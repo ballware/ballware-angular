@@ -1,0 +1,5 @@
+<ballware-entitygrid *ngIf="(gridLayout$ | async)"
+  [gridLayout]="(gridLayout$ | async) ?? undefined"
+  [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
+  [height]="(height$ | async)!">
+</ballware-entitygrid>

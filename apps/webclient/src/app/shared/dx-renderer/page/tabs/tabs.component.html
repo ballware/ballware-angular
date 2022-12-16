@@ -1,0 +1,12 @@
+<dx-tab-panel [style]="styles" [items]="panels" (selectedIndexChange)="onTabChanged($event)" [selectedIndex]="(selectedTab$ | async) ?? 0">
+    <div *dxTemplate="let item of 'title'">
+        <span *ngIf="!item.options.itemoptions.entity" class="dx-tab-text">{{item.options.itemoptions.caption}}</span>
+        <div *ngIf="item.options.itemoptions.entity">
+            <span class="dx-tab-text">{{item.options.itemoptions.caption}}</span>&nbsp;<ballware-page-tabs-counter [entity]="item.options.itemoptions.entity" [query]="item.options.itemoptions.query"></ballware-page-tabs-counter>
+        </div>
+    </div>
+    <div *dxTemplate="let item of 'item'" class="h-100 w-100 container-fluid">
+        <ballware-page-item *ngFor="let layoutItem of item?.items" [layoutItem]="layoutItem" [colCount]="layoutItem.colCount">
+        </ballware-page-item>
+    </div>
+</dx-tab-panel>

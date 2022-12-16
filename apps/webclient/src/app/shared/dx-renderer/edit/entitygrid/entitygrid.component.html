@@ -1,0 +1,9 @@
+<div class="dx-fieldset">
+  <ballware-entitygrid
+    [gridLayout]="(gridLayout$ | async) ?? undefined"
+    [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
+    [height]="(height$ | async)!">
+  </ballware-entitygrid>
+</div>
+<ballware-crud-actions>
+</ballware-crud-actions>

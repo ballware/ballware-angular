@@ -1,0 +1,13 @@
+<dx-select-box
+  #selectBox
+  *ngIf="item && dataSource && lookup"
+  [dataSource]="dataSource"
+  [noDataText]="item.caption ?? ''"
+  [searchEnabled]=true
+  [showClearButton]=true
+  [showDropDownButton]=true
+  [displayExpr]="lookup.displayMember"
+  [valueExpr]="lookup.valueMember ?? ''"
+  [width]="item.width ?? '400px'"
+  (onValueChanged)="onValueChanged($event)">
+</dx-select-box>

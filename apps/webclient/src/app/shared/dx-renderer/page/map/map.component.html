@@ -1,0 +1,10 @@
+<dx-map #map
+  [height]="layoutItem?.options?.height ?? '100%'"
+  [width]="'100%'"
+  [apiKey]="{ google: (googlekey$ | async) ?? 'unlicensed' }"
+  [provider]="'google'"
+  [type]="'hybrid'"
+  [autoAdjust]="true"
+  [zoom]="30"
+  [controls]="true">
+</dx-map>

@@ -1,0 +1,14 @@
+<ballware-edit-fieldset [layoutItem]="layoutItem">
+  <dx-date-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+    [name]="layoutItem.options.dataMember"
+    [type]="layoutItem.type"
+    [displayFormat]="displayFormat"
+    [(value)]="value"
+    [readOnly]="(readonly$ | async) ?? false"
+    [showClearButton]="true"
+    >
+      <dx-validator>
+        <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+      </dx-validator>
+  </dx-date-box>
+</ballware-edit-fieldset>

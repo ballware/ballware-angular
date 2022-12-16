@@ -1,0 +1,12 @@
+<dx-drop-down-button 
+    #button
+    *ngIf="item" 
+    [width]="item.width ?? '180px'"
+    [text]="item.caption ?? ''" 
+    [dataSource]="items"
+    keyExpr="id"
+    displayExpr="text"
+    [splitButton]="true"
+    (onButtonClick)="onButtonClicked($event)"
+    (onItemClick)="onItemClicked($event)">
+</dx-drop-down-button>

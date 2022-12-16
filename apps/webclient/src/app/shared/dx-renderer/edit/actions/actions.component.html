@@ -1,0 +1,38 @@
+<ballware-crud-dialog *ngIf="itemDialog" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+  <ballware-edit-layout></ballware-edit-layout>
+</ballware-crud-dialog>
+<dx-action-sheet #actionMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="(usePopover$ | async) ?? false"
+  [title]="'datacontainer.actionsheet.title' | i18next"
+  (onItemClick)="actionItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #printMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="(usePopover$ | async) ?? false"
+  [title]="'datacontainer.actions.print' | i18next"
+  (onItemClick)="printMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #addMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="(usePopover$ | async) ?? false"
+  [title]="'datacontainer.actions.add' | i18next: { entity: displayName$ | async }"
+  (onItemClick)="addMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #exportMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="(usePopover$ | async) ?? false"
+  [title]="'datacontainer.actions.export' | i18next: { entity: displayName$ }"
+  (onItemClick)="exportMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #importMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="(usePopover$ | async) ?? false"
+  [title]="'datacontainer.actions.import' | i18next: { entity: displayName$ }"
+  (onItemClick)="importMenuItemClicked($event)">
+</dx-action-sheet>

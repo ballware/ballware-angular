@@ -1,0 +1,10 @@
+<dx-date-box
+    #dateBox
+    *ngIf="item"
+    [width]="item.width ?? '220px'"
+    type="datetime"
+    [displayFormat]="getDisplayFormat()"
+    [hint]="item.caption"
+    (onValueChanged)="onValueChanged($event)">
+</dx-date-box>
+

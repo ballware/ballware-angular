@@ -1,0 +1,8 @@
+<div class="dx-fieldset" [style.height]="layoutItem?.options?.height">
+  <div class="dx-field-label" [style.width]="'200px'">
+    {{layoutItem?.options?.caption}}
+  </div>
+  <div class="dx-field-value" [style.width]="'100%'" [style.height]="layoutItem?.options?.height">
+    <ng-content></ng-content>
+  </div>
+</div>

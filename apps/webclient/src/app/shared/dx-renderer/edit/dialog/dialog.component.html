@@ -1,0 +1,15 @@
+<dx-popup
+  [visible]="true"
+  [fullScreen]="editLayout?.fullscreen ?? false"
+  [showCloseButton]="true"
+  [title]="title ?? ''"
+  (onHidden)="onHidden($event)">
+  <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: applyText, onClick: onApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: cancelText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item *ngIf="mode === EditModes.VIEW" widget="dxButton" [options]="{ text: closeText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <dx-scroll-view>
+      <ng-content></ng-content>
+    </dx-scroll-view>
+  </div>
+</dx-popup>
