@@ -1,12 +1,10 @@
-import { AfterViewInit, Component, Input, NgModule, ViewChild } from '@angular/core';
-import { DxMapComponent, DxMapModule } from 'devextreme-angular';
+import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import { DxMapComponent } from 'devextreme-angular';
 import { combineLatest, Observable, takeUntil } from 'rxjs';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
 import { CrudService, SettingsService } from '@ballware/meta-services';
 import { getByPath } from '../../utils/databinding';
 import { WithDestroy } from '../../utils/withdestroy';
-import { PageModule } from '../page.module';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-page-map',
@@ -71,13 +69,3 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
     }
   }
 }
-
-@NgModule({
-  declarations: [PageLayoutMapComponent],
-  imports: [
-    CommonModule,
-    PageModule,
-    DxMapModule
-  ]
-})
-class PageLayoutMapModule {}

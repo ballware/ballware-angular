@@ -1,11 +1,8 @@
-import { Component, Input, NgModule, OnInit, Provider } from '@angular/core';
+import { Component, Input, OnInit, Provider } from '@angular/core';
 import { LookupService, CrudService, MetaService, AttachmentService, PageService, DefaultMetaService, DefaultCrudService, EditService, DefaultLookupService } from '@ballware/meta-services';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
-import { CommonModule } from '@angular/common';
-import { PageModule } from '../page.module';
-import { EditModule } from '../../edit/edit.module';
 
 @Component({
   selector: 'ballware-page-crudcontainer',
@@ -64,15 +61,3 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
 
   }
 }
-
-@NgModule({
-  declarations: [PageLayoutCrudcontainerComponent],
-  imports: [
-    CommonModule,
-    EditModule,
-    PageModule
-  ], exports: [
-    PageLayoutCrudcontainerComponent
-  ]
-})
-export class PageLayoutCrudcontainerModule {}

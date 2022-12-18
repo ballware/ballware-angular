@@ -1,9 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component, Input, NgModule, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EntityGridOptions, GridLayout, PageLayoutItem } from '@ballware/meta-model';
 import { MetaService } from '@ballware/meta-services';
 import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
-import { EditModule } from '../../edit/edit.module';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -45,14 +43,3 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
   }
 }
 
-@NgModule({
-  declarations: [PageLayoutGridComponent],
-  imports: [
-    CommonModule,
-    EditModule
-  ],
-   exports: [
-    PageLayoutGridComponent
-   ]
-})
-export class PageLayoutGridModule {}

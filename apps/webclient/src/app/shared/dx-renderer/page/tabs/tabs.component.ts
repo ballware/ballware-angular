@@ -1,14 +1,10 @@
-import { Component, Input, NgModule, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { isEqual } from 'lodash';
 import * as qs from 'qs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { PageLayoutItem, TabsOptions } from '@ballware/meta-model';
 import { WithDestroy } from '../../utils/withdestroy';
-import { CommonModule } from '@angular/common';
-import { DxLoadIndicatorModule, DxTabPanelModule } from 'devextreme-angular';
-import { PageModule } from '../page.module';
-import { PageLayoutTabsCounterComponent } from './counter.component';
 
 interface TabsParam {
   current?: string;
@@ -85,14 +81,3 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
     }
   }
 }
-
-@NgModule({
-  declarations: [PageLayoutTabsComponent, PageLayoutTabsCounterComponent],
-  imports: [
-    CommonModule,
-    DxTabPanelModule,
-    DxLoadIndicatorModule,
-    PageModule
-  ]
-})
-class PageLayoutTabsModule {}
