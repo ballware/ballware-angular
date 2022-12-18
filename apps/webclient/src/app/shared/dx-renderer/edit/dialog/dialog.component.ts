@@ -53,11 +53,11 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit {
     return this.translationService.transform('editing.actions.close');
   }
 
-  public onHidden(e: {}) {
+  public onHidden() {
     this.cancel && this.cancel();
   }
 
-  public onApply(e: {}) {
+  public onApply() {
     if (this.editService.validate()) {
       this.item && this.apply && this.apply(this.item);
     }

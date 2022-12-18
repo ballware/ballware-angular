@@ -101,12 +101,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
     e.itemData.execute(e.itemData.target);
   }
 
-  public exportMenuItemClicked(e: {}) {
-
+  public exportMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+    e.itemData.execute(e.itemData.target);
   }
 
-  public importMenuItemClicked(e: {}) {
-
+  public importMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+    e.itemData.execute(e.itemData.target);
   }
 
 }

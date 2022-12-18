@@ -26,7 +26,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   public storageIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
 
-  public summary$ = new BehaviorSubject<object|undefined>(undefined);
+  public summary$ = new BehaviorSubject<Record<string, unknown>|undefined>(undefined);
 
   private _gridLayout$ = new BehaviorSubject<GridLayout|undefined>(undefined);
 
@@ -102,7 +102,9 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
     this.dataSource$ = combineLatest([this.crudService.fetchedItems$])
       .pipe(takeUntil(this.destroy$))
-      .pipe(map(([fetchedItems]) => fetchedItems ? createEditableGridDatasource(fetchedItems, (item) => {}) : undefined));
+      .pipe(map(([fetchedItems]) => fetchedItems ? createEditableGridDatasource(fetchedItems, (item) => {
+        console.log('save');
+      }) : undefined));
 
     combineLatest([this.selectAddRequest$, this.editLayoutIdentifier$])
       .pipe(takeUntil(this.destroy$))
@@ -113,12 +115,12 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
       });
   }
 
-  public onReloadClicked(e: {}) {
+  public onReloadClicked() {
     this.crudService.reload();
   }
 
   public onCustomFunctionClicked() {
-
+    console.log('onCustomFunctionClicked');
   }
 
   public onAddClicked(e: { target: Element }) {
@@ -126,13 +128,21 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     this.selectAddRequest$.next({ target: e.target });
   }
 
-  public onPrintClicked() {}
+  public onPrintClicked() {
+    console.log('onPrintClicked');
+  }
 
-  public onExportClicked() {}
+  public onExportClicked() {
+    console.log('onExportClicked');
+  }
 
-  public onImportClicked() {}
+  public onImportClicked() {
+    console.log('onImportClicked');
+  }
 
-  public onRowDblClicked() {}
+  public onRowDblClicked() {
+    console.log('onRowDblClicked');
+  }
 
   public isMasterDetailExpandable(): boolean {
     return false;

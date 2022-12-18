@@ -34,7 +34,7 @@ export class ToolbarDropdownbuttonComponent implements OnDestroy, AfterViewInit 
     }
   }
 
-  onButtonClicked(e: {}) {
+  onButtonClicked() {
     if (this.item?.name) {
       this.pageService.paramEditorEvent(this.item.name, 'click', undefined);
     }

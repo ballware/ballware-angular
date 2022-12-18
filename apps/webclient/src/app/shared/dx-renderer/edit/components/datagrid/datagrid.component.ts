@@ -22,7 +22,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Input() mode!: 'large' | 'medium' | 'small';
   @Input() layout: GridLayout|undefined;
   @Input() columns: Array<dxDataGridColumn>|undefined;
-  @Input() summary: {}|undefined;
+  @Input() summary: Record<string, unknown>|undefined;
   @Input() dataSource!: DataSource;
   @Input() exportFileName!: string;
   @Input() showReload!: boolean;
@@ -74,15 +74,15 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     return `height: ${this.height ?? '100%'}`;
   }
 
-  public editingStart(e: any) {
-
+  public editingStart() {
+    console.log('editingStart');
   }
 
-  public gridEditorPreparing(e: any) {
-
+  public gridEditorPreparing() {
+    console.log('gridEditorPreparing');
   }
 
-  public selectionChanged(e: any) {
+  public selectionChanged(e: { selectedRowKeys: string[], selectedRowsData: CrudItem[]}) {
     this.selectedRowKeys = e.selectedRowKeys as string[];
     this.selectedRowData = e.selectedRowsData as CrudItem[];
   }
@@ -205,11 +205,11 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     }
   }
 
-  public rowExpanding(e: any) {
-
+  public rowExpanding() {
+    console.log('rowExpanding');
   }
 
   public customizeColumnsDisableHidingPriority(columns: Array<any>) {
-
+    console.log('customizeColumnsDisableHidingPriority');
   }
 }

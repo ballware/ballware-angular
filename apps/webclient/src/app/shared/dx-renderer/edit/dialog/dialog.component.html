@@ -3,7 +3,7 @@
   [fullScreen]="editLayout?.fullscreen ?? false"
   [showCloseButton]="true"
   [title]="title ?? ''"
-  (onHidden)="onHidden($event)">
+  (onHidden)="onHidden()">
   <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: applyText, onClick: onApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
   <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: cancelText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
   <dxi-toolbar-item *ngIf="mode === EditModes.VIEW" widget="dxButton" [options]="{ text: closeText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
