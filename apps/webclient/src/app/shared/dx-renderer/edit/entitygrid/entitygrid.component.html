@@ -1,5 +1,5 @@
 <div class="dx-fieldset">
-  <ballware-entitygrid
+  <ballware-entitygrid *ngIf="(gridLayout$ | async)"
     [gridLayout]="(gridLayout$ | async) ?? undefined"
     [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
     [height]="(height$ | async)!">

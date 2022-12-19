@@ -1,2 +1,2 @@
-<dx-load-indicator *ngIf="(count$ | async) === undefined" width="15" height="15"></dx-load-indicator>
-<span *ngIf="(count$ | async) !== undefined" class="dx-tab-text">({{count$ | async}})</span>
+<dx-load-indicator *ngIf="count === undefined" width="15" height="15"></dx-load-indicator>
+<span *ngIf="count !== undefined" class="dx-tab-text">({{count}})</span>

@@ -25,7 +25,7 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
   @Input() entity?: string;
   @Input() query?: string;
 
-  public count$: Observable<number|undefined>;
+  public count: number|undefined = undefined;
 
   constructor(private pageService: PageService, private metaService: MetaService) {
     super();
@@ -44,11 +44,14 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
         }
       });
 
-    this.count$ = combineLatest([this.metaService.count$, this.pageService.headParams$])
+    combineLatest([this.metaService.count$, this.pageService.headParams$])
       .pipe(takeUntil(this.destroy$))
       .pipe(switchMap(([countFunc, pageParam]) => (countFunc && pageParam)
         ? countFunc(this.query ?? 'primary', pageParam)
-        : of(undefined)));
+        : of(undefined)))
+      .subscribe((count) => {
+        this.count = count;
+      });
   }
 
   ngOnInit(): void {

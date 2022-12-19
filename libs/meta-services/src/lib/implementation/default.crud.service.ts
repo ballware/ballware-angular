@@ -1,5 +1,5 @@
 import { I18NextPipe } from 'angular-i18next';
-import { map, Observable, of, Subject, switchMap } from 'rxjs';
+import { map, Observable, of, ReplaySubject, share, Subject, switchMap } from 'rxjs';
 import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { CrudItem, EditLayout, EntityCustomFunction } from '@ballware/meta-model';
 import { EditModes } from '../editmodes';
@@ -372,7 +372,8 @@ export class DefaultCrudService extends CrudService {
       .pipe(takeUntil(this.destroy$))
       .pipe(switchMap(([load, queryIdentifier, query, fetchParams]) => {
         if (load && queryIdentifier && fetchParams && query) {
-          return query(queryIdentifier, fetchParams); }
+          return query(queryIdentifier, fetchParams)
+            .pipe(share({ connector: () => new ReplaySubject(), resetOnRefCountZero: false, resetOnComplete: false, resetOnError: true })); }
         else {
           return of(undefined);
         }

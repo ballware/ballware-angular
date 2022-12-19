@@ -230,6 +230,7 @@ export class DefaultMetaService extends MetaService {
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([entityMetadata, genericApiFactory]) => (entityMetadata && genericApiFactory)
         ? (query, params) => genericApiFactory(entityMetadata.baseUrl).count(this.httpClient, query, params)
+          .pipe(share({ connector: () => new ReplaySubject(), resetOnRefCountZero: false, resetOnComplete: false, resetOnError: true }))
         : undefined));
 
     this.query$ = combineLatest([this._customParam$, this.entityMetadata$, this.metaApiService.metaGenericEntityApiFactory$])

@@ -68,9 +68,9 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
         }
       });
 
-      this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$])
-        .pipe(takeUntil(this.destroy$))
-        .pipe(map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined));
+    this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$])
+      .pipe(takeUntil(this.destroy$))
+      .pipe(map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined));
   }
 
   ngOnInit(): void {

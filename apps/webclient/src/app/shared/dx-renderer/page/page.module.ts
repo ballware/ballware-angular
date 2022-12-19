@@ -13,7 +13,7 @@ import { PageLayoutGridComponent } from './grid/grid.component';
 import { PageLayoutMapComponent } from './map/map.component';
 import { PageLayoutTabsComponent } from './tabs/tabs.component';
 import { PageLayoutTabsCounterComponent } from './tabs/counter.component';
-import { DxLoadIndicatorModule, DxMapModule, DxTabPanelModule } from 'devextreme-angular';
+import { DxDeferRenderingModule, DxLoadIndicatorModule, DxMapModule, DxTabPanelModule } from 'devextreme-angular';
 
 @NgModule({
   declarations: [
@@ -34,7 +34,8 @@ import { DxLoadIndicatorModule, DxMapModule, DxTabPanelModule } from 'devextreme
     EditModule,
     DxTabPanelModule,
     DxMapModule,
-    DxLoadIndicatorModule
+    DxLoadIndicatorModule,
+    DxDeferRenderingModule
   ],
   exports: [
     PageComponent,
