@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { PageService, LookupService, MetaService, DefaultMetaService, DefaultLookupService } from '@ballware/meta-services';
+import { PageService, LookupService, MetaService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
 import { combineLatest, Observable, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -8,8 +8,16 @@ import { WithDestroy } from '../../utils/withdestroy';
   templateUrl: './counter.component.html',
   styleUrls: ['./counter.component.scss'],
   providers: [
-    { provide: LookupService, useClass: DefaultLookupService } as Provider,
-    { provide: MetaService, useClass: DefaultMetaService } as Provider,
+    { 
+      provide: LookupService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: MetaService, 
+      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
+      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]
+    } as Provider,
   ]
 })
 export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnInit {

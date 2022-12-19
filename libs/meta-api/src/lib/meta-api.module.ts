@@ -1,9 +1,9 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IdentityApiService } from './identityapiservice';
-import { DefaultIdentityApiService } from './implementation/defaultidentityapiservice';
-import { MetaApiService } from './metaapiservice';
-import { DefaultMetaApiService } from './implementation/defaultmetaapiservice';
+import { IdentityApiService } from './identity.api.service';
+import { MetaApiService } from './meta.api.service';
+import { ApiServiceFactory } from './api.service.factory';
+import { DefaultApiServiceFactory } from './implementation/default.api.service.factory';
 
 export * from './attachment';
 export * from './document';
@@ -18,10 +18,9 @@ export * from './statistic';
 export * from './tenant';
 export * from './user';
 export * from './role';
-export * from './identityapiservice';
-export * from './metaapiservice';
-export * from './implementation/defaultidentityapiservice';
-export * from './implementation/defaultmetaapiservice';
+export * from './identity.api.service';
+export * from './meta.api.service';
+export * from './api.service.factory';
 
 export interface MetaApiModuleConfig {
   identityServiceBaseUrl: string,
@@ -31,6 +30,18 @@ export interface MetaApiModuleConfig {
 
 @NgModule({
   imports: [CommonModule],
+  providers: [
+    {
+      provide: IdentityApiService,
+      useFactory: (apiServiceFactory: ApiServiceFactory) => apiServiceFactory.createIdentityApi(),
+      deps: [ApiServiceFactory]
+    },
+    {
+      provide: MetaApiService,
+      useFactory: (apiServiceFactory: ApiServiceFactory) => apiServiceFactory.createMetaApi(),
+      deps: [ApiServiceFactory]
+    }
+  ]
 })
 export class MetaApiModule {
   static forRoot(config: MetaApiModuleConfig): ModuleWithProviders<MetaApiModule> {
@@ -38,13 +49,9 @@ export class MetaApiModule {
       ngModule: MetaApiModule,
       providers: [
         {
-          provide: IdentityApiService,
-          useFactory: () => new DefaultIdentityApiService(config.identityServiceBaseUrl)
-        },
-        {
-          provide: MetaApiService,
-          useFactory: () => new DefaultMetaApiService(config.metaServiceBaseUrl, config.documentServiceBaseUrl)
-        }
+          provide: ApiServiceFactory,
+          useFactory: () => new DefaultApiServiceFactory(config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl)
+        }    
       ]
     };
   }

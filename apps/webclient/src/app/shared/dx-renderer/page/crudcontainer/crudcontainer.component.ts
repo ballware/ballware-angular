@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { LookupService, CrudService, MetaService, AttachmentService, PageService, DefaultMetaService, DefaultCrudService, EditService, DefaultLookupService } from '@ballware/meta-services';
+import { LookupService, CrudService, MetaService, AttachmentService, PageService, EditService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -9,11 +9,31 @@ import { WithDestroy } from '../../utils/withdestroy';
   templateUrl: './crudcontainer.component.html',
   styleUrls: ['./crudcontainer.component.scss'],
   providers: [
-    { provide: LookupService, useClass: DefaultLookupService } as Provider,
-    { provide: MetaService, useClass: DefaultMetaService } as Provider,
-    { provide: AttachmentService, useClass: AttachmentService } as Provider,
-    { provide: CrudService, useClass: DefaultCrudService } as Provider,
-    { provide: EditService, useClass: EditService } as Provider,
+    { 
+      provide: LookupService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: MetaService, 
+      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
+      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]  
+    } as Provider,
+    { 
+      provide: AttachmentService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createAttachmentService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: CrudService, 
+      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
+      deps: [MetaServiceFactory, MetaService]  
+    } as Provider,
+    { 
+      provide: EditService, 
+      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
+      deps: [MetaServiceFactory, MetaService]
+    } as Provider,
   ]
 })
 export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit {

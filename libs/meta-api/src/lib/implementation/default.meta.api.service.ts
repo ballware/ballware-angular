@@ -5,7 +5,7 @@ import { createMetaBackendDocumentationApi, MetaDocumentationApi } from "../docu
 import { createMetaBackendEntityApi, MetaEntityApi } from "../entity";
 import { createMetaBackendGenericEntityApi, MetaGenericEntityApi } from "../genericentity";
 import { createMetaBackendLookupApi, MetaLookupApi } from "../lookup";
-import { MetaApiService } from "../metaapiservice";
+import { MetaApiService } from "../meta.api.service";
 import { createMetaBackendPageApi, MetaPageApi } from "../page";
 import { createMetaBackendPickvalueApi, MetaPickvalueApi } from "../pickvalue";
 import { createMetaBackendProcessingstateApi, MetaProcessingstateApi } from "../processingstate";

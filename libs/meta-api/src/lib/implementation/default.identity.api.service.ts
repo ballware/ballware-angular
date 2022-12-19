@@ -1,5 +1,5 @@
 import { Observable, of } from "rxjs";
-import { IdentityApiService } from "../identityapiservice";
+import { IdentityApiService } from "../identity.api.service";
 import { createIdentityBackendRoleApi, IdentityRoleApi } from "../role";
 import { createIdentityBackendUserApi, IdentityUserApi } from "../user";
 

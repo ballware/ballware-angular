@@ -2,8 +2,14 @@ import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SettingsService } from './settings.service';
 import { DefaultSettingsService } from './implementation/default.settings.service';
+import { MetaServiceFactory } from './meta.service.factory';
+import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
+import { HttpClient } from '@angular/common/http';
+import { ApiServiceFactory } from '@ballware/meta-api';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { I18NextPipe } from 'angular-i18next';
 import { TenantService } from './tenant.service';
-import { DefaultTenantService } from './implementation/default.tenant.service';
+import { AuthService } from './auth.service';
 
 export * from './auth.service';
 export * from './attachment.service';
@@ -18,13 +24,7 @@ export * from './page.service';
 export * from './editmodes';
 export * from './edititemref';
 export * from './toolbaritemref';
-
-export * from './implementation/default.settings.service';
-export * from './implementation/default.tenant.service';
-export * from './implementation/default.lookup.service';
-export * from './implementation/default.page.service';
-export * from './implementation/default.meta.service';
-export * from './implementation/default.crud.service';
+export * from './meta.service.factory';
 
 export interface MetaServicesModuleConfig {
   version: string,
@@ -50,7 +50,29 @@ export class MetaServicesModule {
           useFactory: () => new DefaultSettingsService(config.version, config.googlekey, config.identityIssuer, config.identityClient, config.identityScopes, config.identityTenantClaim, config.identityUsernameClaim, config.identityProfileUrl)
         },
         {
-          provide: TenantService, useClass: DefaultTenantService
+          provide: MetaServiceFactory,
+          useFactory: (httpClient: HttpClient, 
+            apiServiceFactory: ApiServiceFactory, 
+            settingsService: SettingsService, 
+            oauthService: OAuthService, 
+            translationPipe: I18NextPipe) => new DefaultMetaServiceFactory(httpClient, apiServiceFactory, settingsService, oauthService, translationPipe),
+          deps: [
+            HttpClient,
+            ApiServiceFactory,
+            SettingsService,
+            OAuthService,
+            I18NextPipe
+          ]
+        },
+        {
+          provide: AuthService,
+          useFactory: (metaServiceFactory: MetaServiceFactory) => metaServiceFactory.createAuthService(),
+          deps: [MetaServiceFactory]
+        },
+        {
+          provide: TenantService,
+          useFactory: (metaServiceFactory: MetaServiceFactory, authService: AuthService) => metaServiceFactory.createTenantService(authService),
+          deps: [MetaServiceFactory, AuthService]
         }
       ]
     };

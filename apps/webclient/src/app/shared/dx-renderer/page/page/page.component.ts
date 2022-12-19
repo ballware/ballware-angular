@@ -1,7 +1,7 @@
 import { Component, HostBinding, OnInit, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, takeUntil } from 'rxjs';
-import { PageService, LookupService, DefaultPageService, TenantService, DefaultLookupService } from '@ballware/meta-services';
+import { PageService, LookupService, TenantService, MetaServiceFactory } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -9,8 +9,16 @@ import { WithDestroy } from '../../utils/withdestroy';
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
   providers: [
-    { provide: LookupService, useClass: DefaultLookupService} as Provider,
-    { provide: PageService, useClass: DefaultPageService } as Provider
+    { 
+      provide: LookupService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: PageService, 
+      useFactory: (serviceFactory: MetaServiceFactory, route: ActivatedRoute, router: Router, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createPageService(route, router, tenantService, lookupService),
+      deps: [MetaServiceFactory, ActivatedRoute, Router, TenantService, LookupService]  
+    } as Provider
   ]
 })
 export class PageComponent extends WithDestroy() implements OnInit {

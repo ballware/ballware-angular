@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { CrudService, EditService, EditItemRef, LookupService, MetaService, AttachmentService, DefaultMetaService, DefaultCrudService, DefaultLookupService } from '@ballware/meta-services';
+import { CrudService, EditService, EditItemRef, LookupService, MetaService, AttachmentService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -21,10 +21,26 @@ interface EntityGridItemOptions {
   templateUrl: './entitygrid.component.html',
   styleUrls: ['./entitygrid.component.scss'],
   providers: [
-    { provide: LookupService, useClass: DefaultLookupService } as Provider,
-    { provide: MetaService, useClass: DefaultMetaService } as Provider,
-    { provide: AttachmentService, useClass: AttachmentService } as Provider,
-    { provide: CrudService, useClass: DefaultCrudService } as Provider,
+    { 
+      provide: LookupService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: MetaService, 
+      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
+      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]  
+    } as Provider,
+    { 
+      provide: AttachmentService, 
+      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createAttachmentService(),
+      deps: [MetaServiceFactory]  
+    } as Provider,
+    { 
+      provide: CrudService, 
+      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
+      deps: [MetaServiceFactory, MetaService]  
+    } as Provider
   ]
 })
 export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, EditItemRef {
