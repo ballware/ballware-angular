@@ -39,6 +39,7 @@ import { DxDeferRenderingModule, DxLoadIndicatorModule, DxMapModule, DxTabPanelM
   ],
   exports: [
     PageComponent,
+    PageLayoutComponent,
     PageLayoutItemComponent
   ]
 })

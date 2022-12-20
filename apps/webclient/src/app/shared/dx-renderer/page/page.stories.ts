@@ -1,15 +1,17 @@
 import { APP_INITIALIZER, Component, LOCALE_ID, OnChanges, Provider } from "@angular/core";
 import { CrudContainerOptions, PageLayout, PageLayoutItem, PageLayoutItemOptions, QueryParams, TabItemOptions } from "@ballware/meta-model";
-import { AuthService, AutocompleteCreator, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, PageService, SettingsService, TenantService } from "@ballware/meta-services";
+import { AuthService, MetaServiceFactory, PageService, SettingsService, TenantService, MetaService, LookupService, CrudService } from "@ballware/meta-services";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
 import { I18NextModule, I18NEXT_SERVICE, ITranslationService } from 'angular-i18next';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 
-import { PageLayoutComponent } from './layout/layout.component';
-import { PageLayoutItemComponent } from './layout/item.component';
 import { HttpClient } from "@angular/common/http";
-import { IdentityApiService, MetaApiService, DefaultIdentityApiService, DefaultMetaApiService } from "@ballware/meta-api";
 import { ResourceLanguage } from "i18next";
+import { CommonModule } from "@angular/common";
+
+import { PageModule } from './page.module';
+
+import * as TypeMoq from 'typemoq';
 
 function appInit(i18next: ITranslationService) {
   return () => i18next.init({
@@ -78,29 +80,7 @@ class MockedPageService {
 }
 
 @Component({
-  template: '<ballware-page-layout></ballware-page-layout>',
-  providers: [
-    {
-      provide: LookupService, useValue: {
-        lookups$: new BehaviorSubject<Record<string, LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>>|undefined>({
-          /*
-          mylookup: {
-            type: 'lookup',
-            store: {
-              listFunc: () => of(lookupValues),
-              byIdFunc: (id) => of(lookupValues.find(v => v.id === id))
-            } as LookupStoreDescriptor,
-            displayMember: 'text',
-            valueMember: 'id'
-          } as LookupDescriptor
-          */
-        } as Record<string, LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>>)
-      }
-    } as Provider,
-    {
-      provide: PageService, useValue: new MockedPageService()
-    } as Provider
-  ]
+  template: '<ballware-page-layout></ballware-page-layout>',  
 })
 class PageLayoutHostComponent implements OnChanges {
 
@@ -108,6 +88,28 @@ class PageLayoutHostComponent implements OnChanges {
     console.log('ngOnChanges');
   }
 }
+
+const lookupServiceMock = TypeMoq.Mock.ofType<LookupService>(undefined, TypeMoq.MockBehavior.Strict);
+const metaServiceMock = TypeMoq.Mock.ofType<MetaService>(undefined, TypeMoq.MockBehavior.Strict);
+const crudServiceMock = TypeMoq.Mock.ofType<CrudService>(undefined, TypeMoq.MockBehavior.Strict);
+const metaServiceFactoryMock = TypeMoq.Mock.ofType<MetaServiceFactory>(undefined, TypeMoq.MockBehavior.Strict);
+
+metaServiceFactoryMock.setup(x => x.createLookupService()).returns(() => lookupServiceMock.object);
+metaServiceFactoryMock.setup(x => x.createMetaService(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => metaServiceMock.object);
+metaServiceFactoryMock.setup(x => x.createCrudService(TypeMoq.It.isAny())).returns(() => crudServiceMock.object);
+
+metaServiceMock.setup(x => x.headParams$).returns(() => of({}));
+metaServiceMock.setup(x => x.displayName$).returns(() => of('Entity display name'));
+metaServiceMock.setup(x => x.setEntity(TypeMoq.It.isAny()));
+metaServiceMock.setup(x => x.setInitialCustomParam(TypeMoq.It.isAny()));
+metaServiceMock.setup(x => x.setHeadParams(TypeMoq.It.isValue({})));
+
+crudServiceMock.setup(x => x.itemDialog$).returns(() => of(undefined));
+crudServiceMock.setup(x => x.selectActionSheet$).returns(() => of(undefined));
+crudServiceMock.setup(x => x.selectAddSheet$).returns(() => of(undefined));
+crudServiceMock.setup(x => x.selectPrintSheet$).returns(() => of(undefined));
+crudServiceMock.setup(x => x.setQuery(TypeMoq.It.isAny()));
+crudServiceMock.setup(x => x.reload());
 
 export default {
   title: 'Page',
@@ -120,10 +122,11 @@ export default {
   decorators: [
     moduleMetadata({
       declarations: [
-        PageLayoutComponent,
-        PageLayoutItemComponent
+        PageLayoutHostComponent
       ],
       imports: [
+        CommonModule,
+        PageModule,
         I18NextModule.forRoot(),
       ],
       providers: [
@@ -132,24 +135,24 @@ export default {
           provide: SettingsService, useValue: {}
         } as Provider,
         {
+          provide: MetaServiceFactory,
+          useValue: metaServiceFactoryMock.object
+        } as Provider,
+        {
           provide: AuthService, useValue: {}
         } as Provider,
         {
           provide: TenantService, useValue: {}
         },
         {
-          provide: HttpClient, useValue: {}
-        } as Provider,
-        {
-          provide: MetaApiService, useValue: new DefaultMetaApiService('/', '/')
-        } as Provider,
-        {
-          provide: IdentityApiService, useValue: new DefaultIdentityApiService('/')
+          provide: PageService, useValue: new MockedPageService()
         } as Provider
       ]
     })
   ]
 } as Meta;
+
+
 
 export const Primary: Story = (args) => ({
   props: {
