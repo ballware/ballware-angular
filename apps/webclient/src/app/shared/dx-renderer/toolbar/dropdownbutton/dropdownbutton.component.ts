@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/
 import { DxDropDownButtonComponent } from 'devextreme-angular';
 import { PageService, ToolbarItemRef } from '@ballware/meta-services';
 import { PageToolbarItem, ValueType } from '@ballware/meta-model';
+import { ItemClickEvent } from 'devextreme/ui/drop_down_button';
 
 @Component({
   selector: 'ballware-toolbar-dropdownbutton',
@@ -44,7 +45,7 @@ export class ToolbarDropdownbuttonComponent implements OnDestroy, AfterViewInit 
     return this.item?.options['items'] as any[];
   }
 
-  onItemClicked(e: { itemData: Record<string, ValueType>}) {
+  onItemClicked(e: ItemClickEvent) {
     if (this.item?.name) {
       this.pageService.paramEditorEvent(this.item.name, 'click', e.itemData['id']);
     }

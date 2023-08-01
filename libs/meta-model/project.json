@@ -6,16 +6,12 @@
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/meta-model",
         "main": "libs/meta-model/src/index.ts",
         "tsConfig": "libs/meta-model/tsconfig.lib.json",
-        "assets": [
-          "libs/meta-model/*.md"
-        ]
+        "assets": ["libs/meta-model/*.md"]
       }
     },
     "publish": {
@@ -23,26 +19,18 @@
       "options": {
         "command": "node tools/scripts/publish.mjs meta-model {args.ver} {args.tag}"
       },
-      "dependsOn": [
-        "build"
-      ]
+      "dependsOn": ["build"]
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "libs/meta-model/**/*.ts"
-        ]
+        "lintFilePatterns": ["libs/meta-model/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "libs/meta-model/jest.config.ts",
         "passWithNoTests": true
