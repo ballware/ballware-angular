@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/
 import { DxSelectBoxComponent } from 'devextreme-angular';
 import { PageService, ToolbarItemRef } from '@ballware/meta-services';
 import { PageToolbarItem, ValueType } from '@ballware/meta-model';
+import { ValueChangedEvent } from 'devextreme/ui/select_box';
 
 @Component({
   selector: 'ballware-toolbar-staticlookup',
@@ -47,7 +48,7 @@ export class ToolbarStaticlookupComponent implements OnDestroy, AfterViewInit {
     return this.item?.options['items'] as any[];
   }
 
-  onValueChanged(e: { value: ValueType }) {
+  onValueChanged(e: ValueChangedEvent) {
     if (this.item?.name) {
       this.pageService.paramEditorValueChanged(this.item.name, e.value);
     }

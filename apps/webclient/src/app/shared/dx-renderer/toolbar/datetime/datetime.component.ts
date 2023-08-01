@@ -3,6 +3,7 @@ import { DxDateBoxComponent } from 'devextreme-angular';
 import { PageService, ToolbarItemRef } from '@ballware/meta-services';
 import { PageToolbarItem, ValueType } from '@ballware/meta-model';
 import { I18NextPipe } from 'angular-i18next';
+import { ValueChangedEvent } from 'devextreme/ui/date_box';
 
 @Component({
   selector: 'ballware-toolbar-datetime',
@@ -35,7 +36,7 @@ export class ToolbarDatetimeComponent implements OnDestroy, AfterViewInit {
     }
   }
 
-  onValueChanged(e: { value: ValueType }) {
+  onValueChanged(e: ValueChangedEvent) {
     if (this.item?.name) {
       this.pageService.paramEditorValueChanged(this.item.name, e.value);
     }

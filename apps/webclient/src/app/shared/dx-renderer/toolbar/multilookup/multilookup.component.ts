@@ -4,6 +4,7 @@ import { PageToolbarItem, ValueType } from '@ballware/meta-model';
 import { createLookupDataSource } from '../../utils/datasource';
 import { PageService, ToolbarItemRef, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
 import { DxSelectBoxComponent } from 'devextreme-angular';
+import { ValueChangedEvent } from 'devextreme/ui/tag_box';
 
 @Component({
   selector: 'ballware-toolbar-multilookup',
@@ -62,7 +63,7 @@ export class ToolbarMultilookupComponent implements OnInit, OnDestroy, AfterView
     }
   }
 
-  onValueChanged(e: { value: ValueType }) {
+  onValueChanged(e: ValueChangedEvent) {
     if (this.item?.name) {
       this.pageService.paramEditorValueChanged(this.item.name, e.value);
     }

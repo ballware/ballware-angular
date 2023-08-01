@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { createLookupDataSource } from '../../utils/datasource';
 import { DxSelectBoxComponent } from 'devextreme-angular';
 import { PageService, ToolbarItemRef, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
+import { ValueChangedEvent } from 'devextreme/ui/select_box';
 
 @Component({
   selector: 'ballware-toolbar-lookup',
@@ -62,7 +63,7 @@ export class ToolbarLookupComponent implements OnInit, OnDestroy, AfterViewInit 
     }
   }
 
-  onValueChanged(e: { value: ValueType }) {
+  onValueChanged(e: ValueChangedEvent) {
     if (this.item?.name) {
       this.pageService.paramEditorValueChanged(this.item.name, e.value);
     }

@@ -1,8 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { dxElement } from 'devextreme/core/element';
 import DataSource from 'devextreme/data/data_source';
-import { dxEvent } from 'devextreme/events';
-import { dxDataGridColumn } from 'devextreme/ui/data_grid';
+import { RowDblClickEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
 import { dxToolbarItem, dxToolbarOptions } from 'devextreme/ui/toolbar';
 import { MetaService } from '@ballware/meta-services';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
@@ -38,11 +36,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Output() exportClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() importClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() customFunctionClick = new EventEmitter<{ items: Array<CrudItem>, target: Element, id: string }>();
-  @Output() rowDblClick = new EventEmitter<{
-      event: dxEvent;
-      data: CrudItem;
-      element: dxElement;
-    }>();
+  @Output() rowDblClick = new EventEmitter<RowDblClickEvent>();
   @Input() isMasterDetailExpandable?: (e: {
       data: CrudItem
     }) => boolean;
@@ -82,12 +76,12 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     console.log('gridEditorPreparing');
   }
 
-  public selectionChanged(e: { selectedRowKeys: string[], selectedRowsData: CrudItem[]}) {
+  public selectionChanged(e: SelectionChangedEvent) {
     this.selectedRowKeys = e.selectedRowKeys as string[];
     this.selectedRowData = e.selectedRowsData as CrudItem[];
   }
 
-  public toolbarPreparing(e: { toolbarOptions?: dxToolbarOptions }) {
+  public toolbarPreparing(e: ToolbarPreparingEvent) {
 
     if (this.showReload && e.toolbarOptions?.items) {
       e.toolbarOptions.items.unshift({

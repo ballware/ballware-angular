@@ -4,6 +4,7 @@ import { map, Observable, takeUntil } from 'rxjs';
 import { EditLayout } from '@ballware/meta-model';
 import { CrudService, MetaService, ResponsiveService, SCREEN_SIZE, EditModes } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
+import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 
 @Component({
   selector: 'ballware-crud-actions',
@@ -89,23 +90,23 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       });
   }
 
-  public actionItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+  public actionItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
 
-  public printMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+  public printMenuItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
 
-  public addMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+  public addMenuItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
 
-  public exportMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+  public exportMenuItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
 
-  public importMenuItemClicked(e: { itemData: { target: Element, execute: (target: Element) => void } }) {
+  public importMenuItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
 
