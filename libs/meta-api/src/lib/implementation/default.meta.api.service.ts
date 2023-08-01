@@ -1,16 +1,16 @@
 import { Observable, of } from "rxjs";
-import { createMetaBackendAttachmentApi, MetaAttachmentApi } from "../attachment";
-import { createMetaBackendDocumentApi, MetaDocumentApi } from "../document";
-import { createMetaBackendDocumentationApi, MetaDocumentationApi } from "../documentation";
-import { createMetaBackendEntityApi, MetaEntityApi } from "../entity";
-import { createMetaBackendGenericEntityApi, MetaGenericEntityApi } from "../genericentity";
-import { createMetaBackendLookupApi, MetaLookupApi } from "../lookup";
+import { MetaAttachmentApi, createMetaBackendAttachmentApi } from "../attachment";
+import { MetaDocumentApi, createMetaBackendDocumentApi } from "../document";
+import { MetaDocumentationApi, createMetaBackendDocumentationApi } from "../documentation";
+import { MetaEntityApi, createMetaBackendEntityApi } from "../entity";
+import { MetaGenericEntityApi, createMetaBackendGenericEntityApi } from "../genericentity";
+import { MetaLookupApi, createMetaBackendLookupApi } from "../lookup";
 import { MetaApiService } from "../meta.api.service";
-import { createMetaBackendPageApi, MetaPageApi } from "../page";
-import { createMetaBackendPickvalueApi, MetaPickvalueApi } from "../pickvalue";
-import { createMetaBackendProcessingstateApi, MetaProcessingstateApi } from "../processingstate";
-import { createMetaBackendStatisticApi, MetaStatisticApi } from "../statistic";
-import { createMetaBackendTenantApi, MetaTenantApi } from "../tenant";
+import { MetaPageApi, createMetaBackendPageApi } from "../page";
+import { MetaPickvalueApi, createMetaBackendPickvalueApi } from "../pickvalue";
+import { MetaProcessingstateApi, createMetaBackendProcessingstateApi } from "../processingstate";
+import { MetaStatisticApi, createMetaBackendStatisticApi } from "../statistic";
+import { MetaTenantApi, createMetaBackendTenantApi } from "../tenant";
 
 export class DefaultMetaApiService implements MetaApiService {
     constructor(protected metaBaseUrl: string, protected documentServiceBaseUrl: string) {
@@ -24,7 +24,7 @@ export class DefaultMetaApiService implements MetaApiService {
         this.metaDocumentApiFactory$ = of(() => createMetaBackendDocumentApi(metaBaseUrl, documentServiceBaseUrl));
         this.metaDocumentationApiFactory$ = of(() => createMetaBackendDocumentationApi(metaBaseUrl));
         this.metaPageApiFactory$ = of(() => createMetaBackendPageApi(metaBaseUrl));
-        this.metaGenericEntityApiFactory$ = of((baseUrl) => createMetaBackendGenericEntityApi(baseUrl));
+        this.metaGenericEntityApiFactory$ = of((baseUrl) => createMetaBackendGenericEntityApi(baseUrl.replace('{meta}', metaBaseUrl + "/")));
 
     }
 

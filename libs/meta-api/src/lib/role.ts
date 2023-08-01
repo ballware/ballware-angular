@@ -28,7 +28,7 @@ import { Observable } from 'rxjs';
 const selectListFunc = (serviceBaseUrl: string) => (
   http: HttpClient
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}/api/role/selectlist`;
+  const url = `${serviceBaseUrl}/ballware-role-api/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
@@ -38,7 +38,7 @@ const selectByIdFunc = (serviceBaseUrl: string) => (
   http: HttpClient,
   identifier: string
 ): Observable<Record<string, unknown>> => {
-  const url = `${serviceBaseUrl}/api/role/selectbyid/${identifier}`;
+  const url = `${serviceBaseUrl}/ballware-role-api/selectbyid/${identifier}`;
 
   return http
     .get<Record<string, unknown>>(url);

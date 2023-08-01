@@ -91,7 +91,14 @@
           "browserTarget": "webclient:build:onprem"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "options": {
+        "host": "localhost",
+        "port": 3000,
+        "ssl": true,
+        "sslKey": "localhost-key.pem",
+        "sslCert": "localhost.pem"        
+      }
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
