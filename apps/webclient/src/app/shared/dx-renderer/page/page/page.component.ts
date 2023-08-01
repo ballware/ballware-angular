@@ -1,8 +1,9 @@
 import { Component, HostBinding, OnInit, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, takeUntil } from 'rxjs';
-import { PageService, LookupService, TenantService, MetaServiceFactory } from '@ballware/meta-services';
+import { PageService, LookupService, MetaServiceFactory, selectNavigationLayout } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'ballware-page',
@@ -16,15 +17,15 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: PageService, 
-      useFactory: (serviceFactory: MetaServiceFactory, route: ActivatedRoute, router: Router, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createPageService(route, router, tenantService, lookupService),
-      deps: [MetaServiceFactory, ActivatedRoute, Router, TenantService, LookupService]  
+      useFactory: (serviceFactory: MetaServiceFactory, route: ActivatedRoute, router: Router, lookupService: LookupService) => serviceFactory.createPageService(route, router, lookupService),
+      deps: [MetaServiceFactory, ActivatedRoute, Router, LookupService]  
     } as Provider
   ]
 })
 export class PageComponent extends WithDestroy() implements OnInit {
   @HostBinding('class') classes = 'd-block h-100 w-100';
 
-  constructor(private router: Router, private route: ActivatedRoute, private tenantService: TenantService, private pageService: PageService, private lookupService: LookupService) {
+  constructor(private store: Store, private router: Router, private route: ActivatedRoute, private pageService: PageService, private lookupService: LookupService) {
     super();
 
     console.log('page.component constructed');
@@ -32,7 +33,7 @@ export class PageComponent extends WithDestroy() implements OnInit {
 
   ngOnInit(): void {
     console.log('page initialized');
-    combineLatest([this.tenantService.navigationLayout$, this.route.paramMap])
+    combineLatest([this.store.select(selectNavigationLayout), this.route.paramMap])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([navigationLayout, params]) => {
         if (navigationLayout) {

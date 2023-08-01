@@ -2,14 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { cloneDeep } from 'lodash';
 import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, ReplaySubject, share, switchMap, takeUntil } from 'rxjs';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from '@ballware/meta-model';
-import { AuthService } from '../auth.service';
 import { createUtil } from './createscriptutil';
 import { EditModes } from '../editmodes';
 import { LookupRequest, LookupService } from '../lookup.service';
-import { TenantService } from '../tenant.service';
 import { MetaApiService } from '@ballware/meta-api';
 import { MetaService } from '../meta.service';
 import { Injectable } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { selectCurrentUser } from '../identity';
+import { selectHasRight } from '../tenant';
 
 @Injectable()
 export class DefaultMetaService extends MetaService {
@@ -75,7 +76,7 @@ export class DefaultMetaService extends MetaService {
     return this._customParam$;
   }
 
-  constructor(private httpClient: HttpClient, private metaApiService: MetaApiService, private authService: AuthService, private tenantService: TenantService, private lookupService: LookupService) {
+  constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private lookupService: LookupService) {
 
     super();
 
@@ -114,8 +115,8 @@ export class DefaultMetaService extends MetaService {
     this.headAllowed$ = combineLatest([
       this._readOnly$,
       this._customParam$,
-      this.authService.currentUser$,
-      this.tenantService.hasRight$,
+      this.store.select(selectCurrentUser),
+      this.store.select(selectHasRight),
       this.entityMetadata$])
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (right: string) => {
@@ -136,8 +137,8 @@ export class DefaultMetaService extends MetaService {
     this.itemAllowed$ = combineLatest([
       this._readOnly$,
       this._customParam$,
-      this.authService.currentUser$,
-      this.tenantService.hasRight$,
+      this.store.select(selectCurrentUser),
+      this.store.select(selectHasRight),
       this.entityMetadata$])
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (item: CrudItem, right: string) => {

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { LookupService, CrudService, MetaService, AttachmentService, PageService, EditService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
+import { LookupService, CrudService, MetaService, AttachmentService, PageService, EditService, MetaServiceFactory } from '@ballware/meta-services';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -16,8 +16,8 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
-      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]  
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
+      deps: [MetaServiceFactory, LookupService]  
     } as Provider,
     { 
       provide: AttachmentService, 

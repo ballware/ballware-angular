@@ -11,7 +11,8 @@ import { ToolbarItemRef } from '../toolbaritemref';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MetaApiService } from '@ballware/meta-api';
 import { PageService } from '../page.service';
-import { TenantService } from '../tenant.service';
+import { Store } from '@ngrx/store';
+import { selectPages } from '../tenant';
 
 @Injectable()
 export class DefaultPageService extends PageService {
@@ -41,10 +42,11 @@ export class DefaultPageService extends PageService {
     return this._headParams$;
   }
 
-  constructor(private httpClient: HttpClient,
+  constructor(
+    private store: Store,
+    private httpClient: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
-    private tenantService: TenantService,
     private lookupService: LookupService,
     private metaApiService: MetaApiService) {
     super();
@@ -193,7 +195,7 @@ export class DefaultPageService extends PageService {
         }
       });
 
-    combineLatest([this.tenantService.pages$, this._pageUrl$])
+    combineLatest([this.store.select(selectPages), this._pageUrl$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([pages, pageUrl]) => {
         if (pages && pageUrl) {

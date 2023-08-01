@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { PageService, LookupService, MetaService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
-import { combineLatest, Observable, of, switchMap, takeUntil } from 'rxjs';
+import { PageService, LookupService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -15,8 +15,8 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
-      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
+      deps: [MetaServiceFactory, LookupService]
     } as Provider,
   ]
 })

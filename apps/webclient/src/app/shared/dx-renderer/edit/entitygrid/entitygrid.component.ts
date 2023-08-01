@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
 import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { CrudService, EditService, EditItemRef, LookupService, MetaService, AttachmentService, MetaServiceFactory, AuthService, TenantService } from '@ballware/meta-services';
+import { CrudService, EditService, EditItemRef, LookupService, MetaService, AttachmentService, MetaServiceFactory } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -28,8 +28,8 @@ interface EntityGridItemOptions {
     } as Provider,
     { 
       provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, authService: AuthService, tenantService: TenantService, lookupService: LookupService) => serviceFactory.createMetaService(authService, tenantService, lookupService),
-      deps: [MetaServiceFactory, AuthService, TenantService, LookupService]  
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
+      deps: [MetaServiceFactory, LookupService]  
     } as Provider,
     { 
       provide: AttachmentService, 

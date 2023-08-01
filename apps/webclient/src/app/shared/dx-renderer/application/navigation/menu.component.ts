@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { TenantService } from '@ballware/meta-services';
+import { selectNavigationTree } from '@ballware/meta-services';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'ballware-application-navigation-menu',
@@ -18,10 +19,10 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
 
   public items: Record <string, unknown>[] = [];
 
-  constructor(private tenantService: TenantService, private router: Router) {
+  constructor(private store: Store, private router: Router) {
     super();
 
-    this.tenantService.navigationTree$
+    this.store.select(selectNavigationTree)
       .pipe(takeUntil(this.destroy$))
       .subscribe((navigation) => {
         this.items = navigation ?? [];
