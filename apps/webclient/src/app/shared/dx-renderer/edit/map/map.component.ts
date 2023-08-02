@@ -3,12 +3,11 @@ import { I18NextPipe } from 'angular-i18next';
 import { DxMapComponent } from 'devextreme-angular';
 import { combineLatest, Observable, takeUntil } from 'rxjs';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef, selectGooglekey } from '@ballware/meta-services';
+import { EditService, EditItemRef, SettingsService } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithValue } from '../../utils/withvalue';
-import { Store } from '@ngrx/store';
 
 declare let google: any;
 
@@ -32,10 +31,10 @@ export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemL
 
   public googlekey$: Observable<string|undefined>;
 
-  constructor(private store: Store, private translationService: I18NextPipe, private editService: EditService) {
+  constructor(private settingsService: SettingsService, private translationService: I18NextPipe, private editService: EditService) {
     super();
 
-    this.googlekey$ = this.store.select(selectGooglekey);
+    this.googlekey$ = this.settingsService.googlekey$;
   }
 
   ngOnInit(): void {

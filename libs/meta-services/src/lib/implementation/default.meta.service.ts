@@ -8,9 +8,9 @@ import { LookupRequest, LookupService } from '../lookup.service';
 import { MetaApiService } from '@ballware/meta-api';
 import { MetaService } from '../meta.service';
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { selectCurrentUser } from '../identity';
 import { selectHasRight } from '../tenant';
+import { IdentityService } from '../identity.service';
+import { TenantService } from '../tenant.service';
 
 @Injectable()
 export class DefaultMetaService extends MetaService {
@@ -76,7 +76,7 @@ export class DefaultMetaService extends MetaService {
     return this._customParam$;
   }
 
-  constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private lookupService: LookupService) {
+  constructor(private identityService: IdentityService, private tenantService: TenantService, private httpClient: HttpClient, private metaApiService: MetaApiService, private lookupService: LookupService) {
 
     super();
 
@@ -115,8 +115,8 @@ export class DefaultMetaService extends MetaService {
     this.headAllowed$ = combineLatest([
       this._readOnly$,
       this._customParam$,
-      this.store.select(selectCurrentUser),
-      this.store.select(selectHasRight),
+      this.identityService.currentUser$,
+      this.tenantService.hasRight$,
       this.entityMetadata$])
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (right: string) => {
@@ -137,8 +137,8 @@ export class DefaultMetaService extends MetaService {
     this.itemAllowed$ = combineLatest([
       this._readOnly$,
       this._customParam$,
-      this.store.select(selectCurrentUser),
-      this.store.select(selectHasRight),
+      this.identityService.currentUser$,
+      this.tenantService.hasRight$,
       this.entityMetadata$])
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (item: CrudItem, right: string) => {

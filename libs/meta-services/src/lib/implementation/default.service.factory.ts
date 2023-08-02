@@ -16,9 +16,11 @@ import { DefaultLookupService } from './default.lookup.service';
 import { DefaultMetaService } from './default.meta.service';
 import { DefaultPageService } from './default.page.service';
 import { Store } from '@ngrx/store';
+import { IdentityService } from '../identity.service';
+import { TenantService } from '../tenant.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe) {
+    constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
         super();
     }
 
@@ -39,7 +41,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createMetaService(lookupService: LookupService): MetaService {
-        return new DefaultMetaService(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), lookupService);
+        return new DefaultMetaService(this.identityService, this.tenantService, this.httpClient, this.apiServiceFactory.createMetaApi(), lookupService);
     }
 
     override createResponsiveService(): ResponsiveService {

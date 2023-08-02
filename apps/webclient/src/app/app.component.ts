@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { identityInitialize, settingsInitialize } from '@ballware/meta-services';
+import { IdentityService, SettingsService } from '@ballware/meta-services';
 
 import { environment } from '../environments/environment';
 
@@ -12,21 +11,21 @@ import { environment } from '../environments/environment';
 export class AppComponent implements OnInit {
   title = 'ballware';
 
-  constructor(private store: Store) {}
+  constructor(private settingsService: SettingsService, private identityService: IdentityService) {}
 
   ngOnInit(): void {
-    this.store.dispatch(settingsInitialize({ 
-      version: environment.version,
-      googlekey: environment.envVar.BALLWARE_GOOGLEKEY,
-    }));
+    this.settingsService.initialize(
+      environment.version,
+      environment.envVar.BALLWARE_GOOGLEKEY
+    );
 
-    this.store.dispatch(identityInitialize({      
-      issuer: environment.envVar.BALLWARE_IDENTITYURL,
-      client: environment.envVar.BALLWARE_CLIENTID,
-      scopes: environment.envVar.BALLWARE_IDENTITYSCOPES,
-      tenantClaim: environment.envVar.BALLWARE_TENANTCLAIM,
-      usernameClaim: environment.envVar.BALLWARE_USERNAMECLAIM,
-      profileUrl: environment.envVar.BALLWARE_ACCOUNTURL
-    }));
+    this.identityService.initialize(
+      environment.envVar.BALLWARE_IDENTITYURL,
+      environment.envVar.BALLWARE_CLIENTID,
+      environment.envVar.BALLWARE_IDENTITYSCOPES,
+      environment.envVar.BALLWARE_TENANTCLAIM,
+      environment.envVar.BALLWARE_USERNAMECLAIM,
+      environment.envVar.BALLWARE_ACCOUNTURL
+    );
   }
 }

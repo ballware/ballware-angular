@@ -1,7 +1,7 @@
 import { inject } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { MetaApiService } from "@ballware/meta-api";
-import { identityUserLogin } from "../identity";
+import { identityUserLogin } from "../identity/identity.actions";
 import { combineLatest, map, of, switchMap, withLatestFrom } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { tenantFetched } from "./tenant.actions";

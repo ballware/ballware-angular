@@ -2,10 +2,9 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { DxMapComponent } from 'devextreme-angular';
 import { combineLatest, Observable, takeUntil } from 'rxjs';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
-import { CrudService, selectGooglekey } from '@ballware/meta-services';
+import { CrudService, SettingsService } from '@ballware/meta-services';
 import { getByPath } from '../../utils/databinding';
 import { WithDestroy } from '../../utils/withdestroy';
-import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'ballware-page-map',
@@ -22,13 +21,13 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   private mouseTarget: Element|undefined|null;
 
-  constructor(private store: Store, private crudService: CrudService) {
+  constructor(private settingsService: SettingsService, private crudService: CrudService) {
     super();
 
     this.onMapMouseMove = this.onMapMouseMove.bind(this);
     this.onMarkerClicked = this.onMarkerClicked.bind(this);
 
-    this.googlekey$ = this.store.select(selectGooglekey);
+    this.googlekey$ = this.settingsService.googlekey$;
   }
 
   ngAfterViewInit(): void {
