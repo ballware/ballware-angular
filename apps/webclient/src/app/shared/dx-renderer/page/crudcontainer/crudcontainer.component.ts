@@ -8,7 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
   selector: 'ballware-page-crudcontainer',
   templateUrl: './crudcontainer.component.html',
   styleUrls: ['./crudcontainer.component.scss'],
-  providers: [
+  providers: [    
     { 
       provide: LookupService, 
       useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),

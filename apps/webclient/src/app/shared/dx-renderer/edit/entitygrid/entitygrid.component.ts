@@ -20,7 +20,7 @@ interface EntityGridItemOptions {
   selector: 'ballware-edit-entitygrid',
   templateUrl: './entitygrid.component.html',
   styleUrls: ['./entitygrid.component.scss'],
-  providers: [
+  providers: [    
     { 
       provide: LookupService, 
       useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),

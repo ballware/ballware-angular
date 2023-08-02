@@ -8,7 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
   selector: 'ballware-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
-  providers: [
+  providers: [    
     { 
       provide: LookupService, 
       useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),

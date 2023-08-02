@@ -12,16 +12,21 @@ import { MetaServiceFactory } from '../meta.service.factory';
 import { PageService } from '../page.service';
 import { ResponsiveService } from '../responsive.service';
 import { DefaultCrudService } from './default.crud.service';
-import { DefaultLookupService } from './default.lookup.service';
 import { DefaultMetaService } from './default.meta.service';
 import { DefaultPageService } from './default.page.service';
 import { Store } from '@ngrx/store';
 import { IdentityService } from '../identity.service';
 import { TenantService } from '../tenant.service';
+import { LookupStore } from '../lookup/lookup.store';
+import { LookupServiceStore } from '../lookup/lookup.service.store';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
         super();
+    }
+
+    override createLookupStore(): LookupStore {
+        return new LookupStore();
     }
 
     override createAttachmentService(): AttachmentService {
@@ -37,7 +42,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
     
     override createLookupService(): LookupService {
-        return new DefaultLookupService(this.httpClient, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi());
+        return new LookupServiceStore(new LookupStore(), this.httpClient, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi());
     }
 
     override createMetaService(lookupService: LookupService): MetaService {

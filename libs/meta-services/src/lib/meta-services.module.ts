@@ -32,7 +32,6 @@ export * from './edititemref';
 export * from './toolbaritemref';
 export * from './meta.service.factory';
 
-
 @NgModule({
   imports: [
     CommonModule,    

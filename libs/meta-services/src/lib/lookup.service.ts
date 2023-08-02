@@ -123,11 +123,11 @@ export abstract class LookupService extends WithDestroy() {
       LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
     >|undefined>;
 
-  public abstract getGenericLookupByIdentifier$: Observable<((
+  public abstract getGenericLookupByIdentifier$: Observable<(((
       identifier: string,
       valueExpr: string,
       displayExpr: string
-    ) => LookupDescriptor | undefined)|undefined>;
+    ) => LookupDescriptor) | undefined)|undefined>;
 
   public abstract requestLookups(request :LookupRequest[]): void;
 }

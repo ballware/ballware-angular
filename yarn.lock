@@ -2989,6 +2989,13 @@
     call-me-maybe "^1.0.1"
     glob-to-regexp "^0.3.0"
 
+"@ngrx/component-store@^16.1.0":
+  version "16.1.0"
+  resolved "https://registry.yarnpkg.com/@ngrx/component-store/-/component-store-16.1.0.tgz#3b8451063c57e976456f7e62a69f7ee43da0bb8d"
+  integrity sha512-+isrCOfBLA4m2eFMre0RmnWjiKvbORnJhoO/MtS/Guup8QxLvLQry5iLs4d7g1ckiCqyZGFfuk/6zMdMGMtqbQ==
+  dependencies:
+    tslib "^2.0.0"
+
 "@ngrx/effects@^16.1.0":
   version "16.1.0"
   resolved "https://registry.yarnpkg.com/@ngrx/effects/-/effects-16.1.0.tgz#6d8f46d15d32f13fac518361ab376bffb4138108"
