@@ -12,13 +12,14 @@ import { MetaServiceFactory } from '../meta.service.factory';
 import { PageService } from '../page.service';
 import { ResponsiveService } from '../responsive.service';
 import { DefaultCrudService } from './default.crud.service';
-import { DefaultMetaService } from './default.meta.service';
 import { DefaultPageService } from './default.page.service';
 import { Store } from '@ngrx/store';
 import { IdentityService } from '../identity.service';
 import { TenantService } from '../tenant.service';
 import { LookupStore } from '../lookup/lookup.store';
 import { LookupServiceStore } from '../lookup/lookup.service.store';
+import { MetaServiceStore } from '../meta/meta.service.store';
+import { MetaStore } from '../meta/meta.store';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
@@ -46,7 +47,8 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createMetaService(lookupService: LookupService): MetaService {
-        return new DefaultMetaService(this.identityService, this.tenantService, this.httpClient, this.apiServiceFactory.createMetaApi(), lookupService);
+        return new MetaServiceStore(new MetaStore(this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
+        //return new DefaultMetaService(this.identityService, this.tenantService, this.httpClient, this.apiServiceFactory.createMetaApi(), lookupService);
     }
 
     override createResponsiveService(): ResponsiveService {
