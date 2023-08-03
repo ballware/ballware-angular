@@ -1,5 +1,6 @@
 import { CompiledTenant, NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
+import { NavigationTreeItem } from "../tenant.service";
 
 export const tenantFeatureKey = "tenant";
 
@@ -7,7 +8,7 @@ export interface TenantState {
     tenant?: CompiledTenant,
     title?: string,
     navigationLayout?: NavigationLayout,
-    navigationTree?: Record<string, unknown>[],
+    navigationTree?: NavigationTreeItem[],
     pages?: NavigationLayoutItem[],
     hasRight?: (rights: string) => boolean
 }

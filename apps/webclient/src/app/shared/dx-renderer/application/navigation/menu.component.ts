@@ -1,9 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { TenantService } from '@ballware/meta-services';
+import { NavigationTreeItem, TenantService } from '@ballware/meta-services';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'ballware-application-navigation-menu',
@@ -16,7 +17,7 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
 
   @Output() openedChange = new EventEmitter<boolean>();
 
-  public items: Record <string, unknown>[] = [];
+  public items: NavigationTreeItem[] = [];
 
   constructor(private tenantService: TenantService, private router: Router) {
     super();
@@ -24,7 +25,7 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
     this.tenantService.navigationTree$
       .pipe(takeUntil(this.destroy$))
       .subscribe((navigation) => {
-        this.items = navigation ?? [];
+        this.items = cloneDeep(navigation ?? []);
       })
   }
 

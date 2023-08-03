@@ -14,5 +14,5 @@ export abstract class MetaServiceFactory {
     abstract createLookupService(): LookupService;
     abstract createMetaService(lookupService: LookupService): MetaService;
     abstract createResponsiveService(): ResponsiveService;
-    abstract createPageService(route: ActivatedRoute, router: Router, lookupService: LookupService): PageService;
+    abstract createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService;
 }

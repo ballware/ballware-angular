@@ -16,13 +16,15 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: PageService, 
-      useFactory: (serviceFactory: MetaServiceFactory, route: ActivatedRoute, router: Router, lookupService: LookupService) => serviceFactory.createPageService(route, router, lookupService),
+      useFactory: (serviceFactory: MetaServiceFactory, activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService) => serviceFactory.createPageService(activatedRoute, router, lookupService),
       deps: [MetaServiceFactory, ActivatedRoute, Router, LookupService]  
     } as Provider
   ]
 })
 export class PageComponent extends WithDestroy() implements OnInit {
   @HostBinding('class') classes = 'd-block h-100 w-100';
+
+  public readonly initialized$ = this.pageService.initialized$;
 
   constructor(private tenantService: TenantService, private router: Router, private route: ActivatedRoute, private pageService: PageService, private lookupService: LookupService) {
     super();

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { combineLatest, BehaviorSubject, takeUntil, Observable, switchMap, of, map, Subject, share, ReplaySubject, distinctUntilChanged } from 'rxjs';
+import { combineLatest, BehaviorSubject, takeUntil, Observable, switchMap, of, map, Subject, share, ReplaySubject, distinctUntilChanged, withLatestFrom } from 'rxjs';
 import * as qs from 'qs';
 import { isEqual } from 'lodash';
 
@@ -17,10 +17,11 @@ import { selectPages } from '../tenant';
 @Injectable()
 export class DefaultPageService extends PageService {
 
+  private _initialized$ = new BehaviorSubject<boolean>(false);
+
   private _pageId$ = new Subject<string|undefined>();
   private _pageUrl$ = new Subject<string|undefined>();
-  private _customParam$ = new BehaviorSubject<Record<string, unknown>|undefined>(undefined);
-  private _headParams$ = new BehaviorSubject<QueryParams|undefined>(undefined);
+  private _customParam$ = new BehaviorSubject<Record<string, unknown>|undefined>(undefined);  
   private _paramEditorInitialized$ = new Subject<{name: string, item: ToolbarItemRef}>();
   private _paramEditorValueChanged$ = new Subject<{name: string, value: ValueType}>();
   private _paramEditorEvent$ = new Subject<{name: string, event: string, param?: ValueType}>();
@@ -30,6 +31,7 @@ export class DefaultPageService extends PageService {
   private toolbarItems: Record<string, ToolbarItemRef|undefined> = {};
   private editUtil: EditUtil;
 
+  public readonly initialized$: Observable<boolean> = this._initialized$;
   public page$: Observable<CompiledPageData|undefined>;
   public title$: Observable<string|undefined>;
   public layout$: Observable<PageLayout|undefined>;
@@ -39,13 +41,14 @@ export class DefaultPageService extends PageService {
   }
 
   public get headParams$() {
-    return this._headParams$;
+    return this.activatedRoute.queryParams
+      .pipe(map((queryParams) => qs.parse(queryParams['page'] ?? "")));
   }
 
   constructor(
     private store: Store,
     private httpClient: HttpClient,
-    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
     private router: Router,
     private lookupService: LookupService,
     private metaApiService: MetaApiService) {
@@ -62,20 +65,30 @@ export class DefaultPageService extends PageService {
       loadData: (params) => this.loadData(params)
     };
 
-    this.route.queryParamMap
-      .subscribe((queryParams) => {
-        const nextPageParam = qs.parse(queryParams.get('page') ?? '');
+    /*
+    this.activatedRoute.queryParams
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this._headParams$))
+      .subscribe(([queryParams, headParams]) => {
+        const nextPageParam = qs.parse(queryParams['page'] ?? "");
 
-        if (!isEqual(this._headParams$.getValue(), nextPageParam)) {
-          this._headParams$.next(qs.parse(queryParams.get('page') ?? ''));
+        if (!isEqual(headParams, nextPageParam)) {
+          this._headParams$.next(nextPageParam);
         }
       });
-
+    */
+    /*
     this._headParams$
-      .pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr)))
-      .subscribe((headParams) => {
-        this.router.navigate([], { relativeTo: this.route, queryParams: { page: qs.stringify(headParams) }, queryParamsHandling: 'merge' });
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this.activatedRoute.queryParams))
+      .subscribe(([headParams, queryParams]) => {    
+        const currentQueryParams = qs.parse(queryParams['page'] ?? "");
+        
+        if (!isEqual(headParams, currentQueryParams)) {          
+          this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: { page: qs.stringify(headParams) }, queryParamsHandling: 'merge' });
+        }        
       });
+    */
 
     this.page$ = combineLatest([this._pageId$.pipe(distinctUntilChanged()), this.metaApiService.metaPageApiFactory$])
       .pipe(takeUntil(this.destroy$))
@@ -100,6 +113,10 @@ export class DefaultPageService extends PageService {
             this.toolbarItems[item.name] = undefined;
           }
         });
+
+        if (!page?.layout?.toolbaritems?.length) {
+          this._initialized$.next(true);
+        }
       });
 
     this.page$.pipe(takeUntil(this.destroy$))
@@ -157,7 +174,7 @@ export class DefaultPageService extends PageService {
         }
       });
 
-    combineLatest([this.page$, this.lookupService.lookups$, this._headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorInitialized$])
+    combineLatest([this.page$, this.lookupService.lookups$, this.headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorInitialized$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([page, lookups, pageParam, { name, item }]) => {
         if (page && lookups && pageParam) {
@@ -175,7 +192,7 @@ export class DefaultPageService extends PageService {
         }
       });
 
-    combineLatest([this.page$, this.lookupService.lookups$, this._headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorValueChanged$])
+    combineLatest([this.page$, this.lookupService.lookups$, this.headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorValueChanged$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([page, lookups, pageParam, { name, value }]) => {
         if (page && lookups && pageParam) {
@@ -185,7 +202,7 @@ export class DefaultPageService extends PageService {
         }
       });
 
-    combineLatest([this.page$, this.lookupService.lookups$, this._headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorEvent$])
+    combineLatest([this.page$, this.lookupService.lookups$, this.headParams$.pipe(distinctUntilChanged((prev, curr) => isEqual(prev, curr))), this._paramEditorEvent$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([page, lookups, pageParam, { name, event, param }]) => {
         if (page && lookups && pageParam) {
@@ -217,7 +234,8 @@ export class DefaultPageService extends PageService {
   }
 
   public loadData(params: QueryParams) {
-    this._headParams$.next(params);
+    this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: { page: qs.stringify(params) }, queryParamsHandling: 'merge' });
+    this._initialized$.next(true);
   }
 
   public paramEditorInitialized(name: string, item: ToolbarItemRef) {

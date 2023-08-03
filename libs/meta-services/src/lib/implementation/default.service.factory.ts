@@ -50,7 +50,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
         return new ResponsiveService();
     }
 
-    override createPageService(route: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new DefaultPageService(this.store, this.httpClient, route, router, lookupService, this.apiServiceFactory.createMetaApi());
+    override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
+        return new DefaultPageService(this.store, this.httpClient, activatedRoute, router, lookupService, this.apiServiceFactory.createMetaApi());
     }
 }

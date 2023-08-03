@@ -2,15 +2,17 @@ import { createReducer, on } from "@ngrx/store";
 import { TenantState } from "./tenant.state";
 import { tenantFetched } from "./tenant.actions";
 import { NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
+import { NavigationTreeItem } from "../tenant.service";
 
 const initialState = {
     
 } as TenantState;
 
-const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: NavigationLayout): Record<string, unknown>[] => {
 
-    const collectAllowedItems = (items: NavigationLayoutItem[]): Record<string, unknown>[] => {
-      const mappedItems = [] as Record<string, unknown>[];
+const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: NavigationLayout): NavigationTreeItem[] => {
+
+    const collectAllowedItems = (items: NavigationLayoutItem[]): NavigationTreeItem[] => {
+      const mappedItems = [] as NavigationTreeItem[];
   
       items?.forEach(item => {
         if (item.type === 'page' && item.options?.page) {
@@ -43,6 +45,7 @@ const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: N
   
           if (subItems.length > 0) {
             mappedItems.push({
+              expanded: false,
               type: 'group',
               text: item.options?.caption,
               icon: 'folder',

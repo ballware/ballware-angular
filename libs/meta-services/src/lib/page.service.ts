@@ -6,6 +6,7 @@ import { WithDestroy } from './withdestroy';
 
 export abstract class PageService extends WithDestroy() {
 
+  public abstract initialized$: Observable<boolean>;
   public abstract page$: Observable<CompiledPageData|undefined>;
   public abstract title$: Observable<string|undefined>;
   public abstract layout$: Observable<PageLayout|undefined>;
