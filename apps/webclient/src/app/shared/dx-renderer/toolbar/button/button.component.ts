@@ -30,13 +30,13 @@ export class ToolbarButtonComponent implements OnDestroy, AfterViewInit {
         setOption: (option, value) => this.button?.instance.option(option, value)
       } as ToolbarItemRef;
 
-      this.pageService.paramEditorInitialized(this.item.name, toolbarItemRef);
+      this.pageService.paramEditorInitialized({ name: this.item.name, item: toolbarItemRef });
     }
   }
 
   onClicked(e: unknown) {
     if (this.item?.name) {
-      this.pageService.paramEditorEvent(this.item.name, 'click');
+      this.pageService.paramEditorEvent({ name: this.item.name, event: 'click' });
     }
   }
 }

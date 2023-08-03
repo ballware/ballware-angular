@@ -32,13 +32,13 @@ export class ToolbarDatetimeComponent implements OnDestroy, AfterViewInit {
         setOption: (option, value) => this.dateBox?.instance.option(option, value)
       } as ToolbarItemRef;
 
-      this.pageService.paramEditorInitialized(this.item.name, toolbarItemRef);
+      this.pageService.paramEditorInitialized({ name: this.item.name, item: toolbarItemRef });
     }
   }
 
   onValueChanged(e: ValueChangedEvent) {
     if (this.item?.name) {
-      this.pageService.paramEditorValueChanged(this.item.name, e.value);
+      this.pageService.paramEditorValueChanged({ name: this.item.name, value: e.value });
     }
   }
 

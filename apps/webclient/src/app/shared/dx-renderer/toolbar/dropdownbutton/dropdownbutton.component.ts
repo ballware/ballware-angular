@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import { DxDropDownButtonComponent } from 'devextreme-angular';
 import { PageService, ToolbarItemRef } from '@ballware/meta-services';
-import { PageToolbarItem, ValueType } from '@ballware/meta-model';
+import { PageToolbarItem } from '@ballware/meta-model';
 import { ItemClickEvent } from 'devextreme/ui/drop_down_button';
 
 @Component({
@@ -31,13 +31,13 @@ export class ToolbarDropdownbuttonComponent implements OnDestroy, AfterViewInit 
         setOption: (option, value) => this.button?.instance.option(option, value)
       } as ToolbarItemRef;
 
-      this.pageService.paramEditorInitialized(this.item.name, toolbarItemRef);
+      this.pageService.paramEditorInitialized({ name: this.item.name, item: toolbarItemRef });
     }
   }
 
   onButtonClicked() {
     if (this.item?.name) {
-      this.pageService.paramEditorEvent(this.item.name, 'click', undefined);
+      this.pageService.paramEditorEvent({ name: this.item.name, event: 'click', param: undefined });
     }
   }
 
@@ -47,7 +47,7 @@ export class ToolbarDropdownbuttonComponent implements OnDestroy, AfterViewInit 
 
   onItemClicked(e: ItemClickEvent) {
     if (this.item?.name) {
-      this.pageService.paramEditorEvent(this.item.name, 'click', e.itemData['id']);
+      this.pageService.paramEditorEvent({ name: this.item.name, event: 'click', param: e.itemData['id'] });
     }
   }
 

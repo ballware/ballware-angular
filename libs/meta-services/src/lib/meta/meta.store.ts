@@ -15,8 +15,6 @@ import { MetaServiceApi } from "../meta.service";
 
 @Injectable()
 export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi {
-    private readonly store = new ComponentStore<MetaState>();
-
     constructor(private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 

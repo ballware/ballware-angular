@@ -12,7 +12,6 @@ import { MetaServiceFactory } from '../meta.service.factory';
 import { PageService } from '../page.service';
 import { ResponsiveService } from '../responsive.service';
 import { DefaultCrudService } from './default.crud.service';
-import { DefaultPageService } from './default.page.service';
 import { Store } from '@ngrx/store';
 import { IdentityService } from '../identity.service';
 import { TenantService } from '../tenant.service';
@@ -20,6 +19,8 @@ import { LookupStore } from '../lookup/lookup.store';
 import { LookupServiceProxy } from '../lookup/lookup.proxy';
 import { MetaServiceProxy } from '../meta/meta.proxy';
 import { MetaStore } from '../meta/meta.store';
+import { PageStore } from '../page/page.store';
+import { PageServiceProxy } from '../page/page.proxy';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
@@ -51,6 +52,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new DefaultPageService(this.store, this.httpClient, activatedRoute, router, lookupService, this.apiServiceFactory.createMetaApi());
+        return new PageServiceProxy(new PageStore(this.httpClient, activatedRoute, router, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
 }
