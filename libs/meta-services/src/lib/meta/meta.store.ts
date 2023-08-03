@@ -11,9 +11,12 @@ import { cloneDeep } from "lodash";
 import { IdentityService } from "../identity.service";
 import { TenantService } from "../tenant.service";
 import { EditModes } from "../editmodes";
+import { MetaServiceApi } from "../meta.service";
 
 @Injectable()
-export class MetaStore extends ComponentStore<MetaState> {
+export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi {
+    private readonly store = new ComponentStore<MetaState>();
+
     constructor(private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 
@@ -130,10 +133,10 @@ export class MetaStore extends ComponentStore<MetaState> {
                 if (lookups && entityMetadata && initialCustomParam) {
                     if (entityMetadata.compiledCustomScripts?.prepareCustomParam) {
                     entityMetadata.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient), (customParam) => {
-                        this.updateCustomParam(customParam);
+                        this.setCustomParam(customParam);
                     });
                     } else {
-                        this.updateCustomParam(initialCustomParam);
+                        this.setCustomParam(initialCustomParam);
                     }
                 }
             })));
@@ -141,14 +144,14 @@ export class MetaStore extends ComponentStore<MetaState> {
 
     readonly entity$ = this.select(state => state.entity);
 
-    readonly updateEntity = this.updater((state, entity: string) => ({
+    readonly setEntity = this.updater((state, entity: string) => ({
             ...state,
             entity
         }));        
     
     readonly readOnly$ = this.select(state => state.readOnly);
 
-    readonly updateReadOnly = 
+    readonly setReadOnly = 
         this.updater((state, readOnly: boolean) => ({
             ...state,
             readOnly
@@ -156,7 +159,7 @@ export class MetaStore extends ComponentStore<MetaState> {
 
     readonly headParams$ = this.select(state => state.headParams);
 
-    readonly updateHeadParams = 
+    readonly setHeadParams = 
         this.updater((state, headParams: QueryParams) => ({
             ...state,
             headParams
@@ -164,7 +167,7 @@ export class MetaStore extends ComponentStore<MetaState> {
 
     readonly initialCustomParam$ = this.select(state => state.initialCustomParam);
 
-    readonly updateInitialCustomParam = 
+    readonly setInitialCustomParam = 
         this.updater((state, initialCustomParam: Record<string, unknown>|undefined) => ({
             ...state,
             initialCustomParam
@@ -172,7 +175,7 @@ export class MetaStore extends ComponentStore<MetaState> {
         
     readonly customParam$ = this.select(state => state.customParam);
 
-    readonly updateCustomParam = 
+    readonly setCustomParam = 
         this.updater((state, customParam: Record<string, unknown>|undefined) => ({
             ...state,
             customParam

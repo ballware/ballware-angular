@@ -57,7 +57,7 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
   ngOnInit(): void {
     if (this.entity) {
       this.metaService.setEntity(this.entity);
-      this.metaService.setReadonly(true);
+      this.metaService.setReadOnly(true);
     }
   }
 }

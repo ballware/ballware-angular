@@ -5,7 +5,7 @@ import { selectGooglekey, selectVersion } from "./settings.state";
 import { settingsInitialize } from "./settings.actions";
 
 @Injectable()
-export class SettingsServiceStore extends SettingsService {
+export class SettingsServiceProxy extends SettingsService {
 
     constructor(private store: Store) {
         super();

@@ -11,11 +11,11 @@ import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
 import { SettingsFeatureModule } from './settings';
 import { TenantEffectsModule, TenantFeatureModule } from './tenant';
 import { SettingsService } from './settings.service';
-import { SettingsServiceStore } from './settings/settings.service.store';
+import { SettingsServiceProxy } from './settings/settings.proxy';
 import { IdentityService } from './identity.service';
-import { IdentityServiceStore } from './identity/identity.service.store';
+import { IdentityServiceProxy } from './identity/identity.proxy';
 import { TenantService } from './tenant.service';
-import { TenantServiceStore } from './tenant/tenant.service.store';
+import { TenantServiceProxy } from './tenant/tenant.proxy';
 
 export * from './settings.service';
 export * from './identity.service';
@@ -49,17 +49,17 @@ export class MetaServicesModule {
       providers: [   
         {
           provide: SettingsService,
-          useFactory: (store: Store) => new SettingsServiceStore(store),
+          useFactory: (store: Store) => new SettingsServiceProxy(store),
           deps: [ Store ]
         },    
         {
           provide: IdentityService,
-          useFactory: (store: Store) => new IdentityServiceStore(store),
+          useFactory: (store: Store) => new IdentityServiceProxy(store),
           deps: [ Store ]
         },  
         {
           provide: TenantService,
-          useFactory: (store: Store) => new TenantServiceStore(store),
+          useFactory: (store: Store) => new TenantServiceProxy(store),
           deps: [ Store ]
         },          
         {

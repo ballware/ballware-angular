@@ -6,11 +6,8 @@ import { LookupService } from './lookup.service';
 import { MetaService } from './meta.service';
 import { PageService } from './page.service';
 import { ResponsiveService } from './responsive.service';
-import { LookupStore } from './lookup/lookup.store';
 
 export abstract class MetaServiceFactory {
-    abstract createLookupStore(): LookupStore;
-
     abstract createAttachmentService(): AttachmentService;
     abstract createCrudService(metaService: MetaService): CrudService;
     abstract createEditService(metaService: MetaService): EditService;

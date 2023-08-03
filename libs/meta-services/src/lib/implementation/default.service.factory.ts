@@ -17,17 +17,13 @@ import { Store } from '@ngrx/store';
 import { IdentityService } from '../identity.service';
 import { TenantService } from '../tenant.service';
 import { LookupStore } from '../lookup/lookup.store';
-import { LookupServiceStore } from '../lookup/lookup.service.store';
-import { MetaServiceStore } from '../meta/meta.service.store';
+import { LookupServiceProxy } from '../lookup/lookup.proxy';
+import { MetaServiceProxy } from '../meta/meta.proxy';
 import { MetaStore } from '../meta/meta.store';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
         super();
-    }
-
-    override createLookupStore(): LookupStore {
-        return new LookupStore();
     }
 
     override createAttachmentService(): AttachmentService {
@@ -43,12 +39,11 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
     
     override createLookupService(): LookupService {
-        return new LookupServiceStore(new LookupStore(), this.httpClient, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi());
+        return new LookupServiceProxy(new LookupStore(this.httpClient, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi()));
     }
 
     override createMetaService(lookupService: LookupService): MetaService {
-        return new MetaServiceStore(new MetaStore(this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
-        //return new DefaultMetaService(this.identityService, this.tenantService, this.httpClient, this.apiServiceFactory.createMetaApi(), lookupService);
+        return new MetaServiceProxy(new MetaStore(this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
     }
 
     override createResponsiveService(): ResponsiveService {

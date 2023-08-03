@@ -115,8 +115,22 @@ export interface LookupRequest {
   field?: string;
 }
 
+export interface LookupServiceApi {
+  lookups$: Observable<Record<
+      string,
+      LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
+    >|undefined>;
 
-export abstract class LookupService extends WithDestroy() {
+  getGenericLookupByIdentifier$: Observable<(((
+      identifier: string,
+      valueExpr: string,
+      displayExpr: string
+    ) => LookupDescriptor) | undefined)|undefined>;
+
+  requestLookups(request :LookupRequest[]): void;
+}
+
+export abstract class LookupService extends WithDestroy() implements LookupServiceApi {
 
   public abstract lookups$: Observable<Record<
       string,

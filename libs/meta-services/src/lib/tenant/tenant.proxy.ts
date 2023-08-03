@@ -4,7 +4,7 @@ import { Store } from "@ngrx/store";
 import { selectHasRight, selectNavigationLayout, selectNavigationTree, selectPages, selectTenant, selectTitle } from "./tenant.state";
 
 @Injectable()
-export class TenantServiceStore extends TenantService {
+export class TenantServiceProxy extends TenantService {
     constructor(private store: Store) {
         super();
     }
@@ -32,22 +32,4 @@ export class TenantServiceStore extends TenantService {
     public get hasRight$() {
         return this.store.select(selectHasRight);
     }
-
-        /*
-                  this.store.dispatch(identityRefreshToken());
-            }
-          },
-          {
-            text: this.translationService.transform('session.manageaccount'),
-            onClick: () => {
-              this.accountMenu?.instance.hide();
-              this.store.dispatch(identityManageProfile());
-            }
-          },
-          {
-            text: this.translationService.transform('session.logout', { user: userName }),
-            onClick: () => {
-              this.accountMenu?.instance.hide();
-              this.store.dispatch(identityUserLogout());
-              */
 }

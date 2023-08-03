@@ -88,7 +88,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
             }
 
             this.metaService.setInitialCustomParam(gridOptions?.customParam ?? {});
-            this.metaService.setReadonly(gridOptions?.readOnly ?? false);
+            this.metaService.setReadOnly(gridOptions?.readOnly ?? false);
             this.metaService.setHeadParams(gridOptions?.headParams ?? {});
 
             this.crudService.setQuery(gridOptions?.query ?? 'primary');
