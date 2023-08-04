@@ -4,7 +4,8 @@ import { LookupState } from "./lookup.state";
 import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupServiceApi, LookupStoreDescriptor } from "../lookup.service";
 import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
 import { HttpClient } from "@angular/common/http";
-import { Observable, combineLatest, map, of } from "rxjs";
+import { Observable, combineLatest, distinctUntilChanged, map, of } from "rxjs";
+import { isEqual } from "lodash";
 
 const createUserLookup = (
     http: HttpClient,
@@ -197,6 +198,13 @@ const createGenericLookupByIdentifier = (
 export class LookupStore extends ComponentStore<LookupState> implements LookupServiceApi {
     constructor(private httpClient: HttpClient, private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
         super({});
+
+        this.state$
+          .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+          .subscribe((state) => {
+              console.debug('LookupStore state update');
+              console.debug(state);
+          });
     }
 
     readonly lookups$ = this.select(state => state.lookups);

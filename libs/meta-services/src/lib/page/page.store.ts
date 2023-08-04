@@ -6,12 +6,13 @@ import { HttpClient } from "@angular/common/http";
 import { ActivatedRoute, Router } from "@angular/router";
 import { LookupRequest, LookupService } from "../lookup.service";
 import { MetaApiService } from "@ballware/meta-api";
-import { Observable, map, of, switchMap, withLatestFrom, tap, combineLatest } from "rxjs";
+import { Observable, map, of, switchMap, withLatestFrom, tap, combineLatest, distinctUntilChanged } from "rxjs";
 import * as qs from "qs";
 import { TenantService } from "../tenant.service";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ToolbarItemRef } from "../toolbaritemref";
 import { createUtil } from "../implementation/createscriptutil";
+import { isEqual } from "lodash";
 
 @Injectable()
 export class PageStore extends ComponentStore<PageState> implements PageServiceApi {
@@ -30,10 +31,12 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
 
         super({ initialized: false });
 
-        this.state$.subscribe((state) => {
-            console.log('Current page state');
-            console.log(state);
-        });
+        this.state$
+          .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+          .subscribe((state) => {
+              console.debug('PageStore state update');
+              console.debug(state);
+          });
 
         this.editUtil = {
             getEditorOption: (dataMember, option) => this.toolbarItems[dataMember] ? this.toolbarItems[dataMember]?.getOption(option) : undefined,

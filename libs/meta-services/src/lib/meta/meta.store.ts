@@ -2,12 +2,12 @@ import { Injectable } from "@angular/core";
 import { ComponentStore } from "@ngrx/component-store";
 import { MetaState } from "./meta.state";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
-import { Observable, combineLatest, map, of, switchMap, tap, withLatestFrom } from "rxjs";
+import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap, withLatestFrom } from "rxjs";
 import { MetaApiService } from "@ballware/meta-api";
 import { HttpClient } from "@angular/common/http";
 import { LookupRequest, LookupService } from "../lookup.service";
 import { createUtil } from "../implementation/createscriptutil";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import { IdentityService } from "../identity.service";
 import { TenantService } from "../tenant.service";
 import { EditModes } from "../editmodes";
@@ -18,10 +18,14 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     constructor(private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 
-        this.effect(_ => this.entity$
-            .pipe(tap((entity) => {
-                console.log(`entity ${entity} selected`);
-            }))
+        this.state$
+            .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+            .subscribe((state) => {
+                console.debug('MetaStore state update');
+                console.debug(state);
+            });
+
+        this.effect(_ => this.entity$            
             .pipe(withLatestFrom(this.metaApiService.metaEntityApiFactory$))
             .pipe(switchMap(([entity, entityApiFactory]) => (entity && entityApiFactory) 
                 ? entityApiFactory().metadataForEntity(this.httpClient, entity)
