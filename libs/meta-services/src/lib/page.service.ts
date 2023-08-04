@@ -12,8 +12,6 @@ export interface PageServiceApi {
   customParam$: Observable<Record<string, unknown>|undefined>;
   headParams$: Observable<QueryParams|undefined>;
 
-  setPageId(pageId: string): void;
-  setPageUrl(pageUrl: string): void;
   loadData(params: QueryParams): void;
   paramEditorInitialized(editor: { name: string, item: ToolbarItemRef }): void;
   paramEditorDestroyed(name: string): void;
@@ -30,8 +28,6 @@ export abstract class PageService extends WithDestroy() implements PageServiceAp
   public abstract customParam$: Observable<Record<string, unknown>|undefined>;
   public abstract headParams$: Observable<QueryParams|undefined>;
 
-  public abstract setPageId(pageId: string): void;
-  public abstract setPageUrl(pageUrl: string): void;
   public abstract loadData(params: QueryParams): void;
   public abstract paramEditorInitialized(editor: { name: string, item: ToolbarItemRef }): void;
   public abstract paramEditorDestroyed(name: string): void;

@@ -69,11 +69,11 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   }
 
   public editingStart() {
-    console.log('editingStart');
+    
   }
 
   public gridEditorPreparing() {
-    console.log('gridEditorPreparing');
+    
   }
 
   public selectionChanged(e: SelectionChangedEvent) {
@@ -200,10 +200,10 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   }
 
   public rowExpanding() {
-    console.log('rowExpanding');
+    
   }
 
   public customizeColumnsDisableHidingPriority(columns: Array<any>) {
-    console.log('customizeColumnsDisableHidingPriority');
+    
   }
 }

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
 import { LookupService, CrudService, MetaService, AttachmentService, PageService, EditService, MetaServiceFactory } from '@ballware/meta-services';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { combineLatest, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -48,24 +48,14 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       .pipe(takeUntil(this.destroy$))
       .subscribe((customParam) => {
         this.metaService.setInitialCustomParam(customParam);
-      });
-
+      });    
+    
     this.pageService.headParams$
       .pipe(takeUntil(this.destroy$))
       .subscribe((headParams) => {
-        if (headParams) {
-          this.metaService.setHeadParams(headParams);
-        }
-      });
-
-    combineLatest([this.metaService.headParams$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([
-        fetchParams
-      ]) => {
-        if (fetchParams) {
-          this.crudService.reload();
-        }
+          if (headParams) {
+            this.metaService.setHeadParams(headParams);
+          }
       });
   }
 

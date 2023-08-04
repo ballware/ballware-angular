@@ -29,7 +29,7 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
         private lookupService: LookupService,
         private metaApiService: MetaApiService) {
 
-        super({ initialized: false });
+        super({ initialized: false, headParams: {} });
 
         this.state$
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
@@ -46,6 +46,100 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
         this.scriptActions = {
             loadData: (params) => this.loadData(params)
         };
+
+        this.effect(_ => this.select((state) => state.pageIdentifier)            
+            .pipe(tap((_) => {
+                this.updater((state, _) => ({
+                  ...state,
+                  initialized: false
+                }))();
+            }))
+            .pipe(withLatestFrom(this.metaApiService.metaPageApiFactory$))
+            .pipe(switchMap(([pageId, metaPageApi]) => (pageId && metaPageApi)
+                ? metaPageApi().pageDataForIdentifier(this.httpClient, pageId)
+                : of(undefined)
+            ))
+            .pipe(tap((page) => this.updater((state) => ({
+                ...state,
+                page,
+                layout: page?.layout,
+                title: page?.layout?.title
+            }))()))            
+            .pipe(tap((page) => {
+                this.toolbarItems = {};
+        
+                page?.layout?.toolbaritems?.forEach(item => {
+                  if (item.name) {
+                    this.toolbarItems[item.name] = undefined;
+                  }
+                });
+        
+                if (!page?.layout?.toolbaritems?.length) {
+                  this.updater((state) => ({
+                    ...state,
+                    initialized: true
+                  }))();
+                }
+            }))
+            .pipe(tap((page) => {
+                if (page) {
+                    const lookups = [] as Array<LookupRequest>;
+          
+                    if (page.lookups) {
+                      lookups.push(...page.lookups.map(l => {
+                        if (l.type === 1) {
+                          if (l.hasParam) {
+                            return {
+                              type: 'autocompletewithparam',
+                              identifier: l.identifier,
+                              lookupId: l.id,
+                            } as LookupRequest;
+                          } else {
+                            return {
+                              type: 'autocomplete',
+                              identifier: l.identifier,
+                              lookupId: l.id,
+                            } as LookupRequest;
+                          }
+                        } else {
+                          if (l.hasParam) {
+                            return {
+                              type: 'lookupwithparam',
+                              identifier: l.identifier,
+                              lookupId: l.id,
+                              valueMember: l.valueMember,
+                              displayMember: l.displayMember,
+                            } as LookupRequest;
+                          } else {
+                            return {
+                              type: 'lookup',
+                              identifier: l.identifier,
+                              lookupId: l.id,
+                              valueMember: l.valueMember,
+                              displayMember: l.displayMember,
+                            } as LookupRequest;
+                          }
+                        }
+                      }));
+                    }
+          
+                    if (page.picklists) {
+                      lookups.push(
+                        ...page.picklists.map(p => {
+                          return {
+                            type: 'pickvalue',
+                            identifier: p.identifier,
+                            entity: p.entity,
+                            field: p.field,
+                          } as LookupRequest;
+                        })
+                      );
+                    }
+                              
+                    this.lookupService.requestLookups(lookups);
+                  }
+            }))
+        );
 
         this.effect(_ => 
             combineLatest([this.page$, this.lookupService.lookups$])                
@@ -65,6 +159,37 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
                     }
                 }))
         );
+
+        this.effect(_ => combineLatest([this.tenantService.navigationLayout$, this.tenantService.pages$, this.activatedRoute.paramMap])
+          .pipe(tap(([navigationLayout, pages, paramMap]) => {
+            const pageUrl = paramMap.get('id') as string;
+
+            if (navigationLayout && pages && pageUrl) {
+              if (pageUrl === 'default') {
+                if (navigationLayout.defaultUrl) {
+                  this.router.navigate([`/page/${navigationLayout.defaultUrl}`]);
+                }   
+              } else {
+                const page = pages.find(p => p.options.url === pageUrl);
+          
+                if (page?.options?.page) {
+                  this.setPageId(page.options.page)
+                }
+              }
+            }
+          }))
+        );
+
+      this.effect(_ => combineLatest([this.activatedRoute.queryParams])
+        .pipe(tap(([queryParams]) => {          
+          const headParams = qs.parse(queryParams['page'] ?? "");
+
+          this.updater((state, headParams: QueryParams) => ({
+              ...state,
+              headParams
+          }))(headParams);
+        }))
+      );
     }
 
     readonly initialized$ = this.select((state) => state.initialized);
@@ -72,14 +197,20 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
     readonly title$ = this.select((state) => state.title);
     readonly layout$ = this.select((state) => state.layout);
     readonly customParam$ = this.select((state) => state.customParam);
-    readonly headParams$ = this.activatedRoute.queryParams
-        .pipe(map((queryParams) => qs.parse(queryParams['page'] ?? "")));
+    readonly headParams$ = this.select((state) => state.headParams);
+    
+    readonly setPageId = this.updater((state, pageIdentifier: string) => ({
+      ...state,
+      pageIdentifier
+    }));
 
+    /*
     readonly setPageId = this.effect((pageId$: Observable<string>) => 
        pageId$
             .pipe(tap((_) => {
                 this.updater((state, _) => ({
-                    initialized: false
+                  ...state,
+                  initialized: false
                 }))();
             }))
             .pipe(withLatestFrom(this.metaApiService.metaPageApiFactory$))
@@ -168,20 +299,7 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
                   }
             }))
     );
-
-    readonly setPageUrl = this.effect((pageUrl$: Observable<string>) => 
-        pageUrl$
-            .pipe(withLatestFrom(this.tenantService.pages$))
-            .pipe(tap(([pageUrl, pages]) => {
-                if (pages && pageUrl) {
-                    const page = pages.find(p => p.options.url === pageUrl);
-          
-                    if (page?.options?.page) {
-                      this.setPageId(page.options.page)
-                    }
-                }
-            }))
-    );
+    */
 
     readonly loadData = this.effect((params$: Observable<QueryParams>) => 
         params$
@@ -196,8 +314,9 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
     );
 
     readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
-            .pipe(tap(([page, lookups, pageParam, { name, item }]) => {
+        combineLatest([this.page$, this.lookupService.lookups$, params$])
+            .pipe(withLatestFrom(this.headParams$))
+            .pipe(tap(([[page, lookups, { name, item }], pageParam]) => {
                 if (page && lookups && pageParam) {
                     this.toolbarItems[name] = item;
 
@@ -233,11 +352,12 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
     );
 
     paramEditorEvent = this.effect((params$: Observable<{ name: string, event: string, param?: ValueType }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
-            .pipe(tap(([page, lookups, pageParam, { name, event, param }]) => {
-                if (page && lookups && pageParam) {
+        combineLatest([this.page$, this.lookupService.lookups$, params$])
+            .pipe(withLatestFrom(this.headParams$))
+            .pipe(tap(([[page, lookups, { name, event, param }], pageParam]) => {
+                if (page && lookups && pageParam && name && event) {
                     if (page.compiledCustomScripts?.paramEditorEvent) {
-                    page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient), this.scriptActions, pageParam, param);
+                      page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient), this.scriptActions, pageParam, param);
                     }
                 }
             }))

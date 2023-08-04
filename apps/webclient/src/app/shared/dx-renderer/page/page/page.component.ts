@@ -21,33 +21,12 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider
   ]
 })
-export class PageComponent extends WithDestroy() implements OnInit {
+export class PageComponent extends WithDestroy() {
   @HostBinding('class') classes = 'd-block h-100 w-100';
 
   public readonly initialized$ = this.pageService.initialized$;
 
   constructor(private tenantService: TenantService, private router: Router, private route: ActivatedRoute, private pageService: PageService, private lookupService: LookupService) {
     super();
-
-    console.log('page.component constructed');
-  }
-
-  ngOnInit(): void {
-    console.log('page initialized');
-    combineLatest([this.tenantService.navigationLayout$, this.route.paramMap])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([navigationLayout, params]) => {
-        if (navigationLayout) {
-          const pageUrl = params.get('id') as string;
-
-          if (pageUrl === 'default') {
-            if (navigationLayout.defaultUrl) {
-              this.router.navigate([`/page/${navigationLayout.defaultUrl}`]);
-            }
-          } else {
-            this.pageService.setPageUrl(pageUrl);
-          }
-        }
-      });
   }
 }

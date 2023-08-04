@@ -14,8 +14,6 @@ export class PageServiceProxy extends PageService {
     readonly customParam$ = this.pageStore.customParam$;
     readonly headParams$ = this.pageStore.headParams$;
     
-    readonly setPageId = this.pageStore.setPageId;
-    readonly setPageUrl = this.pageStore.setPageUrl;
     readonly loadData = this.pageStore.loadData;
     readonly paramEditorInitialized = this.pageStore.paramEditorInitialized;
     readonly paramEditorDestroyed = this.pageStore.paramEditorDestroyed;

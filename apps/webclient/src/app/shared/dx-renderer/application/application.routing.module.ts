@@ -1,6 +1,7 @@
 import { NgModule } from  '@angular/core';
 import { Routes, RouterModule, BaseRouteReuseStrategy, ActivatedRouteSnapshot, RouteReuseStrategy } from  '@angular/router';
 import { PageComponent } from '../page/page/page.component';
+import { isEqual } from 'lodash';
 
 const routes: Routes = [
     {
@@ -14,8 +15,9 @@ const routes: Routes = [
 ];
 
 export class NoRouteReuseStrategy extends BaseRouteReuseStrategy {
-    override shouldDetach(route: ActivatedRouteSnapshot): boolean {
-        return false;
+    
+    override shouldReuseRoute(future: ActivatedRouteSnapshot, curr: ActivatedRouteSnapshot): boolean {
+        return future.routeConfig === curr.routeConfig && isEqual(future.params, curr.params);
     }
 }
 
