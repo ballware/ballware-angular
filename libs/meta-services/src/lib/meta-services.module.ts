@@ -17,8 +17,12 @@ import { IdentityServiceProxy } from './identity/identity.proxy';
 import { TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
 import { Router } from '@angular/router';
+import { NotificationFeatureModule } from './notification';
+import { NotificationServiceProxy } from './notification/notification.proxy';
+import { NotificationService } from './notification.service';
 
 export * from './settings.service';
+export * from './notification.service';
 export * from './identity.service';
 export * from './tenant.service';
 export * from './attachment.service';
@@ -37,6 +41,7 @@ export * from './meta.service.factory';
   imports: [
     CommonModule,    
     SettingsFeatureModule,
+    NotificationFeatureModule,
     IdentityFeatureModule,
     IdentityEffectsModule,
     TenantFeatureModule,
@@ -53,6 +58,11 @@ export class MetaServicesModule {
           useFactory: (store: Store) => new SettingsServiceProxy(store),
           deps: [ Store ]
         },    
+        {
+          provide: NotificationService,
+          useFactory: (store: Store) => new NotificationServiceProxy(store),
+          deps: [ Store ]
+        },          
         {
           provide: IdentityService,
           useFactory: (store: Store) => new IdentityServiceProxy(store),

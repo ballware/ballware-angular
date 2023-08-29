@@ -3,8 +3,10 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
 import { filter, switchMap, tap } from "rxjs";
 import { identityInitialize, identityUserLogin, identityUserLoggedOut, identityUserLogout, identityManageProfile, identityRefreshToken } from "./identity.actions";
+import { showNotification } from "../notification/notification.actions";
 import { Store } from "@ngrx/store";
 import { selectProfileUrl } from "./identity.state";
+import { I18NextPipe } from "angular-i18next";
 
 export const initializeOAuth = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityInitialize))
@@ -62,6 +64,11 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
         }))
 , { functional: true, dispatch: false });
 
+export const notifyUserLogin = createEffect((actions$ = inject(Actions), store = inject(Store), translationPipe = inject(I18NextPipe)) => 
+    actions$.pipe((ofType(identityUserLogin)))
+        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translationPipe.transform('rights.notifications.loginsuccess') }}))))
+, { functional: true, dispatch: false});
+
 export const logoutOAuth = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityUserLogout))
         .pipe(tap(() => {
@@ -81,7 +88,5 @@ export const manageProfile = createEffect((actions$ = inject(Actions), store = i
 
 export const refreshToken = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityRefreshToken))
-        .pipe(tap(() => {
-            oauthService.refreshToken();
-        }))
+        .pipe(tap(() => oauthService.refreshToken()))
 , { functional: true, dispatch: false });
