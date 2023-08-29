@@ -16,6 +16,7 @@ import { IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
 import { TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
+import { Router } from '@angular/router';
 
 export * from './settings.service';
 export * from './identity.service';
@@ -67,14 +68,16 @@ export class MetaServicesModule {
           useFactory: (
             store: Store,
             httpClient: HttpClient, 
+            router: Router,
             apiServiceFactory: ApiServiceFactory, 
             oauthService: OAuthService, 
             translationPipe: I18NextPipe,
             identityService: IdentityService,
-            tenantService: TenantService) => new DefaultMetaServiceFactory(store, httpClient, apiServiceFactory, oauthService, translationPipe, identityService, tenantService),
+            tenantService: TenantService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, identityService, tenantService),
           deps: [
             Store,            
             HttpClient,
+            Router,
             ApiServiceFactory,
             OAuthService,
             I18NextPipe,

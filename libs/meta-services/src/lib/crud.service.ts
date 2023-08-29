@@ -72,17 +72,17 @@ export interface CrudServiceApi {
     setStorageIdentifier(identifier: string): void;
 
     reload(): void;
-    create(editLayout: string): void;
+    create(request: { editLayout: string }): void;
     view(request: { item: CrudItem, editLayout: string }): void;
     edit(request: { item: CrudItem, editLayout: string }): void;
     remove(request: { item: CrudItem }): void;
-    print(documentId: string, items: CrudItem[]): void;
-    customEdit(customFunction: EntityCustomFunction, items?: CrudItem[]): void;
+    print(request: { documentId: string, items: CrudItem[] }): void;
+    customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
 
     selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { item: CrudItem, target: Element }): void;
-    selectOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
-    selectCustomOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;  
+    selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
+    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }
 
 export abstract class CrudService extends WithDestroy() implements CrudServiceApi {
@@ -122,15 +122,15 @@ export abstract class CrudService extends WithDestroy() implements CrudServiceAp
   public abstract setStorageIdentifier(identifier: string): void;
 
   public abstract reload(): void;
-  public abstract create(editLayout: string): void;
+  public abstract create(request: { editLayout: string }): void;
   public abstract view(request: { item: CrudItem, editLayout: string }): void;
   public abstract edit(request: { item: CrudItem, editLayout: string }): void;
   public abstract remove(request: { item: CrudItem }): void;
-  public abstract print(documentId: string, items: CrudItem[]): void;
-  public abstract customEdit(customFunction: EntityCustomFunction, items?: CrudItem[]): void;
+  public abstract print(request: { documentId: string, items: CrudItem[] }): void;
+  public abstract customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
   public abstract selectPrint(request: { item: CrudItem, target: Element }): void;
-  public abstract selectOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
-  public abstract selectCustomOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
+  public abstract selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
+  public abstract selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }

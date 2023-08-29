@@ -7,9 +7,10 @@ import { MetaService } from '../meta.service';
 import { isEqual } from 'lodash';
 import { EditModes } from '../editmodes';
 import { I18NextPipe } from 'angular-i18next';
+import { Router } from '@angular/router';
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi {
-    constructor(private metaService: MetaService, private translationService: I18NextPipe) {
+    constructor(private metaService: MetaService, private translationService: I18NextPipe, private router: Router) {
         super({});
 
         this.state$
@@ -42,6 +43,26 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 addMenuItems
             }))(addMenuItems)))
         );
+
+        this.effect(_ => 
+            combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
+                .pipe(switchMap(([customFunctions, customFunctionAllowed]) =>
+                    of(customFunctions?.filter(f => f.multi && f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f))
+                        .map(f => ({
+                            id: f.id,                            
+                            type: 'edit',
+                            icon: f.icon,
+                            text: f.text,
+                            editLayout: f.editLayout,
+                            customFunction: f
+                        } as EntityCustomFunction))
+                    )
+                ))
+                .pipe(tap((headCustomFunctions) => this.updater((state, headCustomFunctions: EntityCustomFunction[]|undefined) => ({
+                    ...state,
+                    headCustomFunctions
+                }))(headCustomFunctions)))
+        );        
     }
 
     readonly functionAllowed$ = combineLatest(([
@@ -68,11 +89,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 return true;
             case 'customoptions': {
                 if (data && customFunctions && customFunctionAllowed) {
-                const allowedAdditionalFunctions = customFunctions?.filter(f =>
-                    customFunctionAllowed(f, data)
-                );
-    
-                return allowedAdditionalFunctions?.length > 0;
+                    const allowedAdditionalFunctions = customFunctions?.filter(f =>
+                        customFunctionAllowed(f, data)
+                    );
+        
+                    return allowedAdditionalFunctions?.length > 0;
                 }
     
                 return false;
@@ -99,10 +120,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     this.selectPrint({ item: data, target });
                     break;
                 case 'options':
-                    this.selectOptions(data, target, editLayoutIdentifier);
+                    this.selectOptions({ item: data, target, defaultEditLayout: editLayoutIdentifier });
                     break;
                 case 'customoptions':
-                    this.selectCustomOptions(data, target, editLayoutIdentifier);
+                    this.selectCustomOptions({ item: data, target, defaultEditLayout: editLayoutIdentifier });
                     break;
             }
         });
@@ -147,15 +168,15 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             ))
     );
 
-    readonly create = this.effect((editLayoutIdentifier$: Observable<string>) => 
-        combineLatest([this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$, editLayoutIdentifier$])
-            .pipe(switchMap(([getEditLayout, create, displayName, headParams, editLayoutIdentifier]) => (getEditLayout && create && displayName && headParams && editLayoutIdentifier) ?
+    readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
+        combineLatest([this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$, request$])
+            .pipe(switchMap(([getEditLayout, create, displayName, headParams, request]) => (getEditLayout && create && displayName && headParams && request) ?
                 create('primary', headParams)
                     .pipe(map((item) => ({
                         mode: EditModes.CREATE,
                         item: item,
                         title: this.translationService.transform('datacontainer.titles.add', { entity: displayName }),
-                        editLayout: getEditLayout(editLayoutIdentifier, EditModes.CREATE),
+                        editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
                         apply: () => { 
                             this.updater((state) => ({
                                 ...state,
@@ -267,13 +288,35 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }))(removeDialog)))
     );
 
-    print(documentId: string, items: CrudItem[]): void {
-        throw new Error('Method not implemented.');
-    }
-
-    customEdit(customFunction: EntityCustomFunction, items?: CrudItem[] | undefined): void {
-        throw new Error('Method not implemented.');
-    }
+    readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) => 
+        combineLatest([request$])
+            .pipe(tap(([request]) => this.router.navigate([`/print?docId=${encodeURIComponent(request.documentId)}${request.items.map(item => `&id=${encodeURIComponent(item.Id)}`)}`]))));
+      
+    readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
+        combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.getEditLayout$])
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, getEditLayout]) => prepareCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
+                this.updater((state, itemDialog: ItemEditDialog) => ({
+                    ...state,
+                    itemDialog
+                }))({
+                    mode: EditModes.EDIT,
+                    item: params,
+                    title: customFunction.text,
+                    editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
+                    apply: () => { 
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+                    },
+                    cancel: () => { 
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+                     }
+                } as ItemEditDialog);
+            }, (message) => console.log(message)))));            
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
         combineLatest([selectAddRequest$, this.addMenuItems$])            
@@ -281,9 +324,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 if (selectAddRequest && addMenuItems) {
                     if (addMenuItems.length === 1) {
                         if (addMenuItems[0].customFunction) {
-                            this.customEdit(addMenuItems[0].customFunction);
+                            this.customEdit({ customFunction: addMenuItems[0].customFunction });
                         } else {
-                            this.create(selectAddRequest.defaultEditLayout);
+                            this.create({ editLayout: selectAddRequest.defaultEditLayout });
                         }
 
                         return undefined;
@@ -295,7 +338,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                                 text: f.text,
                                 icon: f.customFunction?.icon ?? 'bi bi-plus',
                                 target: selectAddRequest.target,
-                                execute: (target) => f.customFunction ? this.customEdit(f.customFunction) : this.create(selectAddRequest.defaultEditLayout)
+                                execute: (_target) => f.customFunction 
+                                    ? this.customEdit({ customFunction: f.customFunction }) 
+                                    : this.create({ editLayout: selectAddRequest.defaultEditLayout })
                             } as CrudAction))
                         };
                     }
@@ -309,7 +354,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }))(selectAddSheet)))
     );
 
-    selectPrint = this.effect((selectPrintRequest$: Observable<{ item: CrudItem, target: Element }>) => 
+    readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ item: CrudItem, target: Element }>) => 
         combineLatest([this.metaService.entityDocuments$, selectPrintRequest$])
             .pipe(map(([entityDocuments, selectPrintRequest]) => {
                 if (entityDocuments && selectPrintRequest) {
@@ -322,7 +367,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                             icon: 'bi bi-file-earmark-fill',
                             item: selectPrintRequest.item,
                             target: selectPrintRequest.target,
-                            execute: (_target) => this.print(d.Id, [selectPrintRequest.item])
+                            execute: (_target) => this.print({ documentId: d.Id, items: [selectPrintRequest.item] })
                         } as CrudAction))
                     };
                 }
@@ -334,15 +379,126 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     selectPrintSheet
                 }))(selectPrintSheet)
             ))
-    )
+    );
 
-    selectOptions(item: CrudItem, target: Element, defaultEditLayout: string): void {
-        throw new Error('Method not implemented.');
-    }
+    readonly selectOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
+        combineLatest([
+            request$,
+            combineLatest([
+                request$,
+                this.metaService.customFunctions$, 
+                this.metaService.customFunctionAllowed$
+            ]).pipe(switchMap(([{ item, target }, customFunctions, customFunctionAllowed]) => 
+                of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
+                    .map(f => ({ 
+                        id: f.id, 
+                        icon: f.icon, 
+                        text: f.text, 
+                        target: target,
+                        execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
+                    } as CrudAction)))
+            )),
+            this.metaService.viewAllowed$,
+            this.metaService.editAllowed$,
+            this.metaService.dropAllowed$,
+            this.metaService.printAllowed$            
+        ])
+        .pipe(map(([{ item, target, defaultEditLayout }, customFunctions, viewAllowed, editAllowed, dropAllowed, printAllowed]) => {
 
-    selectCustomOptions(item: CrudItem, target: Element, defaultEditLayout: string): void {
-        throw new Error('Method not implemented.');
-    }
+            const actions = [] as CrudAction[];
+
+            if (viewAllowed && viewAllowed(item)) {
+                actions.push({
+                    id: 'view',
+                    icon: 'bi bi-eye-fill',
+                    text: this.translationService.transform('datacontainer.actions.show'),
+                    target: target,
+                    execute: (_target) => this.view({ item, editLayout: defaultEditLayout })
+                });
+            }
+
+            if (editAllowed && editAllowed(item)) {
+                actions.push({
+                    id: 'edit',                  
+                    icon: 'bi bi-pencil-fill',
+                    text: this.translationService.transform('datacontainer.actions.edit'),
+                    target: target,
+                    execute: (_target) => this.edit({ item, editLayout: defaultEditLayout })
+                });
+              }
+
+            if (dropAllowed && dropAllowed(item)) {
+                actions.push({
+                    id: 'delete',                  
+                    icon: 'bi bi-trash-fill',
+                    text: this.translationService.transform('datacontainer.actions.remove'),
+                    target: target,
+                    execute: (_target) => this.remove({ item })
+                });
+            }              
+
+            if (printAllowed && printAllowed(item)) {
+                actions.push({
+                    id: 'print',                    
+                    icon: 'bi bi-printer-fill',
+                    text: this.translationService.transform('datacontainer.actions.print'),
+                    target: target,
+                    execute: (target) => this.selectPrint({ item, target })
+                });
+            }
+
+            if (customFunctions) {
+                actions.push(...customFunctions);
+            }
+
+            return {
+                item,
+                target,
+                actions
+            };
+        }))
+        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, target: Element, actions: CrudAction[]}|undefined) => ({
+            ...state,
+            selectActionSheet
+        }))(selectActionSheet))))
+    ;
 
 
+    readonly selectCustomOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
+        combineLatest([
+            request$,
+            combineLatest([
+                request$,
+                this.metaService.customFunctions$, 
+                this.metaService.customFunctionAllowed$
+            ]).pipe(switchMap(([{ item, target }, customFunctions, customFunctionAllowed]) => 
+                of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
+                    .map(f => ({ 
+                        id: f.id, 
+                        icon: f.icon, 
+                        text: f.text, 
+                        target: target,
+                        execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
+                    } as CrudAction)))
+            ))          
+        ])
+        .pipe(map(([{ item, target }, customFunctions]) => {
+
+            const actions = [] as CrudAction[];
+
+            if (customFunctions) {
+                actions.push(...customFunctions);
+            }
+
+            return {
+                item,
+                target,
+                actions
+            };
+        }))
+        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, target: Element, actions: CrudAction[]}|undefined) => ({
+            ...state,
+            selectActionSheet
+        }))(selectActionSheet))))
+    ;          
 }

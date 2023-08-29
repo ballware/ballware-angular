@@ -65,7 +65,7 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   public onMarkerClicked(item: CrudItem) {
     if (this.mouseTarget) {
-      this.crudService.selectOptions(item, this.mouseTarget, 'primary');
+      this.crudService.selectOptions({ item, target: this.mouseTarget, defaultEditLayout: 'primary' });
     }
   }
 }

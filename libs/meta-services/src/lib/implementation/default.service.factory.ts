@@ -24,7 +24,7 @@ import { CrudServiceProxy } from '../crud/crud.proxy';
 import { CrudStore } from '../crud/crud.store';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private store: Store, private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
+    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
         super();
     }
 
@@ -33,7 +33,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createCrudService(metaService: MetaService): CrudService {
-        return new CrudServiceProxy(new CrudStore(metaService, this.translationPipe));
+        return new CrudServiceProxy(new CrudStore(metaService, this.translationPipe, this.router));
     }
 
     override createEditService(metaService: MetaService): EditService {
