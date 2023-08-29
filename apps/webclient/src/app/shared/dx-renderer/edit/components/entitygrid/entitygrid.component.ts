@@ -110,7 +110,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(([selectAddRequest, editLayoutIdentifier]) => {
         if (selectAddRequest && editLayoutIdentifier) {
-          this.crudService.selectAdd(selectAddRequest.target, editLayoutIdentifier);
+          this.crudService.selectAdd({ target: selectAddRequest.target, defaultEditLayout: editLayoutIdentifier });
         }
       });
   }

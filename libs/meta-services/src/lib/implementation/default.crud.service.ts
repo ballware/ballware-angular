@@ -23,7 +23,7 @@ export class DefaultCrudService extends CrudService {
   public importMenuItems$: Observable<{id: string, text: string, customFunction: EntityCustomFunction}[]|undefined>;
 
   public itemDialog$: Observable<{ mode: EditModes, item: Record<string, unknown>, title: string, editLayout?: EditLayout, apply: (item: Record<string, unknown>) => void, cancel: () => void}|undefined>;
-  public removeDialog$: Observable<{ item: CrudItem, title: string }|undefined>;
+  public removeDialog$: Observable<{ item: CrudItem, title: string, apply: (item: Record<string, unknown>) => void, cancel: () => void }|undefined>;
 
   public selectAddSheet$: Observable<{
     target: Element,
@@ -118,16 +118,16 @@ export class DefaultCrudService extends CrudService {
         case 'add':
           break;
         case 'view':
-          this.view(data, editLayoutIdentifier);
+          this.view({ item: data, editLayout: editLayoutIdentifier });
           break;
         case 'edit':
-          this.edit(data, editLayoutIdentifier);
+          this.edit({ item: data, editLayout: editLayoutIdentifier });
           break;
         case 'delete':
-          this.remove(data);
+          this.remove({ item: data });
           break;
         case 'print':
-          this.selectPrint(data, target);
+          this.selectPrint({ item: data, target });
           break;
         case 'options':
           this.selectOptions(data, target, editLayoutIdentifier);
@@ -283,7 +283,7 @@ export class DefaultCrudService extends CrudService {
                 icon: 'bi bi-eye-fill',
                 item: selectOptionsRequest.item,
                 target: selectOptionsRequest.target,
-                execute: (_target) => this.view(selectOptionsRequest.item, selectOptionsRequest.defaultEditLayout),
+                execute: (_target) => this.view({ item: selectOptionsRequest.item, editLayout: selectOptionsRequest.defaultEditLayout }),
               });
             }
 
@@ -294,7 +294,7 @@ export class DefaultCrudService extends CrudService {
                 icon: 'bi bi-pencil-fill',
                 item: selectOptionsRequest.item,
                 target: selectOptionsRequest.target,
-                execute: (_target) => this.edit(selectOptionsRequest.item, selectOptionsRequest.defaultEditLayout),
+                execute: (_target) => this.edit({ item: selectOptionsRequest.item, editLayout: selectOptionsRequest.defaultEditLayout }),
               });
             }
 
@@ -305,7 +305,7 @@ export class DefaultCrudService extends CrudService {
                 icon: 'bi bi-trash-fill',
                 item: selectOptionsRequest.item,
                 target: selectOptionsRequest.target,
-                execute: (_target) => this.remove(selectOptionsRequest.item),
+                execute: (_target) => this.remove({ item: selectOptionsRequest.item }),
               });
             }
 
@@ -425,16 +425,16 @@ export class DefaultCrudService extends CrudService {
     this.addRequest$.next({ editLayoutId: editLayout });
   }
 
-  public view(item: CrudItem, editLayout: string) {
-    this.viewRequest$.next({ item, editLayoutId: editLayout });
+  public view(request: { item: CrudItem, editLayout: string }) {
+    this.viewRequest$.next({ item: request.item, editLayoutId: request.editLayout });
   }
 
-  public edit(item: CrudItem, editLayout: string) {
-    this.editRequest$.next({ item, editLayoutId: editLayout });
+  public edit(request: { item: CrudItem, editLayout: string }) {
+    this.editRequest$.next({ item: request.item, editLayoutId: request.editLayout });
   }
 
-  public remove(item: CrudItem) {
-    console.log('Removing ' + item.Id);
+  public remove(request: { item: CrudItem }) {
+    console.log('Removing ' + request.item.Id);
   }
 
   public print(documentId: string, items: CrudItem[]) {
@@ -445,12 +445,12 @@ export class DefaultCrudService extends CrudService {
     this.customEditRequest$.next({ customFunction, items });
   }
 
-  public selectAdd(target: Element, defaultEditLayout: string) {
-    this.selectAddRequest$.next({ target, defaultEditLayout });
+  public selectAdd(request: { target: Element, defaultEditLayout: string }) {
+    this.selectAddRequest$.next({ target: request.target, defaultEditLayout: request.defaultEditLayout });
   }
 
-  public selectPrint(item: CrudItem, target: Element) {
-    this.selectPrintRequest$.next({ item, target });
+  public selectPrint(request: { item: CrudItem, target: Element }) {
+    this.selectPrintRequest$.next({ item: request.item, target: request.target });
   }
 
   public selectOptions(item: CrudItem, target: Element, defaultEditLayout: string) {

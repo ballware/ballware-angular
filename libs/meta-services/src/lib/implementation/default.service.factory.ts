@@ -33,7 +33,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createCrudService(metaService: MetaService): CrudService {
-        return new CrudServiceProxy(new CrudStore(metaService));
+        return new CrudServiceProxy(new CrudStore(metaService, this.translationPipe));
     }
 
     override createEditService(metaService: MetaService): EditService {

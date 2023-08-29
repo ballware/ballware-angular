@@ -14,18 +14,40 @@ export interface CrudAction {
     execute: (target: Element) => void
 }
 
+export interface ItemEditDialog {
+    mode: EditModes, 
+    item: Record<string, unknown>, 
+    title: string, 
+    editLayout?: EditLayout, 
+    apply: (item: Record<string, unknown>) => void, 
+    cancel: () => void    
+}
+
+export interface ItemRemoveDialog {
+    item: Record<string, unknown>, 
+    title: string, 
+    apply: (item: Record<string, unknown>) => void, 
+    cancel: () => void    
+}
+
+export interface CrudEditMenuItem {
+    id: string, 
+    text: string, 
+    customFunction?: EntityCustomFunction
+}
+
 export interface CrudServiceApi {
     functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
     functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
-    addMenuItems$: Observable<{id: string, text: string, customFunction?: EntityCustomFunction}[]|undefined>;
+    addMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
     headCustomFunctions$: Observable<EntityCustomFunction[]|undefined>;
 
-    exportMenuItems$: Observable<{id: string, text: string, customFunction: EntityCustomFunction}[]|undefined>;
-    importMenuItems$: Observable<{id: string, text: string, customFunction: EntityCustomFunction}[]|undefined>;
+    exportMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
+    importMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
 
-    itemDialog$: Observable<{ mode: EditModes, item: Record<string, unknown>, title: string, editLayout?: EditLayout, apply: (item: Record<string, unknown>) => void, cancel: () => void}|undefined>;
-    removeDialog$: Observable<{ item: CrudItem, title: string }|undefined>;
+    itemDialog$: Observable<ItemEditDialog|undefined>;
+    removeDialog$: Observable<ItemRemoveDialog|undefined>;
 
     selectAddSheet$: Observable<{
         target: Element,
@@ -51,14 +73,14 @@ export interface CrudServiceApi {
 
     reload(): void;
     create(editLayout: string): void;
-    view(item: CrudItem, editLayout: string): void;
-    edit(item: CrudItem, editLayout: string): void;
-    remove(item: CrudItem): void;
+    view(request: { item: CrudItem, editLayout: string }): void;
+    edit(request: { item: CrudItem, editLayout: string }): void;
+    remove(request: { item: CrudItem }): void;
     print(documentId: string, items: CrudItem[]): void;
     customEdit(customFunction: EntityCustomFunction, items?: CrudItem[]): void;
 
-    selectAdd(target: Element, defaultEditLayout: string): void;
-    selectPrint(item: CrudItem, target: Element): void;
+    selectAdd(request: { target: Element, defaultEditLayout: string }): void;
+    selectPrint(request: { item: CrudItem, target: Element }): void;
     selectOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
     selectCustomOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;  
 }
@@ -68,14 +90,14 @@ export abstract class CrudService extends WithDestroy() implements CrudServiceAp
   public abstract functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
   public abstract functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
-  public abstract addMenuItems$: Observable<{id: string, text: string, customFunction?: EntityCustomFunction}[]|undefined>;
+  public abstract addMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
   public abstract headCustomFunctions$: Observable<EntityCustomFunction[]|undefined>;
 
-  public abstract exportMenuItems$: Observable<{id: string, text: string, customFunction: EntityCustomFunction}[]|undefined>;
-  public abstract importMenuItems$: Observable<{id: string, text: string, customFunction: EntityCustomFunction}[]|undefined>;
+  public abstract exportMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
+  public abstract importMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
 
-  public abstract itemDialog$: Observable<{ mode: EditModes, item: Record<string, unknown>, title: string, editLayout?: EditLayout, apply: (item: Record<string, unknown>) => void, cancel: () => void}|undefined>;
-  public abstract removeDialog$: Observable<{ item: CrudItem, title: string }|undefined>;
+  public abstract itemDialog$: Observable<ItemEditDialog|undefined>;
+  public abstract removeDialog$: Observable<ItemRemoveDialog|undefined>;
 
   public abstract selectAddSheet$: Observable<{
       target: Element,
@@ -101,14 +123,14 @@ export abstract class CrudService extends WithDestroy() implements CrudServiceAp
 
   public abstract reload(): void;
   public abstract create(editLayout: string): void;
-  public abstract view(item: CrudItem, editLayout: string): void;
-  public abstract edit(item: CrudItem, editLayout: string): void;
-  public abstract remove(item: CrudItem): void;
+  public abstract view(request: { item: CrudItem, editLayout: string }): void;
+  public abstract edit(request: { item: CrudItem, editLayout: string }): void;
+  public abstract remove(request: { item: CrudItem }): void;
   public abstract print(documentId: string, items: CrudItem[]): void;
   public abstract customEdit(customFunction: EntityCustomFunction, items?: CrudItem[]): void;
 
-  public abstract selectAdd(target: Element, defaultEditLayout: string): void;
-  public abstract selectPrint(item: CrudItem, target: Element): void;
+  public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
+  public abstract selectPrint(request: { item: CrudItem, target: Element }): void;
   public abstract selectOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
   public abstract selectCustomOptions(item: CrudItem, target: Element, defaultEditLayout: string): void;
 }
