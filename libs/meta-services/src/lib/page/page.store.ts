@@ -54,9 +54,8 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
                   initialized: false
                 }))();
             }))
-            .pipe(withLatestFrom(this.metaApiService.metaPageApiFactory$))
-            .pipe(switchMap(([pageId, metaPageApi]) => (pageId && metaPageApi)
-                ? metaPageApi().pageDataForIdentifier(this.httpClient, pageId)
+            .pipe(switchMap((pageId) => (pageId)
+                ? this.metaApiService.metaPageApi.pageDataForIdentifier(pageId)
                 : of(undefined)
             ))
             .pipe(tap((page) => this.updater((state) => ({

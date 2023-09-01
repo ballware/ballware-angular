@@ -121,11 +121,11 @@ export interface LookupServiceApi {
       LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
     >|undefined>;
 
-  getGenericLookupByIdentifier$: Observable<(((
+  getGenericLookupByIdentifier: (((
       identifier: string,
       valueExpr: string,
       displayExpr: string
-    ) => LookupDescriptor) | undefined)|undefined>;
+    ) => LookupDescriptor) | undefined)|undefined;
 
   requestLookups(request :LookupRequest[]): void;
 }
@@ -137,11 +137,11 @@ export abstract class LookupService extends WithDestroy() implements LookupServi
       LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
     >|undefined>;
 
-  public abstract getGenericLookupByIdentifier$: Observable<(((
+  public abstract getGenericLookupByIdentifier: (((
       identifier: string,
       valueExpr: string,
       displayExpr: string
-    ) => LookupDescriptor) | undefined)|undefined>;
+    ) => LookupDescriptor) | undefined)|undefined;
 
   public abstract requestLookups(request :LookupRequest[]): void;
 }

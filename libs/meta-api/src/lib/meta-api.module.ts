@@ -4,6 +4,7 @@ import { IdentityApiService } from './identity.api.service';
 import { MetaApiService } from './meta.api.service';
 import { ApiServiceFactory } from './api.service.factory';
 import { DefaultApiServiceFactory } from './implementation/default.api.service.factory';
+import { HttpClient } from '@angular/common/http';
 
 export * from './attachment';
 export * from './document';
@@ -50,7 +51,10 @@ export class MetaApiModule {
       providers: [
         {
           provide: ApiServiceFactory,
-          useFactory: () => new DefaultApiServiceFactory(config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl)
+          useFactory: (httpClient: HttpClient) => new DefaultApiServiceFactory(httpClient, config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl),
+          deps: [
+            HttpClient
+          ]
         }    
       ]
     };

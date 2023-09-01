@@ -23,12 +23,10 @@ export interface MetaDocumentApi {
   /**
    * Fetch available print documents for business object type
    *
-   * @param token Access token required for authentication
    * @param entity Identifier for business object type
    * @returns Observable containing available print documents for entity
    */
   selectListPrintDocumentsForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<Array<DocumentSelectEntry>>;
 
@@ -42,8 +40,7 @@ export interface MetaDocumentApi {
   viewerUrl: (token: string, search: string) => Observable<string>;
 }
 
-const selectListPrintDocumentsForEntity = (metaServiceBaseUrl: string) => (
-  http: HttpClient,
+const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
   const url = `${metaServiceBaseUrl}api/document/selectlistdocumentsforentity/${entity}`;
@@ -69,11 +66,13 @@ const viewerUrl = (documentServiceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendDocumentApi(
+  httpClient: HttpClient, 
   metaServiceBaseUrl: string,
   documentServiceBaseUrl: string
 ): MetaDocumentApi {
   return {
     selectListPrintDocumentsForEntity: selectListPrintDocumentsForEntity(
+      httpClient,
       metaServiceBaseUrl
     ),
     viewerUrl: viewerUrl(documentServiceBaseUrl),

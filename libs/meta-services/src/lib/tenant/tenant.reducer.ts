@@ -4,19 +4,19 @@ import { tenantFetched } from "./tenant.actions";
 import { NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
 import { NavigationTreeItem } from "../tenant.service";
 
-const initialState = {
+export const initialState = {
     
 } as TenantState;
 
 
-const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: NavigationLayout): NavigationTreeItem[] => {
+export const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: NavigationLayout): NavigationTreeItem[] => {
 
     const collectAllowedItems = (items: NavigationLayoutItem[]): NavigationTreeItem[] => {
       const mappedItems = [] as NavigationTreeItem[];
   
       items?.forEach(item => {
         if (item.type === 'page' && item.options?.page) {
-          const pageVisible = hasRight(`generic.page.${item.options.page ?? 'unknown'}`);
+          const pageVisible = hasRight(`generic.page.${item.options.page}`);
   
           if (pageVisible) {
             mappedItems.push({
@@ -26,8 +26,8 @@ const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: N
               path: `/page/${item.options.url}`
             });
           }
-        } else if (item.type === 'section') {
-          const subItems = collectAllowedItems(item.items ?? []);
+        } else if (item.type === 'section' && item.items) {
+          const subItems = collectAllowedItems(item.items);
   
           if (subItems.length > 0) {
             if (mappedItems.length > 0) {
@@ -40,8 +40,8 @@ const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: N
   
             mappedItems.push(...subItems);
           }
-        } else if (item.type === 'group') {
-          const subItems = collectAllowedItems(item.items ?? []);
+        } else if (item.type === 'group' && item.items) {
+          const subItems = collectAllowedItems(item.items);
   
           if (subItems.length > 0) {
             mappedItems.push({
@@ -61,20 +61,20 @@ const buildNavigationTree = (hasRight: (right: string) => boolean, navigation: N
     return collectAllowedItems(navigation?.items ?? []);
   }
   
-  const buildPageList = (hasRight: (right: string) => boolean, navigation: NavigationLayout): NavigationLayoutItem[] => {
+  export const buildPageList = (hasRight: (right: string) => boolean, navigation: NavigationLayout): NavigationLayoutItem[] => {
   
     const collectPages = (items: NavigationLayoutItem[]): NavigationLayoutItem[] => {
       const pages = [] as NavigationLayoutItem[];
   
       items?.forEach(item => {
         if (item.type === 'page' && item.options?.page) {
-          const pageVisible = hasRight(`generic.page.${item.options.page ?? 'unknown'}`);
+          const pageVisible = hasRight(`generic.page.${item.options.page}`);
   
           if (pageVisible) {
             pages.push(item);
           }
-        } else if (item.type === 'section' || item.type === 'group') {
-          pages.push(...collectPages(item.items ?? []));
+        } else if ((item.type === 'section' || item.type === 'group') && item.items) {
+          pages.push(...collectPages(item.items));
         }
       });
   
@@ -91,7 +91,7 @@ export const tenantReducer = createReducer(
         ...state,
         tenant,
         title: tenant?.name,
-        hasRight: (right) => tenant?.hasRight(user, right),
+        hasRight: tenant?.hasRight ? (right) => tenant.hasRight(user, right) : undefined,
         navigationLayout: tenant?.navigation,
         navigationTree: tenant?.navigation ? buildNavigationTree((right) => tenant?.hasRight(user, right), tenant?.navigation) : undefined,
         pages: tenant?.navigation ? buildPageList((right) => tenant?.hasRight(user, right), tenant.navigation) : undefined        

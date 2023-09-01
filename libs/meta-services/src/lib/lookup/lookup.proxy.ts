@@ -10,6 +10,6 @@ export class LookupServiceProxy extends LookupService {
     }
 
     public override lookups$ = this.lookupStore.lookups$;
-    public override getGenericLookupByIdentifier$ = this.lookupStore.getGenericLookupByIdentifier$;
+    public override getGenericLookupByIdentifier = this.lookupStore.getGenericLookupByIdentifier;
     public override requestLookups = this.lookupStore.requestLookups;
 }

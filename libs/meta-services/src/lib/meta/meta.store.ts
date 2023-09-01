@@ -26,9 +26,8 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
             });
 
         this.effect(_ => this.entity$            
-            .pipe(withLatestFrom(this.metaApiService.metaEntityApiFactory$))
-            .pipe(switchMap(([entity, entityApiFactory]) => (entity && entityApiFactory) 
-                ? entityApiFactory().metadataForEntity(this.httpClient, entity)
+            .pipe(switchMap((entity) => (entity) 
+                ? this.metaApiService.metaEntityApi.metadataForEntity(entity)
                 : of(undefined)))
             .pipe(tap((entityMetadata) => {                
                 this.updater((state, entityMetadata: CompiledEntityMetadata|undefined) => ({
@@ -116,9 +115,8 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         );
 
         this.effect(_ => this.entity$            
-            .pipe(withLatestFrom(this.metaApiService.metaEntityApiFactory$))
-            .pipe(switchMap(([entity, entityApiFactory]) => (entity && entityApiFactory) 
-                ? entityApiFactory().documentsForEntity(this.httpClient, entity)
+            .pipe(switchMap((entity) => (entity) 
+                ? this.metaApiService.metaEntityApi.documentsForEntity(entity)
                 : of(undefined)))
             .pipe(tap((entityDocuments) => {                
                 if (entityDocuments) {
@@ -289,29 +287,29 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                 customFunction.type === 'edit' && item ? itemAllowed(item, customFunction.id) : headAllowed(customFunction.id)
             : undefined)) as Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;        
 
-    readonly count$ = combineLatest([this.entityMetadata$, this.metaApiService.metaGenericEntityApiFactory$])
-        .pipe(map(([entityMetadata, genericApiFactory]) => (entityMetadata && genericApiFactory)
-            ? (query, params) => genericApiFactory(entityMetadata.baseUrl).count(this.httpClient, query, params)                
+    readonly count$ = this.entityMetadata$
+        .pipe(map((entityMetadata) => (entityMetadata)
+            ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl).count(query, params)                
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
 
-    readonly query$ = combineLatest([this.customParam$, this.entityMetadata$, this.metaApiService.metaGenericEntityApiFactory$])
-        .pipe(map(([customParam, entityMetadata, genericApiFactory]) => (customParam && entityMetadata && genericApiFactory)
-            ? (query, params) => genericApiFactory(entityMetadata.baseUrl)
-                .query(this.httpClient, query, params)
+    readonly query$ = combineLatest([this.customParam$, this.entityMetadata$])
+        .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
+            ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+                .query(query, params)
                 .pipe(map((items) => entityMetadata.itemMappingScript ? items?.map(item => entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient))) : items))
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
 
-    readonly byId$ = combineLatest([this.customParam$, this.entityMetadata$, this.metaApiService.metaGenericEntityApiFactory$])
-        .pipe(map(([customParam, entityMetadata, genericApiFactory]) => (customParam && entityMetadata && genericApiFactory)
-        ? (id) => genericApiFactory(entityMetadata.baseUrl)
-            .byId(this.httpClient, 'primary', id)
+    readonly byId$ = combineLatest([this.customParam$, this.entityMetadata$])
+        .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
+        ? (id) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            .byId('primary', id)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient)) : item))
         : undefined)) as Observable<((id: string) => Observable<CrudItem>)|undefined>;
 
-    readonly create$ = combineLatest([this.customParam$, this.entityMetadata$, this.metaApiService.metaGenericEntityApiFactory$])
-        .pipe(map(([customParam, entityMetadata, genericApiFactory]) => (customParam && entityMetadata && genericApiFactory)
-        ? (query, params) => genericApiFactory(entityMetadata.baseUrl)
-            .new(this.httpClient, query, params)
+    readonly create$ = combineLatest([this.customParam$, this.entityMetadata$])
+        .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
+        ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            .new(query, params)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient)) : item))
         : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
 

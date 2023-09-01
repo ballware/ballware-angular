@@ -8,48 +8,42 @@ import { from, Observable } from 'rxjs';
   /**
    * Query list of attachments by owner
    *
-   * @param token - Access token required for authentication
    * @param owner - Identifier for owner
    * @returns Observable with list of attachment metadata belonging to owner
    */
-  queryByOwner: (
-    http: HttpClient,
+  queryByOwner: (    
     owner: string
   ) => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Upload new attachment
    *
-   * @param token - Access token required for authentication
    * @param owner - Identifier for owner
    * @param file - Uploaded file
    * @returns Observable resolved when upload finished
    */
-  upload: (http: HttpClient, owner: string, file: File) => Observable<void>;
+  upload: (owner: string, file: File) => Observable<void>;
 
   /**
    * Fetch file url for display/download
    *
-   * @param token - Access token required for authentication
    * @param owner - Identifier for owner
    * @param fileName - File name from metadata
    * @returns Observable with URL for download of file
    */
-  open: (http: HttpClient, owner: string, fileName: string) => Observable<string>;
+  open: (owner: string, fileName: string) => Observable<string>;
 
   /**
    * Remove existing attachment
    *
-   * @param token - Access token required for authentication
    * @param owner - Identifier for owner
    * @param fileName - File name from metadata
    * @returns Observable resolved when remove operation finished
    */
-  remove: (http: HttpClient, owner: string, fileName: string) => Observable<void>;
+  remove: (owner: string, fileName: string) => Observable<void>;
 }
 
-const attachmentFetchFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const attachmentFetchFunc = (http: HttpClient, serviceBaseUrl: string) => (  
   owner: string
 ): Observable<Array<Record<string, unknown>>> => {
   const url = `${serviceBaseUrl}api/file/all/${owner}`;
@@ -58,8 +52,7 @@ const attachmentFetchFunc = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const attachmentUploadFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const attachmentUploadFunc = (http: HttpClient, serviceBaseUrl: string) => (
   owner: string,
   file: File
 ): Observable<void> => {
@@ -76,8 +69,7 @@ const attachmentUploadFunc = (serviceBaseUrl: string) => (
   });
 };
 
-const attachmentOpenFunc = (serviceBaseUrl: string) => (
-  _http: HttpClient,
+const attachmentOpenFunc = (_http: HttpClient, serviceBaseUrl: string) => (
   owner: string,
   fileName: string
 ): Observable<string> => {
@@ -88,8 +80,7 @@ const attachmentOpenFunc = (serviceBaseUrl: string) => (
   return from(url);
 };
 
-const attachmentDeleteFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const attachmentDeleteFunc = (http: HttpClient, serviceBaseUrl: string) => (  
   owner: string,
   fileName: string
 ): Observable<void> => {
@@ -106,12 +97,13 @@ const attachmentDeleteFunc = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendAttachmentApi(
+  httpClient: HttpClient,
   serviceBaseUrl: string
 ): MetaAttachmentApi {
   return {
-    queryByOwner: attachmentFetchFunc(serviceBaseUrl),
-    upload: attachmentUploadFunc(serviceBaseUrl),
-    open: attachmentOpenFunc(serviceBaseUrl),
-    remove: attachmentDeleteFunc(serviceBaseUrl),
+    queryByOwner: attachmentFetchFunc(httpClient, serviceBaseUrl),
+    upload: attachmentUploadFunc(httpClient, serviceBaseUrl),
+    open: attachmentOpenFunc(httpClient, serviceBaseUrl),
+    remove: attachmentDeleteFunc(httpClient, serviceBaseUrl),
   } as MetaAttachmentApi;
 }

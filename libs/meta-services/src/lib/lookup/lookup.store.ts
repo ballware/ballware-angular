@@ -8,7 +8,6 @@ import { Observable, combineLatest, distinctUntilChanged, map, of } from "rxjs";
 import { isEqual } from "lodash";
 
 const createUserLookup = (
-    http: HttpClient,
     api: IdentityUserApi,
     valueMember: string,
     displayMember: string
@@ -16,8 +15,8 @@ const createUserLookup = (
     return {
       type: 'lookup',
       store: {
-        listFunc: () => api.selectListFunc(http),
-        byIdFunc: id => api.selectByIdFunc(http, id),
+        listFunc: () => api.selectListFunc(),
+        byIdFunc: id => api.selectByIdFunc(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -25,7 +24,6 @@ const createUserLookup = (
   };
   
 const createRoleLookup = (
-    http: HttpClient,
     api: IdentityRoleApi,
     valueMember: string,
     displayMember: string
@@ -33,8 +31,8 @@ const createRoleLookup = (
     return {
       type: 'lookup',
       store: {
-        listFunc: () => api.selectListFunc(http),
-        byIdFunc: id => api.selectByIdFunc(http, id),
+        listFunc: () => api.selectListFunc(),
+        byIdFunc: id => api.selectByIdFunc(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -42,7 +40,6 @@ const createRoleLookup = (
   };
   
 const createGenericLookup = (
-    http: HttpClient,
     api: MetaLookupApi,
     lookupId: string,
     valueMember: string,
@@ -51,8 +48,8 @@ const createGenericLookup = (
     return {
       type: 'lookup',
       store: {
-        listFunc: () => api.selectListForLookup(http, lookupId),
-        byIdFunc: id => api.selectByIdForLookup(http, lookupId)(id),
+        listFunc: () => api.selectListForLookup(lookupId),
+        byIdFunc: id => api.selectByIdForLookup(lookupId)(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -60,7 +57,6 @@ const createGenericLookup = (
   };
   
 const createGenericLookupWithParam = (
-    http: HttpClient,
     api: MetaLookupApi,
     lookupId: string,
     valueMember: string,
@@ -71,9 +67,9 @@ const createGenericLookupWithParam = (
         type: 'lookup',
         store: {
           listFunc: () =>
-            api.selectListForLookupWithParam(http, lookupId, param),
+            api.selectListForLookupWithParam(lookupId, param),
           byIdFunc: id =>
-            api.selectByIdForLookupWithParam(http, lookupId, param)(id),
+            api.selectByIdForLookupWithParam(lookupId, param)(id),
         } as LookupStoreDescriptor,
         valueMember: valueMember,
         displayMember: displayMember,
@@ -82,7 +78,6 @@ const createGenericLookupWithParam = (
   };
   
 const createGenericPickvalueLookup = (
-    http: HttpClient,
     api: MetaPickvalueApi,
     entity: string,
     field: string,
@@ -92,9 +87,9 @@ const createGenericPickvalueLookup = (
     return {
       type: 'lookup',
       store: {
-        listFunc: () => api.selectListForEntityAndField(http, entity, field),
+        listFunc: () => api.selectListForEntityAndField(entity, field),
         byIdFunc: id =>
-          api.selectByValueForEntityAndField(http, entity, field)(id),
+          api.selectByValueForEntityAndField(entity, field)(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -102,20 +97,18 @@ const createGenericPickvalueLookup = (
   };
   
 const createGenericAutocomplete = (
-    http: HttpClient,
     api: MetaLookupApi,
     lookupId: string
   ): LookupDescriptor => {
     return {
       type: 'autocomplete',
       store: {
-        listFunc: () => api.autoCompleteForLookup(http, lookupId),
+        listFunc: () => api.autoCompleteForLookup(lookupId),
       } as AutocompleteStoreDescriptor,
     } as LookupDescriptor;
   };
   
 const createGenericAutocompleteWithParam = (
-    http: HttpClient,
     api: MetaLookupApi,
     lookupId: string
   ): LookupCreator => {
@@ -124,14 +117,13 @@ const createGenericAutocompleteWithParam = (
         type: 'autocomplete',
         store: {
           listFunc: () =>
-            api.autoCompleteForLookupWithParam(http, lookupId, param),
+            api.autoCompleteForLookupWithParam(lookupId, param),
         } as AutocompleteStoreDescriptor,
       };
     };
   };
   
 const createGenericStateLookup = (
-    http: HttpClient,
     api: MetaProcessingstateApi,
     entity: string,
     valueMember = 'State',
@@ -140,8 +132,8 @@ const createGenericStateLookup = (
     return {
       type: 'lookup',
       store: {
-        listFunc: () => api.selectListForEntity(http, entity),
-        byIdFunc: id => api.selectByStateForEntity(http, entity)(id),
+        listFunc: () => api.selectListForEntity(entity),
+        byIdFunc: id => api.selectByStateForEntity(entity)(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -149,7 +141,6 @@ const createGenericStateLookup = (
   };
   
 const createGenericAllowedStateLookup = (
-    http: HttpClient,
     api: MetaProcessingstateApi,
     entity: string,
     valueMember = 'State',
@@ -161,11 +152,10 @@ const createGenericAllowedStateLookup = (
         store: {
           listFunc: () =>
             api.selectListAllowedForEntityAndIds(
-              http,
               entity,
               Array.isArray(param) ? param : [param]
             ),
-          byIdFunc: id => api.selectByStateForEntity(http, entity)(id),
+          byIdFunc: id => api.selectByStateForEntity(entity)(id),
         } as LookupStoreDescriptor,
         valueMember: valueMember,
         displayMember: displayMember,
@@ -174,7 +164,6 @@ const createGenericAllowedStateLookup = (
   };
   
 const createGenericLookupByIdentifier = (
-    http: HttpClient,
     api: MetaLookupApi,
     lookupIdentifier: string,
     valueMember: string,
@@ -184,9 +173,9 @@ const createGenericLookupByIdentifier = (
       type: 'lookup',
       store: {
         listFunc: () =>
-          api.selectListForLookupIdentifier(http, lookupIdentifier),
+          api.selectListForLookupIdentifier(lookupIdentifier),
         byIdFunc: id =>
-          api.selectByIdForLookupIdentifier(http, lookupIdentifier)(id),
+          api.selectByIdForLookupIdentifier(lookupIdentifier)(id),
       } as LookupStoreDescriptor,
       valueMember: valueMember,
       displayMember: displayMember,
@@ -196,7 +185,7 @@ const createGenericLookupByIdentifier = (
 
 @Injectable()
 export class LookupStore extends ComponentStore<LookupState> implements LookupServiceApi {
-    constructor(private httpClient: HttpClient, private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
+    constructor(private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
         super({});
 
         this.state$
@@ -215,132 +204,107 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             lookups
         }));    
 
-    readonly getGenericLookupByIdentifier$ = this.metaApiService.metaLookupApiFactory$
-        .pipe(map((metaLookupApiFactory) => (metaLookupApiFactory)
-            ? (identifier, valueExpr, displayExpr) => createGenericLookupByIdentifier(this.httpClient, metaLookupApiFactory(), identifier, valueExpr, displayExpr)
-            : undefined
-        )) as Observable<(((
-            identifier: string,
-            valueExpr: string,
-            displayExpr: string
-            ) => LookupDescriptor) | undefined)|undefined>;
+    readonly getGenericLookupByIdentifier = (identifier: string, valueExpr: string, displayExpr: string) => createGenericLookupByIdentifier(this.metaApiService.metaLookupApi, identifier, valueExpr, displayExpr);
 
-    readonly requestLookups = (request :LookupRequest[]) =>
-        combineLatest([
-            of(request),
-            this.identityApiService.identityUserApiFactory$,
-            this.identityApiService.identityRoleApiFactory$,
-            this.metaApiService.metaLookupApiFactory$,
-            this.metaApiService.metaPickvalueApiFactory$,
-            this.metaApiService.metaProcessingstateApiFactory$
-            ]).pipe(map(([requests, userApiFactory, roleApiFactory, lookupApiFactory, pickvalueApiFactory, processingstateApiFactory]) => {
-                if (requests) {
-                const newLookups = {} as Record<
-                    string,
-                    | LookupDescriptor
-                    | LookupCreator
-                    | AutocompleteCreator
-                    | Array<unknown>
-                >;
-        
-                newLookups['userLookup'] = createUserLookup(this.httpClient, userApiFactory(), 'id', 'name');
-                newLookups['roleLookup'] = createRoleLookup(this.httpClient, roleApiFactory(), 'id', 'name');
-        
-                requests?.forEach(l => {
-                    switch (l.type) {
-                    case 'lookup':
-                        if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
-                        newLookups[l.identifier] = createGenericLookup(
-                            this.httpClient,
-                            lookupApiFactory(),
-                            l.lookupId,
-                            l.valueMember,
-                            l.displayMember
-                        );
-                        } else {
-                        console.error(
-                            `Missing params for lookup type 'lookup': lookupId: ${l.lookupId}, valueMember: ${l.valueMember}, displayMember: ${l.displayMember}`
-                        );
-                        }
-                        break;
-                    case 'lookupwithparam':
-                        if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
-                        newLookups[l.identifier] = createGenericLookupWithParam(
-                            this.httpClient,
-                            lookupApiFactory(),
-                            l.lookupId,
-                            l.valueMember,
-                            l.displayMember
-                        );
-                        } else {
-                        console.error(
-                            `Missing params for lookup type 'lookupwithparam': lookupId: ${l.lookupId}, valueMember: ${l.valueMember}, displayMember: ${l.displayMember}`
-                        );
-                        }
-                        break;
-                    case 'pickvalue':
-                        newLookups[l.identifier] = createGenericPickvalueLookup(
-                        this.httpClient,
-                        pickvalueApiFactory(),
-                        l.entity as string,
-                        l.field as string,
-                        l.valueMember,
-                        l.displayMember
-                        );
-                        break;
-                    case 'autocomplete':
-                        if (l.lookupId) {
-                        newLookups[l.identifier] = createGenericAutocomplete(
-                            this.httpClient,
-                            lookupApiFactory(),
-                            l.lookupId
-                        );
-                        } else {
-                        console.error(
-                            `Missing params for lookup type 'autocomplete': lookupId: ${l.lookupId}`
-                        );
-                        }
-                        break;
-                    case 'autocompletewithparam':
-                        if (l.lookupId) {
-                        newLookups[l.identifier] = createGenericAutocompleteWithParam(
-                            this.httpClient,
-                            lookupApiFactory(),
-                            l.lookupId
-                        );
-                        } else {
-                        console.error(
-                            `Missing params for lookup type 'autocompletewithparam': lookupId: ${l.lookupId}`
-                        );
-                        }
-                        break;
-                    case 'state':
-                        newLookups[l.identifier] = createGenericStateLookup(
-                        this.httpClient,
-                        processingstateApiFactory(),
-                        l.entity as string,
-                        l.valueMember,
-                        l.displayMember
-                        );
-                        break;
-                    case 'stateallowed':
-                        newLookups[l.identifier] = createGenericAllowedStateLookup(
-                        this.httpClient,
-                        processingstateApiFactory(),
-                        l.entity as string,
-                        l.valueMember,
-                        l.displayMember
-                        );
-                        break;
-                    }
-                });
-        
-                return newLookups;
+    readonly requestLookups = (requests :LookupRequest[]) => {
+      if (requests) {
+        const newLookups = {} as Record<
+            string,
+            | LookupDescriptor
+            | LookupCreator
+            | AutocompleteCreator
+            | Array<unknown>
+        >;
+
+        newLookups['userLookup'] = createUserLookup(this.identityApiService.identityUserApi, 'id', 'name');
+        newLookups['roleLookup'] = createRoleLookup(this.identityApiService.identityRoleApi, 'id', 'name');
+
+        requests?.forEach(l => {
+            switch (l.type) {
+            case 'lookup':
+                if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
+                newLookups[l.identifier] = createGenericLookup(
+                    this.metaApiService.metaLookupApi,
+                    l.lookupId,
+                    l.valueMember,
+                    l.displayMember
+                );
                 } else {
-                return undefined;
+                console.error(
+                    `Missing params for lookup type 'lookup': lookupId: ${l.lookupId}, valueMember: ${l.valueMember}, displayMember: ${l.displayMember}`
+                );
                 }
-            }))
-            .subscribe((lookups) => {
-                this.updateLookups(lookups);
-            }); 
+                break;
+            case 'lookupwithparam':
+                if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
+                  newLookups[l.identifier] = createGenericLookupWithParam(                    
+                      this.metaApiService.metaLookupApi,
+                      l.lookupId,
+                      l.valueMember,
+                      l.displayMember
+                  );
+                } else {
+                console.error(
+                    `Missing params for lookup type 'lookupwithparam': lookupId: ${l.lookupId}, valueMember: ${l.valueMember}, displayMember: ${l.displayMember}`
+                );
+                }
+                break;
+            case 'pickvalue':
+                newLookups[l.identifier] = createGenericPickvalueLookup(                
+                  this.metaApiService.metaPickvalueApi,
+                  l.entity as string,
+                  l.field as string,
+                  l.valueMember,
+                  l.displayMember
+                );
+                break;
+            case 'autocomplete':
+                if (l.lookupId) {
+                  newLookups[l.identifier] = createGenericAutocomplete(
+                      this.metaApiService.metaLookupApi,
+                      l.lookupId
+                  );
+                } else {
+                console.error(
+                    `Missing params for lookup type 'autocomplete': lookupId: ${l.lookupId}`
+                );
+                }
+                break;
+            case 'autocompletewithparam':
+                if (l.lookupId) {
+                  newLookups[l.identifier] = createGenericAutocompleteWithParam(
+                    this.metaApiService.metaLookupApi,
+                    l.lookupId
+                  );
+                } else {
+                console.error(
+                    `Missing params for lookup type 'autocompletewithparam': lookupId: ${l.lookupId}`
+                );
+                }
+                break;
+            case 'state':
+                newLookups[l.identifier] = createGenericStateLookup(
+                  this.metaApiService.metaProcessingstateApi,
+                  l.entity as string,
+                  l.valueMember,
+                  l.displayMember
+                );
+                break;
+            case 'stateallowed':
+                newLookups[l.identifier] = createGenericAllowedStateLookup(
+                  this.metaApiService.metaProcessingstateApi,
+                  l.entity as string,
+                  l.valueMember,
+                  l.displayMember
+                );
+                break;
+            }
+        });
+
+          this.updateLookups(newLookups);
+        } else {
+          this.updateLookups(undefined);
+        }
+    }
+        
 }

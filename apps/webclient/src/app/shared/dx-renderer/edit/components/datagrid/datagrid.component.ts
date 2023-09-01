@@ -35,7 +35,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Output() printClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() exportClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() importClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
-  @Output() customFunctionClick = new EventEmitter<{ items: Array<CrudItem>, target: Element, id: string }>();
+  @Output() customFunctionClick = new EventEmitter<{ items: Array<CrudItem>, target: Element, customFunction: EntityCustomFunction }>();
   @Output() rowDblClick = new EventEmitter<RowDblClickEvent>();
   @Input() isMasterDetailExpandable?: (e: {
       data: CrudItem
@@ -172,7 +172,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
           icon: f.icon,
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.customFunctionClick.emit({
-              id: f.id,
+              customFunction: f,
               items: this.selectedRowData,
               target: e.event.currentTarget,
             });

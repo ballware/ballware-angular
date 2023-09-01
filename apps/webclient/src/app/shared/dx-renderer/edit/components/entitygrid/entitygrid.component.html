@@ -7,7 +7,7 @@
     [showExport]="(showExport$ | async) ?? false"
     [showImport]="(showImport$ | async) ?? false"
     (reloadClick)="onReloadClicked()"
-    (customFunctionClick)="onCustomFunctionClicked"
+    (customFunctionClick)="onCustomFunctionClicked($event)"
     (addClick)="onAddClicked($event)"
     (printClick)="onPrintClicked()"
     (exportClick)="onExportClicked()"

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CrudService, MetaService, LookupService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
-import { EntityCustomFunction, GridLayout } from '@ballware/meta-model';
+import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
 import { combineLatest, map, Subject, takeUntil } from 'rxjs';
 import { dxDataGridColumn } from 'devextreme/ui/data_grid';
 import { createColumnConfiguration } from '../../../utils/columns';
@@ -119,8 +119,11 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     this.crudService.reload();
   }
 
-  public onCustomFunctionClicked() {
-    console.log('onCustomFunctionClicked');
+  public onCustomFunctionClicked(e: { items: Array<CrudItem>, target: Element, customFunction: EntityCustomFunction }) {    
+    this.crudService.customEdit({
+      customFunction: e.customFunction,
+      items: e.items
+    });
   }
 
   public onAddClicked(e: { target: Element }) {

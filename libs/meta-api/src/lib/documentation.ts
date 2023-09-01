@@ -8,18 +8,15 @@ import { Observable } from 'rxjs';
   /**
    * Fetch documentation for business object type
    *
-   * @param token Access token required for authentication
    * @param entity Requested business object type
    * @returns Observable containing rich text for rendering documentation
    */
   loadDocumentationForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<unknown>;
 }
 
-const loadDocumentationForEntity = (metaServiceBaseUrl: string) => (
-  http: HttpClient,
+const loadDocumentationForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (  
   entity: string
 ): Observable<unknown> => {
   const url = `${metaServiceBaseUrl}api/documentation/documentationforentity/${entity}`;
@@ -34,9 +31,10 @@ const loadDocumentationForEntity = (metaServiceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendDocumentationApi(
+  httpClient: HttpClient, 
   metaServiceBaseUrl: string
 ): MetaDocumentationApi {
   return {
-    loadDocumentationForEntity: loadDocumentationForEntity(metaServiceBaseUrl),
+    loadDocumentationForEntity: loadDocumentationForEntity(httpClient, metaServiceBaseUrl),
   } as MetaDocumentationApi;
 }

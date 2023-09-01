@@ -8,63 +8,53 @@ import { Observable } from 'rxjs';
   /**
    * Fetch list by lookup
    *
-   * @param token Access token required for authentication
    * @param lookup Identifier of lookup definition
    * @returns Observable containing result list of lookup query
    */
   selectListForLookup: (
-    http: HttpClient,
     lookup: string
   ) => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Fetch single element by lookup and id
    *
-   * @param token Access token required for authentication
    * @param lookup Id of lookup definition
    * @param id Id of lookup element
    * @returns Observable containing lookup element
    */
   selectByIdForLookup: (
-    http: HttpClient,
     lookup: string
   ) => (id: string) => Observable<Record<string, unknown>>;
 
   /**
    * Fetch list by lookup identifier
    *
-   * @param token Access token required for authentication
    * @param identifier Unique identifier of lookup definition
    * @returns Observable containing result list of lookup query
    */
   selectListForLookupIdentifier: (
-    http: HttpClient,
     identifier: string
   ) => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Fetch single element by lookup identifier and id
    *
-   * @param token Access token required for authentication
    * @param identifier Unique identifier of lookup definition
    * @param id Id of lookup element
    * @returns Observable containing lookup element
    */
   selectByIdForLookupIdentifier: (
-    http: HttpClient,
     identifier: string
   ) => (id: string) => Observable<Record<string, unknown>>;
 
   /**
    * Fetch list by lookup with param
    *
-   * @param token Access token required for authentication
    * @param lookup Identifier of lookup definition
    * @param param Additional query param for lookup
    * @returns Observable containing result list of lookup query
    */
   selectListForLookupWithParam: (
-    http: HttpClient,
     lookup: string,
     param: unknown
   ) => Observable<Array<Record<string, unknown>>>;
@@ -72,14 +62,12 @@ import { Observable } from 'rxjs';
   /**
    * Fetch single element by lookup with param and id
    *
-   * @param token Access token required for authentication
    * @param lookup Id of lookup definition
    * @param param Additional query param for lookup
    * @param id Id of lookup element
    * @returns Observable containing lookup element
    */
   selectByIdForLookupWithParam: (
-    http: HttpClient,
     lookup: string,
     param: unknown
   ) => (id: string) => Observable<Record<string, unknown>>;
@@ -87,32 +75,27 @@ import { Observable } from 'rxjs';
   /**
    * Fetch list of proposals for lookup
    *
-   * @param token Access token required for authentication
    * @param lookup Id of lookup definition
    * @returns Observable containing proposals
    */
   autoCompleteForLookup: (
-    http: HttpClient,
     lookup: string
   ) => Observable<Array<unknown>>;
 
   /**
    * Fetch list of proposals for lookup with param
    *
-   * @param token Access token required for authentication
    * @param lookup Id of lookup definition
    * @param param Additional query param for lookup
    * @returns Observable containing proposals
    */
   autoCompleteForLookupWithParam: (
-    http: HttpClient,
     lookup: string,
     param: unknown
   ) => Observable<Array<unknown>>;
 }
 
-const selectListForLookupFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListForLookupFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string
 ): Observable<Array<Record<string, unknown>>> => {
   const url = `${serviceBaseUrl}/api/lookup/selectlistforlookup/${lookupId}`;
@@ -121,8 +104,7 @@ const selectListForLookupFunc = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByIdForLookupFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectByIdForLookupFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string
 ) => (id: string): Observable<Record<string, unknown>> => {
   const url = `${serviceBaseUrl}/api/lookup/selectbyidforlookup/${lookupId}/${id}`;
@@ -131,8 +113,7 @@ const selectByIdForLookupFunc = (serviceBaseUrl: string) => (
     .get<Record<string, unknown>>(url);
 };
 
-const selectListForLookupIdentifierFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListForLookupIdentifierFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string
 ): Observable<Array<Record<string, unknown>>> => {
   const url = `${serviceBaseUrl}/api/lookup/selectlistforlookupidentifier/${identifier}`;
@@ -141,8 +122,7 @@ const selectListForLookupIdentifierFunc = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByIdForLookupIdentifierFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectByIdForLookupIdentifierFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string
 ) => (id: string): Observable<Record<string, unknown>> => {
   const url = `${serviceBaseUrl}/api/lookup/selectbyidforlookupidentifier/${identifier}/${id}`;
@@ -151,8 +131,7 @@ const selectByIdForLookupIdentifierFunc = (serviceBaseUrl: string) => (
     .get<Record<string, unknown>>(url);
 };
 
-const selectListForLookupWithParamFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListForLookupWithParamFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string,
   param: unknown
 ): Observable<Array<Record<string, unknown>>> => {
@@ -162,8 +141,7 @@ const selectListForLookupWithParamFunc = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByIdForLookupWithParamFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectByIdForLookupWithParamFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string,
   param: unknown
 ) => (id: string): Observable<Record<string, unknown>> => {
@@ -173,8 +151,7 @@ const selectByIdForLookupWithParamFunc = (serviceBaseUrl: string) => (
     .get<Record<string, unknown>>(url);
 };
 
-const autoCompleteForLookupFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const autoCompleteForLookupFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string
 ): Observable<Array<unknown>> => {
   const url = `${serviceBaseUrl}/api/lookup/autocompleteforlookup/${lookupId}`;
@@ -183,8 +160,7 @@ const autoCompleteForLookupFunc = (serviceBaseUrl: string) => (
     .get<Array<unknown>>(url);
 };
 
-const autoCompleteForLookupWithParamFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const autoCompleteForLookupWithParamFunc = (http: HttpClient, serviceBaseUrl: string) => (
   lookupId: string,
   param: unknown
 ): Observable<Array<unknown>> => {
@@ -200,25 +176,31 @@ const autoCompleteForLookupWithParamFunc = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendLookupApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaLookupApi {
   return {
-    selectListForLookup: selectListForLookupFunc(serviceBaseUrl),
-    selectByIdForLookup: selectByIdForLookupFunc(serviceBaseUrl),
+    selectListForLookup: selectListForLookupFunc(httpClient, serviceBaseUrl),
+    selectByIdForLookup: selectByIdForLookupFunc(httpClient, serviceBaseUrl),
     selectListForLookupIdentifier: selectListForLookupIdentifierFunc(
+      httpClient, 
       serviceBaseUrl
     ),
     selectByIdForLookupIdentifier: selectByIdForLookupIdentifierFunc(
+      httpClient, 
       serviceBaseUrl
     ),
     selectListForLookupWithParam: selectListForLookupWithParamFunc(
+      httpClient, 
       serviceBaseUrl
     ),
     selectByIdForLookupWithParam: selectByIdForLookupWithParamFunc(
+      httpClient, 
       serviceBaseUrl
     ),
-    autoCompleteForLookup: autoCompleteForLookupFunc(serviceBaseUrl),
+    autoCompleteForLookup: autoCompleteForLookupFunc(httpClient, serviceBaseUrl),
     autoCompleteForLookupWithParam: autoCompleteForLookupWithParamFunc(
+      httpClient, 
       serviceBaseUrl
     ),
   } as MetaLookupApi;

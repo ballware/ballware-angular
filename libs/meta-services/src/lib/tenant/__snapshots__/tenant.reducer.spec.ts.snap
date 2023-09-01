@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`build navigation tree metadata with not allowed pages should generate tree without excluded pages and empty groups 1`] = `
+[
+  {
+    "expanded": false,
+    "icon": "folder",
+    "items": [
+      {
+        "icon": "file",
+        "path": "/page/page_1",
+        "text": "Page 1",
+        "type": "page",
+      },
+      {
+        "disabled": true,
+        "html": "<hr/>",
+        "type": "section",
+      },
+      {
+        "icon": "file",
+        "path": "/page/page_2",
+        "text": "Page 2",
+        "type": "page",
+      },
+    ],
+    "text": "allowed_group",
+    "type": "group",
+  },
+]
+`;
+
+exports[`build page list metadata with not allowed pages should generate page list without excluded pages 1`] = `
+[
+  {
+    "options": {
+      "caption": "Page 1",
+      "page": "allowed_page_1",
+      "url": "page_1",
+    },
+    "type": "page",
+  },
+  {
+    "options": {
+      "caption": "Page 2",
+      "page": "allowed_page_2",
+      "url": "page_2",
+    },
+    "type": "page",
+  },
+]
+`;

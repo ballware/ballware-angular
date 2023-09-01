@@ -10,13 +10,11 @@ import { additionalParamsToUrl } from './util';
   /**
    * Query list of business objects by search params
    *
-   * @param token Access token required for authentication
    * @param query Identifier of list query
    * @param params Parameter values for query
    * @returns Observable containing list of resulting business objects
    */
   query: (
-    http: HttpClient,
     query: string,
     params?: QueryParams
   ) => Observable<Array<CrudItem>>;
@@ -24,13 +22,11 @@ import { additionalParamsToUrl } from './util';
   /**
    * Query count of business objects by search params
    *
-   * @param token Access token required for authentication
    * @param query Identifier of list query
    * @param params Parameter values for query
    * @returns Observable containing count of resulting business objects
    */
-   count: (
-    http: HttpClient,
+  count: (
     query: string,
     params?: QueryParams
   ) => Observable<number>;
@@ -38,75 +34,67 @@ import { additionalParamsToUrl } from './util';
   /**
    * Fetch single business object by id
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of edit function
    * @param id Id of business object
    * @returns Observable containing instance of business object
    */
-  byId: (http: HttpClient, functionIdentifier: string, id: string) => Observable<CrudItem>;
+  byId: (functionIdentifier: string, id: string) => Observable<CrudItem>;
 
   /**
    * Fetch prepared new instance of business object
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of edit function
    * @param params Parameter values for initialization of business object
    * @returns Observable containing new generated instance of business object
    */
-  new: (http: HttpClient, functionIdentifier: string, params?: QueryParams) => Observable<CrudItem>;
+  new: (functionIdentifier: string, params?: QueryParams) => Observable<CrudItem>;
 
   /**
    * Save modified instance of business object
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of edit function
    * @param item Modified instance of business object
    * @returns Observable resolved when save operation has finished
    */
-  save: (http: HttpClient, functionIdentifier: string, item: CrudItem) => Observable<void>;
+  save: (functionIdentifier: string, item: CrudItem) => Observable<void>;
 
   /**
    * Save multiple modified instances of business object
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of edit function
    * @param items Modified instances of business object
    * @returns Observable resolved when save operation has finished
    */
-  saveBatch: (http: HttpClient, functionIdentifier: string, items: CrudItem[]) => Observable<void>;
+  saveBatch: (functionIdentifier: string, items: CrudItem[]) => Observable<void>;
 
   /**
    * Drop existing instance of business object
    *
-   * @param token Access token required for authentication
    * @param id Identifier of business object instance to drop
    * @returns Observable resolved when drop operation has finished
    */
-  drop: (http: HttpClient, id: string) => Observable<void>;
+  drop: (id: string) => Observable<void>;
 
   /**
    * Import business objects from uploaded file
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of import function
    * @param file Uploaded file containing objects to import
    * @returns Observable resolved when drop operation has finished
    */
-  importItems: (http: HttpClient, functionIdentifier: string, file: File) => Observable<void>;
+  importItems: (functionIdentifier: string, file: File) => Observable<void>;
 
   /**
    * Export business objects to download file
    *
-   * @param token Access token required for authentication
    * @param functionIdentifier Identifier of import function
    * @param ids Selected object ids to export
    * @returns Observable resolved when download is ready, containing download url
    */
-  exportItems: (http: HttpClient, functionIdentifier: string, ids: string[]) => Observable<string>;
+  exportItems: (functionIdentifier: string, ids: string[]) => Observable<string>;
 }
 
-const queryFunc = (baseUrl: string) => (
-  http: HttpClient,
+const queryFunc = (http: HttpClient, baseUrl: string) => (
   query: string,
   params?: QueryParams
 ): Observable<Array<CrudItem>> => {
@@ -120,8 +108,7 @@ const queryFunc = (baseUrl: string) => (
     .get<Array<CrudItem>>(url);
 };
 
-const countFunc = (baseUrl: string) => (
-  http: HttpClient,
+const countFunc = (http: HttpClient, baseUrl: string) => (
   query: string,
   params?: QueryParams
 ): Observable<number> => {
@@ -136,8 +123,7 @@ const countFunc = (baseUrl: string) => (
     .pipe(map(value => value?.count));
 };
 
-const byIdFunc = (baseUrl: string) => (
-  http: HttpClient,
+const byIdFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   id: string
 ): Observable<CrudItem> => {
@@ -147,8 +133,7 @@ const byIdFunc = (baseUrl: string) => (
     .get<CrudItem>(url);
 };
 
-const newFunc = (baseUrl: string) => (
-  http: HttpClient,
+const newFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   params?: QueryParams
 ): Observable<CrudItem> => {
@@ -162,8 +147,7 @@ const newFunc = (baseUrl: string) => (
     .get<CrudItem>(url);
 };
 
-const saveFunc = (baseUrl: string) => (
-  http: HttpClient,
+const saveFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   item: object
 ): Observable<void> => {
@@ -176,13 +160,13 @@ const saveFunc = (baseUrl: string) => (
   });
 };
 
-const saveBatchFunc = (baseUrl: string) => (
-  http: HttpClient,
+const saveBatchFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   items: object[]
 ): Observable<void> => {
   const url = `${baseUrl}/savebatch?identifier=${encodeURIComponent(functionIdentifier)}`;
 
+  
   return http
     .post<void>(url, JSON.stringify(items), {
       headers: {
@@ -191,8 +175,7 @@ const saveBatchFunc = (baseUrl: string) => (
     });
 };
 
-const removeFunc = (baseUrl: string) => (
-  http: HttpClient,
+const removeFunc = (http: HttpClient, baseUrl: string) => (
   id: string
 ): Observable<void> => {
   const url = `${baseUrl}/remove/${id}`;
@@ -201,8 +184,7 @@ const removeFunc = (baseUrl: string) => (
     .delete<void>(url);
 };
 
-const importFunc = (baseUrl: string) => (
-  http: HttpClient,
+const importFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   file: File
 ): Observable<void> => {
@@ -219,8 +201,7 @@ const importFunc = (baseUrl: string) => (
   });
 };
 
-const exportFunc = (baseUrl: string) => (
-  http: HttpClient,
+const exportFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   ids: string[]
 ): Observable<string> => {
@@ -242,17 +223,18 @@ const exportFunc = (baseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendGenericEntityApi(
+  httpClient: HttpClient, 
   entityBaseUrl: string
 ): MetaGenericEntityApi {
   return {
-    query: queryFunc(entityBaseUrl),
-    count: countFunc(entityBaseUrl),
-    byId: byIdFunc(entityBaseUrl),
-    new: newFunc(entityBaseUrl),
-    save: saveFunc(entityBaseUrl),
-    saveBatch: saveBatchFunc(entityBaseUrl),
-    drop: removeFunc(entityBaseUrl),
-    exportItems: exportFunc(entityBaseUrl),
-    importItems: importFunc(entityBaseUrl)
+    query: queryFunc(httpClient, entityBaseUrl),
+    count: countFunc(httpClient, entityBaseUrl),
+    byId: byIdFunc(httpClient, entityBaseUrl),
+    new: newFunc(httpClient, entityBaseUrl),
+    save: saveFunc(httpClient, entityBaseUrl),
+    saveBatch: saveBatchFunc(httpClient, entityBaseUrl),
+    drop: removeFunc(httpClient, entityBaseUrl),
+    exportItems: exportFunc(httpClient, entityBaseUrl),
+    importItems: importFunc(httpClient, entityBaseUrl)
   } as MetaGenericEntityApi;
 }

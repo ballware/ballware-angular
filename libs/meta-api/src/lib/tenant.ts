@@ -11,11 +11,10 @@ import { CompiledTenant, NavigationLayout } from '@ballware/meta-model';
  export interface MetaTenantApi {
   /**
    * Fetch metadatan for tenant
-   * @param token Access token required for authentication
    * @param tenant Identifier of tenant
    * @returns Observable containing compiled tenant metadata
    */
-  metadataForTenant: (http: HttpClient, tenant: string) => Observable<CompiledTenant>;
+  metadataForTenant: (tenant: string) => Observable<CompiledTenant>;
 }
 
 interface Tenant {
@@ -49,8 +48,7 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
   return compiledTenant;
 };
 
-const metadataFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   tenant: string
 ): Observable<CompiledTenant> => {
   const url = `${serviceBaseUrl}/api/tenant/metadatafortenant/${tenant}`;
@@ -66,9 +64,10 @@ const metadataFunc = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendTenantApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaTenantApi {
   return {
-    metadataForTenant: metadataFunc(serviceBaseUrl),
+    metadataForTenant: metadataFunc(httpClient, serviceBaseUrl),
   } as MetaTenantApi;
 }
