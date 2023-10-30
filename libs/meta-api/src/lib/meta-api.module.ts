@@ -5,6 +5,8 @@ import { MetaApiService } from './meta.api.service';
 import { ApiServiceFactory } from './api.service.factory';
 import { DefaultApiServiceFactory } from './implementation/default.api.service.factory';
 import { HttpClient } from '@angular/common/http';
+import { MetaAttachmentApiService } from './attachment';
+import { DefaultMetaAttachmentApiService } from './attachment/attachment.service';
 
 export * from './attachment';
 export * from './document';
@@ -49,6 +51,13 @@ export class MetaApiModule {
     return {
       ngModule: MetaApiModule,
       providers: [
+        {
+          provide: MetaAttachmentApiService,
+          useFactory: (httpClient: HttpClient) => new DefaultMetaAttachmentApiService(httpClient, config.metaServiceBaseUrl),
+          deps: [
+            HttpClient
+          ]
+        },
         {
           provide: ApiServiceFactory,
           useFactory: (httpClient: HttpClient) => new DefaultApiServiceFactory(httpClient, config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl),

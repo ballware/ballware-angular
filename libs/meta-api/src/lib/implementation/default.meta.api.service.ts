@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { MetaAttachmentApi, createMetaBackendAttachmentApi } from "../attachment";
+import { MetaAttachmentApi } from "../attachment";
 import { MetaDocumentApi, createMetaBackendDocumentApi } from "../document";
 import { MetaDocumentationApi, createMetaBackendDocumentationApi } from "../documentation";
 import { MetaEntityApi, createMetaBackendEntityApi } from "../entity";
@@ -16,7 +16,6 @@ export class DefaultMetaApiService implements MetaApiService {
     constructor(protected httpClient: HttpClient, protected metaBaseUrl: string, protected documentServiceBaseUrl: string) {
         this.metaEntityApi = createMetaBackendEntityApi(httpClient, metaBaseUrl);
         this.metaTenantApi = createMetaBackendTenantApi(httpClient, metaBaseUrl);
-        this.metaAttachmentApi = createMetaBackendAttachmentApi(httpClient, metaBaseUrl);
         this.metaStatisticApi = createMetaBackendStatisticApi(httpClient, metaBaseUrl);
         this.metaLookupApi = createMetaBackendLookupApi(httpClient, metaBaseUrl);
         this.metaProcessingstateApi = createMetaBackendProcessingstateApi(httpClient, metaBaseUrl);
@@ -29,7 +28,6 @@ export class DefaultMetaApiService implements MetaApiService {
 
     metaEntityApi: MetaEntityApi;
     metaTenantApi: MetaTenantApi;
-    metaAttachmentApi: MetaAttachmentApi;
     metaStatisticApi: MetaStatisticApi;
     metaLookupApi: MetaLookupApi;
     metaProcessingstateApi: MetaProcessingstateApi;
