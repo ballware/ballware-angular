@@ -1,7 +1,6 @@
-import { Component, HostBinding, OnInit, Provider } from '@angular/core';
+import { Component, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { combineLatest, takeUntil } from 'rxjs';
-import { PageService, LookupService, MetaServiceFactory, TenantService } from '@ballware/meta-services';
+import { LookupService, MetaServiceFactory, PageService, TenantService } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -21,8 +20,7 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider
   ]
 })
-export class PageComponent extends WithDestroy() {
-  @HostBinding('class') classes = 'd-block h-100 w-100';
+export class PageComponent extends WithDestroy() {  
 
   public readonly initialized$ = this.pageService.initialized$;
 

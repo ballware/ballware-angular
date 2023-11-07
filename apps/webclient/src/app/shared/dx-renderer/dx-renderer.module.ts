@@ -1,10 +1,10 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EditModule } from './edit/edit.module';
-import { PageModule } from './page/page.module';
+import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
-import { I18N_PROVIDERS } from './i18n/i18n';
 import { ApplicationModule } from './application/application.module';
+import { EditModule } from './edit/edit.module';
+import { I18N_PROVIDERS } from './i18n/i18n';
+import { PageModule } from './page/page.module';
 
 @NgModule({
   declarations: [
@@ -23,4 +23,4 @@ import { ApplicationModule } from './application/application.module';
     ApplicationModule
   ]
 })
-export class RenderFactoryModule { }
+export class RenderFactoryModule {}

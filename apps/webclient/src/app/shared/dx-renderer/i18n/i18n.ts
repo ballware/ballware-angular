@@ -1,13 +1,14 @@
-import * as languageEn from './en/translate.json';
-import * as languageDe from './de/translate.json';
-import { ResourceLanguage } from 'i18next';
-import { defaultInterpolationFormat, I18NextModule, I18NEXT_SERVICE, ITranslationService } from 'angular-i18next';
 import { APP_INITIALIZER, LOCALE_ID, Provider } from '@angular/core';
+import { I18NEXT_SERVICE, I18NextModule, ITranslationService, defaultInterpolationFormat } from 'angular-i18next';
+import { ResourceLanguage } from 'i18next';
+import * as languageDe from './de/translate.json';
+import * as languageEn from './en/translate.json';
 
 function appInit(i18next: ITranslationService) {
   return () => i18next
     .init({
       supportedLngs: ['en', 'de'],
+      lng: navigator.language,
       fallbackLng: 'en',
       resources: {
         en: languageEn as ResourceLanguage,

@@ -1,9 +1,11 @@
-<dx-tree-view
-    [dataSource]="items"
-    keyExpr="path"
-    selectionMode="single"
-    [focusStateEnabled]="false"
-    expandEvent="click"
-    (onItemClick)="onItemClick($event)"
-    width="250px">
-</dx-tree-view>>
+<div class=" h-100" style="width: 240px;">
+    <dx-tree-view
+        class="h-100"
+        [dataSource]="items"
+        keyExpr="path"
+        selectionMode="single"
+        [focusStateEnabled]="false"
+        expandEvent="click"
+        (onItemClick)="onItemClick($event)">
+    </dx-tree-view>>
+</div>

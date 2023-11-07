@@ -1,6 +1,6 @@
-<dx-drawer position="before" class="pt-2" height="calc(100vh - 60px)" [(opened)]="opened">
-  <ballware-application-navigation-menu *dxTemplate="let dataMenu of 'panel'">
-
-  </ballware-application-navigation-menu>
+<dx-drawer position="before" class="flex-fill overflow-hidden pt-2" [maxSize]="240" [(opened)]="opened">
+  <div *dxTemplate="let dataMenu of 'panel'">
+    <ballware-application-navigation-menu></ballware-application-navigation-menu>
+  </div>  
   <ng-content></ng-content>
 </dx-drawer>
