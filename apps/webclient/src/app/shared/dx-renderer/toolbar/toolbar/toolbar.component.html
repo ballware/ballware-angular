@@ -1,8 +1,5 @@
 <dx-toolbar>
-  <dxi-item location="before" locateInMenu="never" widget="dxButton">
-    <div *dxTemplate>
-      <div class="toolbar-title">{{ title$ | async }}</div>
-    </div>
+  <dxi-item location="before" locateInMenu="never" [text]="title$ | async">    
   </dxi-item>
   <dxi-item *ngFor="let toolbarItem of toolbarItems" location="after" locateInMenu="auto" [widget]="toolbarItem.widget" [options]="toolbarItem.options">
     <div *dxTemplate="let item of 'toolbarItem'">
@@ -14,5 +11,5 @@
       <ballware-toolbar-button *ngIf="toolbarItem.item.type === 'button'" [item]="toolbarItem.item"></ballware-toolbar-button>
     </div>
   </dxi-item>
-  <dxi-item *ngIf="showDocumentationButton" location="after" widget="dxButton" [options]="{ icon: 'help', onClick: onDocumentationClicked }"></dxi-item>
+  <dxi-item *ngIf="showDocumentationButton" location="after" widget="dxButton" [options]="{ icon: 'bi bi-question-circle', onClick: onDocumentationClicked }"></dxi-item>
 </dx-toolbar>

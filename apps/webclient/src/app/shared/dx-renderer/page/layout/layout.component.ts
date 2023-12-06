@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { PageService } from '@ballware/meta-services';
+import { Component, HostBinding } from '@angular/core';
 import { PageLayout } from '@ballware/meta-model';
+import { PageService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -10,6 +10,7 @@ import { WithDestroy } from '../../utils/withdestroy';
   styleUrls: ['./layout.component.scss']
 })
 export class PageLayoutComponent extends WithDestroy() {
+  @HostBinding('class') classes = 'flex-fill overflow-hidden row row-cols-xs-1 row-cols-lg-12';
 
   public layout?: PageLayout;
 

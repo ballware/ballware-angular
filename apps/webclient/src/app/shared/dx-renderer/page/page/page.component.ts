@@ -1,4 +1,4 @@
-import { Component, Provider } from '@angular/core';
+import { Component, HostBinding, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LookupService, MetaServiceFactory, PageService, TenantService } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -21,6 +21,7 @@ import { WithDestroy } from '../../utils/withdestroy';
   ]
 })
 export class PageComponent extends WithDestroy() {  
+  @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
 

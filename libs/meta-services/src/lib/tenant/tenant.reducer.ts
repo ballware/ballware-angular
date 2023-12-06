@@ -1,8 +1,8 @@
-import { createReducer, on } from "@ngrx/store";
-import { TenantState } from "./tenant.state";
-import { tenantFetched } from "./tenant.actions";
 import { NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
+import { createReducer, on } from "@ngrx/store";
 import { NavigationTreeItem } from "../tenant.service";
+import { tenantFetched } from "./tenant.actions";
+import { TenantState } from "./tenant.state";
 
 export const initialState = {
     
@@ -22,14 +22,15 @@ export const buildNavigationTree = (hasRight: (right: string) => boolean, naviga
             mappedItems.push({
               type: 'page',
               text: item.options?.caption,
-              icon: item.options?.icon ?? 'file',
-              path: `/page/${item.options.url}`
+              icon: item.options?.icon,
+              url: `/page/${item.options.url}`
             });
           }
         } else if (item.type === 'section' && item.items) {
           const subItems = collectAllowedItems(item.items);
-  
+            
           if (subItems.length > 0) {
+            /*
             if (mappedItems.length > 0) {
               mappedItems.push({
                 type: 'section',
@@ -37,9 +38,10 @@ export const buildNavigationTree = (hasRight: (right: string) => boolean, naviga
                 disabled: true
               });
             }
+            */
   
             mappedItems.push(...subItems);
-          }
+          }          
         } else if (item.type === 'group' && item.items) {
           const subItems = collectAllowedItems(item.items);
   
@@ -48,7 +50,7 @@ export const buildNavigationTree = (hasRight: (right: string) => boolean, naviga
               expanded: false,
               type: 'group',
               text: item.options?.caption,
-              icon: 'folder',
+              icon: item.options?.icon,
               items: subItems
             });
           }

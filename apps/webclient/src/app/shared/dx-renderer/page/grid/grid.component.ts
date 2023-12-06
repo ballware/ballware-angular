@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EntityGridOptions, GridLayout, PageLayoutItem } from '@ballware/meta-model';
 import { MetaService } from '@ballware/meta-services';
-import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -39,7 +39,7 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
   ngOnInit(): void {
     this._storageIdentifier$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.identifier);
     this._layoutIdentifier$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.layout ?? 'primary');
-    this._height$.next(this.layoutItem?.options?.height ?? '100%');
+    this._height$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.height ?? '100%');
   }
 }
 

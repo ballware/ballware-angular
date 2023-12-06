@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { PageLayoutItem } from '@ballware/meta-model';
 import { PageLayoutCrudcontainerComponent } from '../crudcontainer/crudcontainer.component';
 import { PageLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
@@ -71,13 +71,15 @@ export class PageLayoutItemComponent implements AfterViewInit {
     }
   }
 
+  @HostBinding('style')
   get styles(): object {
     return { 'height': this.layoutItem?.options?.height ?? '100%' };
   }
 
+  @HostBinding('class')
   get classes(): string {
     const cols = ((this.colSpan ?? 1) / (this.colCount ?? 1)) * 12;
 
-    return `col-xs-12 col-sm-${cols}`;
+    return `h-100 col-xs-1 col-lg-${cols}`;
   }
 }

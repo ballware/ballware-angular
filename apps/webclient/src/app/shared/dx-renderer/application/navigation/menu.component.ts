@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { NavigationTreeItem, TenantService } from '@ballware/meta-services';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
+import { cloneDeep } from 'lodash';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
-import { cloneDeep } from 'lodash';
 
 @Component({
   selector: 'ballware-application-navigation-menu',
@@ -13,6 +13,8 @@ import { cloneDeep } from 'lodash';
   providers: []
 })
 export class ApplicationNavigationMenuComponent extends WithDestroy() {
+  @HostBinding('class') classes = 'h-100';
+
   @Input() opened!: boolean;
 
   @Output() openedChange = new EventEmitter<boolean>();
@@ -30,13 +32,13 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
   }
 
   onItemClick(event: ItemClickEvent) {
-    const path = (event.itemData as any).path;
+    const url = (event.itemData as any).url;
 
-    if (path) {
-      this.router.navigate([path]);
-    } else {
-      event.event?.preventDefault();
-    }
+    event.event?.preventDefault();
+
+    if (url) {
+      this.router.navigate([url]);
+    }    
   }
 }
 

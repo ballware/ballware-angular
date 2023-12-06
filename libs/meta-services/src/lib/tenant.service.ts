@@ -1,6 +1,6 @@
+import { CompiledTenant, NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
 import { Observable } from "rxjs";
 import { WithDestroy } from "./withdestroy";
-import { CompiledTenant, NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
 
 export interface NavigationTreeItem {
     type: 'page'|'section'|'group';
@@ -8,7 +8,7 @@ export interface NavigationTreeItem {
     disabled?: boolean;
     text?: string;
     icon?: string;
-    path?: string;
+    url?: string;
     html?: string;
     items?: NavigationTreeItem[];
 }
