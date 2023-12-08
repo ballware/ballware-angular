@@ -4,24 +4,19 @@ exports[`build navigation tree metadata with not allowed pages should generate t
 [
   {
     "expanded": false,
-    "icon": "folder",
+    "icon": undefined,
     "items": [
       {
-        "icon": "file",
-        "path": "/page/page_1",
+        "icon": undefined,
         "text": "Page 1",
         "type": "page",
+        "url": "/page/page_1",
       },
       {
-        "disabled": true,
-        "html": "<hr/>",
-        "type": "section",
-      },
-      {
-        "icon": "file",
-        "path": "/page/page_2",
+        "icon": undefined,
         "text": "Page 2",
         "type": "page",
+        "url": "/page/page_2",
       },
     ],
     "text": "allowed_group",
