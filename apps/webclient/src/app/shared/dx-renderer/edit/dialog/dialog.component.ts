@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { I18NextPipe } from 'angular-i18next';
 import { EditLayout } from '@ballware/meta-model';
-import { EditService, EditModes } from '@ballware/meta-services';
+import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { I18NextPipe } from 'angular-i18next';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -9,7 +9,11 @@ import { WithDestroy } from '../../utils/withdestroy';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
   providers: [
-    { provide: EditService, useClass: EditService } as Provider
+    { 
+      provide: EditService, 
+      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
+      deps: [MetaServiceFactory, MetaService]  
+    } as Provider
   ]
 })
 export class CrudDialogComponent extends WithDestroy() implements OnInit {

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { combineLatest, takeUntil } from 'rxjs';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef } from '@ballware/meta-services';
 import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -45,7 +45,7 @@ export class EditLayoutStaticmultilookupComponent extends WithRequired(WithReado
               .pipe(takeUntil(this.destroy$))
               .subscribe(([getValue]) => {
                 if (getValue) {
-                  this.dataSource = createArrayDatasource(this.layoutItem?.options?.items ?? (this.layoutItem?.options?.itemsMember ? getValue(this.layoutItem?.options?.itemsMember) as any[] : []));
+                  this.dataSource = createArrayDatasource(this.layoutItem?.options?.items ?? (this.layoutItem?.options?.itemsMember ? getValue({ dataMember: this.layoutItem?.options?.itemsMember }) as any[] : []));
                 }
               });
           }

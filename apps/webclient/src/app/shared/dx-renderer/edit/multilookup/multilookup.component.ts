@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { combineLatest, takeUntil } from 'rxjs';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
 import { createArrayDatasource, createLookupDataSource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -53,7 +53,7 @@ export class EditLayoutMultilookupComponent extends WithRequired(WithReadonly(Wi
 
                   if (myLookup) {
                     if (lookupParam && myLookup as LookupCreator) {
-                      this.lookup = (myLookup as LookupCreator)(getValue(lookupParam) as string|string[]);
+                      this.lookup = (myLookup as LookupCreator)(getValue({ dataMember: lookupParam }) as string|string[]);
                     } else if (myLookup as LookupDescriptor) {
                       this.lookup = myLookup as LookupDescriptor;
                     }

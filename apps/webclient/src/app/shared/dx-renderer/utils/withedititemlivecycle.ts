@@ -1,7 +1,7 @@
+import { EditLayoutItem } from "@ballware/meta-model";
+import { EditItemRef, EditService } from "@ballware/meta-services";
 import { cloneDeep } from "lodash";
 import { BehaviorSubject, combineLatest, map, takeUntil } from "rxjs";
-import { EditLayoutItem } from "@ballware/meta-model";
-import { EditService, EditItemRef } from "@ballware/meta-services";
 import { HasDestroy } from "./hasdestroy";
 import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
@@ -19,7 +19,7 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
               if (editorPreparing && layoutItem.options?.dataMember) {
                 const preparedLayoutItem = cloneDeep(layoutItem);
 
-                editorPreparing(layoutItem.options.dataMember, preparedLayoutItem);
+                editorPreparing({ dataMember: layoutItem.options.dataMember, layoutItem: preparedLayoutItem });
 
                 return preparedLayoutItem;
               }
@@ -33,7 +33,7 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
           .pipe(takeUntil(this.destroy$))
           .subscribe(([layoutItem, editorInitialized]) => {
             if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
-              editorInitialized(layoutItem.options.dataMember, ref);
+              editorInitialized({ dataMember: layoutItem.options.dataMember, ref });
             }
           });
       }
