@@ -27,7 +27,8 @@
       "outputs": ["{workspaceRoot}/coverage/libs/meta-services"],
       "options": {
         "jestConfig": "libs/meta-services/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "coverageReporters": ["lcov"]
       }
     },
     "lint": {

@@ -1,24 +1,63 @@
-import { TestBed } from '@angular/core/testing'
-import { HttpClientTestingModule, HttpTestingController } from  '@angular/common/http/testing';
+import { TestBed, fakeAsync } from '@angular/core/testing';
+import { of } from 'rxjs';
+
+import { Provider } from '@angular/core';
+import { MetaApiService } from '@ballware/meta-api';
+import { CompiledTenant } from '@ballware/meta-model';
+import { identityUserLogin } from '../identity/identity.actions';
 import { fetchTenant } from './tenant.effects';
-import { Actions } from '@ngrx/effects';
-import { inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 
 describe('TenantEffects', () => {
-    beforeEach(() => {        
-        TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule]
+    
+    const metaApiServiceMock = {} as MetaApiService;
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({            
+            providers: [
+                { 
+                    provide: MetaApiService,
+                    useValue: metaApiServiceMock
+                } as Provider
+            ]
         })
     });
 
-    it('should resolve fetched tenant', () => {
-        const actions$ = new Actions();
+    it('should resolve fetched tenant', fakeAsync(() => {
+       
+        const mockedUser = {
+            refreshToken: 'REFRESH_TOKEN',
+            accessToken: 'ACCESS_TOKEN',
+            accessTokenExpiration: new Date(),
+            userName: 'USER',
+            currentUser: {
+                mail: 'test@mock'
+            },
+            tenant: 'TENANT'
+        };
 
-        const httpClient = TestBed.inject(HttpClient);
+        const mockedTenant = {
+            id: 'TENANT'
+        } as CompiledTenant;
+
+        const actions$ = of(identityUserLogin(mockedUser));
+
+        metaApiServiceMock.metaTenantApi =  {
+            metadataForTenant: jest.fn().mockReturnValue(of(mockedTenant))
+        };
         
-        //const 
+        const callbackSpy = jest.fn();
 
-        //fetchTenant(actions$, httpClient, )
-    });
+        TestBed.runInInjectionContext(() => {
+            
+            fetchTenant(actions$, undefined).subscribe((user) => {
+                expect(user.user).toEqual(mockedUser.currentUser);
+                expect(user.tenant).toEqual(mockedTenant);
+
+                callbackSpy();                
+            });
+
+            expect(metaApiServiceMock.metaTenantApi.metadataForTenant).toHaveBeenCalledTimes(1);
+            expect(callbackSpy).toHaveBeenCalledTimes(1);
+        });
+    }));
 });
