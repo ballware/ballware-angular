@@ -17,6 +17,8 @@ import { ApplicationNavigationDrawerComponent } from './navigation/drawer.compon
 import { ApplicationNavigationMenuComponent } from './navigation/menu.component';
 import { ApplicationNotificationComponent } from './notification/notification.component';
 
+export { ApplicationComponent } from './application/application.component';
+
 @NgModule({
   declarations: [
     ApplicationComponent,

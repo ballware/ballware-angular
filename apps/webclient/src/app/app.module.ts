@@ -9,7 +9,7 @@ import { environment } from '../environments/environment';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app.routing.module';
 import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
-import { RenderFactoryModule } from './shared/dx-renderer/dx-renderer.module';
+import { RenderFactoryModule } from '@ballware/dx-renderer';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';

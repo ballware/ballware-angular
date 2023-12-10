@@ -6,6 +6,8 @@ import { EditModule } from './edit/edit.module';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PageModule } from './page/page.module';
 
+export * from './application/application.module';
+
 @NgModule({
   declarations: [
   ],
