@@ -5,8 +5,9 @@ in
 
 pkgs.mkShell {
     packages = with pkgs; [
-        git
+        git        
         nodejs
+        gh
     ];
 
     shellHook = ''
