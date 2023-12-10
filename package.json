@@ -99,5 +99,6 @@
     "typemoq": "^2.1.0",
     "typescript": "5.1.6",
     "webpack": "^5.64.0"
-  }
+  },
+  "packageManager": "yarn@4.0.2"
 }
