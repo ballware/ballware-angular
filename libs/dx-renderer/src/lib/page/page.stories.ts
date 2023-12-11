@@ -1,6 +1,6 @@
 import { APP_INITIALIZER, Component, LOCALE_ID, OnChanges, Provider } from "@angular/core";
 import { CrudContainerOptions, PageLayout, PageLayoutItem, PageLayoutItemOptions, QueryParams, TabItemOptions } from "@ballware/meta-model";
-import { AuthService, MetaServiceFactory, PageService, SettingsService, TenantService, MetaService, LookupService, CrudService } from "@ballware/meta-services";
+import { IdentityService, MetaServiceFactory, PageService, SettingsService, TenantService, MetaService, LookupService, CrudService } from "@ballware/meta-services";
 import { Meta, moduleMetadata, Story } from "@storybook/angular";
 import { I18NextModule, I18NEXT_SERVICE, ITranslationService } from 'angular-i18next';
 import { BehaviorSubject, of } from "rxjs";
@@ -95,7 +95,7 @@ const crudServiceMock = TypeMoq.Mock.ofType<CrudService>(undefined, TypeMoq.Mock
 const metaServiceFactoryMock = TypeMoq.Mock.ofType<MetaServiceFactory>(undefined, TypeMoq.MockBehavior.Strict);
 
 metaServiceFactoryMock.setup(x => x.createLookupService()).returns(() => lookupServiceMock.object);
-metaServiceFactoryMock.setup(x => x.createMetaService(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => metaServiceMock.object);
+metaServiceFactoryMock.setup(x => x.createMetaService(TypeMoq.It.isAny())).returns(() => metaServiceMock.object);
 metaServiceFactoryMock.setup(x => x.createCrudService(TypeMoq.It.isAny())).returns(() => crudServiceMock.object);
 
 metaServiceMock.setup(x => x.headParams$).returns(() => of({}));
@@ -139,7 +139,7 @@ export default {
           useValue: metaServiceFactoryMock.object
         } as Provider,
         {
-          provide: AuthService, useValue: {}
+          provide: IdentityService, useValue: {}
         } as Provider,
         {
           provide: TenantService, useValue: {}
