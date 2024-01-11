@@ -1,6 +1,6 @@
 import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
-import { isEqual } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import { combineLatest, distinctUntilChanged, map, tap } from "rxjs";
 import { getByPath, setByPath } from "../databinding";
 import { EditServiceApi } from "../edit.service";
@@ -11,6 +11,8 @@ import { EditState } from "./edit.state";
 
 export class EditStore extends ComponentStore<EditState> implements EditServiceApi {
 
+    private syncedEditItems: Record<string, EditItemRef|undefined> = {}; 
+
     constructor(private metaService: MetaService) {
         super({
             editItems: {},
@@ -19,6 +21,9 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
 
         this.state$
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+          .pipe(tap((state) => {
+            this.syncedEditItems = state.editItems;
+          }))
           .subscribe((state) => {
               console.debug('EditStore state update');
               console.debug(state);
@@ -67,14 +72,21 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
     readonly editorInitialized$ = combineLatest([this.mode$, this.item$, this.metaService.editorInitialized$])            
             .pipe(map(([mode, item, editorInitialized]) => 
                 (mode && item && editorInitialized) ? (request: { dataMember: string, ref: EditItemRef }) => {
-                    this.updater((state, request: { dataMember: string; ref: EditItemRef; }) => ({
-                        ...state,
-                        editItems: Object.assign({ ...state.editItems }, ({} as Record<string, unknown>)[request.dataMember] = request.ref)
-                    }))(request);
+                    this.updater((state, request: { dataMember: string; ref: EditItemRef; }) => {
+
+                        const editItems = cloneDeep(state.editItems) ?? {};
+
+                        editItems[request.dataMember] = request.ref;
+                        
+                        return {
+                            ...state,
+                            editItems
+                        };
+                    })(request);
 
                     editorInitialized(mode, item, {
-                        getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-                        setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+                        getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
+                        setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
                     } as EditUtil, request.dataMember);
                 } : undefined)
             );
@@ -82,8 +94,8 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
     readonly editorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
             .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
                 ? (request: { dataMember: string; ruleIdentifier: string; value: ValueType; }) => editorValidating(mode, item, {
-                    getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-                    setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+                    getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
+                    setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
                 } as EditUtil, request.dataMember, request.value, request.ruleIdentifier)
                 : () => true)
             );    
@@ -95,8 +107,8 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
 
                     if (notify) {
                         editorValueChanged(mode, item, {
-                            getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-                            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+                            getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
+                            setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
                         } as EditUtil, dataMember, value);
                     }
                 } : undefined            
@@ -106,8 +118,8 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
     readonly editorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])
         .pipe(map(([mode, item, editorEntered]) => (mode && item && editorEntered)
             ? ({ dataMember }: { dataMember: string; }) => editorEntered(mode, item, {
-                getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-                setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+                getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
+                setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
             } as EditUtil, dataMember)
             : undefined)
         );
@@ -115,8 +127,8 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
     readonly editorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
         .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
             ? ({ dataMember, event }: { dataMember: string; event: string; }) => editorEvent(mode, item, {
-                getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-                setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+                getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
+                setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
             } as EditUtil, dataMember, event)
             : undefined)
         );
@@ -131,4 +143,12 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
 
 
     readonly validate = () => this.select(state => state.validator ? state.validator() : true);
+
+    private readonly getSyncedEditor = (request: { dataMember: string }) => this.syncedEditItems[request.dataMember];
+
+    private readonly getSyncedEditorOption = (request: { dataMember: string; option: string; }) =>
+        this.getSyncedEditor({ dataMember: request.dataMember })?.getOption(request.option);
+
+    private readonly setSyncedEditorOption = (request: { dataMember: string; option: string; value: unknown; }) =>
+        this.getSyncedEditor({ dataMember: request.dataMember })?.setOption(request.option, request.value);
 }
