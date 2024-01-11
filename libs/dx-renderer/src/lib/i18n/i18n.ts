@@ -15,7 +15,7 @@ function appInit(i18next: ITranslationService) {
         de: languageDe as ResourceLanguage
       },
       defaultNS: 'translations',
-      debug: true,
+      debug: false,
       returnEmptyString: false,
       ns: [
         'translations'
