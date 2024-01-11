@@ -1,5 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { OpenedStateMode } from 'devextreme/ui/drawer';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -16,7 +17,7 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
 
   @Output() openedChange = new EventEmitter<boolean>();
 
-  openStateMode$: Observable<string>;
+  openStateMode$: Observable<OpenedStateMode>;
 
   constructor(private responsiveService: ResponsiveService) {
     super();

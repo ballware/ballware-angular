@@ -1,7 +1,7 @@
 <ballware-edit-fieldset *ngIf="layoutItem" [layoutItem]="layoutItem">
   <dx-date-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
     [name]="layoutItem.options.dataMember"
-    [type]="layoutItem.type"
+    [type]="type"
     [displayFormat]="displayFormat"
     [(value)]="value"
     [readOnly]="(readonly$ | async) ?? false"

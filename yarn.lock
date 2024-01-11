@@ -3696,14 +3696,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devextreme/runtime@npm:3.0.11":
-  version: 3.0.11
-  resolution: "@devextreme/runtime@npm:3.0.11"
+"@devextreme/runtime@npm:3.0.12":
+  version: 3.0.12
+  resolution: "@devextreme/runtime@npm:3.0.12"
   dependencies:
     inferno: "npm:^7.4.6"
     inferno-create-element: "npm:^7.4.6"
     inferno-hydrate: "npm:^7.4.6"
-  checksum: 487f43a083fd1bbfbd7575922bc786caa935c54ab0a488495a88eca8803c7325611280ea3e4d14c11e599ef2f97a57e875dc7145357db1e430869f6da8303fd5
+  checksum: 27dc00726c2e55ae6dabb59e40629e208247eb265c021346ed7d7223fa16a1279e6c7be9839054be43154426378cf9cc8651e0df37b7b6bc2f1124fa521bd801
   languageName: node
   linkType: hard
 
@@ -10203,11 +10203,11 @@ __metadata:
     "@typescript-eslint/parser": "npm:5.60.1"
     angular-i18next: "npm:^16.0.0"
     angular-oauth2-oidc: "npm:^15.0.1"
-    bootstrap: "npm:^5.2.3"
-    bootstrap-icons: "npm:^1.10.2"
+    bootstrap: "npm:^5.1.1"
+    bootstrap-icons: "npm:^1.4.0"
     cypress: "npm:^12.2.0"
-    devextreme: "npm:^23.1.4"
-    devextreme-angular: "npm:^23.1.4"
+    devextreme: "npm:^23.1.6"
+    devextreme-angular: "npm:^23.1.6"
     eslint: "npm:~8.15.0"
     eslint-config-prettier: "npm:8.1.0"
     eslint-plugin-cypress: "npm:^2.10.3"
@@ -10389,19 +10389,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bootstrap-icons@npm:^1.10.2":
-  version: 1.10.2
-  resolution: "bootstrap-icons@npm:1.10.2"
-  checksum: 58afb8527dac6ecadc4f1b151a7a2c46330c8dffa0a14b4dabb51168e85d711139cb47de9dd3e5aa5318153f215f7727f45fea4ba4293064cd1137deb45d3e56
+"bootstrap-icons@npm:^1.4.0":
+  version: 1.11.3
+  resolution: "bootstrap-icons@npm:1.11.3"
+  checksum: 37eefd418c6bbbb304bdff0f2ed527f82c3c6f331d3e3a7c4aa8bbdbaf7118bb86725b024f85e7d738c613d48c7353cd81c09e58e9d8d34c5633960fdec8410b
   languageName: node
   linkType: hard
 
-"bootstrap@npm:^5.2.3":
-  version: 5.2.3
-  resolution: "bootstrap@npm:5.2.3"
+"bootstrap@npm:^5.1.1":
+  version: 5.3.2
+  resolution: "bootstrap@npm:5.3.2"
   peerDependencies:
-    "@popperjs/core": ^2.11.6
-  checksum: 3db5d1e1047fb17ee5b62d830597424179f9cffd2139a89e932ee6bb66b7ec5bdb519028ec07d633bb1926a7fea6c4b5625846478da272f6aacd74d4920dbeb9
+    "@popperjs/core": ^2.11.8
+  checksum: 0c108d90cee90247db571f07a0fc3718beda58eed2ffed3f2f8ccff66b25a349830dfbeb5e55e6e6fe484fad96c4edb19cb4c5fa5a68b771b2e0f3c400e42dda
   languageName: node
   linkType: hard
 
@@ -12322,40 +12322,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devexpress-diagram@npm:2.1.75":
-  version: 2.1.75
-  resolution: "devexpress-diagram@npm:2.1.75"
+"devexpress-diagram@npm:2.2.2":
+  version: 2.2.2
+  resolution: "devexpress-diagram@npm:2.2.2"
   dependencies:
     "@devexpress/utils": "npm:1.3.16"
     es6-object-assign: "npm:^1.1.0"
-  checksum: 4613fdfff238d2095002253b9db6082dc8be2cfa0a51b3f18771ff6e048d8e8a80a99e03b9b31ca9580dd73929a84eb1d1844e6f05b9b291a38976ef7ca0d41b
+  checksum: 464463e7b7d3ad5749e7fc1a1e5fbf6d87d9911923039969d9b8e78245c663ba98c3e26e613f3b595efbf804f07ca4ff6e8c50864c4122ca020ee43ad7619eb6
   languageName: node
   linkType: hard
 
-"devexpress-gantt@npm:4.1.47":
-  version: 4.1.47
-  resolution: "devexpress-gantt@npm:4.1.47"
+"devexpress-gantt@npm:4.1.50":
+  version: 4.1.50
+  resolution: "devexpress-gantt@npm:4.1.50"
   dependencies:
     "@devexpress/utils": "npm:1.4.1"
     tslib: "npm:2.3.1"
-  checksum: 85acdb8d7541195ad6cfbb8fbd1996bf894c487909bfc4be1aeb4ef6dcc5db0c041915dc469510e01dd486afced4b88030add7e5c6c1ff32c10dc2e41cbe1c26
+  checksum: 3d9267d105d240a01170e3cfe604d94e0d7b625337ad212d2fb53cb929a04e0ed5e47469a4bbc14c93d69d27098d6eef306ffc11a21264f864b21aaf077c756f
   languageName: node
   linkType: hard
 
-"devextreme-angular@npm:^23.1.4":
-  version: 23.1.4
-  resolution: "devextreme-angular@npm:23.1.4"
+"devextreme-angular@npm:^23.1.6":
+  version: 23.2.3
+  resolution: "devextreme-angular@npm:23.2.3"
   dependencies:
     "@angular-devkit/schematics": "npm:^12.2.18"
-    devextreme-schematics: "npm:latest"
+    devextreme-schematics: "npm:*"
     inferno-server: "npm:7.4.11"
     tslib: "npm:^2.2.0"
   peerDependencies:
     "@angular/common": ">12.0.0"
     "@angular/core": ">12.0.0"
     "@angular/forms": ">12.0.0"
-    devextreme: ~23.1.4
-  checksum: b4c6f7517e7c3073a9d145c1a7f1c6f857de4ed952fa12dedd75b72930321c44242bfa1ecea28d08857285b5b5933cba0fe519639b9762075eea12766d2379a7
+    devextreme: ~23.2.3
+  checksum: d70561c978399983cbdb0cab27dad6fdd3cc7f73689c37233e5e07e30078227d645afb860b449df8f71311efaa946331f6f88c293a6775b9496a5716d10fe1a5
   languageName: node
   linkType: hard
 
@@ -12374,14 +12374,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devextreme-schematics@npm:latest":
-  version: 1.6.4
-  resolution: "devextreme-schematics@npm:1.6.4"
+"devextreme-schematics@npm:*":
+  version: 1.6.5
+  resolution: "devextreme-schematics@npm:1.6.5"
   dependencies:
     "@angular-devkit/core": "npm:^12.2.18"
     "@angular-devkit/schematics": "npm:^12.2.18"
     "@schematics/angular": "npm:^12.2.18"
-  checksum: 53685676e1f09426b0b23543e9a8582e08d13c38f75b82d7efa7aa487b8fe00fff5baa36a692d120f296458e5fc990f74ba73a58d05089cd6c112eaed04c639d
+  checksum: 2d0270491705dd2fe94447cfc8bbe95d2fa4a26172953a51c1b51d9c40628e51df142379e704beaf2834926e93a4c9fd79ce2502a407b264a3c5016168ac5fc7
   languageName: node
   linkType: hard
 
@@ -12396,14 +12396,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devextreme@npm:^23.1.4":
-  version: 23.1.4
-  resolution: "devextreme@npm:23.1.4"
+"devextreme@npm:^23.1.6":
+  version: 23.2.3
+  resolution: "devextreme@npm:23.2.3"
   dependencies:
     "@babel/runtime": "npm:^7.12.1"
-    "@devextreme/runtime": "npm:3.0.11"
-    devexpress-diagram: "npm:2.1.75"
-    devexpress-gantt: "npm:4.1.47"
+    "@devextreme/runtime": "npm:3.0.12"
+    devexpress-diagram: "npm:2.2.2"
+    devexpress-gantt: "npm:4.1.50"
     devextreme-quill: "npm:1.6.2"
     devextreme-showdown: "npm:^1.0.1"
     inferno: "npm:^7.4.9"
@@ -12414,7 +12414,7 @@ __metadata:
   bin:
     devextreme-bundler: bin/bundler.js
     devextreme-bundler-init: bin/bundler-init.js
-  checksum: 05a4701754583b790ba9ec06b362073538a62d14805d4dc4ad9f14c77c45749596588500143bd8f13df2dc89414f4842f637aa74829ad5b2f7bedce9b5a70e5e
+  checksum: de99a7c8aadc13cef80daffdbc64fee9b26db6112a9afb7fdf65643806abb35fee2141eb3ea5f6eb324808203ecba1bec6652cc453cf04479cbe4a62b7fab1c5
   languageName: node
   linkType: hard
 

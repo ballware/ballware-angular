@@ -1,8 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { I18NextPipe } from 'angular-i18next';
-import { takeUntil } from 'rxjs';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef } from '@ballware/meta-services';
+import { EditItemRef, EditService } from '@ballware/meta-services';
+import { I18NextPipe } from 'angular-i18next';
+import { DateType } from 'devextreme/ui/date_box';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -40,6 +41,10 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithReadonly(WithV
           }
         });
     }
+  }
+
+  public get type(): DateType {
+    return this.layoutItem?.type as DateType;
   }
 
   public get displayFormat(): string {
