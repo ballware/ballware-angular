@@ -1,10 +1,9 @@
-<ballware-edit-fieldset *ngIf="layoutItem" [layoutItem]="layoutItem">
-  <dx-text-area *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
-    [name]="layoutItem.options.dataMember"
-    [(value)]="value"
-    [readOnly]="(readonly$ | async) ?? false">
-    <dx-validator>
-      <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
-    </dx-validator>
-  </dx-text-area>
-</ballware-edit-fieldset>
+<dx-text-area *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  [label]="layoutItem.options.caption ?? ''"
+  [name]="layoutItem.options.dataMember"
+  [(value)]="value"
+  [readOnly]="(readonly$ | async) ?? false">
+  <dx-validator>
+    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+  </dx-validator>
+</dx-text-area>

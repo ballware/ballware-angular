@@ -1,8 +1,8 @@
-<div class="dx-fieldset" [style.height]="layoutItem.options?.height">
+<div class="dx-field" [style.height]="layoutItem.options?.height">
   <div class="dx-field-label">
     {{layoutItem.options?.caption}}
   </div>
-  <div class="dx-field-value w-100" [style.height]="layoutItem.options?.height">
+  <div class="dx-field-value flex-fill" [style.height]="layoutItem.options?.height">
     <ng-content></ng-content>
   </div>
 </div>

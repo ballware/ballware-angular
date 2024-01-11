@@ -14,8 +14,6 @@ export class EditLayoutTabsComponent extends WithDestroy() implements OnChanges 
 
   @Input() layoutItem!: EditLayoutItem;
 
-  get showNavButtons() { return true; }
-
   get panels() { return this._panels; }
   get height() { return this._height; }
 
