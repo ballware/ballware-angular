@@ -1,4 +1,4 @@
-<ballware-edit-fieldset [layoutItem]="layoutItem">
+<ballware-edit-fieldset *ngIf="layoutItem" [layoutItem]="layoutItem">
   <dx-select-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
     [name]="layoutItem.options.dataMember"
     [(value)]="value"

@@ -8,5 +8,5 @@ import { EditLayoutItem } from '@ballware/meta-model';
 })
 export class EditLayoutFieldsetComponent {
 
-  @Input() layoutItem?: EditLayoutItem;
+  @Input() layoutItem!: EditLayoutItem;
 }

@@ -1,4 +1,4 @@
-<dx-tab-panel [showNavButtons]="true" [style]="styles" [items]="panels" [deferRendering]="false">
+<dx-tab-panel [showNavButtons]="true" [style.height]="height" [items]="panels" [deferRendering]="false">
     <div *dxTemplate="let item of 'title'">
         <span class="dx-tab-text">{{item.options.caption}}</span>
     </div>

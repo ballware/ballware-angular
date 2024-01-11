@@ -28,6 +28,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutTabsComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'crudcontainer': {
@@ -35,6 +36,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutCrudcontainerComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'grid': {
@@ -42,6 +44,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutGridComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'map': {
@@ -49,6 +52,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutMapComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
           /*
@@ -57,6 +61,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutStatisticComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
           */
@@ -65,6 +70,7 @@ export class PageLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(PageLayoutEntitygridComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.changeDetectorRef.detectChanges();
           }
           break;
       }

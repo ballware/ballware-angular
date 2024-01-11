@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -7,21 +7,20 @@ import { WithDestroy } from '../../utils/withdestroy';
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss']
 })
-export class EditLayoutTabsComponent extends WithDestroy() implements OnInit {
+export class EditLayoutTabsComponent extends WithDestroy() implements OnChanges {
 
-  @Input() layoutItem?: EditLayoutItem;
+  private _height: string|undefined;
+  private _panels: EditLayoutItem[] = [];
 
-  public panels: any[] = [];
+  @Input() layoutItem!: EditLayoutItem;
 
-  constructor() {
-    super();
-  }
+  get showNavButtons() { return true; }
 
-  ngOnInit(): void {
-    this.panels = this.layoutItem?.items?.filter(item => item.type === 'tab') ?? [];
-  }
+  get panels() { return this._panels; }
+  get height() { return this._height; }
 
-  get styles(): object {
-    return { 'height': this.layoutItem?.options?.height ?? '100%' };
+  ngOnChanges(): void {
+    this._height = this.layoutItem.options?.height ?? '100px';
+    this._panels = this.layoutItem.items?.filter(item => item.type === 'tab') ?? [];
   }
 }
