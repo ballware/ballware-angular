@@ -20,6 +20,7 @@ export class MetaServiceProxy extends MetaService {
     public override displayName$ = this.metaStore.displayName$;
     public override entityMetadata$ = this.metaStore.entityMetadata$;
     public override entityDocuments$ = this.metaStore.entityDocuments$;
+    public override entityTemplates$ = this.metaStore.entityTemplates$;
     public override customFunctions$ = this.metaStore.customFunctions$;
 
     public override prepareCustomFunction$ = this.metaStore.prepareCustomFunction$;

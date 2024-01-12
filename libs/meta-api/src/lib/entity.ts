@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout } from '@ballware/meta-model';
+import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout, Template } from '@ballware/meta-model';
 
 /**
  * Interface for entity metadata operations
@@ -39,6 +39,7 @@ interface EntityMetadata {
   ItemReverseMappingScript: string;
   Lookups: string;
   Picklists: string;
+  Templates: string;
   CustomScripts?: string;
   CustomFunctions?: string;
   GridLayout: string;
@@ -53,6 +54,7 @@ interface EntityCustomScripts {
   prepareCustomParam?: string;
   prepareGridLayout?: string;
   prepareEditLayout?: string;
+  prepareMaterializedEditItem?: string;  
   editorPreparing?: string;
   editorInitialized?: string;
   editorValueChanged?: string;
@@ -122,6 +124,13 @@ const compileEntityMetadata = (
   if (metaData.Picklists) {
     compiledMetaData.picklists = parse(metaData.Picklists);
   }
+
+  if (metaData.Templates) {
+    compiledMetaData.templates = (parse(metaData.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+      identifier: t.identifier,
+      definition: parse(t.definition)
+    } as Template));
+  }  
 
   if (metaData.CustomFunctions) {
     compiledMetaData.customFunctions = parse(metaData.CustomFunctions);
@@ -243,6 +252,37 @@ const compileEntityMetadata = (
             ])
         : undefined;
     }
+
+    if (customScripts.prepareMaterializedEditItem) {
+      const compiledArgs = [
+        'mode',
+        'lookups',
+        'customParam',
+        'util',
+        'editLayout',
+        'scope',
+        'identifier',
+        'materializedItem'
+      ];
+      const compiledFn = Function.apply(
+        Function,
+        compiledArgs.concat(customScripts.prepareMaterializedEditItem)
+      );
+
+      compiledMetaData.compiledCustomScripts.prepareMaterializedEditItem = compiledFn
+        ? (mode, lookups, customParam, util, editLayout, scope, identifier, materializedItem) =>
+            compiledFn.apply(compiledFn, [
+              mode,
+              lookups,
+              customParam,
+              util,
+              editLayout,
+              scope,
+              identifier,
+              materializedItem
+            ])
+        : undefined;
+    }    
 
     if (customScripts.editorPreparing) {
       const compiledEditorPreparingArgs = [

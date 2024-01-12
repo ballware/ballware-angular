@@ -1,5 +1,5 @@
+import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
-import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from '@ballware/meta-model';
 import { EditModes } from './editmodes';
 import { WithDestroy } from './withdestroy';
 
@@ -15,6 +15,8 @@ export interface MetaServiceApi {
   displayName$: Observable<string|undefined>;
   entityMetadata$: Observable<CompiledEntityMetadata|undefined>;
   entityDocuments$: Observable<DocumentSelectEntry[]|undefined>;
+
+  entityTemplates$: Observable<Template[]|undefined>;
 
   customFunctions$: Observable<EntityCustomFunction[]|undefined>;
   prepareCustomFunction$: Observable<((identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams) => void)|undefined>;
@@ -44,7 +46,7 @@ export interface MetaServiceApi {
 }
 
 export abstract class MetaService extends WithDestroy() implements MetaServiceApi {
-  
+    
   public abstract setEntity(entity: string): void;
   public abstract setReadOnly(readOnly: boolean): void;
   public abstract setHeadParams(headParams: QueryParams): void;
@@ -56,6 +58,7 @@ export abstract class MetaService extends WithDestroy() implements MetaServiceAp
   public abstract displayName$: Observable<string|undefined>;
   public abstract entityMetadata$: Observable<CompiledEntityMetadata|undefined>;
   public abstract entityDocuments$: Observable<DocumentSelectEntry[]|undefined>;
+  public abstract entityTemplates$: Observable<Template[] | undefined>;
 
   public abstract customFunctions$: Observable<EntityCustomFunction[]|undefined>;
   public abstract prepareCustomFunction$: Observable<((identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams) => void)|undefined>;

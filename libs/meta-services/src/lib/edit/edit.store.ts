@@ -1,6 +1,6 @@
 import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
-import { cloneDeep, isEqual } from "lodash";
+import { isEqual } from "lodash";
 import { combineLatest, distinctUntilChanged, map, tap } from "rxjs";
 import { getByPath, setByPath } from "../databinding";
 import { EditServiceApi } from "../edit.service";
@@ -21,9 +21,6 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
 
         this.state$
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-          .pipe(tap((state) => {
-            this.syncedEditItems = state.editItems;
-          }))
           .subscribe((state) => {
               console.debug('EditStore state update');
               console.debug(state);
@@ -74,13 +71,11 @@ export class EditStore extends ComponentStore<EditState> implements EditServiceA
                 (mode && item && editorInitialized) ? (request: { dataMember: string, ref: EditItemRef }) => {
                     this.updater((state, request: { dataMember: string; ref: EditItemRef; }) => {
 
-                        const editItems = cloneDeep(state.editItems) ?? {};
-
-                        editItems[request.dataMember] = request.ref;
+                        this.syncedEditItems[request.dataMember] = request.ref;
                         
                         return {
                             ...state,
-                            editItems
+                            editItems: this.syncedEditItems
                         };
                     })(request);
 

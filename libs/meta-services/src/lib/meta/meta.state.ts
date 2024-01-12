@@ -1,4 +1,4 @@
-import { CompiledEntityMetadata, DocumentSelectEntry, EntityCustomFunction, QueryParams } from "@ballware/meta-model";
+import { CompiledEntityMetadata, DocumentSelectEntry, EntityCustomFunction, QueryParams, Template } from "@ballware/meta-model";
 
 export interface MetaState {
     entity?: string;
@@ -12,5 +12,6 @@ export interface MetaState {
 
     entityMetadata?: CompiledEntityMetadata;
     entityDocuments?: DocumentSelectEntry[];
+    entityTemplates?: Template[];
     customFunctions?: EntityCustomFunction[];
 }

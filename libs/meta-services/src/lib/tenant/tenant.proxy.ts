@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
-import { TenantService } from "../tenant.service";
 import { Store } from "@ngrx/store";
-import { selectHasRight, selectNavigationLayout, selectNavigationTree, selectPages, selectTenant, selectTitle } from "./tenant.state";
+import { TenantService } from "../tenant.service";
+import { selectHasRight, selectNavigationLayout, selectNavigationTree, selectPages, selectTemplates, selectTenant, selectTitle } from "./tenant.state";
 
 @Injectable()
 export class TenantServiceProxy extends TenantService {
@@ -27,6 +27,10 @@ export class TenantServiceProxy extends TenantService {
 
     public get pages$() {
         return this.store.select(selectPages);
+    }
+
+    public get tenantTemplates$() {
+        return this.store.select(selectTemplates);
     }
 
     public get hasRight$() {

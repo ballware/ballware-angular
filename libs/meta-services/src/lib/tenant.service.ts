@@ -1,4 +1,4 @@
-import { CompiledTenant, NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
+import { CompiledTenant, NavigationLayout, NavigationLayoutItem, Template } from "@ballware/meta-model";
 import { Observable } from "rxjs";
 import { WithDestroy } from "./withdestroy";
 
@@ -10,7 +10,7 @@ export interface NavigationTreeItem {
     icon?: string;
     url?: string;
     html?: string;
-    items?: NavigationTreeItem[];
+    items?: NavigationTreeItem[];    
 }
 
 export abstract class TenantService extends WithDestroy() {
@@ -20,5 +20,6 @@ export abstract class TenantService extends WithDestroy() {
     public abstract navigationLayout$: Observable<NavigationLayout|undefined>;
     public abstract navigationTree$: Observable<NavigationTreeItem[]|undefined>;
     public abstract pages$: Observable<NavigationLayoutItem[]|undefined>;
+    public abstract tenantTemplates$: Observable<Template[]|undefined>;
     public abstract hasRight$: Observable<((rights: string) => boolean) | undefined>;
 }

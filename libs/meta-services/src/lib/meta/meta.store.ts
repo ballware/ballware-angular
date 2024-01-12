@@ -1,17 +1,22 @@
-import { Injectable } from "@angular/core";
-import { ComponentStore } from "@ngrx/component-store";
-import { MetaState } from "./meta.state";
-import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
-import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap, withLatestFrom } from "rxjs";
-import { MetaApiService } from "@ballware/meta-api";
 import { HttpClient } from "@angular/common/http";
-import { LookupRequest, LookupService } from "../lookup.service";
-import { createUtil } from "../implementation/createscriptutil";
+import { Injectable } from "@angular/core";
+import { MetaApiService } from "@ballware/meta-api";
+import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
+import { ComponentStore } from "@ngrx/component-store";
 import { cloneDeep, isEqual } from "lodash";
-import { IdentityService } from "../identity.service";
-import { TenantService } from "../tenant.service";
+import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from "rxjs";
 import { EditModes } from "../editmodes";
+import { IdentityService } from "../identity.service";
+import { createUtil } from "../implementation/createscriptutil";
+import { LookupRequest, LookupService } from "../lookup.service";
 import { MetaServiceApi } from "../meta.service";
+import { TenantService } from "../tenant.service";
+import { MetaState } from "./meta.state";
+
+interface TemplateItemOptions {
+    scope: 'tenant' | 'meta';
+    identifier: string;
+}
 
 @Injectable()
 export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi {
@@ -34,7 +39,8 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                     ...state,
                     entityMetadata,
                     displayName: entityMetadata?.displayName,
-                    customFunctions: entityMetadata?.customFunctions ?? []
+                    customFunctions: entityMetadata?.customFunctions ?? [],
+                    entityTemplates: entityMetadata?.templates ?? []
                 }))(entityMetadata);                
             }))
             .pipe(tap((entityMetadata) => {
@@ -182,7 +188,8 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         }));           
 
     readonly entityMetadata$ = this.select(state => state.entityMetadata);      
-    readonly entityDocuments$ = this.select(state => state.entityDocuments);  
+    readonly entityDocuments$ = this.select(state => state.entityDocuments);
+    readonly entityTemplates$ = this.select(state => state.entityTemplates);
 
     readonly displayName$ = this.select(state => state.displayName);    
     readonly customFunctions$ = this.select(state => state.customFunctions);
@@ -209,20 +216,65 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     readonly getEditLayout$ = combineLatest([
             this.customParam$,
             this.entityMetadata$,
-            this.lookupService.lookups$
+            this.entityTemplates$,
+            this.lookupService.lookups$,
+            this.tenantService.tenantTemplates$
         ])
-        .pipe(map(([customParam, entityMetadata, lookups]) => (customParam && entityMetadata && lookups) ? (identifier, mode) => {
-          const editLayout = entityMetadata.editLayouts?.find(layout => layout.identifier === identifier);
-  
-          if (editLayout && entityMetadata.compiledCustomScripts?.prepareEditLayout) {
-            const preparedEditLayout = cloneDeep(editLayout);
-  
-            entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, createUtil(this.httpClient), preparedEditLayout);
-  
-            return preparedEditLayout;
-          }
-  
-          return editLayout;
+        .pipe(map(([customParam, entityMetadata, entityTemplates, lookups, tenantTemplates]) => (customParam && entityMetadata && entityTemplates && lookups && tenantTemplates) ? (identifier, mode) => {
+            const editLayout = entityMetadata.editLayouts?.find(layout => layout.identifier === identifier);
+    
+            if (editLayout) {
+                const materializeTemplates = (items: EditLayoutItem[]) => {
+                    return items?.map(item => {
+                        if ('template' === item.type) {
+                            const scope = (item.options?.itemoptions as TemplateItemOptions)?.scope;
+                            const identifier = (item.options?.itemoptions as TemplateItemOptions)?.identifier;
+
+                            let template: EditLayoutItem|undefined = undefined;
+
+                            if (scope && identifier) {
+                                switch (scope) {
+                                    case 'tenant':
+                                        template = tenantTemplates.find(t => t.identifier === identifier)?.definition;
+                                        break;
+                                    case 'meta':
+                                        template = entityTemplates.find(t => t.identifier === identifier)?.definition;
+                                }
+                            }
+
+                            if (template) {
+                                item.type = template.type;
+                                item.colCount = template.colCount;
+                                item.colSpan = template.colSpan;
+                                item.options = template.options;
+                                item.items = template.items;
+
+                                if (entityMetadata.compiledCustomScripts?.prepareMaterializedEditItem) {
+                                    entityMetadata.compiledCustomScripts?.prepareMaterializedEditItem(mode, lookups, customParam, createUtil(this.httpClient), editLayout, scope, identifier, item);
+                                }
+                            }
+                        } else {
+                            item.items = item.items && materializeTemplates(item.items);
+                        }
+
+                        return item;
+                    });
+                };
+
+                editLayout.items = materializeTemplates(editLayout.items);
+            }
+
+            
+
+            if (editLayout && entityMetadata.compiledCustomScripts?.prepareEditLayout) {
+                const preparedEditLayout = cloneDeep(editLayout);
+    
+                entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, createUtil(this.httpClient), preparedEditLayout);
+    
+                return preparedEditLayout;
+            }
+    
+            return editLayout;
         } : undefined)) as Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;
 
     private readonly headAllowed$ = combineLatest([

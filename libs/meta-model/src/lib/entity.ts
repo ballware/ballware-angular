@@ -2,6 +2,7 @@ import { CrudItem, ValueType } from "./cruditem";
 import { QueryParams } from "./queryparams";
 import { RightsCheckFunc } from "./rights";
 import { ScriptUtil } from "./scriptutil";
+import { Template } from "./template";
 
 /**
  * Adapter for accessing editor objects in custom scripts
@@ -469,6 +470,29 @@ export interface CompiledEntityCustomScripts {
   ) => void;
 
   /**
+   * Manipulate materialized edit layout item template instance before rendering
+   *
+   * @param mode Edit mode (add, edit, view)
+   * @param lookups Lookup definitions prepared for business object
+   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+   * @param util Utility for performing misc operations
+   * @param editLayout Edit layout instance
+   * @param scope Source scope of template definition
+   * @param identifier Identifier of template definition
+   * @param materializedItem Generated edit layout item instance of template
+   */
+  prepareMaterializedEditItem?: (
+    mode: string, 
+    lookups: Record<string, unknown>, 
+    customParam: unknown, 
+    util: ScriptUtil, 
+    editLayout: EditLayout, 
+    scope: 'tenant' | 'meta', 
+    identifier: string, 
+    materializedItem: EditLayoutItem
+  ) => void;  
+
+  /**
    * Manipulate editor options before rendering
    *
    * @param mode Edit mode (add, edit, view)
@@ -765,6 +789,11 @@ export interface CompiledEntityMetadata {
    * Collection of defined picklists
    */
   picklists: Array<{ identifier: string; entity: string; field: string }>;
+
+  /**
+   * List of entity templates
+   */
+  templates?: Array<Template>;
 
   /**
    * Member of business object containing current state code

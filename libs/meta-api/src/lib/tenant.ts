@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledTenant, NavigationLayout } from '@ballware/meta-model';
+import { CompiledTenant, NavigationLayout, Template } from '@ballware/meta-model';
 
 /**
  * Interface for tenant data operations
@@ -21,6 +21,7 @@ interface Tenant {
   Id: string;
   Name: string;
   Navigation?: string;
+  Templates?: string;
   RightsCheckScript?: string;
 }
 
@@ -31,6 +32,12 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
     navigation: tenant.Navigation
       ? (parse(tenant.Navigation) as NavigationLayout)
       : ({} as NavigationLayout),
+    templates: tenant.Templates 
+      ? (parse(tenant.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+            identifier: t.identifier,
+            definition: parse(t.definition)
+          } as Template))        
+      : ([]),      
   } as CompiledTenant;
 
   if (tenant.RightsCheckScript) {

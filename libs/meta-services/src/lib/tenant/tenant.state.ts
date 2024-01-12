@@ -1,4 +1,4 @@
-import { CompiledTenant, NavigationLayout, NavigationLayoutItem } from "@ballware/meta-model";
+import { CompiledTenant, NavigationLayout, NavigationLayoutItem, Template } from "@ballware/meta-model";
 import { createFeatureSelector, createSelector } from "@ngrx/store";
 import { NavigationTreeItem } from "../tenant.service";
 
@@ -10,6 +10,7 @@ export interface TenantState {
     navigationLayout?: NavigationLayout,
     navigationTree?: NavigationTreeItem[],
     pages?: NavigationLayoutItem[],
+    templates?: Template[],
     hasRight?: (rights: string) => boolean
 }
 
@@ -20,4 +21,5 @@ export const selectTitle = createSelector(selectTenantFeature, (state: TenantSta
 export const selectNavigationLayout = createSelector(selectTenantFeature, (state: TenantState) => state.navigationLayout);
 export const selectNavigationTree = createSelector(selectTenantFeature, (state: TenantState) => state.navigationTree);
 export const selectPages = createSelector(selectTenantFeature, (state: TenantState) => state.pages);
+export const selectTemplates = createSelector(selectTenantFeature, (state: TenantState) => state.templates);
 export const selectHasRight = createSelector(selectTenantFeature, (state: TenantState) => state.hasRight);
