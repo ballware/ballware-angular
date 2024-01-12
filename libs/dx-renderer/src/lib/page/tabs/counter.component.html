@@ -1,2 +1,2 @@
-<dx-load-indicator *ngIf="count === undefined" width="15" height="15"></dx-load-indicator>
-<span *ngIf="count !== undefined" class="dx-tab-text">({{count}})</span>
+<div class="dx-tab-text" *ngIf="count === undefined"><span>{{caption}}</span><dx-load-indicator width="12" height="12"></dx-load-indicator></div>
+<span class="dx-tab-text" *ngIf="count !== undefined">{{caption}}&nbsp;({{count}})</span>

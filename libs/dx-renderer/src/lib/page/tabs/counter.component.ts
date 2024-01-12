@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { PageService, LookupService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
 import { combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -22,6 +22,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 })
 export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnInit {
 
+  @Input() caption?: string;
   @Input() entity?: string;
   @Input() query?: string;
 
