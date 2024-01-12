@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
-import { BehaviorSubject, takeUntil } from 'rxjs';
-import { EditService, EditModes } from '@ballware/meta-services';
 import { DetailLayout } from '@ballware/meta-model';
+import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { MasterdetailService } from '../components/datagrid/masterdetail.service';
 
@@ -11,7 +11,9 @@ import { MasterdetailService } from '../components/datagrid/masterdetail.service
   styleUrls: ['./detail.component.scss'],
   providers: [
     {
-      provide: EditService, useClass: EditService
+      provide: EditService,
+      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
+      deps: [MetaServiceFactory, MetaService]
     } as Provider
   ]
 })

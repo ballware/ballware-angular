@@ -30,7 +30,7 @@
     <dxo-master-detail [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>
     <dxo-state-storing *ngIf="identifier" [enabled]="identifier ? true : false" type="localStorage" [storageKey]="identifier"></dxo-state-storing>
     <div *dxTemplate="let masterDetailItem of 'masterDetail'">
-        <ballware-datagrid-masterdetail [item]="masterDetailItem">
+        <ballware-datagrid-masterdetail [item]="masterDetailItem.data">
             <ballware-edit-detail slot="masterDetail" [detailLayout]="layout?.details!"></ballware-edit-detail>
         </ballware-datagrid-masterdetail>
     </div>
