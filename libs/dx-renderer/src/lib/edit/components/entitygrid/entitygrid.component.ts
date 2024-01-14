@@ -1,15 +1,37 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CrudService, MetaService, LookupService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { combineLatest, map, Subject, takeUntil } from 'rxjs';
-import { dxDataGridColumn } from 'devextreme/ui/data_grid';
-import { createColumnConfiguration } from '../../../utils/columns';
+import { CrudService, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
+import { dxDataGridColumn } from 'devextreme/ui/data_grid';
+import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
+import { createColumnConfiguration } from '../../../utils/columns';
 import { createEditableGridDatasource } from '../../../utils/datasource';
-import { BehaviorSubject } from 'rxjs';
 import { WithDestroy } from '../../../utils/withdestroy';
-import { Observable } from 'rxjs';
+import { DatagridSummary } from '../datagrid/datagrid.component';
+
+const createSummaryConfiguration = (gridLayout: GridLayout) => {
+  return {
+    totalItems: gridLayout.summaries
+      ?.filter(s => s.totalSummary)
+      .map(s => {
+        return {
+          column: s.dataMember,
+          summaryType: s.summaryType,
+          valueFormat: 'fixedPoint',
+        };
+      }),
+    groupItems: gridLayout.summaries
+      ?.filter(s => s.groupSummary)
+      .map(s => {
+        return {
+          column: s.dataMember,
+          summaryType: s.summaryType,
+          valueFormat: 'fixedPoint',
+        };
+      }),
+  } as DatagridSummary;
+};
 
 @Component({
   selector: 'ballware-entitygrid',
@@ -26,7 +48,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   public storageIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
 
-  public summary$ = new BehaviorSubject<Record<string, unknown>|undefined>(undefined);
+  public summary$: Observable<DatagridSummary|undefined>;
 
   private _gridLayout$ = new BehaviorSubject<GridLayout|undefined>(undefined);
 
@@ -99,6 +121,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
         (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')),
         (button, data, target) => buttonClicked(button, editLayoutIdentifier, data, target),
         buttonAllowed) : undefined));
+
+    this.summary$ = this._gridLayout$.pipe(map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined));
 
     this.dataSource$ = combineLatest([this.crudService.fetchedItems$])
       .pipe(takeUntil(this.destroy$))

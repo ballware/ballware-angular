@@ -1,12 +1,25 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
+import { MetaService } from '@ballware/meta-services';
+import { I18NextPipe } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
 import { RowDblClickEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
-import { dxToolbarItem, dxToolbarOptions } from 'devextreme/ui/toolbar';
-import { MetaService } from '@ballware/meta-services';
-import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
+import { dxToolbarItem } from 'devextreme/ui/toolbar';
 import { combineLatest, takeUntil } from 'rxjs';
-import { I18NextPipe } from 'angular-i18next';
 import { WithDestroy } from '../../../utils/withdestroy';
+
+export interface DatagridSummary {
+  totalItems: Array<{
+    column: string,
+    summaryType: string,
+    valueFormat?: string
+  }>,
+  groupItems: Array<{
+    column: string,
+    summaryType: string,
+    valueFormat?: string
+  }>
+}
 
 @Component({
   selector: 'ballware-datagrid',
@@ -20,7 +33,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Input() mode!: 'large' | 'medium' | 'small';
   @Input() layout: GridLayout|undefined;
   @Input() columns: Array<dxDataGridColumn>|undefined;
-  @Input() summary: Record<string, unknown>|undefined;
+  @Input() summary: DatagridSummary|undefined;
   @Input() dataSource!: DataSource;
   @Input() exportFileName!: string;
   @Input() showReload!: boolean;
