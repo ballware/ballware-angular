@@ -18,7 +18,7 @@ export class EditLayoutTabsComponent extends WithDestroy() implements OnChanges 
   get height() { return this._height; }
 
   ngOnChanges(): void {
-    this._height = this.layoutItem.options?.height ?? '100px';
+    this._height = this.layoutItem.options?.height;
     this._panels = this.layoutItem.items?.filter(item => item.type === 'tab') ?? [];
   }
 }

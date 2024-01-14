@@ -287,6 +287,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (right: string) => {
             return (
                 entityMetadata &&
+                customParam &&
                 currentUser &&
                 !readOnly &&
                 hasRight &&
@@ -308,7 +309,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         ])
         .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (item: CrudItem, right: string) => {
             return (
-            entityMetadata && hasRight && currentUser &&
+            entityMetadata && customParam && hasRight && currentUser &&
             (entityMetadata.compiledCustomScripts?.rightsCheck ?
                 entityMetadata.compiledCustomScripts?.rightsCheck(currentUser, entityMetadata.application, entityMetadata.entity, readOnly ?? false, right, entityMetadata.compiledCustomScripts?.rightsParamForItem
                 ? entityMetadata.compiledCustomScripts.rightsParamForItem(item, customParam)
