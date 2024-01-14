@@ -1,6 +1,7 @@
 <dx-date-box
     #dateBox
     *ngIf="item"
+    [label]="item.caption ?? ''"
     [width]="item.width ?? '220px'"
     type="datetime"
     [displayFormat]="getDisplayFormat()"

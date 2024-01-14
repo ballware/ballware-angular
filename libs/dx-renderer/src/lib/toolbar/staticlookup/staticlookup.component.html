@@ -1,8 +1,8 @@
 <dx-select-box
     #selectBox
     *ngIf="item"
+    [label]="item.caption ?? ''"
     [value]="item.defaultValue"
-    [noDataText]="item.caption ?? ''"
     [width]="item.width ?? 'auto'"
     [searchEnabled]="true"
     [showClearButton]="true"

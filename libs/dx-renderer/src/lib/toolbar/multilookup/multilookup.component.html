@@ -1,8 +1,8 @@
 <dx-tag-box
   #selectBox
   *ngIf="item && lookup && dataSource"
+  [label]="item.caption ?? ''"
   [dataSource]="dataSource"
-  [noDataText]="item.caption ?? ''"
   [searchEnabled]=true
   [showClearButton]=true
   [showSelectionControls]=true

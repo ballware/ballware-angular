@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { DxDateBoxComponent } from 'devextreme-angular';
+import { PageToolbarItem } from '@ballware/meta-model';
 import { PageService, ToolbarItemRef } from '@ballware/meta-services';
-import { PageToolbarItem, ValueType } from '@ballware/meta-model';
 import { I18NextPipe } from 'angular-i18next';
+import { DxDateBoxComponent } from 'devextreme-angular';
 import { ValueChangedEvent } from 'devextreme/ui/date_box';
 
 @Component({
@@ -43,13 +43,7 @@ export class ToolbarDatetimeComponent implements OnDestroy, AfterViewInit {
   }
 
   getDisplayFormat() {
-    const format = this.translationService.transform('format.datetime');
-
-    if (this.item?.caption) {
-      return `${this.item.caption}: ${format}`;
-    }
-
-    return format;
+    return this.translationService.transform('format.datetime');
   }
 
 }

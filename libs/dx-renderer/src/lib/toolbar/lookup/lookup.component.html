@@ -1,8 +1,8 @@
 <dx-select-box
   #selectBox
   *ngIf="item && dataSource && lookup"
+  [label]="item.caption ?? ''"
   [dataSource]="dataSource"
-  [noDataText]="item.caption ?? ''"
   [searchEnabled]=true
   [showClearButton]=true
   [showDropDownButton]=true
