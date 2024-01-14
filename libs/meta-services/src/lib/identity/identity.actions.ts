@@ -23,6 +23,8 @@ export const identityUserLogout = createAction('[Identity] user logout');
 
 export const identityUserLoggedOut = createAction('[Identity] user logged out');
 
+export const identityUserExpired = createAction('[Identity] user expired');
+
 export const identityManageProfile = createAction('[Identity] manage profile');
 
 export const identityRefreshToken = createAction('[Identity] refresh token');

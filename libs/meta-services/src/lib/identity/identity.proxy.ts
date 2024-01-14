@@ -1,7 +1,7 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "../identity.service";
+import { identityInitialize, identityManageProfile, identityRefreshToken, identityUserExpired, identityUserLogout } from "./identity.actions";
 import { selectAccessTokenExpiration, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant } from "./identity.state";
-import { identityInitialize, identityManageProfile, identityRefreshToken, identityUserLogout } from "./identity.actions";
 
 export class IdentityServiceProxy extends IdentityService {
 
@@ -44,5 +44,9 @@ export class IdentityServiceProxy extends IdentityService {
 
     public logout() {
         this.store.dispatch(identityUserLogout());
+    }
+
+    public expired() {
+        this.store.dispatch(identityUserExpired());
     }
 }

@@ -17,4 +17,5 @@ export abstract class IdentityService extends WithDestroy() {
     public abstract refreshToken(): void;
     public abstract manageProfile(): void;
     public abstract logout(): void;
+    public abstract expired(): void;
 }
