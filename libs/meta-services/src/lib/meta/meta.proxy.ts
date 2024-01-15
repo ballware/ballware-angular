@@ -35,6 +35,9 @@ export class MetaServiceProxy extends MetaService {
     public override byId$ = this.metaStore.byId$;
     public override create$ = this.metaStore.create$;
 
+    public override save$ = this.metaStore.save$;
+    public override saveBatch$ = this.metaStore.saveBatch$;
+
     public override addAllowed$ = this.metaStore.addAllowed$;
     public override viewAllowed$ = this.metaStore.viewAllowed$;
     public override editAllowed$ = this.metaStore.editAllowed$;

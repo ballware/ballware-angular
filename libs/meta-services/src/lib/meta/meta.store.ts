@@ -147,7 +147,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                 }
             })));
     }
-
+    
     readonly entity$ = this.select(state => state.entity);
 
     readonly setEntity = this.updater((state, entity: string) => ({
@@ -365,6 +365,18 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
             .new(query, params)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient)) : item))
         : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
+
+    readonly save$ = combineLatest([this.customParam$, this.entityMetadata$])
+        .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
+        ? (query, item) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            .save(query, entityMetadata.itemReverseMappingScript ? entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient)) : item)
+        : undefined)) as Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
+
+    readonly saveBatch$ = combineLatest([this.customParam$, this.entityMetadata$])
+        .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
+        ? (query, items) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient))) : items)
+        : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;        
 
     readonly prepareCustomFunction$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)

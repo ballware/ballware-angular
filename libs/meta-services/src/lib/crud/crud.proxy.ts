@@ -36,6 +36,9 @@ export class CrudServiceProxy extends CrudService {
     readonly remove = this.crudStore.remove;
     readonly print = this.crudStore.print;
     readonly customEdit = this.crudStore.customEdit;
+
+    readonly save = this.crudStore.save;
+    readonly saveBatch = this.crudStore.saveBatch;
   
     readonly selectAdd = this.crudStore.selectAdd;
     readonly selectPrint = this.crudStore.selectPrint;

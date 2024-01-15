@@ -1,5 +1,5 @@
-import { Observable } from 'rxjs';
 import { CrudItem, EditLayout, EntityCustomFunction } from '@ballware/meta-model';
+import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
 import { WithDestroy } from './withdestroy';
 
@@ -79,6 +79,9 @@ export interface CrudServiceApi {
     print(request: { documentId: string, items: CrudItem[] }): void;
     customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
 
+    save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
+    saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
+
     selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { item: CrudItem, target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
@@ -128,6 +131,8 @@ export abstract class CrudService extends WithDestroy() implements CrudServiceAp
   public abstract remove(request: { item: CrudItem }): void;
   public abstract print(request: { documentId: string, items: CrudItem[] }): void;
   public abstract customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
+  public abstract save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
+  public abstract saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
   public abstract selectPrint(request: { item: CrudItem, target: Element }): void;

@@ -29,6 +29,8 @@ export interface MetaServiceApi {
   count$: Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
   byId$: Observable<((id: string) => Observable<CrudItem>)|undefined>;
   create$: Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
+  save$: Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
+  saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;
 
   addAllowed$: Observable<(() => boolean)|undefined>;
   viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
@@ -46,7 +48,7 @@ export interface MetaServiceApi {
 }
 
 export abstract class MetaService extends WithDestroy() implements MetaServiceApi {
-    
+      
   public abstract setEntity(entity: string): void;
   public abstract setReadOnly(readOnly: boolean): void;
   public abstract setHeadParams(headParams: QueryParams): void;
@@ -71,7 +73,9 @@ export abstract class MetaService extends WithDestroy() implements MetaServiceAp
   public abstract count$: Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
   public abstract byId$: Observable<((id: string) => Observable<CrudItem>)|undefined>;
   public abstract create$: Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
-
+  public abstract save$: Observable<((query: string, item: CrudItem) => Observable<void>) | undefined>;
+  public abstract saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>) | undefined>;
+  
   public abstract addAllowed$: Observable<(() => boolean)|undefined>;
   public abstract viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;

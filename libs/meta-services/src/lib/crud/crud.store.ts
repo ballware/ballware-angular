@@ -1,13 +1,13 @@
-import { ComponentStore } from '@ngrx/component-store';
-import { CrudState } from "./crud.state";
-import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
-import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
-import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
-import { MetaService } from '../meta.service';
-import { isEqual } from 'lodash';
-import { EditModes } from '../editmodes';
-import { I18NextPipe } from 'angular-i18next';
 import { Router } from '@angular/router';
+import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
+import { ComponentStore } from '@ngrx/component-store';
+import { I18NextPipe } from 'angular-i18next';
+import { isEqual } from 'lodash';
+import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
+import { EditModes } from '../editmodes';
+import { MetaService } from '../meta.service';
+import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi {
     constructor(private metaService: MetaService, private translationService: I18NextPipe, private router: Router) {
@@ -316,7 +316,21 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         }))(); 
                      }
                 } as ItemEditDialog);
-            }, (message) => console.log(message)))));            
+            }, (message) => console.log(message)))));           
+            
+    readonly save = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, item: CrudItem }>) => 
+        combineLatest([saveRequest$, this.metaService.save$])
+            .pipe(map(([saveRequest, save]) => (saveRequest && save)
+                ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
+                : undefined
+            )));
+
+    readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
+        combineLatest([saveRequest$, this.metaService.saveBatch$])
+            .pipe(map(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
+                ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
+                : undefined
+            )));
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
         combineLatest([selectAddRequest$, this.addMenuItems$])            
