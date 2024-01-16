@@ -15,7 +15,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './staticlookup.component.html',
   styleUrls: ['./staticlookup.component.scss']
 })
-export class EditLayoutStaticlookupComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as string|undefined))) implements OnInit, EditItemRef {
+export class EditLayoutStaticlookupComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 

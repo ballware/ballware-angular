@@ -19,6 +19,7 @@ import { MetaService } from '../meta.service';
 import { MetaServiceFactory } from '../meta.service.factory';
 import { MetaServiceProxy } from '../meta/meta.proxy';
 import { MetaStore } from '../meta/meta.store';
+import { NotificationService } from '../notification.service';
 import { PageService } from '../page.service';
 import { PageServiceProxy } from '../page/page.proxy';
 import { PageStore } from '../page/page.store';
@@ -26,7 +27,7 @@ import { ResponsiveService } from '../responsive.service';
 import { TenantService } from '../tenant.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService) {
+    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService) {
         super();
     }
 
@@ -35,7 +36,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createCrudService(metaService: MetaService): CrudService {
-        return new CrudServiceProxy(new CrudStore(metaService, this.translationPipe, this.router));
+        return new CrudServiceProxy(new CrudStore(metaService, this.notificationService, this.translationPipe, this.router));
     }
 
     override createEditService(metaService: MetaService): EditService {

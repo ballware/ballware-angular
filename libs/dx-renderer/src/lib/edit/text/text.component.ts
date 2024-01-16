@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { takeUntil } from 'rxjs';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';

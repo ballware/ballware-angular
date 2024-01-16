@@ -7,10 +7,11 @@ import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, ta
 import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
+import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi {
-    constructor(private metaService: MetaService, private translationService: I18NextPipe, private router: Router) {
+    constructor(private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
         super({});
 
         this.state$
@@ -240,10 +241,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         title: this.translationService.transform('datacontainer.titles.edit', { entity: displayName }),
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
                         apply: () => { 
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))(); 
+                            this.save({ item });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -318,18 +316,38 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 } as ItemEditDialog);
             }, (message) => console.log(message)))));           
             
-    readonly save = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, item: CrudItem }>) => 
+    readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
         combineLatest([saveRequest$, this.metaService.save$])
-            .pipe(map(([saveRequest, save]) => (saveRequest && save)
+            .pipe(switchMap(([saveRequest, save]) => (saveRequest && save)
                 ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
-                : undefined
+                    .pipe(tap(() => { 
+                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+
+                        this.reload();
+                    }))
+                : of(undefined)
             )));
 
     readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
         combineLatest([saveRequest$, this.metaService.saveBatch$])
-            .pipe(map(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
+            .pipe(switchMap(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
                 ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
-                : undefined
+                    .pipe(tap(() => { 
+                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+
+                        this.reload();
+                    }))
+                : of(undefined)
             )));
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 

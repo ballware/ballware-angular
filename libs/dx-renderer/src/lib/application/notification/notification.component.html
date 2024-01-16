@@ -1,6 +1,0 @@
-<dx-toast *ngIf="(notification$ | async)"    
-    [visible]="true"
-    [type]="(notification$ | async)?.severity ?? 'info'"
-    [message]="(notification$ | async)?.message ?? ''"
-    (onHidden)="hideNotification">
-</dx-toast>

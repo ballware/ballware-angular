@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
+import { NotificationService } from '@ballware/meta-services';
+import notify from 'devextreme/ui/notify';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
-import { Notification, NotificationService } from '@ballware/meta-services';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'ballware-notification',
@@ -10,17 +11,19 @@ import { Observable } from 'rxjs';
   providers: []
 })
 export class ApplicationNotificationComponent extends WithDestroy() {
-  
-  public notification$: Observable<Notification|undefined>;
-
+    
   constructor(private notificationService: NotificationService) {    
     super();
 
-    this.notification$ = this.notificationService.notification$;
-  }
+    this.notificationService.notification$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(notification => {
+          if (notification) {
+            notify(notification.message, notification.severity);
 
-  public hideNotification() {
-    this.notificationService.hideNotification();
+            this.notificationService.hideNotification();
+          }          
+      });
   }
 }
 

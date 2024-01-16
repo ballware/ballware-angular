@@ -1,41 +1,41 @@
-import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MetaServiceFactory } from './meta.service.factory';
-import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
 import { HttpClient } from '@angular/common/http';
+import { ModuleWithProviders, NgModule } from '@angular/core';
+import { Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { I18NextPipe } from 'angular-i18next';
 import { Store } from '@ngrx/store';
+import { I18NextPipe } from 'angular-i18next';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
-import { SettingsFeatureModule } from './settings';
-import { TenantEffectsModule, TenantFeatureModule } from './tenant';
-import { SettingsService } from './settings.service';
-import { SettingsServiceProxy } from './settings/settings.proxy';
 import { IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
+import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
+import { MetaServiceFactory } from './meta.service.factory';
+import { NotificationFeatureModule } from './notification';
+import { NotificationService } from './notification.service';
+import { NotificationServiceProxy } from './notification/notification.proxy';
+import { SettingsFeatureModule } from './settings';
+import { SettingsService } from './settings.service';
+import { SettingsServiceProxy } from './settings/settings.proxy';
+import { TenantEffectsModule, TenantFeatureModule } from './tenant';
 import { TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
-import { Router } from '@angular/router';
-import { NotificationFeatureModule } from './notification';
-import { NotificationServiceProxy } from './notification/notification.proxy';
-import { NotificationService } from './notification.service';
 
-export * from './settings.service';
-export * from './notification.service';
-export * from './identity.service';
-export * from './tenant.service';
 export * from './attachment.service';
 export * from './crud.service';
 export * from './edit.service';
+export * from './edititemref';
+export * from './editmodes';
+export * from './identity.service';
 export * from './lookup.service';
 export * from './meta.service';
-export * from './responsive.service';
-export * from './page.service';
-export * from './editmodes';
-export * from './edititemref';
-export * from './toolbaritemref';
 export * from './meta.service.factory';
+export * from './notification.service';
+export * from './page.service';
+export * from './responsive.service';
+export * from './settings.service';
+export * from './tenant.service';
+export * from './toolbaritemref';
 
 @NgModule({
   imports: [
@@ -80,15 +80,17 @@ export class MetaServicesModule {
             httpClient: HttpClient, 
             router: Router,
             apiServiceFactory: ApiServiceFactory, 
+            notificationService: NotificationService,
             oauthService: OAuthService, 
             translationPipe: I18NextPipe,
             identityService: IdentityService,
-            tenantService: TenantService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, identityService, tenantService),
+            tenantService: TenantService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, notificationService, identityService, tenantService),
           deps: [
             Store,            
             HttpClient,
             Router,
             ApiServiceFactory,
+            NotificationService,
             OAuthService,
             I18NextPipe,
             IdentityService,
