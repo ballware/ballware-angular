@@ -1,5 +1,4 @@
 import { EditLayout } from "@ballware/meta-model";
-import { EditItemRef } from "../edititemref";
 import { EditModes } from "../editmodes";
 
 export interface EditState {
@@ -10,8 +9,6 @@ export interface EditState {
     mode?: EditModes;
     editLayout?: EditLayout;
     readonly?: boolean;
-
-    editItems: Record<string, EditItemRef|undefined>;
 
     validator: (() => boolean)|undefined;
 }

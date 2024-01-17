@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, Provider } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayout } from '@ballware/meta-model';
 import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
+import { nanoid } from 'nanoid';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -16,7 +17,7 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider
   ]
 })
-export class CrudDialogComponent extends WithDestroy() implements OnInit {
+export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDestroy {
 
   @Input() mode?: EditModes;
   @Input() title?: string;
@@ -39,10 +40,17 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit {
 
   ngOnInit(): void {
       if (this.mode && this.item && this.editLayout) {
+        this.editService.setIdentifier(nanoid(11));
         this.editService.setMode(this.mode);
         this.editService.setItem(this.item);
         this.editService.setEditLayout(this.editLayout);
       }
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    
+    this.editService.ngOnDestroy();
   }
 
   public get applyText(): string {

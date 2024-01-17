@@ -3,7 +3,7 @@ import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
-import { combineLatest, distinctUntilChanged, map, takeUntil, tap, withLatestFrom } from "rxjs";
+import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
 import { getByPath, setByPath } from "../databinding";
 import { EditServiceApi } from "../edit.service";
@@ -14,11 +14,10 @@ import { EditState } from "./edit.state";
 
 export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditServiceApi {
 
-    private syncedEditItems: Record<string, EditItemRef|undefined> = {}; 
+    private editItems: Record<string, EditItemRef|undefined> = {}; 
 
     constructor(private store: Store, private metaService: MetaService) {
         super({
-            editItems: {},
             validator: undefined
         });
 
@@ -74,8 +73,6 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         validator
     }));
    
-    readonly getEditor = (request: { dataMember: string }) => this.select(state => state.editItems[request.dataMember]);
-
     readonly getValue$ = combineLatest([this.item$])
         .pipe(map(([item]) => item ? (request: { dataMember: string }) => getByPath(item, request.dataMember) : undefined));
 
@@ -90,19 +87,12 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly editorInitialized$ = combineLatest([this.mode$, this.item$, this.metaService.editorInitialized$])            
             .pipe(map(([mode, item, editorInitialized]) => 
                 (mode && item && editorInitialized) ? (request: { dataMember: string, ref: EditItemRef }) => {
-                    this.updater((state, request: { dataMember: string; ref: EditItemRef; }) => {
 
-                        this.syncedEditItems[request.dataMember] = request.ref;
-                        
-                        return {
-                            ...state,
-                            editItems: this.syncedEditItems
-                        };
-                    })(request);
+                    this.editItems[request.dataMember] = request.ref;
 
                     editorInitialized(mode, item, {
-                        getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
-                        setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
+                        getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+                        setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
                     } as EditUtil, request.dataMember);
                 } : undefined)
             );
@@ -110,8 +100,8 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly editorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
             .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
                 ? (request: { dataMember: string; ruleIdentifier: string; value: ValueType; }) => editorValidating(mode, item, {
-                    getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
-                    setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
+                    getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+                    setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
                 } as EditUtil, request.dataMember, request.value, request.ruleIdentifier)
                 : () => true)
             );    
@@ -123,8 +113,8 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
 
                     if (notify) {
                         editorValueChanged(mode, item, {
-                            getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
-                            setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
+                            getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+                            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
                         } as EditUtil, dataMember, value);
                     }
                 } : undefined            
@@ -134,8 +124,8 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly editorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])
         .pipe(map(([mode, item, editorEntered]) => (mode && item && editorEntered)
             ? ({ dataMember }: { dataMember: string; }) => editorEntered(mode, item, {
-                getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
-                setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
+                getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+                setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
             } as EditUtil, dataMember)
             : undefined)
         );
@@ -143,28 +133,19 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly editorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
         .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
             ? ({ dataMember, event }: { dataMember: string; event: string; }) => editorEvent(mode, item, {
-                getEditorOption: (dataMember, option) => this.getSyncedEditorOption({ dataMember, option }),
-                setEditorOption: (dataMember, option, value) => this.setSyncedEditorOption({ dataMember, option, value })
+                getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+                setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
             } as EditUtil, dataMember, event)
             : undefined)
         );
 
-    readonly getEditorOption = (request: { dataMember: string; option: string; }) =>
-        this.getEditor({ dataMember: request.dataMember })
-            .pipe(map(editor => editor?.getOption(request.option)));    
-
-    readonly setEditorOption = (request: { dataMember: string; option: string; value: unknown; }) =>
-        this.getEditor({ dataMember: request.dataMember })
-            .pipe(tap(editor => editor?.setOption(request.option, request.value)));    
-
-
     readonly validate = () => this.select(state => state.validator ? state.validator() : true);
 
-    private readonly getSyncedEditor = (request: { dataMember: string }) => this.syncedEditItems[request.dataMember];
+    private readonly getEditor = (request: { dataMember: string }) => this.editItems[request.dataMember];
 
-    private readonly getSyncedEditorOption = (request: { dataMember: string; option: string; }) =>
-        this.getSyncedEditor({ dataMember: request.dataMember })?.getOption(request.option);
+    private readonly getEditorOption = (request: { dataMember: string; option: string; }) =>
+        this.getEditor({ dataMember: request.dataMember })?.getOption(request.option);
 
-    private readonly setSyncedEditorOption = (request: { dataMember: string; option: string; value: unknown; }) =>
-        this.getSyncedEditor({ dataMember: request.dataMember })?.setOption(request.option, request.value);
+    private readonly setEditorOption = (request: { dataMember: string; option: string; value: unknown; }) =>
+        this.getEditor({ dataMember: request.dataMember })?.setOption(request.option, request.value);
 }
