@@ -80,6 +80,23 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     headCustomFunctions
                 }))(headCustomFunctions)))
         );        
+
+        this.effect(_ => combineLatest([this.queryIdentifier$, this.metaService.query$, this.metaService.headParams$])
+            .pipe(switchMap(([queryIdentifier, query, fetchParams]) => {
+                if (queryIdentifier && fetchParams && query) {
+                    return query(queryIdentifier, fetchParams);
+                }                        
+                else {
+                    return of(undefined);
+                }
+            }))
+            .pipe(tap((fetchedItems) =>
+                this.updater((state, fetchedItems: CrudItem[]|undefined) => ({
+                    ...state,
+                    fetchedItems
+                }))(fetchedItems)
+            ))
+        );
     }
 
     readonly functionAllowed$ = combineLatest(([
@@ -167,9 +184,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
         identifier
     }));
     
-    readonly reload = this.effect(_ => 
-        combineLatest([this.queryIdentifier$, this.metaService.query$, this.metaService.headParams$])            
-            .pipe(switchMap(([queryIdentifier, query, fetchParams]) => {
+    readonly reload = this.effect<void>((trigger$) => 
+        trigger$.pipe(withLatestFrom(this.queryIdentifier$, this.metaService.query$, this.metaService.headParams$))        
+            .pipe(switchMap(([, queryIdentifier, query, fetchParams]) => {
                 if (queryIdentifier && fetchParams && query) {
                     return query(queryIdentifier, fetchParams);
                 }                        
