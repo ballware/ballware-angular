@@ -1,13 +1,19 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { MetaService } from "../meta.service";
 import { MetaStore } from "./meta.store";
 
 @Injectable()
-export class MetaServiceProxy extends MetaService {
+export class MetaServiceProxy extends MetaService implements OnDestroy {
 
     constructor(private metaStore: MetaStore) {
         super();
     }
+
+    ngOnDestroy(): void {
+        this.metaStore.ngOnDestroy();
+    }
+
+    public override setIdentifier = this.metaStore.setIdentifier;
 
     public override setEntity = this.metaStore.setEntity;
     public override setReadOnly = this.metaStore.setReadOnly;

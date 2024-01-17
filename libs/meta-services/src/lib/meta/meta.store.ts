@@ -1,10 +1,12 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { MetaApiService } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
+import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
-import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from "rxjs";
+import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
+import { metaDestroyed, metaUpdated } from "../component";
 import { EditModes } from "../editmodes";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
@@ -19,16 +21,29 @@ interface TemplateItemOptions {
 }
 
 @Injectable()
-export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi {
-    constructor(private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
+export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi, OnDestroy {
+    constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 
         this.state$
+            .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {
-                console.debug('MetaStore state update');
-                console.debug(state);
+            .subscribe((state) => {                
+                if (state.identifier) {
+                    this.store.dispatch(metaUpdated({ identifier: state.identifier, currentState: state }));
+                } else {
+                    console.debug('Meta state update');
+                    console.debug(state);    
+                }
             });
+
+        this.destroy$
+            .pipe(withLatestFrom(this.state$))
+            .subscribe(([, state]) => {
+                if (state.identifier) {
+                    this.store.dispatch(metaDestroyed({ identifier: state.identifier }));
+                }
+            });            
 
         this.effect(_ => this.entity$            
             .pipe(switchMap((entity) => (entity) 
@@ -150,6 +165,11 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     
     readonly entity$ = this.select(state => state.entity);
 
+    readonly setIdentifier = this.updater((state, identifier: string) => ({
+        ...state,
+        identifier
+    }));
+
     readonly setEntity = this.updater((state, entity: string) => ({
             ...state,
             entity
@@ -224,6 +244,9 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
             const editLayout = entityMetadata.editLayouts?.find(layout => layout.identifier === identifier);
     
             if (editLayout) {
+
+                const preparedEditLayout = cloneDeep(editLayout);
+
                 const materializeTemplates = (items: EditLayoutItem[]) => {
                     return items?.map(item => {
                         if ('template' === item.type) {
@@ -261,20 +284,17 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                     });
                 };
 
-                editLayout.items = materializeTemplates(editLayout.items);
-            }
+                preparedEditLayout.items = materializeTemplates(preparedEditLayout.items);
 
-            
+                if (entityMetadata.compiledCustomScripts?.prepareEditLayout) {
+                    
+                    entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, createUtil(this.httpClient), preparedEditLayout);
+                }
 
-            if (editLayout && entityMetadata.compiledCustomScripts?.prepareEditLayout) {
-                const preparedEditLayout = cloneDeep(editLayout);
-    
-                entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, createUtil(this.httpClient), preparedEditLayout);
-    
                 return preparedEditLayout;
             }
     
-            return editLayout;
+            return undefined;
         } : undefined)) as Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;
 
     private readonly headAllowed$ = combineLatest([

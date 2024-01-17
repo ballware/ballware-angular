@@ -36,19 +36,19 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createCrudService(metaService: MetaService): CrudService {
-        return new CrudServiceProxy(new CrudStore(metaService, this.notificationService, this.translationPipe, this.router));
+        return new CrudServiceProxy(new CrudStore(this.store, metaService, this.notificationService, this.translationPipe, this.router));
     }
 
     override createEditService(metaService: MetaService): EditService {
-        return new EditServiceProxy(new EditStore(metaService));
+        return new EditServiceProxy(new EditStore(this.store, metaService));
     }
     
     override createLookupService(): LookupService {
-        return new LookupServiceProxy(new LookupStore(this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi()));
+        return new LookupServiceProxy(new LookupStore(this.store, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi()));
     }
 
     override createMetaService(lookupService: LookupService): MetaService {
-        return new MetaServiceProxy(new MetaStore(this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
+        return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
     }
 
     override createResponsiveService(): ResponsiveService {
@@ -56,6 +56,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new PageServiceProxy(new PageStore(this.httpClient, activatedRoute, router, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
+        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
 }

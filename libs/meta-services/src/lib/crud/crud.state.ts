@@ -4,7 +4,7 @@ import { CrudAction, CrudEditMenuItem, ItemEditDialog, ItemRemoveDialog } from "
 export interface CrudState {
   
     queryIdentifier?: string;
-    storageIdentifier?: string;
+    identifier?: string;
 
     addMenuItems?: CrudEditMenuItem[];
     headCustomFunctions?: EntityCustomFunction[];

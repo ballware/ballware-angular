@@ -1,11 +1,12 @@
-import { Injectable } from "@angular/core";
-import { ComponentStore } from "@ngrx/component-store";
-import { LookupState } from "./lookup.state";
-import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupServiceApi, LookupStoreDescriptor } from "../lookup.service";
+import { Injectable, OnDestroy } from "@angular/core";
 import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
-import { HttpClient } from "@angular/common/http";
-import { Observable, combineLatest, distinctUntilChanged, map, of } from "rxjs";
+import { ComponentStore } from "@ngrx/component-store";
+import { Store } from "@ngrx/store";
 import { isEqual } from "lodash";
+import { distinctUntilChanged, takeUntil, withLatestFrom } from "rxjs";
+import { lookupDestroyed, lookupUpdated } from "../component";
+import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupServiceApi, LookupStoreDescriptor } from "../lookup.service";
+import { LookupState } from "./lookup.state";
 
 const createUserLookup = (
     api: IdentityUserApi,
@@ -184,17 +185,35 @@ const createGenericLookupByIdentifier = (
 
 
 @Injectable()
-export class LookupStore extends ComponentStore<LookupState> implements LookupServiceApi {
-    constructor(private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
+export class LookupStore extends ComponentStore<LookupState> implements OnDestroy, LookupServiceApi {
+    constructor(private store: Store, private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
         super({});
 
         this.state$
+          .pipe(takeUntil(this.destroy$))
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-          .subscribe((state) => {
-              console.debug('LookupStore state update');
-              console.debug(state);
+          .subscribe((state) => {                
+              if (state.identifier) {
+                  this.store.dispatch(lookupUpdated({ identifier: state.identifier, currentState: state }));
+              } else {
+                  console.debug('Lookup state update');
+                  console.debug(state);    
+              }
           });
+
+        this.destroy$
+            .pipe(withLatestFrom(this.state$))
+            .subscribe(([, state]) => {
+                if (state.identifier) {
+                    this.store.dispatch(lookupDestroyed({ identifier: state.identifier }));
+                }
+            });    
     }
+
+    readonly setIdentifier = this.updater((state, identifier: string) => ({
+      ...state,
+      identifier
+    }));
 
     readonly lookups$ = this.select(state => state.lookups);
 

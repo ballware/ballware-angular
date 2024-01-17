@@ -1,6 +1,8 @@
 import { CompiledEntityMetadata, DocumentSelectEntry, EntityCustomFunction, QueryParams, Template } from "@ballware/meta-model";
 
 export interface MetaState {
+    identifier?: string;
+
     entity?: string;
     readOnly?: boolean;
     headParams?: QueryParams;

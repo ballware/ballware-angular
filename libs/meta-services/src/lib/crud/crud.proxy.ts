@@ -1,11 +1,15 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { CrudService } from "../crud.service";
 import { CrudStore } from "./crud.store";
 
 @Injectable()
-export class CrudServiceProxy extends CrudService {
+export class CrudServiceProxy extends CrudService implements OnDestroy {
     constructor(private crudStore: CrudStore) {
         super();
+    }
+
+    ngOnDestroy(): void {
+        this.crudStore.ngOnDestroy();    
     }
 
     readonly functionAllowed$ = this.crudStore.functionAllowed$;
@@ -27,7 +31,7 @@ export class CrudServiceProxy extends CrudService {
     readonly fetchedItems$ = this.crudStore.fetchedItems$;
   
     readonly setQuery = this.crudStore.setQuery;
-    readonly setStorageIdentifier = this.crudStore.setStorageIdentifier;
+    readonly setIdentifier = this.crudStore.setIdentifier;
   
     readonly reload = this.crudStore.reload;
     readonly create = this.crudStore.create;

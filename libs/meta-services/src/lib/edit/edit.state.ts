@@ -4,6 +4,8 @@ import { EditModes } from "../editmodes";
 
 export interface EditState {
 
+    identifier?: string;
+
     item?: Record<string, unknown>;  
     mode?: EditModes;
     editLayout?: EditLayout;

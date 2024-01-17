@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, Provider } from '@angular/core';
-import { LookupService, CrudService, MetaService, AttachmentService, PageService, EditService, MetaServiceFactory } from '@ballware/meta-services';
+import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
+import { AttachmentService, CrudService, EditService, LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -36,11 +37,11 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
   ]
 })
-export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit {
+export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit, OnDestroy {
 
   @Input() layoutItem?: PageLayoutItem;
 
-  constructor(private pageService: PageService, private metaService: MetaService, private crudService: CrudService) {
+  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private editService: EditService) {
 
     super();
 
@@ -63,11 +64,27 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
     this.metaService.setEntity((this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.entity);
     this.crudService.setQuery((this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.query ?? 'primary');
 
-    const storageIdentifier = (this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.identifier;
+    let identifier = (this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.identifier;
 
-    if (storageIdentifier) {
-      this.crudService.setStorageIdentifier(storageIdentifier);
+    if (!identifier) {
+      identifier = nanoid(11);
     }
 
+    if (identifier) {
+      this.lookupService.setIdentifier(identifier);
+      this.metaService.setIdentifier(identifier);
+      this.crudService.setIdentifier(identifier);
+      this.editService.setIdentifier(identifier);
+    }
+
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    
+    this.editService.ngOnDestroy();
+    this.crudService.ngOnDestroy();
+    this.metaService.ngOnDestroy();
+    this.lookupService.ngOnDestroy();
   }
 }

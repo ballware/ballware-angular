@@ -1,7 +1,10 @@
+import { OnDestroy } from "@angular/core";
 import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
+import { Store } from "@ngrx/store";
 import { isEqual } from "lodash";
-import { combineLatest, distinctUntilChanged, map, tap } from "rxjs";
+import { combineLatest, distinctUntilChanged, map, takeUntil, tap, withLatestFrom } from "rxjs";
+import { editDestroyed, editUpdated } from "../component";
 import { getByPath, setByPath } from "../databinding";
 import { EditServiceApi } from "../edit.service";
 import { EditItemRef } from "../edititemref";
@@ -9,24 +12,42 @@ import { EditModes } from "../editmodes";
 import { MetaService } from "../meta.service";
 import { EditState } from "./edit.state";
 
-export class EditStore extends ComponentStore<EditState> implements EditServiceApi {
+export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditServiceApi {
 
     private syncedEditItems: Record<string, EditItemRef|undefined> = {}; 
 
-    constructor(private metaService: MetaService) {
+    constructor(private store: Store, private metaService: MetaService) {
         super({
             editItems: {},
             validator: undefined
         });
 
         this.state$
-          .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-          .subscribe((state) => {
-              console.debug('EditStore state update');
-              console.debug(state);
-          });
+            .pipe(takeUntil(this.destroy$))
+            .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+            .subscribe((state) => {                
+                if (state.identifier) {
+                    this.store.dispatch(editUpdated({ identifier: state.identifier, currentState: state }));
+                } else {
+                    console.debug('Edit state update');
+                    console.debug(state);    
+                }
+            });
+
+        this.destroy$
+            .pipe(withLatestFrom(this.state$))
+            .subscribe(([, state]) => {
+                if (state.identifier) {
+                    this.store.dispatch(editDestroyed({ identifier: state.identifier }));
+                }
+            });
     }    
-            
+    
+    readonly setIdentifier = this.updater((state, identifier: string) => ({
+        ...state,
+        identifier
+    }));
+
     readonly item$ = this.select(state => state.item);
     readonly mode$ = this.select(state => state.mode);
     readonly editLayout$ = this.select(state => state.editLayout);

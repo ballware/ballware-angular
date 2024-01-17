@@ -1,5 +1,5 @@
+import { Injectable, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
-import { WithDestroy } from './withdestroy';
 
 /**
  * Data access adapter for fetching lookup data
@@ -116,6 +116,9 @@ export interface LookupRequest {
 }
 
 export interface LookupServiceApi {
+
+  setIdentifier(identifier: string): void;
+
   lookups$: Observable<Record<
       string,
       LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
@@ -130,7 +133,12 @@ export interface LookupServiceApi {
   requestLookups(request :LookupRequest[]): void;
 }
 
-export abstract class LookupService extends WithDestroy() implements LookupServiceApi {
+@Injectable()
+export abstract class LookupService implements OnDestroy, LookupServiceApi {
+
+  public abstract ngOnDestroy(): void;
+
+  public abstract setIdentifier(identifier: string): void;
 
   public abstract lookups$: Observable<Record<
       string,

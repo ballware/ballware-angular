@@ -1,8 +1,9 @@
+import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
+import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor } from "@ballware/meta-services";
 import { dxEvent } from "devextreme/events";
 import { dxDataGridColumn } from "devextreme/ui/data_grid";
 import { dxTreeListColumn } from "devextreme/ui/tree_list";
-import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
-import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor } from "@ballware/meta-services";
+import { cloneDeep } from "lodash";
 import { getByPath } from "./databinding";
 import { createLookupDataSource } from "./datasource";
 
@@ -223,8 +224,8 @@ export function createColumnConfiguration<
   onButtonAllowed?: (button: OptionButtons, data: CrudItem) => boolean
 ): Array<ColumnType> {
   const gridColumns =
-    columns
-      ?.sort((a, b) => ((a.position ?? 0) < (b.position ?? 0) ? -1 : (a.position ?? 0) > (b.position ?? 0) ? 1 : 0))
+    cloneDeep(columns ?? [])
+      .sort((a, b) => ((a.position ?? 0) < (b.position ?? 0) ? -1 : (a.position ?? 0) > (b.position ?? 0) ? 1 : 0))
       .map(c => createColumn<ColumnType>(t, c, lookups, lookupParams)) ?? [];
 
   switch (mode) {

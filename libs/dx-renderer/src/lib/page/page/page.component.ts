@@ -1,4 +1,4 @@
-import { Component, HostBinding, Provider } from '@angular/core';
+import { Component, HostBinding, OnDestroy, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LookupService, MetaServiceFactory, PageService, TenantService } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -20,12 +20,19 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider
   ]
 })
-export class PageComponent extends WithDestroy() {  
+export class PageComponent extends WithDestroy() implements OnDestroy {  
   @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
 
   constructor(private tenantService: TenantService, private router: Router, private route: ActivatedRoute, private pageService: PageService, private lookupService: LookupService) {
     super();
+  }
+
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
+    
+    this.pageService.ngOnDestroy();
+    this.lookupService.ngOnDestroy();
   }
 }

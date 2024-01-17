@@ -1,28 +1,32 @@
-import { Injectable } from "@angular/core";
-import { PageServiceApi } from "../page.service";
-import { PageState } from "./page.state";
-import { ComponentStore } from "@ngrx/component-store";
 import { HttpClient } from "@angular/common/http";
+import { Injectable, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { LookupRequest, LookupService } from "../lookup.service";
 import { MetaApiService } from "@ballware/meta-api";
-import { Observable, map, of, switchMap, withLatestFrom, tap, combineLatest, distinctUntilChanged } from "rxjs";
-import * as qs from "qs";
-import { TenantService } from "../tenant.service";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
-import { ToolbarItemRef } from "../toolbaritemref";
-import { createUtil } from "../implementation/createscriptutil";
+import { ComponentStore } from "@ngrx/component-store";
+import { Store } from "@ngrx/store";
 import { isEqual } from "lodash";
+import * as qs from "qs";
+import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
+import { pageDestroyed, pageUpdated } from "../component";
+import { createUtil } from "../implementation/createscriptutil";
+import { LookupRequest, LookupService } from "../lookup.service";
+import { PageServiceApi } from "../page.service";
+import { TenantService } from "../tenant.service";
+import { ToolbarItemRef } from "../toolbaritemref";
+import { PageState } from "./page.state";
 
 @Injectable()
-export class PageStore extends ComponentStore<PageState> implements PageServiceApi {
+export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageServiceApi {
     
     private scriptActions: ScriptActions;
 
     private toolbarItems: Record<string, ToolbarItemRef|undefined> = {};
     private editUtil: EditUtil;
 
-    constructor(private httpClient: HttpClient,
+    constructor(
+        private store: Store,
+        private httpClient: HttpClient,
         private activatedRoute: ActivatedRoute,
         private router: Router,
         private tenantService: TenantService,
@@ -32,11 +36,24 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
         super({ initialized: false, headParams: {} });
 
         this.state$
-          .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-          .subscribe((state) => {
-              console.debug('PageStore state update');
-              console.debug(state);
-          });
+            .pipe(takeUntil(this.destroy$))
+            .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
+            .subscribe((state) => {                
+                if (state.pageIdentifier) {
+                    this.store.dispatch(pageUpdated({ identifier: state.pageIdentifier, currentState: state }));
+                } else {
+                    console.debug('Meta state update');
+                    console.debug(state);    
+                }
+            });
+
+        this.destroy$
+            .pipe(withLatestFrom(this.state$))
+            .subscribe(([, state]) => {
+                if (state.pageIdentifier) {
+                    this.store.dispatch(pageDestroyed({ identifier: state.pageIdentifier }));
+                }
+            });  
 
         this.editUtil = {
             getEditorOption: (dataMember, option) => this.toolbarItems[dataMember] ? this.toolbarItems[dataMember]?.getOption(option) : undefined,
@@ -202,103 +219,6 @@ export class PageStore extends ComponentStore<PageState> implements PageServiceA
       ...state,
       pageIdentifier
     }));
-
-    /*
-    readonly setPageId = this.effect((pageId$: Observable<string>) => 
-       pageId$
-            .pipe(tap((_) => {
-                this.updater((state, _) => ({
-                  ...state,
-                  initialized: false
-                }))();
-            }))
-            .pipe(withLatestFrom(this.metaApiService.metaPageApiFactory$))
-            .pipe(switchMap(([pageId, metaPageApi]) => (pageId && metaPageApi)
-                ? metaPageApi().pageDataForIdentifier(this.httpClient, pageId)
-                : of(undefined)
-            ))
-            .pipe(tap((page) => this.updater((state) => ({
-                ...state,
-                page,
-                layout: page?.layout,
-                title: page?.layout?.title
-            }))()))            
-            .pipe(tap((page) => {
-                this.toolbarItems = {};
-        
-                page?.layout?.toolbaritems?.forEach(item => {
-                  if (item.name) {
-                    this.toolbarItems[item.name] = undefined;
-                  }
-                });
-        
-                if (!page?.layout?.toolbaritems?.length) {
-                  this.updater((state) => ({
-                    ...state,
-                    initialized: true
-                  }))();
-                }
-            }))
-            .pipe(tap((page) => {
-                if (page) {
-                    const lookups = [] as Array<LookupRequest>;
-          
-                    if (page.lookups) {
-                      lookups.push(...page.lookups.map(l => {
-                        if (l.type === 1) {
-                          if (l.hasParam) {
-                            return {
-                              type: 'autocompletewithparam',
-                              identifier: l.identifier,
-                              lookupId: l.id,
-                            } as LookupRequest;
-                          } else {
-                            return {
-                              type: 'autocomplete',
-                              identifier: l.identifier,
-                              lookupId: l.id,
-                            } as LookupRequest;
-                          }
-                        } else {
-                          if (l.hasParam) {
-                            return {
-                              type: 'lookupwithparam',
-                              identifier: l.identifier,
-                              lookupId: l.id,
-                              valueMember: l.valueMember,
-                              displayMember: l.displayMember,
-                            } as LookupRequest;
-                          } else {
-                            return {
-                              type: 'lookup',
-                              identifier: l.identifier,
-                              lookupId: l.id,
-                              valueMember: l.valueMember,
-                              displayMember: l.displayMember,
-                            } as LookupRequest;
-                          }
-                        }
-                      }));
-                    }
-          
-                    if (page.picklists) {
-                      lookups.push(
-                        ...page.picklists.map(p => {
-                          return {
-                            type: 'pickvalue',
-                            identifier: p.identifier,
-                            entity: p.entity,
-                            field: p.field,
-                          } as LookupRequest;
-                        })
-                      );
-                    }
-                              
-                    this.lookupService.requestLookups(lookups);
-                  }
-            }))
-    );
-    */
 
     readonly loadData = this.effect((params$: Observable<QueryParams>) => 
         params$

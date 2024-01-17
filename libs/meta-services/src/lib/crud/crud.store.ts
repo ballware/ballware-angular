@@ -1,24 +1,40 @@
+import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
+import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { isEqual } from 'lodash';
-import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
 import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
 
-export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi {
-    constructor(private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
+export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi, OnDestroy {
+    constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
         super({});
 
         this.state$
+            .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {
-                console.debug('CrudStore state update');
-                console.debug(state);
+            .subscribe((state) => {                
+                if (state.identifier) {
+                    this.store.dispatch(crudUpdated({ identifier: state.identifier, currentState: state }));
+                } else {
+                    console.debug('Crud state update');
+                    console.debug(state);    
+                }
+            });
+
+        this.destroy$
+            .pipe(withLatestFrom(this.state$))
+            .subscribe(([, state]) => {
+                if (state.identifier) {
+                    this.store.dispatch(crudDestroyed({ identifier: state.identifier }));
+                }
             });
 
         this.effect(_ => combineLatest([ 
@@ -146,9 +162,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
         queryIdentifier
     }));
 
-    readonly setStorageIdentifier = this.updater((state, storageIdentifier: string) => ({
+    readonly setIdentifier = this.updater((state, identifier: string) => ({
         ...state,
-        storageIdentifier
+        identifier
     }));
     
     readonly reload = this.effect(_ => 

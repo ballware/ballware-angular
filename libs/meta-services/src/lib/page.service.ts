@@ -1,8 +1,8 @@
 import { Observable } from 'rxjs';
 
+import { Injectable, OnDestroy } from '@angular/core';
 import { CompiledPageData, PageLayout, QueryParams, ValueType } from '@ballware/meta-model';
 import { ToolbarItemRef } from './toolbaritemref';
-import { WithDestroy } from './withdestroy';
 
 export interface PageServiceApi {
   initialized$: Observable<boolean>;
@@ -19,7 +19,10 @@ export interface PageServiceApi {
   paramEditorEvent(editor: { name: string, event: string, param?: ValueType }): void;
 }
 
-export abstract class PageService extends WithDestroy() implements PageServiceApi {
+@Injectable()
+export abstract class PageService implements OnDestroy, PageServiceApi {
+  
+  public abstract ngOnDestroy(): void;
 
   public abstract initialized$: Observable<boolean>;
   public abstract page$: Observable<CompiledPageData|undefined>;

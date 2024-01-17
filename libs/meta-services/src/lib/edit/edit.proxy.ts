@@ -1,13 +1,19 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { EditService } from "../edit.service";
 import { EditStore } from "./edit.store";
 
 @Injectable()
-export class EditServiceProxy extends EditService {
+export class EditServiceProxy extends EditService implements OnDestroy {
     
     constructor(private editStore: EditStore) {
         super();
     }
+
+    ngOnDestroy(): void {
+        this.editStore.ngOnDestroy();    
+    }
+
+    readonly setIdentifier = this.editStore.setIdentifier;
 
     readonly mode$ = this.editStore.mode$;
     readonly editLayout$ = this.editStore.editLayout$;

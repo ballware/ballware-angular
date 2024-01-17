@@ -6,6 +6,7 @@ import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { OAuthService } from 'angular-oauth2-oidc';
+import { ComponentFeatureModule } from './component';
 import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
 import { IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
@@ -45,7 +46,8 @@ export * from './toolbaritemref';
     IdentityFeatureModule,
     IdentityEffectsModule,
     TenantFeatureModule,
-    TenantEffectsModule
+    TenantEffectsModule,
+    ComponentFeatureModule
   ],
 })
 export class MetaServicesModule {

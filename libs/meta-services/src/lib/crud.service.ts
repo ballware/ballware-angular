@@ -1,7 +1,7 @@
+import { Injectable, OnDestroy } from '@angular/core';
 import { CrudItem, EditLayout, EntityCustomFunction } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
-import { WithDestroy } from './withdestroy';
 
 export type FunctionIdentifier = 'add' | 'edit' | 'view' | 'delete' | 'print' | 'options' | 'customoptions';
 
@@ -37,6 +37,7 @@ export interface CrudEditMenuItem {
 }
 
 export interface CrudServiceApi {
+
     functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
     functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
@@ -69,7 +70,7 @@ export interface CrudServiceApi {
     fetchedItems$: Observable<CrudItem[]|undefined>;
 
     setQuery(query: string): void;
-    setStorageIdentifier(identifier: string): void;
+    setIdentifier(identifier: string): void;
 
     reload(): void;
     create(request: { editLayout: string }): void;
@@ -88,7 +89,10 @@ export interface CrudServiceApi {
     selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }
 
-export abstract class CrudService extends WithDestroy() implements CrudServiceApi {
+@Injectable()
+export abstract class CrudService implements OnDestroy, CrudServiceApi {
+  
+  public abstract ngOnDestroy(): void;
 
   public abstract functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
   public abstract functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
@@ -122,7 +126,7 @@ export abstract class CrudService extends WithDestroy() implements CrudServiceAp
   public abstract fetchedItems$: Observable<CrudItem[]|undefined>;
 
   public abstract setQuery(query: string): void;
-  public abstract setStorageIdentifier(identifier: string): void;
+  public abstract setIdentifier(identifier: string): void;
 
   public abstract reload(): void;
   public abstract create(request: { editLayout: string }): void;

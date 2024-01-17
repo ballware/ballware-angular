@@ -1,8 +1,8 @@
+import { Injectable, OnDestroy } from '@angular/core';
 import { EditLayout, EditLayoutItem, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
-import { WithDestroy } from './withdestroy';
 
 export interface EditServiceApi {
     mode$: Observable<EditModes|undefined>;
@@ -19,6 +19,8 @@ export interface EditServiceApi {
     editorEntered$: Observable<((request: { dataMember: string }) => void)|undefined>;
     editorEvent$: Observable<((request: { dataMember: string, event: string }) => void)|undefined>;    
 
+    setIdentifier(identifier: string): void;
+
     setMode(mode: EditModes): void;  
     setItem(item: Record<string, unknown>): void;  
     setEditLayout(editLayout: EditLayout): void;
@@ -27,8 +29,13 @@ export interface EditServiceApi {
     validate(): Observable<boolean>;
 }
 
-export abstract class EditService extends WithDestroy() implements EditServiceApi {
-        
+@Injectable()
+export abstract class EditService implements OnDestroy, EditServiceApi {
+    
+    public abstract ngOnDestroy(): void;
+
+    public abstract setIdentifier(identifier: string): void;
+
     public abstract mode$: Observable<EditModes|undefined>;
     public abstract editLayout$: Observable<EditLayout|undefined>;
     public abstract readonly$: Observable<boolean|undefined>;

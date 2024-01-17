@@ -1,9 +1,10 @@
+import { Injectable, OnDestroy } from '@angular/core';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
-import { WithDestroy } from './withdestroy';
 
 export interface MetaServiceApi {
+  setIdentifier(identifier: string): void;
   setEntity(entity: string): void;
   setReadOnly(readOnly: boolean): void;
   setHeadParams(headParams: QueryParams): void;
@@ -47,8 +48,13 @@ export interface MetaServiceApi {
   editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;  
 }
 
-export abstract class MetaService extends WithDestroy() implements MetaServiceApi {
-      
+@Injectable()
+export abstract class MetaService implements OnDestroy, MetaServiceApi {
+  
+  public abstract ngOnDestroy(): void;
+
+  public abstract setIdentifier(identifier: string): void;
+
   public abstract setEntity(entity: string): void;
   public abstract setReadOnly(readOnly: boolean): void;
   public abstract setHeadParams(headParams: QueryParams): void;

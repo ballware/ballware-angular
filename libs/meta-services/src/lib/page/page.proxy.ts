@@ -1,10 +1,16 @@
+import { Injectable, OnDestroy } from "@angular/core";
 import { PageService } from "../page.service";
 import { PageStore } from "./page.store";
 
-export class PageServiceProxy extends PageService {
+@Injectable()
+export class PageServiceProxy extends PageService implements OnDestroy {
     
     constructor(private pageStore: PageStore) {
         super();
+    }
+
+    ngOnDestroy(): void {
+        this.pageStore.ngOnDestroy();
     }
 
     readonly initialized$ = this.pageStore.initialized$;
