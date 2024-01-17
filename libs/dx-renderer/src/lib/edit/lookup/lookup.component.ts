@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
+import { AutocompleteStoreDescriptor, EditItemRef, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { combineLatest, takeUntil } from 'rxjs';
-import { createArrayDatasource, createLookupDataSource } from '../../utils/datasource';
+import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -61,10 +61,17 @@ export class EditLayoutLookupComponent extends WithRequired(WithReadonly(WithVal
                     if (this.lookup) {
                       const currentLookup = this.lookup;
 
-                      this.dataSource = createLookupDataSource(
-                        () => (currentLookup.store as LookupStoreDescriptor).listFunc(),
-                        (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
-                      );
+                      if (currentLookup.type === 'lookup') {
+                        this.dataSource = createLookupDataSource(
+                          () => (currentLookup.store as LookupStoreDescriptor).listFunc(),
+                          (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
+                        );
+                      } else if (currentLookup.type === 'autocomplete') {
+                        this.dataSource = createAutocompleteDataSource(
+                          () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
+                        );
+                      }
+                      
                     }
                   }
                 }

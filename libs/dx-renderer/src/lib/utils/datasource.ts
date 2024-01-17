@@ -1,7 +1,7 @@
+import { CrudItem } from '@ballware/meta-model';
 import CustomStore from 'devextreme/data/custom_store';
 import DataSource from 'devextreme/data/data_source';
 import { firstValueFrom, Observable } from 'rxjs';
-import { CrudItem } from '@ballware/meta-model';
 
 export function createReadonlyDatasource(
   fetchFunc: () => Promise<Array<Record<string, unknown>>>,
@@ -128,14 +128,12 @@ export function createLookupDataSource(
 }
 
 export function createAutocompleteDataSource(
-  fetchFunc: () => Promise<Array<unknown>>
+  fetchFunc: () => Observable<Array<unknown>>
 ): DataSource {
   const dataStore = new CustomStore({
     loadMode: 'raw',
     load: function() {
-      return fetchFunc().then(result => {
-        return result;
-      });
+      return firstValueFrom(fetchFunc());
     },
   });
 
