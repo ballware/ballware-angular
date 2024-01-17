@@ -2,7 +2,7 @@ import { OnDestroy } from "@angular/core";
 import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { isEqual } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import { combineLatest, distinctUntilChanged, map, takeUntil, tap, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
 import { getByPath, setByPath } from "../databinding";
@@ -27,7 +27,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
             .subscribe((state) => {                
                 if (state.identifier) {
-                    this.store.dispatch(editUpdated({ identifier: state.identifier, currentState: state }));
+                    this.store.dispatch(editUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Edit state update');
                     console.debug(state);    

@@ -5,7 +5,7 @@ import { MetaApiService } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { isEqual } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import * as qs from "qs";
 import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
@@ -40,7 +40,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
             .subscribe((state) => {                
                 if (state.pageIdentifier) {
-                    this.store.dispatch(pageUpdated({ identifier: state.pageIdentifier, currentState: state }));
+                    this.store.dispatch(pageUpdated({ identifier: state.pageIdentifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Meta state update');
                     console.debug(state);    

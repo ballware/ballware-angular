@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from "@angular/core";
 import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { isEqual } from "lodash";
+import { cloneDeep, isEqual } from "lodash";
 import { distinctUntilChanged, takeUntil, withLatestFrom } from "rxjs";
 import { lookupDestroyed, lookupUpdated } from "../component";
 import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupServiceApi, LookupStoreDescriptor } from "../lookup.service";
@@ -194,7 +194,7 @@ export class LookupStore extends ComponentStore<LookupState> implements OnDestro
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
           .subscribe((state) => {                
               if (state.identifier) {
-                  this.store.dispatch(lookupUpdated({ identifier: state.identifier, currentState: state }));
+                  this.store.dispatch(lookupUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
               } else {
                   console.debug('Lookup state update');
                   console.debug(state);    

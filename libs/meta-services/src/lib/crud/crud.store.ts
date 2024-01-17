@@ -4,7 +4,7 @@ import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
-import { isEqual } from 'lodash';
+import { cloneDeep, isEqual } from 'lodash';
 import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
@@ -22,7 +22,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
             .subscribe((state) => {                
                 if (state.identifier) {
-                    this.store.dispatch(crudUpdated({ identifier: state.identifier, currentState: state }));
+                    this.store.dispatch(crudUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Crud state update');
                     console.debug(state);    

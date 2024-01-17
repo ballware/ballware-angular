@@ -30,7 +30,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
             .subscribe((state) => {                
                 if (state.identifier) {
-                    this.store.dispatch(metaUpdated({ identifier: state.identifier, currentState: state }));
+                    this.store.dispatch(metaUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Meta state update');
                     console.debug(state);    
