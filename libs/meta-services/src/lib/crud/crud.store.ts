@@ -301,10 +301,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                             item: item,
                             title: this.translationService.transform('datacontainer.titles.remove', { entity: displayName }),
                             apply: () => { 
-                                this.updater((state) => ({
-                                    ...state,
-                                    removeDialog: undefined
-                                }))(); 
+                                this.drop({ item });
                             },
                             cancel: () => { 
                                 this.updater((state) => ({
@@ -382,6 +379,24 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     }))
                 : of(undefined)
             )));
+
+    readonly drop = this.effect((dropRequest$: Observable<{ item: CrudItem }>) => 
+        combineLatest([dropRequest$, this.metaService.drop$])
+            .pipe(switchMap(([dropRequest, drop]) => (dropRequest && drop)
+                ? drop(dropRequest.item)
+                    .pipe(tap(() => { 
+                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.removed'), severity: 'info' });
+                        
+                        this.updater((state) => ({
+                            ...state,
+                            removeDialog: undefined
+                        }))(); 
+
+                        this.reload();
+                    }))
+                : of(undefined)
+            ))
+    );
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
         combineLatest([selectAddRequest$, this.addMenuItems$])            

@@ -83,6 +83,8 @@ export interface CrudServiceApi {
     save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
     saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
 
+    drop(request: { item: CrudItem }): void;
+
     selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { item: CrudItem, target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
@@ -137,6 +139,7 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
   public abstract save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
   public abstract saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
+  public abstract drop(request: { item: CrudItem }): void;
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
   public abstract selectPrint(request: { item: CrudItem, target: Element }): void;

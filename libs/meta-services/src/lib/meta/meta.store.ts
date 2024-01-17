@@ -396,7 +396,13 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (query, items) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
             .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient))) : items)
-        : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;        
+        : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;     
+        
+    readonly drop$ = combineLatest([this.entityMetadata$])
+        .pipe(map(([entityMetadata]) => (entityMetadata)
+        ? (item) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            .drop(item.Id)
+        : undefined)) as Observable<((item: CrudItem) => Observable<void>) | undefined>;
 
     readonly prepareCustomFunction$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)

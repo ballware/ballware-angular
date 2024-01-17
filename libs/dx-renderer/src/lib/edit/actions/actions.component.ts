@@ -1,10 +1,9 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { CrudService, EditModes, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
-import { map, Observable, takeUntil } from 'rxjs';
-import { EditLayout } from '@ballware/meta-model';
-import { CrudService, MetaService, ResponsiveService, SCREEN_SIZE, EditModes } from '@ballware/meta-services';
-import { WithDestroy } from '../../utils/withdestroy';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
+import { Observable, map, takeUntil } from 'rxjs';
+import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
   selector: 'ballware-crud-actions',
@@ -23,14 +22,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public EditModes = EditModes;
 
-  public itemDialog?: {
-    mode: EditModes,
-    item: Record<string, unknown>,
-    title: string,
-    editLayout?: EditLayout,
-    apply: (item: Record<string, unknown>) => void,
-    cancel: () => void
-  };
+  public itemDialog: ItemEditDialog|undefined;
+  public removeDialog: ItemRemoveDialog|undefined;
 
   public displayName$: Observable<string|undefined>;
 
@@ -38,6 +31,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   constructor(private metaService: MetaService, private crudService: CrudService, private responsiveService: ResponsiveService) {
     super();
+
+    this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);
+    this.onRemoveDialogCancel = this.onRemoveDialogCancel.bind(this);
 
     this.usePopover$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
@@ -49,6 +45,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((itemDialog) => {
         this.itemDialog = itemDialog;
+      });
+
+    this.crudService.removeDialog$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((removeDialog) => {
+        this.removeDialog = removeDialog;
       });
   }
 
@@ -108,6 +110,14 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public importMenuItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
+  }
+
+  public onRemoveDialogApply() {
+    this.removeDialog?.apply(this.removeDialog.item);
+  }
+
+  public onRemoveDialogCancel() {
+    this.removeDialog?.cancel();
   }
 
 }

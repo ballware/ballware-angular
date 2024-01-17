@@ -1,6 +1,20 @@
 <ballware-crud-dialog *ngIf="itemDialog" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
+<dx-popup *ngIf="removeDialog" 
+  [visible]="true" 
+  [showCloseButton]="true"
+  [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
+  (onHidden)="onRemoveDialogCancel()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'danger', text: 'editing.actions.remove' | i18next, onClick: onRemoveDialogApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onRemoveDialogCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <p>{{'datacontainer.messages.remove' | i18next: { entity: displayName$ | async } }}</p>
+  </div>
+</dx-popup>
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"

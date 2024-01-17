@@ -43,6 +43,7 @@ export class MetaServiceProxy extends MetaService implements OnDestroy {
 
     public override save$ = this.metaStore.save$;
     public override saveBatch$ = this.metaStore.saveBatch$;
+    public override drop$ = this.metaStore.drop$;
 
     public override addAllowed$ = this.metaStore.addAllowed$;
     public override viewAllowed$ = this.metaStore.viewAllowed$;
