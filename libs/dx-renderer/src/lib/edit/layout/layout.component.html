@@ -1,7 +1,9 @@
 <dx-validation-group
   (onInitialized)="onValidationGroupInitialized($event)">
-  <ballware-edit-container [colCount]="(layout$ | async)?.colCount ?? 1" [items]="(layout$ | async)?.items ?? []">
-  </ballware-edit-container>
+  <dx-scroll-view>
+    <ballware-edit-container [colCount]="(layout$ | async)?.colCount ?? 1" [items]="(layout$ | async)?.items ?? []">
+    </ballware-edit-container>
+  </dx-scroll-view> 
   <dx-validation-summary>
   </dx-validation-summary>
 </dx-validation-group>

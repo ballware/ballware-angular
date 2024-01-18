@@ -70,9 +70,11 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   }
 
   public onApply() {
-    if (this.editService.validate()) {
-      this.item && this.apply && this.apply(this.item);
-    }
+    this.editService.validate().subscribe(result => {
+      if (result) {
+        this.item && this.apply && this.apply(this.item);  
+      }
+    });
   }
 
 }
