@@ -1,11 +1,12 @@
 import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { ApiError } from '@ballware/meta-api';
 import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
-import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { Observable, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { EditModes } from '../editmodes';
@@ -360,6 +361,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
                         this.reload();
                     }))
+                    .pipe(catchError((error: ApiError) => {
+                        this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                        
+                        return of(undefined);              
+                    }))
                 : of(undefined)
             )));
 
@@ -377,6 +383,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
                         this.reload();
                     }))
+                    .pipe(catchError((error: ApiError) => {
+                        this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                        
+                        return of(undefined);              
+                    }))
                 : of(undefined)
             )));
 
@@ -393,6 +404,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         }))(); 
 
                         this.reload();
+                    }))
+                    .pipe(catchError((error: ApiError) => {
+                        this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                        
+                        return of(undefined);              
                     }))
                 : of(undefined)
             ))

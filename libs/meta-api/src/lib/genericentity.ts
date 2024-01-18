@@ -1,6 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CrudItem, QueryParams } from '@ballware/meta-model';
+import { Observable, catchError, map, throwError } from 'rxjs';
+import { ApiError } from './error';
 import { additionalParamsToUrl } from './util';
 
 /**
@@ -105,7 +106,15 @@ const queryFunc = (http: HttpClient, baseUrl: string) => (
     : `${baseUrl}/all?identifier=${encodeURIComponent(query)}`;
 
   return http
-    .get<Array<CrudItem>>(url);
+    .get<Array<CrudItem>>(url)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }));
 };
 
 const countFunc = (http: HttpClient, baseUrl: string) => (
@@ -120,6 +129,14 @@ const countFunc = (http: HttpClient, baseUrl: string) => (
 
   return http
     .get<{ count: number }>(url)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }))
     .pipe(map(value => value?.count));
 };
 
@@ -130,7 +147,15 @@ const byIdFunc = (http: HttpClient, baseUrl: string) => (
   const url = `${baseUrl}/byId?identifier=${encodeURIComponent(functionIdentifier)}&id=${encodeURIComponent(id)}`;
 
   return http
-    .get<CrudItem>(url);
+    .get<CrudItem>(url)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }));
 };
 
 const newFunc = (http: HttpClient, baseUrl: string) => (
@@ -144,7 +169,15 @@ const newFunc = (http: HttpClient, baseUrl: string) => (
     : `${baseUrl}/new?identifier=${encodeURIComponent(functionIdentifier)}`;
 
   return http
-    .get<CrudItem>(url);
+    .get<CrudItem>(url)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }));
 };
 
 const saveFunc = (http: HttpClient, baseUrl: string) => (
@@ -157,7 +190,15 @@ const saveFunc = (http: HttpClient, baseUrl: string) => (
     headers: {
       'Content-Type': 'application/json'
     },
-  });
+  })
+  .pipe(catchError((error: HttpErrorResponse) => {      
+    return throwError(() => ({
+      status: error.status,
+      statusText: error.statusText,
+      message: error.message,
+      payload: error.error
+    } as ApiError))
+  }));
 };
 
 const saveBatchFunc = (http: HttpClient, baseUrl: string) => (
@@ -172,7 +213,15 @@ const saveBatchFunc = (http: HttpClient, baseUrl: string) => (
       headers: {
         'Content-Type': 'application/json'
       },
-    });
+    })
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }));
 };
 
 const removeFunc = (http: HttpClient, baseUrl: string) => (
@@ -181,7 +230,15 @@ const removeFunc = (http: HttpClient, baseUrl: string) => (
   const url = `${baseUrl}/remove/${id}`;
 
   return http
-    .delete<void>(url);
+    .delete<void>(url)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError));              
+  }));
 };
 
 const importFunc = (http: HttpClient, baseUrl: string) => (
@@ -198,7 +255,15 @@ const importFunc = (http: HttpClient, baseUrl: string) => (
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-  });
+  })
+  .pipe(catchError((error: HttpErrorResponse) => {      
+    return throwError(() => ({
+      status: error.status,
+      statusText: error.statusText,
+      message: error.message,
+      payload: error.error
+    } as ApiError))
+  }));
 };
 
 const exportFunc = (http: HttpClient, baseUrl: string) => (
@@ -213,6 +278,14 @@ const exportFunc = (http: HttpClient, baseUrl: string) => (
         'Content-Type': 'application/x-www-form-urlencoded'
       },
     })
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }))
     .pipe(map(data => `${baseUrl}/download?id=${encodeURIComponent(data)}`));
 };
 
