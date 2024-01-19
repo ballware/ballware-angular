@@ -1,8 +1,8 @@
 import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
-import { DxMapComponent } from 'devextreme-angular';
-import { combineLatest, Observable, takeUntil } from 'rxjs';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
 import { CrudService, SettingsService } from '@ballware/meta-services';
+import { DxMapComponent } from 'devextreme-angular';
+import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { getByPath } from '../../utils/databinding';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -65,6 +65,8 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   public onMarkerClicked(item: CrudItem) {
     if (this.mouseTarget) {
+      
+
       this.crudService.selectOptions({ item, target: this.mouseTarget, defaultEditLayout: 'primary' });
     }
   }

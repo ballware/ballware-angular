@@ -6,7 +6,7 @@ import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
-import { Observable, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { EditModes } from '../editmodes';
@@ -15,6 +15,7 @@ import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi, OnDestroy {
+    
     constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
         super({});
 
@@ -99,6 +100,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             ))
         );
     }
+
+    readonly currentInteractionTarget$: Subject<Element | undefined> = new Subject<Element|undefined>();
 
     readonly functionAllowed$ = combineLatest(([
             this.metaService.addAllowed$,
@@ -427,13 +430,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
                         return undefined;
                     } else if (addMenuItems.length > 1) {
+
+                        this.currentInteractionTarget$.next(selectAddRequest.target)
+
                         return {
-                            target: selectAddRequest.target,
                             actions: addMenuItems.map(f => ({
                                 id: f.id,
                                 text: f.text,
                                 icon: f.customFunction?.icon ?? 'bi bi-plus',
-                                target: selectAddRequest.target,
                                 execute: (_target) => f.customFunction 
                                     ? this.customEdit({ customFunction: f.customFunction }) 
                                     : this.create({ editLayout: selectAddRequest.defaultEditLayout })
@@ -444,7 +448,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
                 return undefined;
             }))
-            .pipe(tap((selectAddSheet) => this.updater((state, selectAddSheet: { target: Element, actions: CrudAction[]}|undefined) => ({
+            .pipe(tap((selectAddSheet) => this.updater((state, selectAddSheet: { actions: CrudAction[]}|undefined) => ({
                 ...state,
                 selectAddSheet
             }))(selectAddSheet)))
@@ -454,15 +458,16 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
         combineLatest([this.metaService.entityDocuments$, selectPrintRequest$])
             .pipe(map(([entityDocuments, selectPrintRequest]) => {
                 if (entityDocuments && selectPrintRequest) {
+
+                    this.currentInteractionTarget$.next(selectPrintRequest.target);
+
                     return {
                         item: selectPrintRequest.item,
-                        target: selectPrintRequest.target,
                         actions: entityDocuments.map(d => ({
                             id: d.Id,
                             text: d.Name,
                             icon: 'bi bi-file-earmark-fill',
                             item: selectPrintRequest.item,
-                            target: selectPrintRequest.target,
                             execute: (_target) => this.print({ documentId: d.Id, items: [selectPrintRequest.item] })
                         } as CrudAction))
                     };
@@ -470,7 +475,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
                 return undefined;
             }))
-            .pipe(tap((selectPrintSheet) => this.updater((state, selectPrintSheet: { item: CrudItem, target: Element, actions: CrudAction[]}|undefined) => ({
+            .pipe(tap((selectPrintSheet) => this.updater((state, selectPrintSheet: { item: CrudItem, actions: CrudAction[]}|undefined) => ({
                     ...state,
                     selectPrintSheet
                 }))(selectPrintSheet)
@@ -484,13 +489,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 request$,
                 this.metaService.customFunctions$, 
                 this.metaService.customFunctionAllowed$
-            ]).pipe(switchMap(([{ item, target }, customFunctions, customFunctionAllowed]) => 
+            ]).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
                     .map(f => ({ 
                         id: f.id, 
                         icon: f.icon, 
                         text: f.text, 
-                        target: target,
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
             )),
@@ -508,7 +512,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     id: 'view',
                     icon: 'bi bi-eye-fill',
                     text: this.translationService.transform('datacontainer.actions.show'),
-                    target: target,
                     execute: (_target) => this.view({ item, editLayout: defaultEditLayout })
                 });
             }
@@ -518,7 +521,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     id: 'edit',                  
                     icon: 'bi bi-pencil-fill',
                     text: this.translationService.transform('datacontainer.actions.edit'),
-                    target: target,
                     execute: (_target) => this.edit({ item, editLayout: defaultEditLayout })
                 });
               }
@@ -528,7 +530,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     id: 'delete',                  
                     icon: 'bi bi-trash-fill',
                     text: this.translationService.transform('datacontainer.actions.remove'),
-                    target: target,
                     execute: (_target) => this.remove({ item })
                 });
             }              
@@ -538,7 +539,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     id: 'print',                    
                     icon: 'bi bi-printer-fill',
                     text: this.translationService.transform('datacontainer.actions.print'),
-                    target: target,
                     execute: (target) => this.selectPrint({ item, target })
                 });
             }
@@ -547,13 +547,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 actions.push(...customFunctions);
             }
 
+            this.currentInteractionTarget$.next(target);
+
             return {
                 item,
-                target,
                 actions
             };
         }))
-        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, target: Element, actions: CrudAction[]}|undefined) => ({
+        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, actions: CrudAction[]}|undefined) => ({
             ...state,
             selectActionSheet
         }))(selectActionSheet))))
@@ -567,13 +568,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 request$,
                 this.metaService.customFunctions$, 
                 this.metaService.customFunctionAllowed$
-            ]).pipe(switchMap(([{ item, target }, customFunctions, customFunctionAllowed]) => 
+            ]).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
                     .map(f => ({ 
                         id: f.id, 
                         icon: f.icon, 
                         text: f.text, 
-                        target: target,
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
             ))          
@@ -586,13 +586,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 actions.push(...customFunctions);
             }
 
+            this.currentInteractionTarget$.next(target);
+
             return {
                 item,
-                target,
                 actions
             };
         }))
-        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, target: Element, actions: CrudAction[]}|undefined) => ({
+        .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, actions: CrudAction[]}|undefined) => ({
             ...state,
             selectActionSheet
         }))(selectActionSheet))))

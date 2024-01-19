@@ -16,19 +16,16 @@ export interface CrudState {
     removeDialog?: ItemRemoveDialog;
   
     selectAddSheet?: {
-        target: Element,
         actions: CrudAction[]
     };
   
     selectActionSheet?: { 
         item: CrudItem, 
-        target: Element, 
         actions: CrudAction[]
     };
   
     selectPrintSheet?: { 
-        item: CrudItem, 
-        target: Element, 
+        item: CrudItem,  
         actions: CrudAction[]
     };
   

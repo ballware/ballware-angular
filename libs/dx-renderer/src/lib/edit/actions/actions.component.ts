@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { CrudService, EditModes, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
-import { Observable, map, takeUntil } from 'rxjs';
+import { Observable, map, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -57,11 +57,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   ngOnInit(): void {
     this.crudService.selectAddSheet$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((addSheet) => {
+      .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
+      .subscribe(([addSheet, target]) => {
         if (addSheet) {
           console.log('Activating add sheet');
           console.log(addSheet);
-          this.addMenu?.instance.option('target', addSheet.target);
+          this.addMenu?.instance.option('target', target);
           this.addMenu?.instance.option('dataSource', addSheet.actions);
           this.addMenu?.instance.option('visible', true);
         }
@@ -69,11 +70,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.crudService.selectPrintSheet$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((printSheet) => {
+      .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
+      .subscribe(([printSheet, target]) => {
         if (printSheet) {
           console.log('Activating print sheet');
           console.log(printSheet);
-          this.printMenu?.instance.option('target', printSheet.target);
+          this.printMenu?.instance.option('target', target);
           this.printMenu?.instance.option('dataSource', printSheet.actions);
           this.printMenu?.instance.option('visible', true);
         }
@@ -81,11 +83,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.crudService.selectActionSheet$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((actionSheet) => {
+      .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
+      .subscribe(([actionSheet, target]) => {
         if (actionSheet) {
           console.log('Activating action sheet');
           console.log(actionSheet);
-          this.actionMenu?.instance.option('target', actionSheet.target);
+          this.actionMenu?.instance.option('target', target);
           this.actionMenu?.instance.option('dataSource', actionSheet.actions);
           this.actionMenu?.instance.option('visible', true);
         }

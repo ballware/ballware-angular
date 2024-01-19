@@ -12,6 +12,8 @@ export class CrudServiceProxy extends CrudService implements OnDestroy {
         this.crudStore.ngOnDestroy();    
     }
 
+    readonly currentInteractionTarget$ = this.crudStore.currentInteractionTarget$;
+
     readonly functionAllowed$ = this.crudStore.functionAllowed$;
     readonly functionExecute$ = this.crudStore.functionExecute$;
   

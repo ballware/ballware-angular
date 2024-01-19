@@ -10,7 +10,6 @@ export interface CrudAction {
     text: string,
     icon: string,
     item?: CrudItem,
-    target: Element,
     execute: (target: Element) => void
 }
 
@@ -38,6 +37,8 @@ export interface CrudEditMenuItem {
 
 export interface CrudServiceApi {
 
+    currentInteractionTarget$: Observable<Element|undefined>;
+
     functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
     functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
@@ -51,19 +52,16 @@ export interface CrudServiceApi {
     removeDialog$: Observable<ItemRemoveDialog|undefined>;
 
     selectAddSheet$: Observable<{
-        target: Element,
         actions: CrudAction[]
     }|undefined>;
 
     selectActionSheet$: Observable<{ 
         item: CrudItem, 
-        target: Element, 
         actions: CrudAction[] 
     }|undefined>;
 
     selectPrintSheet$: Observable<{ 
         item: CrudItem, 
-        target: Element, 
         actions: CrudAction[]
     }|undefined>;
 
@@ -96,6 +94,8 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   
   public abstract ngOnDestroy(): void;
 
+  public abstract currentInteractionTarget$: Observable<Element|undefined>;
+
   public abstract functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
   public abstract functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
@@ -109,19 +109,16 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract removeDialog$: Observable<ItemRemoveDialog|undefined>;
 
   public abstract selectAddSheet$: Observable<{
-      target: Element,
       actions: CrudAction[]
   }|undefined>;
 
   public abstract selectActionSheet$: Observable<{ 
-      item: CrudItem, 
-      target: Element, 
+      item: CrudItem,       
       actions: CrudAction[]
   }|undefined>;
 
   public abstract selectPrintSheet$: Observable<{ 
-      item: CrudItem, 
-      target: Element, 
+      item: CrudItem,       
       actions: CrudAction[]
   }|undefined>;
 
