@@ -38,9 +38,6 @@ export interface MetaServiceApi {
   viewFunction$: Observable<EntityCustomFunction|undefined>;
   editFunction$: Observable<EntityCustomFunction|undefined>;
 
-  //addAllowed$: Observable<(() => boolean)|undefined>;
-  //viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  //editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;

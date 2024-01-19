@@ -366,16 +366,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                 : hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
             ) ?? false;
         })) as Observable<((item: CrudItem, right: string) => boolean)|undefined>;        
-
-    //readonly addAllowed$ = this.headAllowed$    
-    //    .pipe(map((headAllowed) => headAllowed ? () => headAllowed('add') : undefined)) as Observable<(() => boolean)|undefined>;
-
-    //readonly viewAllowed$ = this.itemAllowed$        
-    //    .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'view') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
     
-    //readonly editAllowed$ = this.itemAllowed$        
-    //    .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'edit') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
-
     readonly dropAllowed$ = this.itemAllowed$        
         .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'delete') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
 
