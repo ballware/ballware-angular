@@ -18,6 +18,7 @@ export interface ItemEditDialog {
     item: Record<string, unknown>, 
     title: string, 
     editLayout?: EditLayout, 
+    externalEditor?: boolean,
     apply: (item: Record<string, unknown>) => void, 
     cancel: () => void    
 }

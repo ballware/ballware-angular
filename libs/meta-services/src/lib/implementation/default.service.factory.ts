@@ -56,6 +56,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
+        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
 }

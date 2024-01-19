@@ -1,6 +1,13 @@
-<ballware-crud-dialog *ngIf="itemDialog" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog *ngIf="itemDialog && !itemDialog.externalEditor" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
+<dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
+  [visible]="true" 
+  [showCloseButton]="true"
+  [title]="itemDialog.title"
+  (onHidden)="onExternalEditorDialogClose()">
+  <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
+</dx-popup>
 <dx-popup *ngIf="removeDialog" 
   [visible]="true" 
   [showCloseButton]="true"

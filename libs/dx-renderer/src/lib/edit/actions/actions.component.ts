@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CrudService, EditModes, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
@@ -25,11 +26,13 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   public itemDialog: ItemEditDialog|undefined;
   public removeDialog: ItemRemoveDialog|undefined;
 
+  public sanitizedExternalEditorUrl: SafeUrl|undefined;
+
   public displayName$: Observable<string|undefined>;
 
   public usePopover$: Observable<boolean>;
 
-  constructor(private metaService: MetaService, private crudService: CrudService, private responsiveService: ResponsiveService) {
+  constructor(private domSanitizer: DomSanitizer, private metaService: MetaService, private crudService: CrudService, private responsiveService: ResponsiveService) {
     super();
 
     this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);
@@ -45,6 +48,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((itemDialog) => {
         this.itemDialog = itemDialog;
+        this.sanitizedExternalEditorUrl = this.itemDialog?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.itemDialog.item as unknown) as string) : undefined;
       });
 
     this.crudService.removeDialog$
@@ -95,6 +99,10 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       });
   }
 
+  public externalEditorUrl() {
+    this.crudService.itemDialog$
+  }
+
   public actionItemClicked(e: ItemClickEvent) {
     e.itemData.execute(e.itemData.target);
   }
@@ -121,6 +129,10 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public onRemoveDialogCancel() {
     this.removeDialog?.cancel();
+  }
+
+  public onExternalEditorDialogClose() {
+    this.itemDialog?.cancel();
   }
 
 }

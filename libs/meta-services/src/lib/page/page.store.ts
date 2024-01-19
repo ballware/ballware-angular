@@ -9,6 +9,7 @@ import { cloneDeep, isEqual } from "lodash";
 import * as qs from "qs";
 import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
+import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
 import { PageServiceApi } from "../page.service";
@@ -29,6 +30,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         private httpClient: HttpClient,
         private activatedRoute: ActivatedRoute,
         private router: Router,
+        private identityService: IdentityService,
         private tenantService: TenantService,
         private lookupService: LookupService,
         private metaApiService: MetaApiService) {
@@ -158,11 +160,11 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         );
 
         this.effect(_ => 
-            combineLatest([this.page$, this.lookupService.lookups$])                
-                .pipe(tap(([page, lookups]) => {
-                    if (page && lookups) {
+            combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$])                
+                .pipe(tap(([page, lookups, accessToken]) => {
+                    if (page && lookups && accessToken) {
                         if (page.compiledCustomScripts?.prepareCustomParam) {
-                            page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient), (p) => this.updater((state) => ({
+                            page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), (p) => this.updater((state) => ({
                                 ...state,
                                 customParam: p
                             }))());
@@ -233,19 +235,19 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     );
 
     readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, params$])
+        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, params$])
             .pipe(withLatestFrom(this.headParams$))
-            .pipe(tap(([[page, lookups, { name, item }], pageParam]) => {
-                if (page && lookups && pageParam) {
+            .pipe(tap(([[page, lookups, accessToken, { name, item }], pageParam]) => {
+                if (page && lookups && pageParam && accessToken) {
                     this.toolbarItems[name] = item;
 
                     if (page.compiledCustomScripts?.paramEditorInitialized) {
-                        page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient), this.scriptActions, pageParam);
+                        page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
                     }
 
                     if (!Object.keys(this.toolbarItems).some(item => !this.toolbarItems[item])) {
                         if (page && page.compiledCustomScripts?.paramsInitialized) {
-                            page.compiledCustomScripts?.paramsInitialized(false, lookups, createUtil(this.httpClient), this.scriptActions, pageParam);
+                            page.compiledCustomScripts?.paramsInitialized(false, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
                         }
                     }
                 }
@@ -260,23 +262,23 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     );
 
     paramEditorValueChanged = this.effect((params$: Observable<{ name: string, value: ValueType }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
-            .pipe(tap(([page, lookups, pageParam, { name, value }]) => {
-                if (page && lookups && pageParam) {
+        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, this.headParams$, params$])
+            .pipe(tap(([page, lookups, accessToken, pageParam, { name, value }]) => {
+                if (page && lookups && accessToken && pageParam) {
                     if (page.compiledCustomScripts?.paramEditorValueChanged) {
-                        page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient), this.scriptActions, pageParam);
+                        page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
                     }
                 }
             }))
     );
 
     paramEditorEvent = this.effect((params$: Observable<{ name: string, event: string, param?: ValueType }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, params$])
+        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, params$])
             .pipe(withLatestFrom(this.headParams$))
-            .pipe(tap(([[page, lookups, { name, event, param }], pageParam]) => {
-                if (page && lookups && pageParam && name && event) {
+            .pipe(tap(([[page, lookups, accessToken, { name, event, param }], pageParam]) => {
+                if (page && lookups && accessToken && pageParam && name && event) {
                     if (page.compiledCustomScripts?.paramEditorEvent) {
-                      page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient), this.scriptActions, pageParam, param);
+                      page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam, param);
                     }
                 }
             }))

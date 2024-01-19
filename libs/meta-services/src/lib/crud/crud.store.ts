@@ -55,7 +55,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             ])
             .pipe(map(([customFunctions, addFunction, customFunctionAllowed]) => (addFunction && customFunctionAllowed && customFunctionAllowed(addFunction) ? [{
                 id: addFunction.id,
-                text: addFunction.text
+                text: addFunction.text,
+                customFunction: addFunction.id !== 'none' ? addFunction : undefined
             } as CrudEditMenuItem, ...customFunctions ?? []] : customFunctions)))
             .pipe(tap((addMenuItems) => this.updater((state, addMenuItems: CrudEditMenuItem[]|undefined) => ({
                 ...state,
@@ -341,6 +342,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     item: params,
                     title: customFunction.text,
                     editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
+                    externalEditor: customFunction.externalEditor,
                     apply: () => { 
                         this.updater((state) => ({
                             ...state,
