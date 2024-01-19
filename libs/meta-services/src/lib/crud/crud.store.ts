@@ -155,7 +155,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     this.remove({ item: data });
                     break;
                 case 'print':
-                    this.selectPrint({ item: data, target });
+                    this.selectPrint({ items: [data], target });
                     break;
                 case 'options':
                     this.selectOptions({ item: data, target, defaultEditLayout: editLayoutIdentifier });
@@ -322,7 +322,13 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
     readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) => 
         combineLatest([request$])
-            .pipe(tap(([request]) => this.router.navigate([`/print?docId=${encodeURIComponent(request.documentId)}${request.items.map(item => `&id=${encodeURIComponent(item.Id)}`)}`]))));
+            .pipe(tap(([request]) => this.router.navigate(['print'], {
+                queryParams: {
+                    docId: request.documentId,
+                    id: request.items.map(item => item.Id)
+                }
+            })))
+    );
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
         combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.getEditLayout$])
@@ -454,7 +460,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }))(selectAddSheet)))
     );
 
-    readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ item: CrudItem, target: Element }>) => 
+    readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
         combineLatest([this.metaService.entityDocuments$, selectPrintRequest$])
             .pipe(map(([entityDocuments, selectPrintRequest]) => {
                 if (entityDocuments && selectPrintRequest) {
@@ -462,20 +468,19 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     this.currentInteractionTarget$.next(selectPrintRequest.target);
 
                     return {
-                        item: selectPrintRequest.item,
+                        items: selectPrintRequest.items,
                         actions: entityDocuments.map(d => ({
                             id: d.Id,
                             text: d.Name,
                             icon: 'bi bi-file-earmark-fill',
-                            item: selectPrintRequest.item,
-                            execute: (_target) => this.print({ documentId: d.Id, items: [selectPrintRequest.item] })
+                            execute: (_target) => this.print({ documentId: d.Id, items: selectPrintRequest.items })
                         } as CrudAction))
                     };
                 }
 
                 return undefined;
             }))
-            .pipe(tap((selectPrintSheet) => this.updater((state, selectPrintSheet: { item: CrudItem, actions: CrudAction[]}|undefined) => ({
+            .pipe(tap((selectPrintSheet) => this.updater((state, selectPrintSheet: { items: CrudItem[], actions: CrudAction[]}|undefined) => ({
                     ...state,
                     selectPrintSheet
                 }))(selectPrintSheet)
@@ -539,7 +544,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     id: 'print',                    
                     icon: 'bi bi-printer-fill',
                     text: this.translationService.transform('datacontainer.actions.print'),
-                    execute: (target) => this.selectPrint({ item, target })
+                    execute: (target) => this.selectPrint({ items: [item], target })
                 });
             }
 

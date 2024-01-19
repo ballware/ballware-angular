@@ -25,7 +25,7 @@ export interface CrudState {
     };
   
     selectPrintSheet?: { 
-        item: CrudItem,  
+        items: CrudItem[],  
         actions: CrudAction[]
     };
   

@@ -1,4 +1,4 @@
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MetaApiModule } from '@ballware/meta-api';
@@ -6,18 +6,19 @@ import { MetaServicesModule } from '@ballware/meta-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 
-import { AppComponent } from './app.component';
-import { AppRoutingModule } from './app.routing.module';
-import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
 import { RenderFactoryModule } from '@ballware/dx-renderer';
-import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
-import { EffectsModule } from '@ngrx/effects';
+import { AppComponent } from './app.component';
+import { AppRoutingModule } from './app.routing.module';
+import { PrintComponent } from './shared/components/print/print.component';
+import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
+import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 
 @NgModule({
-  declarations: [AppComponent, ResponsiveDetectorComponent],
+  declarations: [AppComponent, ResponsiveDetectorComponent, PrintComponent],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),    
     StoreModule.forRoot({

@@ -32,5 +32,6 @@ export const selectProfileUrl = createSelector(selectIdentityFeature, (state: Id
 export const selectAuthenticated = createSelector(selectIdentityFeature, (state: IdentityState) => state.authenticated);
 export const selectUserTenant = createSelector(selectIdentityFeature, (state: IdentityState) => state.tenant);
 export const selectUserName = createSelector(selectIdentityFeature, (state: IdentityState) => state.userName);
+export const selectAccessToken = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessToken);
 export const selectCurrentUser = createSelector(selectIdentityFeature, (state: IdentityState) => state.currentUser);
 export const selectAccessTokenExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessTokenExpiration);

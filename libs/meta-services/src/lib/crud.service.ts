@@ -61,7 +61,7 @@ export interface CrudServiceApi {
     }|undefined>;
 
     selectPrintSheet$: Observable<{ 
-        item: CrudItem, 
+        items: CrudItem[], 
         actions: CrudAction[]
     }|undefined>;
 
@@ -84,7 +84,7 @@ export interface CrudServiceApi {
     drop(request: { item: CrudItem }): void;
 
     selectAdd(request: { target: Element, defaultEditLayout: string }): void;
-    selectPrint(request: { item: CrudItem, target: Element }): void;
+    selectPrint(request: { items: CrudItem[], target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
     selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }
@@ -118,7 +118,7 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   }|undefined>;
 
   public abstract selectPrintSheet$: Observable<{ 
-      item: CrudItem,       
+      items: CrudItem[],       
       actions: CrudAction[]
   }|undefined>;
 
@@ -139,7 +139,7 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract drop(request: { item: CrudItem }): void;
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
-  public abstract selectPrint(request: { item: CrudItem, target: Element }): void;
+  public abstract selectPrint(request: { items: CrudItem[], target: Element }): void;
   public abstract selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
   public abstract selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }

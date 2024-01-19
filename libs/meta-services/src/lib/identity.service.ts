@@ -11,6 +11,7 @@ export abstract class IdentityService extends WithDestroy() {
     public abstract currentUser$: Observable<Record<string, unknown>|undefined>;
     public abstract userTenant$: Observable<string|undefined>;
     public abstract userName$: Observable<string|undefined>;
+    public abstract accessToken$: Observable<string|undefined>;
 
     public abstract initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string): void;
 
