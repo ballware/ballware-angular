@@ -29,6 +29,10 @@ export class MetaServiceProxy extends MetaService implements OnDestroy {
     public override entityTemplates$ = this.metaStore.entityTemplates$;
     public override customFunctions$ = this.metaStore.customFunctions$;
 
+    public override addFunction$ = this.metaStore.addFunction$;
+    public override viewFunction$ = this.metaStore.viewFunction$;
+    public override editFunction$ = this.metaStore.editFunction$;
+
     public override prepareCustomFunction$ = this.metaStore.prepareCustomFunction$;
     public override evaluateCustomFunction$ = this.metaStore.evaluateCustomFunction$;
 
@@ -45,9 +49,9 @@ export class MetaServiceProxy extends MetaService implements OnDestroy {
     public override saveBatch$ = this.metaStore.saveBatch$;
     public override drop$ = this.metaStore.drop$;
 
-    public override addAllowed$ = this.metaStore.addAllowed$;
-    public override viewAllowed$ = this.metaStore.viewAllowed$;
-    public override editAllowed$ = this.metaStore.editAllowed$;
+    //public override addAllowed$ = this.metaStore.addAllowed$;
+    //public override viewAllowed$ = this.metaStore.viewAllowed$;
+    //public override editAllowed$ = this.metaStore.editAllowed$;
     public override dropAllowed$ = this.metaStore.dropAllowed$;
     public override printAllowed$ = this.metaStore.printAllowed$;
     public override customFunctionAllowed$ = this.metaStore.customFunctionAllowed$;

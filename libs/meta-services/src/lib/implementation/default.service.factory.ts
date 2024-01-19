@@ -48,7 +48,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createMetaService(lookupService: LookupService): MetaService {
-        return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
+        return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.translationPipe, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
     }
 
     override createResponsiveService(): ResponsiveService {

@@ -16,4 +16,8 @@ export interface MetaState {
     entityDocuments?: DocumentSelectEntry[];
     entityTemplates?: Template[];
     customFunctions?: EntityCustomFunction[];
+
+    addFunction?: EntityCustomFunction;
+    viewFunction?: EntityCustomFunction;
+    editFunction?: EntityCustomFunction;    
 }

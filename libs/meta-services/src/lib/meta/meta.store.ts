@@ -4,6 +4,7 @@ import { MetaApiService } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
+import { I18NextPipe } from "angular-i18next";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { metaDestroyed, metaUpdated } from "../component";
@@ -22,7 +23,7 @@ interface TemplateItemOptions {
 
 @Injectable()
 export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi, OnDestroy {
-    constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
+    constructor(private store: Store, private httpClient: HttpClient, private i18next: I18NextPipe, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 
         this.state$
@@ -55,7 +56,30 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
                     entityMetadata,
                     displayName: entityMetadata?.displayName,
                     customFunctions: entityMetadata?.customFunctions ?? [],
-                    entityTemplates: entityMetadata?.templates ?? []
+                    entityTemplates: entityMetadata?.templates ?? [],
+                    addFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_add') 
+                        ?? { 
+                            id: 'add', 
+                            type: 'default_add', 
+                            text: this.i18next.transform('datacontainer.actions.add', { entity: entityMetadata?.displayName }), 
+                            editLayout: 'primary' 
+                        },
+                    viewFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_view') 
+                        ?? { 
+                            id: 'view', 
+                            type: 'default_view', 
+                            icon: 'bi bi-eye-fill',
+                            text: this.i18next.transform('datacontainer.actions.show', { entity: entityMetadata?.displayName }), 
+                            editLayout: 'primary' 
+                        },                        
+                    editFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_edit') 
+                        ?? { 
+                            id: 'edit', 
+                            type: 'default_edit', 
+                            icon: 'bi bi-pencil-fill',
+                            text: this.i18next.transform('datacontainer.actions.edit', { entity: entityMetadata?.displayName }), 
+                            editLayout: 'primary' 
+                        },
                 }))(entityMetadata);                
             }))
             .pipe(tap((entityMetadata) => {
@@ -214,6 +238,10 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     readonly displayName$ = this.select(state => state.displayName);    
     readonly customFunctions$ = this.select(state => state.customFunctions);
 
+    readonly addFunction$ = this.select(state => state.addFunction);
+    readonly viewFunction$ = this.select(state => state.viewFunction);
+    readonly editFunction$ = this.select(state => state.editFunction);
+
     readonly getGridLayout$ = combineLatest([
             this.customParam$,
             this.entityMetadata$,
@@ -339,14 +367,14 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
             ) ?? false;
         })) as Observable<((item: CrudItem, right: string) => boolean)|undefined>;        
 
-    readonly addAllowed$ = this.headAllowed$    
-        .pipe(map((headAllowed) => headAllowed ? () => headAllowed('add') : undefined)) as Observable<(() => boolean)|undefined>;
+    //readonly addAllowed$ = this.headAllowed$    
+    //    .pipe(map((headAllowed) => headAllowed ? () => headAllowed('add') : undefined)) as Observable<(() => boolean)|undefined>;
 
-    readonly viewAllowed$ = this.itemAllowed$        
-        .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'view') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
+    //readonly viewAllowed$ = this.itemAllowed$        
+    //    .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'view') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
     
-    readonly editAllowed$ = this.itemAllowed$        
-        .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'edit') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
+    //readonly editAllowed$ = this.itemAllowed$        
+    //    .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'edit') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
 
     readonly dropAllowed$ = this.itemAllowed$        
         .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'delete') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
@@ -357,7 +385,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     readonly customFunctionAllowed$ = combineLatest([this.headAllowed$, this.itemAllowed$])
         .pipe(map(([headAllowed, itemAllowed]) => (headAllowed && itemAllowed) 
             ? (customFunction: EntityCustomFunction, item?: CrudItem) =>
-                customFunction.type === 'edit' && item ? itemAllowed(item, customFunction.id) : headAllowed(customFunction.id)
+                (customFunction.type === 'default_view' || customFunction.type === 'default_edit' || customFunction.type === 'edit') && item ? itemAllowed(item, customFunction.id) : headAllowed(customFunction.id)
             : undefined)) as Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;        
 
     readonly count$ = this.entityMetadata$

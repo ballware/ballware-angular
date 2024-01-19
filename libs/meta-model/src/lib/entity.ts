@@ -67,8 +67,11 @@ export interface EntityCustomFunction {
    * edit: Function is editing existing selected business objects
    * import: Function to import external data
    * export: Function to export data
+   * default_add: Replacement for default add function
+   * default_view: Replacement for default view function
+   * default_edit: Replacement for default edit function
    */
-  type: 'add' | 'edit' | 'import' | 'export';
+  type: 'add' | 'edit' | 'import' | 'export' | 'default_add' | 'default_view' | 'default_edit';
 
   /**
    * Display text of function

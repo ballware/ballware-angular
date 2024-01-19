@@ -34,9 +34,13 @@ export interface MetaServiceApi {
   saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;
   drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
 
-  addAllowed$: Observable<(() => boolean)|undefined>;
-  viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
+  addFunction$: Observable<EntityCustomFunction|undefined>;
+  viewFunction$: Observable<EntityCustomFunction|undefined>;
+  editFunction$: Observable<EntityCustomFunction|undefined>;
+
+  //addAllowed$: Observable<(() => boolean)|undefined>;
+  //viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
+  //editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
@@ -84,9 +88,13 @@ export abstract class MetaService implements OnDestroy, MetaServiceApi {
   public abstract saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>) | undefined>;
   public abstract drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
   
-  public abstract addAllowed$: Observable<(() => boolean)|undefined>;
-  public abstract viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  public abstract editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
+  public abstract addFunction$: Observable<EntityCustomFunction|undefined>;
+  public abstract viewFunction$: Observable<EntityCustomFunction|undefined>;
+  public abstract editFunction$: Observable<EntityCustomFunction|undefined>;
+
+  //public abstract addAllowed$: Observable<(() => boolean)|undefined>;
+  //public abstract viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
+  //public abstract editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
