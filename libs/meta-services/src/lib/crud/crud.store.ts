@@ -142,15 +142,24 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }
         }));
     
-    readonly functionExecute$ = of((identifier: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => {
+    readonly functionExecute$ = combineLatest([this.metaService.viewFunction$, this.metaService.editFunction$])
+        .pipe(map(([viewFunction, editFunction]) => (viewFunction && editFunction) ? (identifier: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => {
             switch (identifier) {
                 case 'add':
                     break;
                 case 'view':
-                    this.view({ item: data, editLayout: editLayoutIdentifier });
+                    if (viewFunction.id !== 'view') {
+                        this.customEdit({ customFunction: viewFunction, items: [data]});
+                    } else {
+                        this.view({ item: data, editLayout: editLayoutIdentifier });
+                    }           
                     break;
                 case 'edit':
-                    this.edit({ item: data, editLayout: editLayoutIdentifier });
+                    if (editFunction.id !== 'edit') {
+                        this.customEdit({ customFunction: editFunction, items: [data]});
+                    } else {
+                        this.edit({ item: data, editLayout: editLayoutIdentifier });
+                    }                    
                     break;
                 case 'delete':
                     this.remove({ item: data });
@@ -165,7 +174,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     this.selectCustomOptions({ item: data, target, defaultEditLayout: editLayoutIdentifier });
                     break;
             }
-        });
+        } : undefined));
 
     readonly queryIdentifier$ = this.select(state => state.queryIdentifier);
     readonly addMenuItems$ = this.select(state => state.addMenuItems);
