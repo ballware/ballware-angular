@@ -3,7 +3,8 @@
   [name]="layoutItem.options.dataMember"
   [(value)]="value"
   [readOnly]="(readonly$ | async) ?? false"
-  [showClearButton]="true">
+  [showClearButton]="true"
+  (onFocusIn)="onEntered()">
   <dx-validator>
     <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
   </dx-validator>

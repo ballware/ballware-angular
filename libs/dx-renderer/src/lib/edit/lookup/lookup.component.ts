@@ -80,7 +80,7 @@ export class EditLayoutLookupComponent extends WithRequired(WithReadonly(WithVal
         });
     }
   }
-
+  
   public getOption(option: string): any {
     switch (option) {
       case 'value':

@@ -12,7 +12,8 @@
   [showDropDownButton]=true
   [multiline]=false
   [maxDisplayedTags]=3
-  [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false">
+  [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false"
+  (onFocusIn)="onEntered()">
   <dx-validator>
     <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
   </dx-validator>

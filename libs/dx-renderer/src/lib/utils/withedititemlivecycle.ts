@@ -1,7 +1,7 @@
 import { EditLayoutItem } from "@ballware/meta-model";
 import { EditItemRef, EditService } from "@ballware/meta-services";
 import { cloneDeep } from "lodash";
-import { BehaviorSubject, combineLatest, map, takeUntil } from "rxjs";
+import { BehaviorSubject, Subject, combineLatest, map, takeUntil } from "rxjs";
 import { HasDestroy } from "./hasdestroy";
 import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
@@ -11,6 +11,12 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
     return class extends Base implements HasEditItemLifecycle {
 
       public preparedLayoutItem$ = new BehaviorSubject<EditLayoutItem|undefined>(undefined);
+      
+      public editorEntered$ = new Subject<void>();
+      public editorEvent$ = new Subject<{ event: string }>();
+
+      readonly onEntered = () => this.editorEntered$.next();
+      readonly onEvent = (event: string) => this.editorEvent$.next({ event });
 
       initLifecycle(layoutItem: EditLayoutItem, editService: EditService, ref: EditItemRef): void {
         combineLatest([editService.editorPreparing$])
@@ -34,6 +40,22 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
           .subscribe(([layoutItem, editorInitialized]) => {
             if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
               editorInitialized({ dataMember: layoutItem.options.dataMember, ref });
+            }
+          });
+
+        combineLatest([editService.editorEntered$, this.editorEntered$])
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(([editorEntered,]) => {
+            if (editorEntered && layoutItem.options?.dataMember) {
+              editorEntered({ dataMember: layoutItem.options.dataMember });
+            }
+          });
+
+        combineLatest([editService.editorEvent$, this.editorEvent$])
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(([editorEvent, { event }]) => {
+            if (editorEvent && layoutItem.options?.dataMember) {
+              editorEvent({ dataMember: layoutItem.options.dataMember, event });
             }
           });
       }
