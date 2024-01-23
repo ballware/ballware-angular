@@ -12,6 +12,7 @@ import dxTextArea from 'devextreme/ui/text_area';
 import dxTextBox from 'devextreme/ui/text_box';
 import { CrudActionsComponent } from './actions/actions.component';
 import { EditLayoutBoolComponent } from './bool/bool.component';
+import { CodeMirrorComponent } from './components/codeeditor/codemirror.component';
 import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { DatagridMasterdetailComponent } from './components/datagrid/masterdetail.component';
 import { EntitygridComponent } from './components/entitygrid/entitygrid.component';
@@ -21,6 +22,8 @@ import { CrudDialogComponent } from './dialog/dialog.component';
 import { EditLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
 import { EditLayoutFieldsetComponent } from './fieldset/fieldset.component';
 import { EditLayoutGroupComponent } from './group/group.component';
+import { EditLayoutJavascriptComponent } from './javascript/javascript.component';
+import { EditLayoutJsonComponent } from './json/json.component';
 import { EditLayoutContainerComponent } from './layout/container.component';
 import { EditLayoutItemComponent } from './layout/item.component';
 import { EditLayoutComponent } from './layout/layout.component';
@@ -28,6 +31,7 @@ import { EditLayoutLookupComponent } from './lookup/lookup.component';
 import { EditLayoutMapComponent } from './map/map.component';
 import { EditLayoutMultilookupComponent } from './multilookup/multilookup.component';
 import { EditLayoutNumberComponent } from './number/number.component';
+import { EditLayoutSqlComponent } from './sql/sql.component';
 import { EditLayoutStaticlookupComponent } from './staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from './staticmultilookup/staticmultilookup.component';
 import { EditLayoutTabsComponent } from './tabs/tabs.component';
@@ -36,6 +40,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
 
 @NgModule({
   declarations: [
+    CodeMirrorComponent,
     DatagridComponent,
     DatagridMasterdetailComponent,
     EntitygridComponent,
@@ -56,6 +61,9 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutTextComponent,
     EditLayoutTextareaComponent,
     EditLayoutEntitygridComponent,
+    EditLayoutJsonComponent,
+    EditLayoutJavascriptComponent,
+    EditLayoutSqlComponent,
     EditDetailComponent,
     CrudActionsComponent,
     CrudDialogComponent

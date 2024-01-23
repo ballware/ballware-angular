@@ -1,0 +1,9 @@
+<div *ngIf="layoutItem?.options?.caption" class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<ballware-codemirror 
+    mode="json5"
+    [readOnly]="readonly$ | async"
+    width="100%"
+    [height]="height ?? '300px'"
+    [options]="options"
+    [(value)]="value">
+</ballware-codemirror>

@@ -4,10 +4,13 @@ import { EditLayoutBoolComponent } from '../bool/bool.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
 import { EditLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
 import { EditLayoutGroupComponent } from '../group/group.component';
+import { EditLayoutJavascriptComponent } from '../javascript/javascript.component';
+import { EditLayoutJsonComponent } from '../json/json.component';
 import { EditLayoutLookupComponent } from '../lookup/lookup.component';
 import { EditLayoutMapComponent } from '../map/map.component';
 import { EditLayoutMultilookupComponent } from '../multilookup/multilookup.component';
 import { EditLayoutNumberComponent } from '../number/number.component';
+import { EditLayoutSqlComponent } from '../sql/sql.component';
 import { EditLayoutStaticlookupComponent } from '../staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from '../staticmultilookup/staticmultilookup.component';
 import { EditLayoutTabsComponent } from '../tabs/tabs.component';
@@ -134,6 +137,27 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
+        case 'json': {
+            const componentRef = this.itemHost.createComponent(EditLayoutJsonComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;
+        case 'javascript': {
+            const componentRef = this.itemHost.createComponent(EditLayoutJavascriptComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;          
+        case 'sql': {
+            const componentRef = this.itemHost.createComponent(EditLayoutSqlComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;            
         default: {
             console.warn(`Unknown edit layout item type ${this.layoutItem.type}`);
           }
