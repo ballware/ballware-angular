@@ -1,5 +1,6 @@
-<dx-check-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
-  [text]="layoutItem.options.caption ?? ''"
+<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<dx-check-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"  
+  class="pt-1"
   [name]="layoutItem.options.dataMember"
   [(value)]="value"
   [readOnly]="(readonly$ | async) ?? false"
