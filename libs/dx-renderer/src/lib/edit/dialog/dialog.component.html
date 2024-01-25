@@ -1,6 +1,6 @@
 <dx-popup
   [visible]="true"
-  [fullScreen]="editLayout?.fullscreen ?? false"
+  [fullScreen]="(!popover || editLayout?.fullscreen) ?? false"
   [showCloseButton]="true"
   [title]="title ?? ''"
   (onHidden)="onHidden()">

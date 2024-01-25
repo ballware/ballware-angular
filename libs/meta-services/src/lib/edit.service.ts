@@ -5,6 +5,7 @@ import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
 
 export interface EditServiceApi {
+    item$: Observable<Record<string, unknown>|undefined>;
     mode$: Observable<EditModes|undefined>;
     editLayout$: Observable<EditLayout|undefined>;
     readonly$: Observable<boolean|undefined>;
@@ -36,6 +37,7 @@ export abstract class EditService implements OnDestroy, EditServiceApi {
 
     public abstract setIdentifier(identifier: string): void;
 
+    public abstract item$: Observable<Record<string, unknown>|undefined>;
     public abstract mode$: Observable<EditModes|undefined>;
     public abstract editLayout$: Observable<EditLayout|undefined>;
     public abstract readonly$: Observable<boolean|undefined>;

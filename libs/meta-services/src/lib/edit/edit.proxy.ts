@@ -15,6 +15,7 @@ export class EditServiceProxy extends EditService implements OnDestroy {
 
     readonly setIdentifier = this.editStore.setIdentifier;
 
+    readonly item$ = this.editStore.item$;
     readonly mode$ = this.editStore.mode$;
     readonly editLayout$ = this.editStore.editLayout$;
     readonly readonly$ = this.editStore.readonly$;

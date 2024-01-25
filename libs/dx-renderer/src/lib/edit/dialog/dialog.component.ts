@@ -23,6 +23,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   @Input() title?: string;
   @Input() item?: Record<string, unknown>;
   @Input() editLayout?: EditLayout;
+  @Input() popover!: boolean;
   @Input() apply?: (item: Record<string, unknown>) => void;
   @Input() cancel?: () => void;
 

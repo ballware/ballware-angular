@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxActionSheetModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
 import dxDateBox from 'devextreme/ui/date_box';
 import dxHtmlEditor from 'devextreme/ui/html_editor';
 import dxNumberBox from 'devextreme/ui/number_box';
@@ -18,6 +18,7 @@ import { DatagridMasterdetailComponent } from './components/datagrid/masterdetai
 import { EntitygridComponent } from './components/entitygrid/entitygrid.component';
 import { EditLayoutDatetimeComponent } from './datetime/datetime.component';
 import { EditDetailComponent } from './detail/detail.component';
+import { DetailEditPopupComponent } from './detaileditpopup/detaileditpopup.component';
 import { CrudDialogComponent } from './dialog/dialog.component';
 import { EditLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
 import { EditLayoutFieldsetComponent } from './fieldset/fieldset.component';
@@ -65,12 +66,14 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,
     EditDetailComponent,
+    DetailEditPopupComponent,
     CrudActionsComponent,
     CrudDialogComponent
   ],
   imports: [
     CommonModule,
     I18NextModule,
+    DxButtonModule,
     DxActionSheetModule,
     DxCheckBoxModule,
     DxDateBoxModule,
