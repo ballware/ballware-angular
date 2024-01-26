@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from "@angular/core";
+import { ValueType } from "@ballware/meta-model";
 
 import { snippetCompletion } from '@codemirror/autocomplete';
 import { indentWithTab } from '@codemirror/commands';
@@ -10,6 +11,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { json5, json5Language, json5ParseLinter } from 'codemirror-json5';
+import { parse, stringify } from "json5";
 
 export interface CodeMirrorEditorOptions {
     prefixCode?: string[],
@@ -25,14 +27,16 @@ export interface CodeMirrorEditorOptions {
 export class CodeMirrorComponent implements AfterViewInit {
     @ViewChild('editor', { read: ViewContainerRef }) private editorHost?: ViewContainerRef;
 
-    @Input() value!: string;
+    @Input() value!: unknown;
     @Input() readOnly!: boolean|null;
     @Input() mode!: 'json5' | 'javascript' | 'sqlserver';
     @Input() width: string|undefined;
     @Input() height: string|undefined;
     @Input() options: CodeMirrorEditorOptions|undefined;
     
-    @Output() valueChange = new EventEmitter<string>();
+    @Output() valueChange = new EventEmitter<ValueType>();
+
+    jsonStructuredMode = false;
 
     ngAfterViewInit(): void {
         const theme = EditorView.theme({
@@ -65,13 +69,15 @@ export class CodeMirrorComponent implements AfterViewInit {
             extensions.push(lintGutter());
             extensions.push(keymap.of([indentWithTab]));
             extensions.push(EditorView.updateListener.of((e) => {
-                this.valueChange.emit(e.state.doc.toString());
+                this.valueChange.emit(this.jsonStructuredMode ? parse(e.state.doc.toString()) : e.state.doc.toString());
             }));
         }
 
+        this.jsonStructuredMode = this.mode === 'json5' && typeof(this.value) !== 'string';
+
         const state = EditorState.create({
             extensions: extensions,
-            doc: this.value ?? ""            
+            doc: (this.jsonStructuredMode ? stringify(this.value) : this.value as string) ?? ""            
         });
  
         if (this.editorHost?.element) {

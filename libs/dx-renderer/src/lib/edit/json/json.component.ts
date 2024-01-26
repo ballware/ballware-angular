@@ -14,7 +14,7 @@ import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.com
     templateUrl: './json.component.html',
     styleUrls: ['./json.component.scss']
 })
-export class EditLayoutJsonComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))) implements OnInit, EditItemRef {
+export class EditLayoutJsonComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))) implements OnInit, EditItemRef {
 
     @Input() initialLayoutItem?: EditLayoutItem;
   

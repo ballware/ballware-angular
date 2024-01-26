@@ -14,7 +14,7 @@ import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.com
     templateUrl: './sql.component.html',
     styleUrls: ['./sql.component.scss']
 })
-export class EditLayoutSqlComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))) implements OnInit, EditItemRef {
+export class EditLayoutSqlComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))) implements OnInit, EditItemRef {
 
     @Input() initialLayoutItem?: EditLayoutItem;
   
