@@ -44,7 +44,7 @@ export class MetaServiceProxy extends MetaService implements OnDestroy {
 
     public override byId$ = this.metaStore.byId$;
     public override create$ = this.metaStore.create$;
-
+ 
     public override save$ = this.metaStore.save$;
     public override saveBatch$ = this.metaStore.saveBatch$;
     public override drop$ = this.metaStore.drop$;
@@ -59,4 +59,9 @@ export class MetaServiceProxy extends MetaService implements OnDestroy {
     public override editorValueChanged$ = this.metaStore.editorValueChanged$;
     public override editorValidating$ = this.metaStore.editorValidating$;    
     public override editorEvent$ = this.metaStore.editorEvent$;
+
+    public override detailGridCellPreparing$ = this.metaStore.detailGridCellPreparing$;
+    public override detailGridRowValidating$ = this.metaStore.detailGridRowValidating$;
+    public override initNewDetailItem$ = this.metaStore.initNewDetailItem$;
+  
 }

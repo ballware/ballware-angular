@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
 import { MetaApiService } from "@ballware/meta-api";
-import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, ValueType } from "@ballware/meta-model";
+import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { I18NextPipe } from "angular-i18next";
@@ -491,4 +491,20 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
         .pipe(map(([entityMetadata, lookups, accessToken]) => (entityMetadata && lookups && accessToken)
             ? (_mode, item, editUtil, identifier, event) => entityMetadata.compiledCustomScripts?.editorEvent && entityMetadata.compiledCustomScripts.editorEvent(item, editUtil, identifier, event, lookups, createUtil(this.httpClient, accessToken))
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
+
+    readonly detailGridCellPreparing$ = combineLatest([this.entityMetadata$, this.identityService.accessToken$])
+        .pipe(map(([entityMetadata, accessToken]) => (entityMetadata && accessToken)
+            ? (mode, item, detailItem, identifier, options) => entityMetadata.compiledCustomScripts?.detailGridCellPreparing && entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, options, createUtil(this.httpClient, accessToken))
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => void) | undefined>;
+
+    readonly detailGridRowValidating$ = combineLatest([this.entityMetadata$, this.identityService.accessToken$])
+        .pipe(map(([entityMetadata, accessToken]) => (entityMetadata && accessToken)
+            ? (mode, item, detailItem, identifier) => entityMetadata.compiledCustomScripts?.detailGridRowValidating ? entityMetadata.compiledCustomScripts.detailGridRowValidating(mode, item as CrudItem, detailItem, identifier, createUtil(this.httpClient, accessToken)) : undefined
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => string) | undefined>;
+    
+    readonly initNewDetailItem$ = combineLatest([this.entityMetadata$, this.identityService.accessToken$])
+        .pipe(map(([entityMetadata, accessToken]) => (entityMetadata && accessToken)
+            ? (dataMember, item, detailItem) => entityMetadata.compiledCustomScripts?.initNewDetailItem && entityMetadata.compiledCustomScripts.initNewDetailItem(dataMember, item as CrudItem, detailItem, createUtil(this.httpClient, accessToken))
+            : undefined)) as Observable<((dataMember: string, item: Record<string, unknown>, detailItem: Record<string, unknown>) => void) | undefined>;
+  
 }

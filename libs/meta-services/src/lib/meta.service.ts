@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, QueryParams, Template, ValueType } from '@ballware/meta-model';
+import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
 
@@ -47,12 +47,32 @@ export interface MetaServiceApi {
   editorEntered$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
   editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
   editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
-  editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;  
+  editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>; 
+  
+  detailGridCellPreparing$: Observable<((
+      mode: EditModes,
+      item: Record<string, unknown>,
+      detailItem: Record<string, unknown>,
+      identifier: string,
+      options: GridLayoutColumn
+  ) => void)|undefined>;
+
+  detailGridRowValidating$: Observable<((
+      mode: EditModes,
+      item: Record<string, unknown>,
+      detailItem: Record<string, unknown>,
+      identifier: string
+  ) => string)|undefined>;
+
+  initNewDetailItem$: Observable<((
+      dataMember: string,
+      item: Record<string, unknown>,
+      detailItem: Record<string, unknown>
+  ) => void)|undefined>;
 }
 
 @Injectable()
-export abstract class MetaService implements OnDestroy, MetaServiceApi {
-  
+export abstract class MetaService implements OnDestroy, MetaServiceApi {  
   public abstract ngOnDestroy(): void;
 
   public abstract setIdentifier(identifier: string): void;
@@ -89,9 +109,6 @@ export abstract class MetaService implements OnDestroy, MetaServiceApi {
   public abstract viewFunction$: Observable<EntityCustomFunction|undefined>;
   public abstract editFunction$: Observable<EntityCustomFunction|undefined>;
 
-  //public abstract addAllowed$: Observable<(() => boolean)|undefined>;
-  //public abstract viewAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  //public abstract editAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   public abstract customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
@@ -102,5 +119,8 @@ export abstract class MetaService implements OnDestroy, MetaServiceApi {
   public abstract editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
   public abstract editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
   public abstract editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
-  
+
+  public abstract detailGridCellPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => void) | undefined>;
+  public abstract detailGridRowValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => string) | undefined>;
+  public abstract initNewDetailItem$: Observable<((dataMember: string, item: Record<string, unknown>, detailItem: Record<string, unknown>) => void) | undefined>;
 }
