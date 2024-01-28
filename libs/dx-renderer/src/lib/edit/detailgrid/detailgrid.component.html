@@ -1,0 +1,29 @@
+<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<dx-data-grid *ngIf="columns"
+    [height]="height" 
+    width="100%"
+    [repaintChangesOnly]="true"
+    [columnAutoWidth]="true"    
+    [columns]="columns"
+    [dataSource]="value">
+    <dxo-editing mode="cell" [useIcons]="true" 
+        [allowAdding]="allowAdd" 
+        [allowUpdating]="allowUpdate" 
+        [allowDeleting]="allowDelete">
+    </dxo-editing>
+    <div *dxTemplate="let cell of 'dynamic'">
+        <ballware-edit-dynamic-column [editing]="false" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+    </div>
+    <div *dxTemplate="let cell of 'dynamicedit'">
+        <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+    </div>    
+</dx-data-grid>
+ 
+<!--
+lookupParams={lookupParams ?? {}}
+column={cell.column.editorOptions}
+item={cell.data}
+dataMember={cell.column.dataField}
+editing={false}
+setValue={value => setByPath(cell.data, cell.column.dataField, value)}
+-->

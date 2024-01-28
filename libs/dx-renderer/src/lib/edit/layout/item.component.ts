@@ -2,6 +2,7 @@ import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@a
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EditLayoutBoolComponent } from '../bool/bool.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
+import { EditLayoutDetailGridComponent } from '../detailgrid/detailgrid.component';
 import { EditLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
 import { EditLayoutGroupComponent } from '../group/group.component';
 import { EditLayoutJavascriptComponent } from '../javascript/javascript.component';
@@ -132,6 +133,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
         case 'entitygrid': {
             //const { EditLayoutEntitygridComponent } = await import('../entitygrid/entitygrid.component');
             const componentRef = this.itemHost.createComponent(EditLayoutEntitygridComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;
+        case 'detailgrid': {
+            const componentRef = this.itemHost.createComponent(EditLayoutDetailGridComponent);
 
             componentRef.instance.initialLayoutItem = this.layoutItem;  
             componentRef.changeDetectorRef.detectChanges();

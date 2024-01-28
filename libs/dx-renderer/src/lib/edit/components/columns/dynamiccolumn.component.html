@@ -1,0 +1,11 @@
+<dx-check-box *ngIf="preparedColumn && 'bool' === preparedColumn.type" [readOnly]="!editing" ></dx-check-box>
+<dx-number-box *ngIf="preparedColumn && 'number' === preparedColumn.type"></dx-number-box>
+<dx-date-box *ngIf="preparedColumn && 'date' === preparedColumn.type"></dx-date-box>
+<dx-date-box *ngIf="preparedColumn && 'datetime' === preparedColumn.type"></dx-date-box>
+<dx-tag-box *ngIf="preparedColumn && 'staticmultilookup' === preparedColumn.type"></dx-tag-box>
+<dx-tag-box *ngIf="preparedColumn && 'multilookup' === preparedColumn.type"></dx-tag-box>
+<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type" 
+    [column]="preparedColumn" 
+    [readOnly]="!editing"
+    [item]="item">
+</ballware-edit-detaileditpopup>   

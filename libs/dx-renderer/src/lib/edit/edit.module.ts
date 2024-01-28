@@ -13,12 +13,14 @@ import dxTextBox from 'devextreme/ui/text_box';
 import { CrudActionsComponent } from './actions/actions.component';
 import { EditLayoutBoolComponent } from './bool/bool.component';
 import { CodeMirrorComponent } from './components/codeeditor/codemirror.component';
+import { DynamicColumnComponent } from './components/columns/dynamiccolumn.component';
 import { DatagridComponent } from './components/datagrid/datagrid.component';
 import { DatagridMasterdetailComponent } from './components/datagrid/masterdetail.component';
 import { EntitygridComponent } from './components/entitygrid/entitygrid.component';
 import { EditLayoutDatetimeComponent } from './datetime/datetime.component';
 import { EditDetailComponent } from './detail/detail.component';
 import { DetailEditPopupComponent } from './detaileditpopup/detaileditpopup.component';
+import { EditLayoutDetailGridComponent } from './detailgrid/detailgrid.component';
 import { CrudDialogComponent } from './dialog/dialog.component';
 import { EditLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
 import { EditLayoutFieldsetComponent } from './fieldset/fieldset.component';
@@ -44,6 +46,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     CodeMirrorComponent,
     DatagridComponent,
     DatagridMasterdetailComponent,
+    DynamicColumnComponent,
     EntitygridComponent,
     EditLayoutComponent,
     EditLayoutContainerComponent,
@@ -62,6 +65,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutTextComponent,
     EditLayoutTextareaComponent,
     EditLayoutEntitygridComponent,
+    EditLayoutDetailGridComponent,
     EditLayoutJsonComponent,
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,

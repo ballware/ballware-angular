@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { EditLayout, GridLayoutColumn } from "@ballware/meta-model";
 import { EditModes, MetaService, ResponsiveService, SCREEN_SIZE } from "@ballware/meta-services";
 import { cloneDeep } from "lodash";
-import { Observable, Subject, combineLatest, map, takeUntil } from "rxjs";
+import { Subject, combineLatest, takeUntil } from "rxjs";
 import { getByPath, setByPath } from "../../utils/databinding";
 import { WithDestroy } from "../../utils/withdestroy";
 
@@ -11,17 +11,16 @@ import { WithDestroy } from "../../utils/withdestroy";
     templateUrl: './detaileditpopup.component.html',
     styleUrls: ['./detaileditpopup.component.scss']
 })
-export class DetailEditPopupComponent extends WithDestroy() implements OnInit {
+export class DetailEditPopupComponent extends WithDestroy() implements OnInit, OnDestroy {
 
     @Input() column!: GridLayoutColumn;
     @Input() readOnly: boolean|null = null;
     @Input() item!: Record<string, unknown>;
 
     dialogItem: Record<string, unknown>|undefined;
-    editLayout$: Observable<EditLayout|undefined>;
+    editLayout: EditLayout|undefined;
     dialogVisible = false;
-
-    public usePopover$: Observable<boolean>;
+    usePopover = false;
 
     private editLayoutIdentifier$ = new Subject<string>();
 
@@ -31,17 +30,17 @@ export class DetailEditPopupComponent extends WithDestroy() implements OnInit {
         this.dialogApply = this.dialogApply.bind(this);
         this.dialogCancel = this.dialogCancel.bind(this);
         
-        this.editLayout$ = combineLatest([this.editLayoutIdentifier$, this.metaService.getEditLayout$])
+        combineLatest([this.responsiveService.onResize$, this.editLayoutIdentifier$, this.metaService.getEditLayout$])
             .pipe(takeUntil(this.destroy$))
-            .pipe(map(([editLayoutIdentifier, getEditLayout]) => 
-                (editLayoutIdentifier && getEditLayout) 
-                    ? getEditLayout(editLayoutIdentifier, this.readOnly ? EditModes.VIEW : EditModes.EDIT)                    
-                    : undefined
-            ));
-
-        this.usePopover$ = combineLatest([this.responsiveService.onResize$, this.editLayout$])
-            .pipe(takeUntil(this.destroy$))
-            .pipe(map(([screenSize, editLayout]) => screenSize >= SCREEN_SIZE.SM && !editLayout?.fullscreen));
+            .subscribe(([screenSize, editLayoutIdentifier, getEditLayout]) => {
+                if (editLayoutIdentifier && getEditLayout) {
+                    this.editLayout = getEditLayout(editLayoutIdentifier, this.readOnly ? EditModes.VIEW : EditModes.EDIT);
+                    this.usePopover = screenSize >= SCREEN_SIZE.SM && !this.editLayout?.fullscreen;
+                } else {
+                    this.editLayout = undefined;
+                    this.usePopover = false;
+                }
+            });
     }
     
     ngOnInit(): void {
