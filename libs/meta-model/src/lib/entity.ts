@@ -197,6 +197,11 @@ export interface EditLayoutItemOptions {
   itemsMember?: string;
 
   /**
+   * Data member of lookup params containing select list (only for editors with select list functionality)
+   */
+  lookupMember?: string;
+
+  /**
    * Hint displayed as tooltip on editor
    */
   hint?: string;

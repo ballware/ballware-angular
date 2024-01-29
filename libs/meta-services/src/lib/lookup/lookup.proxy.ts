@@ -16,6 +16,6 @@ export class LookupServiceProxy extends LookupService implements OnDestroy {
     public override setIdentifier = this.lookupStore.setIdentifier;
 
     public override lookups$ = this.lookupStore.lookups$;
-    public override getGenericLookupByIdentifier = this.lookupStore.getGenericLookupByIdentifier;
+    public override getGenericLookupByIdentifier$ = this.lookupStore.getGenericLookupByIdentifier$;
     public override requestLookups = this.lookupStore.requestLookups;
 }
