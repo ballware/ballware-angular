@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from "@angular/core";
-import { GridLayoutColumn, ValueType } from "@ballware/meta-model";
+import { GridLayoutColumn } from "@ballware/meta-model";
 import { EditModes, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, MetaService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
@@ -8,7 +8,7 @@ import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/numb
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
-import { getByPath } from "../../../utils/databinding";
+import { getByPath, setByPath } from "../../../utils/databinding";
 import { createLookupDataSource } from "../../../utils/datasource";
 import { WithDestroy } from "../../../utils/withdestroy";
 
@@ -26,7 +26,7 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit {
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
-    value: ValueType|undefined = undefined;
+    value: unknown|undefined = undefined;
     lookupDatasource: DataSource|object[]|undefined;
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
@@ -51,12 +51,18 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit {
         return this.value as Array<any>;
     }
 
-    onValueChanged(e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) {
-
+    onValueChanged(e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) {                
+        setByPath(this.item, this.dataMember, e.value);
+        this.value = getByPath(this.item, this.dataMember);
     }
 
 
     ngOnInit(): void {
+
+        if (this.item && this.dataMember) {
+            this.value = getByPath(this.item, this.dataMember);
+        }
+        
         combineLatest([this.lookupService.lookups$, this.lookupService.getGenericLookupByIdentifier$, this.metaService.detailGridCellPreparing$])
             .pipe(takeUntil(this.destroy$))
             .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing]) => {
