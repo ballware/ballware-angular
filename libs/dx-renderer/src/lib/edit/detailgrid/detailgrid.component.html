@@ -1,11 +1,14 @@
 <div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
-<dx-data-grid *ngIf="columns"
+<dx-data-grid *ngIf="columns" #grid
     [height]="height" 
     width="100%"
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
     [columns]="columns"
-    [dataSource]="value">
+    [dataSource]="value"
+    (onEditorPreparing)="onEditorPreparing($event)"
+    (onInitNewRow)="onInitNewRow($event)"
+    (onRowValidating)="onRowValidating($event)">
     <dxo-editing mode="cell" [useIcons]="true" 
         [allowAdding]="allowAdd" 
         [allowUpdating]="allowUpdate" 

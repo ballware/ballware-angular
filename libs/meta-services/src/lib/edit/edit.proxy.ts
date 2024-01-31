@@ -27,6 +27,17 @@ export class EditServiceProxy extends EditService implements OnDestroy {
     readonly editorValueChanged$ = this.editStore.editorValueChanged$;
     readonly editorEntered$ = this.editStore.editorEntered$;
     readonly editorEvent$ = this.editStore.editorEvent$;
+
+    readonly detailGridCellPreparing$ = this.editStore.detailGridCellPreparing$;
+    readonly detailGridRowValidating$ = this.editStore.detailGridRowValidating$;
+    readonly initNewDetailItem$ = this.editStore.initNewDetailItem$; 
+
+    readonly detailEditorInitialized$ = this.editStore.detailEditorInitialized$; 
+    readonly detailEditorValidating$ = this.editStore.detailEditorValidating$; 
+    readonly detailEditorEntered$ = this.editStore.detailEditorEntered$; 
+    readonly detailEditorEvent$ = this.editStore.detailEditorEvent$; 
+    readonly detailEditorValueChanged$ = this.editStore.detailEditorValueChanged$; 
+    
     readonly setMode = this.editStore.setMode;
     readonly setItem = this.editStore.setItem;
     readonly setEditLayout = this.editStore.setEditLayout;

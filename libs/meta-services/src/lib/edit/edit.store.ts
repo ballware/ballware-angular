@@ -1,5 +1,5 @@
 import { OnDestroy } from "@angular/core";
-import { EditLayout, EditLayoutItem, EditUtil, ValueType } from "@ballware/meta-model";
+import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
@@ -139,6 +139,80 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             : undefined)
         );
 
+    readonly detailGridCellPreparing$ = combineLatest([this.mode$, this.item$, this.metaService.detailGridCellPreparing$])
+        .pipe(map(([mode, item, detailGridCellPreparing]) => (mode && item && detailGridCellPreparing)
+            ? ({ detailItem, identifier, options }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => detailGridCellPreparing(mode, item, detailItem, identifier, options)
+            : undefined)
+        );
+    
+    readonly detailGridRowValidating$ = combineLatest([this.mode$, this.item$, this.metaService.detailGridRowValidating$])
+        .pipe(map(([mode, item, detailGridRowValidating]) => (mode && item && detailGridRowValidating)
+            ? ({ dataMember, detailItem }: { dataMember: string, detailItem: Record<string, unknown> }) => detailGridRowValidating(mode, item, detailItem, dataMember)
+            : undefined)
+        );
+
+    readonly initNewDetailItem$ = combineLatest([this.mode$, this.item$, this.metaService.initNewDetailItem$])
+        .pipe(map(([mode, item, initNewDetailItem]) => (mode && item && initNewDetailItem)
+            ? ({ dataMember, detailItem }: { dataMember: string, detailItem: Record<string, unknown> }) => initNewDetailItem(dataMember, item, detailItem)
+            : undefined)
+        );
+
+    readonly detailEditorInitialized$ = combineLatest([this.mode$, this.metaService.editorInitialized$])
+        .pipe(map(([mode, editorInitialized]) => (mode && editorInitialized)
+            ? ({ dataMember, detailItem, identifier, component }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => 
+            {
+                this.editItems[`${dataMember}.${identifier}`] = component;
+
+                editorInitialized(mode, detailItem, {
+                    getEditorOption: (detailMember, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailMember}`, option }),
+                    setEditorOption: (detailMember, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailMember}`, option, value })
+                } as EditUtil, `${dataMember}.${identifier}`);
+            }
+            : undefined )
+        );
+
+    readonly detailEditorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
+        .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
+            ? ({ dataMember, detailItem, identifier, ruleIdentifier, value }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => editorValidating(mode, detailItem, {
+                getEditorOption: (detailMember, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailMember}`, option }),
+                setEditorOption: (detailMember, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailMember}`, option, value })
+            } as EditUtil, `${dataMember}.${identifier}`, value, ruleIdentifier)
+            : () => true)
+        );    
+    
+    readonly detailEditorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])
+        .pipe(map(([mode, item, editorEntered]) => (mode && item && editorEntered)
+            ? ({ dataMember, detailItem, identifier }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string }) => editorEntered(mode, detailItem, {
+                getEditorOption: (detailMember, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailMember}`, option }),
+                setEditorOption: (detailMember, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailMember}`, option, value })
+            } as EditUtil, `${dataMember}.${identifier}`)
+            : undefined)
+        );
+
+    readonly detailEditorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
+        .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
+            ? ({ dataMember, detailItem, identifier, event }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => editorEvent(mode, detailItem, {
+                getEditorOption: (detailMember, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailMember}`, option }),
+                setEditorOption: (detailMember, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailMember}`, option, value })
+            } as EditUtil, `${dataMember}.${identifier}`, event)
+            : undefined)
+        );
+      
+    readonly detailEditorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])            
+        .pipe(map(([mode, item, setValue, editorValueChanged]) => 
+            (mode && item && editorValueChanged && setValue) 
+            ? ({ dataMember, detailItem, identifier, value, notify }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => {
+                setByPath(detailItem, identifier, value);
+
+                if (notify) {
+                    editorValueChanged(mode, item, {
+                        getEditorOption: (detailMember, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailMember}`, option }),
+                        setEditorOption: (detailMember, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailMember}`, option, value })
+                    } as EditUtil, `${dataMember}.${identifier}`, value as ValueType);
+                }
+            } : undefined)
+        );
+    
     readonly validate = () => this.select(state => state.validator ? state.validator() : true);
 
     private readonly getEditor = (request: { dataMember: string }) => this.editItems[request.dataMember];
