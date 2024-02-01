@@ -226,10 +226,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         title: this.translationService.transform('datacontainer.titles.add', { entity: displayName }),
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
                         apply: () => { 
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
+                            this.save({ item });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -341,8 +338,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
-        combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.getEditLayout$])
-            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, getEditLayout]) => prepareCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
+        combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$])
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout]) => prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
                 this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
                     itemDialog
@@ -353,6 +350,17 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
                     externalEditor: customFunction.externalEditor,
                     apply: () => { 
+                        evaluateCustomFunction(customFunction.id, params, 
+                            (evaluatedResult) => {
+                                if (Array.isArray(evaluatedResult)) {
+                                    this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem> });
+                                } else {
+                                    this.save({ customFunction, item: evaluatedResult as CrudItem });
+                                }                                
+                            },
+                            (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'warning' })
+                        );
+
                         this.updater((state) => ({
                             ...state,
                             itemDialog: undefined
@@ -439,7 +447,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             .pipe(map(([selectAddRequest, addMenuItems]) => {
                 if (selectAddRequest && addMenuItems) {
                     if (addMenuItems.length === 1) {
-                        if (addMenuItems[0].customFunction) {
+                        if (addMenuItems[0].customFunction && addMenuItems[0].customFunction.id !== 'add') {
                             this.customEdit({ customFunction: addMenuItems[0].customFunction });
                         } else {
                             this.create({ editLayout: selectAddRequest.defaultEditLayout });
