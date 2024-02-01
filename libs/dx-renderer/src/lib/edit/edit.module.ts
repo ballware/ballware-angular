@@ -12,6 +12,7 @@ import dxTextArea from 'devextreme/ui/text_area';
 import dxTextBox from 'devextreme/ui/text_box';
 import { CrudActionsComponent } from './actions/actions.component';
 import { EditLayoutBoolComponent } from './bool/bool.component';
+import { EditLayoutButtonComponent } from './button/button.component';
 import { CodeMirrorComponent } from './components/codeeditor/codemirror.component';
 import { DynamicColumnComponent } from './components/columns/dynamiccolumn.component';
 import { DatagridComponent } from './components/datagrid/datagrid.component';
@@ -69,6 +70,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutJsonComponent,
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,
+    EditLayoutButtonComponent,
     EditDetailComponent,
     DetailEditPopupComponent,
     CrudActionsComponent,

@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EditLayoutBoolComponent } from '../bool/bool.component';
+import { EditLayoutButtonComponent } from '../button/button.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
 import { EditLayoutDetailGridComponent } from '../detailgrid/detailgrid.component';
 import { EditLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
@@ -33,6 +34,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
 
     if (this.layoutItem && this.itemHost) {
       switch (this.layoutItem.type) {
+        case 'button': {
+            const componentRef = this.itemHost.createComponent(EditLayoutButtonComponent);
+
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;
         case 'text': {
             //const { EditLayoutTextComponent } = await import('../text/text.component');
             const componentRef = this.itemHost.createComponent(EditLayoutTextComponent);
@@ -74,7 +82,8 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
-        case 'lookup': {
+        case 'lookup':
+        case 'pickvalue': {
             //const { EditLayoutLookupComponent } = await import('../lookup/lookup.component');
             const componentRef = this.itemHost.createComponent(EditLayoutLookupComponent);
 
@@ -166,6 +175,8 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;            
+        case 'empty':
+          break;
         default: {
             console.warn(`Unknown edit layout item type ${this.layoutItem.type}`);
           }
