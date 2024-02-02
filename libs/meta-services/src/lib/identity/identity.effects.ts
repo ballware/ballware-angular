@@ -38,6 +38,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                 const oauthConfig: AuthConfig = {
                     issuer: issuer,
                     redirectUri: window.location.origin + '/signin-oidc',
+                    postLogoutRedirectUri: window.location.origin,
                     clientId: client,
                     responseType: 'code',
                     scope: scopes,
