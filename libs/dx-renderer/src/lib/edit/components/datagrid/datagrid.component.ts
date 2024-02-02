@@ -1,12 +1,23 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { MetaService } from '@ballware/meta-services';
+import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
+import { CrudService, EditModes, MetaService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
-import { RowDblClickEvent, RowExpandingEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
+import { EditingStartEvent, EditorPreparingEvent, RowDblClickEvent, RowExpandingEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
 import { dxToolbarItem } from 'devextreme/ui/toolbar';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../../utils/withdestroy';
+
+interface EditComponentWithOptions {
+  /**
+    * Gets the value of a single property.
+    */
+  option<TPropertyName extends string, TValue = unknown>(optionName: TPropertyName): TValue;
+  /**
+    * Updates the value of a single property.
+    */
+  option<TPropertyName extends string, TValue = unknown>(optionName: TPropertyName, optionValue: TValue): void;
+}
 
 export interface DatagridSummary {
   totalItems: Array<{
@@ -54,24 +65,31 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
       data: CrudItem
     }) => boolean;
 
-  private displayName?: string;
-
+  private displayName?: string;  
+  private editAllowed: ((item: CrudItem) => boolean)|undefined;
+  private editorEntered: ((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined;
+  private editorValueChanged: ((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined;
+   
   public selectedRowKeys: string[] = [];
   public selectedRowData: CrudItem[] = [];
 
   public initialized = false;
 
   constructor(private metaService: MetaService,
+    private crudService: CrudService,
     private i18next: I18NextPipe) {
     super();
   }
 
   ngOnInit(): void {
-    combineLatest([this.metaService.displayName$])
+    combineLatest([this.metaService.editorEntered$, this.metaService.editorValueChanged$, this.metaService.editFunction$, this.metaService.customFunctionAllowed$, this.metaService.displayName$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([displayName]) => {
-        if (displayName) {
+      .subscribe(([editorEntered, editorValueChanged, editFunction, customFunctionAllowed, displayName]) => {
+        if (editorEntered && editorValueChanged && customFunctionAllowed && displayName) {
           this.displayName = displayName;
+          this.editAllowed = (item) => editFunction ? customFunctionAllowed(editFunction, item) : false;
+          this.editorEntered = editorEntered;
+          this.editorValueChanged = editorValueChanged;
           this.initialized = true;
         }
       });
@@ -81,12 +99,74 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     return `height: ${this.height ?? '100%'}`;
   }
 
-  public editingStart() {
+  public editingStart(e: EditingStartEvent) {
+    e.cancel = !e.data || !this.editAllowed || !this.editAllowed(e.data);
     
+    if (!e.cancel && e.column) {
+      const column = this.layout?.columns.find(c => c.dataMember === e.column?.dataField);
+
+      if (column && column.editFunction) {
+        e.cancel = true;
+
+        const customFunction = this.customFunctions.find(cf => cf.id === column.editFunction);
+
+        if (customFunction && e.data) {
+          this.crudService.customEdit({ customFunction, items: [e.data]})
+        }
+      }
+    }
   }
 
-  public gridEditorPreparing() {
-    
+  public gridEditorPreparing(e: EditorPreparingEvent) {
+    if (e.parentType === 'dataRow') {
+      const defaultValueChanged = e.editorOptions.onValueChanged;
+      const defaultFocusIn = e.editorOptions.onFocusIn;
+
+      e.editorOptions.onValueChanged = (args: {
+        component: EditComponentWithOptions,
+        value: ValueType;
+      }) => {
+        if (defaultValueChanged) defaultValueChanged(args);
+
+        const editUtil = {
+          getEditorOption: (dataMember, option) =>
+            dataMember === e.dataField ? args.component.option(option) : null,
+          setEditorOption: (dataMember, option, value) => {
+            if (dataMember === e.dataField) {
+              args.component.option(option, value);
+            }
+          },
+        } as EditUtil;
+
+        if (this.editorValueChanged && e.row && e.dataField) {
+          this.editorValueChanged(
+            EditModes.EDIT,
+            e.row.data,
+            editUtil,
+            e.dataField,
+            args.value
+          );
+        }
+      };
+
+      e.editorOptions.onFocusIn = (args: { component: EditComponentWithOptions }) => {
+        if (defaultFocusIn) defaultFocusIn(args);
+
+        const editUtil = {
+          getEditorOption: (dataMember, option) =>
+            dataMember === e.dataField ? args.component.option(option) : null,
+          setEditorOption: (dataMember, option, value) => {
+            if (dataMember === e.dataField) {
+              args.component.option(option, value);
+            }
+          },
+        } as EditUtil;
+
+        if (this.editorEntered && e.row && e.dataField) {
+          this.editorEntered(EditModes.EDIT, e.row.data, editUtil, e.dataField);
+        }
+      };
+    }
   }
 
   public selectionChanged(e: SelectionChangedEvent) {
