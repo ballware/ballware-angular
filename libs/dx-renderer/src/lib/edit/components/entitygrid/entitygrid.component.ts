@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { CrudService, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CrudService, FunctionIdentifier, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
 import { dxDataGridColumn } from 'devextreme/ui/data_grid';
@@ -66,6 +66,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
   private selectAddRequest$ = new Subject<{ target: Element }>();
 
+  private functionAllowed: ((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined;
+
   public get gridLayout$(): Observable<GridLayout|undefined> {
     return this._gridLayout$;
   }
@@ -78,6 +80,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     private responsiveService: ResponsiveService) {
 
     super();
+
+    this.isMasterDetailExpandable = this.isMasterDetailExpandable.bind(this);
 
     this.mode$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
@@ -137,6 +141,12 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
           this.crudService.selectAdd({ target: selectAddRequest.target, defaultEditLayout: editLayoutIdentifier });
         }
       });
+
+    this.crudService.functionAllowed$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((functionAllowed) => {
+        this.functionAllowed = functionAllowed;
+      });
   }
 
   public onReloadClicked() {
@@ -171,8 +181,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     console.log('onRowDblClicked');
   }
 
-  public isMasterDetailExpandable(): boolean {
-    return false;
+  public isMasterDetailExpandable(e: { data: CrudItem }): boolean {
+    return (this.functionAllowed && this.functionAllowed('view', e.data)) ?? false;
   }
 
   public get exportFileName(): string {

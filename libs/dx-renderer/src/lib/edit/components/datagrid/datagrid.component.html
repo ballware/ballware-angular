@@ -10,7 +10,7 @@
     (onEditorPreparing)="gridEditorPreparing()"
     (onSelectionChanged)="selectionChanged($event)"
     (onToolbarPreparing)="toolbarPreparing($event)"
-    (onRowExpanding)="rowExpanding()"
+    (onRowExpanding)="rowExpanding($event)"
     [customizeColumns]="customizeColumnsDisableHidingPriority"
     [allowColumnResizing]="mode === 'large'"
     [allowColumnReordering]="true"

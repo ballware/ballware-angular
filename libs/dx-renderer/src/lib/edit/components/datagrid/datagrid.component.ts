@@ -3,7 +3,7 @@ import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model
 import { MetaService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
-import { RowDblClickEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
+import { RowDblClickEvent, RowExpandingEvent, SelectionChangedEvent, ToolbarPreparingEvent, dxDataGridColumn } from 'devextreme/ui/data_grid';
 import { dxToolbarItem } from 'devextreme/ui/toolbar';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../../utils/withdestroy';
@@ -212,8 +212,10 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     }
   }
 
-  public rowExpanding() {
-    
+  public rowExpanding(e: RowExpandingEvent) {
+    const rowData = e.component.getVisibleRows().find(row => row.rowType === 'data' && row.key === e.key);
+
+    e.cancel = rowData && this.isMasterDetailExpandable && !this.isMasterDetailExpandable({ data: rowData.data });
   }
 
   public customizeColumnsDisableHidingPriority(columns: Array<any>) {
