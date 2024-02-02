@@ -25,6 +25,7 @@ import { EditLayoutDetailGridComponent } from './detailgrid/detailgrid.component
 import { CrudDialogComponent } from './dialog/dialog.component';
 import { EditLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
 import { EditLayoutFieldsetComponent } from './fieldset/fieldset.component';
+import { ForeignEditPopupComponent } from './foreigneditpopup/foreigneditpopup.component';
 import { EditLayoutGroupComponent } from './group/group.component';
 import { EditLayoutJavascriptComponent } from './javascript/javascript.component';
 import { EditLayoutJsonComponent } from './json/json.component';
@@ -73,6 +74,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutButtonComponent,
     EditDetailComponent,
     DetailEditPopupComponent,
+    ForeignEditPopupComponent,
     CrudActionsComponent,
     CrudDialogComponent
   ],

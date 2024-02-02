@@ -64,8 +64,6 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
       .subscribe(([addSheet, target]) => {
         if (addSheet) {
-          console.log('Activating add sheet');
-          console.log(addSheet);
           this.addMenu?.instance.option('target', target);
           this.addMenu?.instance.option('dataSource', addSheet.actions);
           this.addMenu?.instance.option('visible', true);
@@ -77,8 +75,6 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
       .subscribe(([printSheet, target]) => {
         if (printSheet) {
-          console.log('Activating print sheet');
-          console.log(printSheet);
           this.printMenu?.instance.option('target', target);
           this.printMenu?.instance.option('dataSource', printSheet.actions);
           this.printMenu?.instance.option('visible', true);
@@ -90,17 +86,11 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
       .subscribe(([actionSheet, target]) => {
         if (actionSheet) {
-          console.log('Activating action sheet');
-          console.log(actionSheet);
           this.actionMenu?.instance.option('target', target);
           this.actionMenu?.instance.option('dataSource', actionSheet.actions);
           this.actionMenu?.instance.option('visible', true);
         }
       });
-  }
-
-  public externalEditorUrl() {
-    this.crudService.itemDialog$
   }
 
   public actionItemClicked(e: ItemClickEvent) {

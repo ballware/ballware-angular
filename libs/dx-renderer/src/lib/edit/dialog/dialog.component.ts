@@ -21,7 +21,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   @Input() mode?: EditModes;
   @Input() title?: string;
-  @Input() item?: Record<string, unknown>;
+  @Input() item?: unknown;
   @Input() editLayout!: EditLayout;
   @Input() popover!: boolean;
   @Input() apply?: (item: Record<string, unknown>) => void;
@@ -43,7 +43,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
       if (this.mode && this.item && this.editLayout) {
         this.editService.setIdentifier(nanoid(11));
         this.editService.setMode(this.mode);
-        this.editService.setItem(this.item);
+        this.editService.setItem(this.item as Record<string, unknown>);
         this.editService.setEditLayout(this.editLayout);
       }
   }
@@ -73,7 +73,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   public onApply() {
     this.editService.validate().subscribe(result => {
       if (result) {
-        this.item && this.apply && this.apply(this.item);  
+        this.item && this.apply && this.apply(this.item as Record<string, unknown>);  
       }
     });
   }

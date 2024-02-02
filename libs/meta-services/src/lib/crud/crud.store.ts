@@ -339,7 +339,32 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
         combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$])
-            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout]) => prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout]) =>  customFunction.entity 
+                ? this.updater((state, itemDialog: ItemEditDialog) => ({
+                    ...state,
+                    itemDialog
+                }))({
+                    mode: EditModes.EDIT,
+                    item: items,
+                    title: customFunction.text,
+                    editLayout: undefined,
+                    externalEditor: false,
+                    foreignEntity: customFunction.entity,
+                    customFunction: customFunction,
+                    apply: () => {                         
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+                    },
+                    cancel: () => { 
+                        this.updater((state) => ({
+                            ...state,
+                            itemDialog: undefined
+                        }))(); 
+                     }
+                } as ItemEditDialog) 
+                : prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
                 this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
                     itemDialog
@@ -349,22 +374,26 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     title: customFunction.text,
                     editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
                     externalEditor: customFunction.externalEditor,
+                    foreignEntity: customFunction.entity,
+                    customFunction: customFunction,
                     apply: () => { 
-                        evaluateCustomFunction(customFunction.id, params, 
-                            (evaluatedResult) => {
-                                if (Array.isArray(evaluatedResult)) {
-                                    this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem> });
-                                } else {
-                                    this.save({ customFunction, item: evaluatedResult as CrudItem });
-                                }                                
-                            },
-                            (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'warning' })
-                        );
-
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))(); 
+                        if (!customFunction.externalEditor && !customFunction.entity) {
+                            evaluateCustomFunction(customFunction.id, params, 
+                                (evaluatedResult) => {
+                                    if (Array.isArray(evaluatedResult)) {
+                                        this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem> });
+                                    } else {
+                                        this.save({ customFunction, item: evaluatedResult as CrudItem });
+                                    }                                
+                                },
+                                (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'warning' })
+                            );
+                        } else  {
+                            this.updater((state) => ({
+                                ...state,
+                                itemDialog: undefined
+                            }))(); 
+                        }          
                     },
                     cancel: () => { 
                         this.updater((state) => ({

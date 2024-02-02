@@ -15,10 +15,12 @@ export interface CrudAction {
 
 export interface ItemEditDialog {
     mode: EditModes, 
-    item: Record<string, unknown>, 
+    item: unknown, 
     title: string, 
     editLayout?: EditLayout, 
     externalEditor?: boolean,
+    foreignEntity?: string,
+    customFunction?: EntityCustomFunction,
     apply: (item: Record<string, unknown>) => void, 
     cancel: () => void    
 }

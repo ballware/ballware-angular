@@ -1,6 +1,12 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor" [popover]="(usePopover$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [popover]="(usePopover$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
+<ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
+  [customFunctionEntity]="itemDialog.foreignEntity"  
+  [customFunctionId]="itemDialog.customFunction.id"
+  [customFunctionParam]="itemDialog.item"
+  (editFinished)="itemDialog.cancel()">
+</ballware-crud-foreigneditpopup>
 <dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
   [visible]="true" 
   [showCloseButton]="true"

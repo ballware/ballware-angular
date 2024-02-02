@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, Provider } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
+import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { CrudService, EditService, EditItemRef, LookupService, MetaService, AttachmentService, MetaServiceFactory } from '@ballware/meta-services';
+import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { nanoid } from 'nanoid';
+import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -43,7 +44,7 @@ interface EntityGridItemOptions {
     } as Provider
   ]
 })
-export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, EditItemRef {
+export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -55,7 +56,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public height$ = new BehaviorSubject<string|undefined>('100%');
 
-  constructor(private metaService: MetaService, private crudService: CrudService, private editService: EditService) {
+  constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private editService: EditService) {
     super();
 
     combineLatest([this.metaService.headParams$])
@@ -74,6 +75,16 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
   }
 
   ngOnInit(): void {
+
+    const  identifier = nanoid(11);
+
+    if (identifier) {
+      this.lookupService.setIdentifier(identifier);
+      this.metaService.setIdentifier(identifier);
+      this.crudService.setIdentifier(identifier);
+      this.editService.setIdentifier(identifier);
+    }
+
     if (this.initialLayoutItem) {
       this.initLifecycle(this.initialLayoutItem, this.editService, this);
 
@@ -102,6 +113,15 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
           }
         });
     }
+  }
+
+  override ngOnDestroy(): void {
+      super.ngOnDestroy();
+
+      this.editService.ngOnDestroy();
+      this.crudService.ngOnDestroy();
+      this.metaService.ngOnDestroy();
+      this.lookupService.ngOnDestroy();
   }
 
   public getOption(option: string): any {
