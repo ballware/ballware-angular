@@ -128,10 +128,12 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
     this.summary$ = this._gridLayout$.pipe(map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined));
 
-    this.dataSource$ = combineLatest([this.crudService.fetchedItems$])
+    this.dataSource$ = combineLatest([this.metaService.editFunction$, this.crudService.fetchedItems$])
       .pipe(takeUntil(this.destroy$))
-      .pipe(map(([fetchedItems]) => fetchedItems ? createEditableGridDatasource(fetchedItems, (item) => {
-        console.log('save');
+      .pipe(map(([editFunction, fetchedItems]) => fetchedItems ? createEditableGridDatasource(fetchedItems, (item) => {
+        if (editFunction) {
+          this.crudService.save({ customFunction: editFunction, item });  
+        }        
       }) : undefined));
 
     combineLatest([this.selectAddRequest$, this.editLayoutIdentifier$])
