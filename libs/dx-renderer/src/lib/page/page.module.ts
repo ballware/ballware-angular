@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxChartModule, DxDeferRenderingModule, DxLoadIndicatorModule, DxMapModule, DxTabPanelModule } from 'devextreme-angular';
+import { DxChartModule, DxDeferRenderingModule, DxLoadIndicatorModule, DxMapModule, DxPivotGridModule, DxTabPanelModule } from 'devextreme-angular';
 import { EditModule } from '../edit/edit.module';
 import { ToolbarModule } from '../toolbar/toolbar.module';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer/crudcontainer.component';
@@ -44,7 +44,8 @@ import { PageLayoutTabsComponent } from './tabs/tabs.component';
     DxMapModule,
     DxLoadIndicatorModule,
     DxDeferRenderingModule,
-    DxChartModule
+    DxChartModule,
+    DxPivotGridModule
   ],
   exports: [
     PageComponent,

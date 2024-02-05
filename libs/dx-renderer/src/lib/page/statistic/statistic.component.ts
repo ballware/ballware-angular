@@ -22,12 +22,12 @@ import { WithDestroy } from "../../utils/withdestroy";
     @Input() layoutItem!: PageLayoutItem;
 
     type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
-
+    
     constructor(private pageService: PageService, private statisticService: StatisticService) {
       super();
 
       this.type$ = this.statisticService.layout$.pipe(map((layout) => layout?.type));
-
+      
       this.pageService.customParam$
         .pipe(takeUntil(this.destroy$))
         .subscribe((customParam) => {
@@ -44,7 +44,7 @@ import { WithDestroy } from "../../utils/withdestroy";
   }
 
   ngOnInit(): void {
-
+    
     let identifier = (this.layoutItem?.options?.itemoptions as StatisticOptions)?.identifier;
 
     if (!identifier) {

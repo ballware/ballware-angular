@@ -1,0 +1,14 @@
+<dx-pivot-grid
+    [style.height]="(height$ | async) ?? '100%'"
+    [allowSortingBySummary]="true"
+    [allowSorting]="true"
+    [allowExpandAll]="true"
+    [allowFiltering]="true"
+    [fieldChooser]="{ enabled: true }"
+    [export]="{ enabled: true }"
+    (onExporting)="onExporting($event)"
+    [showRowTotals]="(options$ | async)?.showRowTotals ?? false"
+    [showRowGrandTotals]="(options$ | async)?.showRowGrandTotals ?? false"
+    [dataSource]="(dataSource$ | async) ?? null">
+
+</dx-pivot-grid>
