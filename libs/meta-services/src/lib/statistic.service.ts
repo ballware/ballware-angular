@@ -14,6 +14,7 @@ export interface StatisticServiceApi {
   customParam$: Observable<Record<string, unknown>|undefined>;
   headParams$: Observable<QueryParams|undefined>;
   metadata$: Observable<CompiledStatistic|undefined>;
+  name$: Observable<string|undefined>;
   layout$: Observable<StatisticLayout|undefined>;
   data$: Observable<Array<Record<string, unknown>>|undefined>;
 
@@ -26,6 +27,7 @@ export abstract class StatisticService implements OnDestroy, StatisticServiceApi
   public abstract customParam$: Observable<Record<string, unknown>|undefined>;
   public abstract headParams$: Observable<QueryParams|undefined>;
   public abstract metadata$: Observable<CompiledStatistic|undefined>;
+  public abstract name$: Observable<string|undefined>;
   public abstract layout$: Observable<StatisticLayout | undefined>;
   public abstract data$: Observable<Record<string, unknown>[] | undefined>;
   public abstract argumentAxisCustomizeText$: Observable<((value: unknown) => string|undefined) | undefined>;

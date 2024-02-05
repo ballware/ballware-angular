@@ -10,6 +10,7 @@ export interface StatisticState {
 
     statisticMetadata?: CompiledStatistic;
 
+    name?: string;
     layout?: StatisticLayout;
     data?: Array<Record<string, unknown>>;
 }

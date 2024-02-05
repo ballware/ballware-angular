@@ -4,6 +4,7 @@ import { PageLayoutCrudcontainerComponent } from '../crudcontainer/crudcontainer
 import { PageLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
 import { PageLayoutGridComponent } from '../grid/grid.component';
 import { PageLayoutMapComponent } from '../map/map.component';
+import { PageLayoutStatisticComponent } from '../statistic/statistic.component';
 import { PageLayoutTabsComponent } from '../tabs/tabs.component';
 
 @Component({
@@ -54,17 +55,15 @@ export class PageLayoutItemComponent implements AfterViewInit {
             componentRef.instance.layoutItem = this.layoutItem;
             componentRef.changeDetectorRef.detectChanges();
           }
-          break;
-          /*
+          break;          
         case 'statistic': {
-            const { PageLayoutStatisticComponent } = await import('../statistic/statistic.component');
+            //const { PageLayoutStatisticComponent } = await import('../statistic/statistic.component');
             const componentRef = this.itemHost.createComponent(PageLayoutStatisticComponent);
 
             componentRef.instance.layoutItem = this.layoutItem;
             componentRef.changeDetectorRef.detectChanges();
           }
-          break;
-          */
+          break;          
         case 'entitygrid': {
             //const { PageLayoutEntitygridComponent } = await import('../entitygrid/entitygrid.component');
             const componentRef = this.itemHost.createComponent(PageLayoutEntitygridComponent);

@@ -59,16 +59,17 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
             .pipe(tap(([metadata, customParam, accessToken, headParams, lookups, data]) => {
                 if (metadata && metadata.layout && customParam && accessToken && headParams && lookups && data) {
 
-                    const updater = this.updater((state, updates: { layout: StatisticLayout|undefined, data: Record<string, unknown>[] }) => ({
+                    const updater = this.updater((state, updates: { name: string, layout: StatisticLayout|undefined, data: Record<string, unknown>[] }) => ({
                         ...state,
+                        name: updates.name,
                         layout: updates.layout,
                         data: updates.data
                     }));
 
                     if (metadata.mappingScript) {
-                        metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, createUtil(this.httpClient, accessToken), (layout, data) => updater({ layout, data }));
+                        metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, createUtil(this.httpClient, accessToken), (layout, data) => updater({ name: layout?.title ?? metadata.name, layout, data }));
                     } else {
-                        updater({ layout: metadata.layout, data });
+                        updater({ name: metadata.layout?.title ?? metadata.name, layout: metadata.layout, data });
                     }
                 }
             }))
@@ -79,6 +80,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
     readonly statistic$ = this.select(state => state.statistic);
     readonly customParam$ = this.select(state => state.customParam);
     readonly headParams$ = this.select(state => state.headParams);
+    readonly name$ = this.select(state => state.name);
     readonly layout$ = this.select(state => state.layout);
     readonly data$ = this.select(state => state.data);
     
