@@ -4,7 +4,8 @@ import { EditState } from "../edit/edit.state";
 import { LookupState } from "../lookup/lookup.state";
 import { MetaState } from "../meta/meta.state";
 import { PageState } from "../page/page.state";
-import { crudDestroyed, crudUpdated, editDestroyed, editUpdated, lookupDestroyed, lookupUpdated, metaDestroyed, metaUpdated, pageDestroyed, pageUpdated } from "./component.actions";
+import { StatisticState } from "../statistic/statistic.state";
+import { crudDestroyed, crudUpdated, editDestroyed, editUpdated, lookupDestroyed, lookupUpdated, metaDestroyed, metaUpdated, pageDestroyed, pageUpdated, statisticDestroyed, statisticUpdated } from "./component.actions";
 
 export const componentReducer = combineReducers({
     lookup: createReducer(
@@ -58,6 +59,17 @@ export const componentReducer = combineReducers({
             [identifier]: currentState
         })),
         on(editDestroyed, (state, { identifier }) => ({
+            ...state,
+            [identifier]: undefined
+        })),
+    ),
+    statistic: createReducer(
+        {} as Record<string, StatisticState|undefined>,
+        on(statisticUpdated, (state, { identifier, currentState }) => ({
+            ...state,
+            [identifier]: currentState
+        })),
+        on(statisticDestroyed, (state, { identifier }) => ({
             ...state,
             [identifier]: undefined
         })),

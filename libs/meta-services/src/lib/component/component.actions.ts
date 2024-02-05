@@ -4,6 +4,7 @@ import { EditState } from "../edit/edit.state";
 import { LookupState } from "../lookup/lookup.state";
 import { MetaState } from "../meta/meta.state";
 import { PageState } from "../page/page.state";
+import { StatisticState } from "../statistic/statistic.state";
 
 export const lookupUpdated = createAction('[Lookup] updated', props<{    
     identifier: string,
@@ -47,5 +48,14 @@ export const editUpdated = createAction('[Edit] updated', props<{
 }>());
 
 export const editDestroyed = createAction('[Edit] destroyed', props<{    
+    identifier: string
+}>());
+
+export const statisticUpdated = createAction('[Statistic] updated', props<{    
+    identifier: string,
+    currentState: StatisticState|undefined
+}>());
+
+export const statisticDestroyed = createAction('[Statistic] destroyed', props<{    
     identifier: string
 }>());

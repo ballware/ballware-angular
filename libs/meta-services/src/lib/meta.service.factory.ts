@@ -6,6 +6,7 @@ import { LookupService } from './lookup.service';
 import { MetaService } from './meta.service';
 import { PageService } from './page.service';
 import { ResponsiveService } from './responsive.service';
+import { StatisticService } from './statistic.service';
 
 export abstract class MetaServiceFactory {
     abstract createAttachmentService(): AttachmentService;
@@ -15,4 +16,5 @@ export abstract class MetaServiceFactory {
     abstract createMetaService(lookupService: LookupService): MetaService;
     abstract createResponsiveService(): ResponsiveService;
     abstract createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService;
+    abstract createStatisticService(lookupService: LookupService): StatisticService;
 }

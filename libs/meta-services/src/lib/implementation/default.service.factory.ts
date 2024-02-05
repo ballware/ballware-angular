@@ -24,6 +24,9 @@ import { PageService } from '../page.service';
 import { PageServiceProxy } from '../page/page.proxy';
 import { PageStore } from '../page/page.store';
 import { ResponsiveService } from '../responsive.service';
+import { StatisticService } from '../statistic.service';
+import { StatisticServiceProxy } from '../statistic/statistic.proxy';
+import { StatisticStore } from '../statistic/statistic.store';
 import { TenantService } from '../tenant.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
@@ -57,5 +60,9 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
         return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
+    }
+    
+    override createStatisticService(lookupService: LookupService): StatisticService {
+        return new StatisticServiceProxy(new StatisticStore(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, lookupService));
     }
 }

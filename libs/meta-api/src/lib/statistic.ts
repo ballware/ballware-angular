@@ -118,7 +118,7 @@ export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
 const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string
 ): Observable<CompiledStatistic> => {
-  const url = `${serviceBaseUrl}api/statistic/metadataforidentifier?identifier=${encodeURIComponent(identifier)}`;
+  const url = `${serviceBaseUrl}/api/statistic/metadataforidentifier?identifier=${encodeURIComponent(identifier)}`;
 
   return http
     .get<Statistic>(url)
@@ -129,7 +129,7 @@ const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string,
   params: QueryParams
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}api/statistic/dataforidentifier?identifier=${encodeURIComponent(identifier)}${additionalParamsToUrl(
+  const url = `${serviceBaseUrl}/api/statistic/dataforidentifier?identifier=${encodeURIComponent(identifier)}${additionalParamsToUrl(
     params
   )}`;
 

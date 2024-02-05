@@ -35,6 +35,7 @@ export * from './notification.service';
 export * from './page.service';
 export * from './responsive.service';
 export * from './settings.service';
+export * from './statistic.service';
 export * from './tenant.service';
 export * from './toolbaritemref';
 
