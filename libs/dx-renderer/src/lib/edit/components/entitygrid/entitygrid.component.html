@@ -14,7 +14,7 @@
     (importClick)="onImportClicked()"
     (rowDblClick)="onRowDblClicked()"
     [isMasterDetailExpandable]="isMasterDetailExpandable"
-    [exportFileName]="exportFileName"
+    [exportFileName]="(exportFileName$ | async) ?? 'unknown'"
     [layout]="(gridLayout$ | async) ?? undefined"
     [summary]="(summary$ | async) ?? undefined"
     [mode]="(mode$ | async) ?? 'large'"

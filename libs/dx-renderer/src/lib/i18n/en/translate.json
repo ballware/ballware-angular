@@ -1,105 +1,112 @@
 {
-    "translations": {        
-        "format": {
-            "date": "MM/dd/yyyy",
-            "datetime": "MM/dd/yyyy HH:mm:ss"
-        },
-        "validation": {
-            "messages": {
-                "required": "Input required"
-            }
-        },
-        "session": {
-            "refresh": "Refresh session",
-            "changepassword": "Change password",
-            "logout": "Logout {{user}}",
-            "manageaccount": "Edit account"
-        },
-        "attachment": {
-            "messages": {
-                "added": "File successfully uploaded",
-                "removed": "File successfully removed"
-            },
-            "actions": {
-                "view": "Show",
-                "remove": "Remove"
-            },
-            "columns": {
-                "name": "Name",
-                "options": "Options"
-            }            
-        },
-        "datacontainer": {
-            "titles": {
-                "add": "Add {{entity}}",
-                "view": "Show {{entity}}",
-                "edit": "Edit {{entity}}",
-                "remove": "Drop {{entity}}"
-            },
-            "actions": {
-                "refresh": "Refresh list",
-                "options": "More Options",
-                "add": "Add {{entity}}",
-                "show": "Show",
-                "edit": "Edit",
-                "remove": "Remove",
-                "print": "Print",
-                "export": "Export",
-                "import": "Import",
-                "showSource": "Show source",
-                "showList": "Show list"                                
-            },
-            "messages": {
-                "loading": "Loading data",
-                "remove": "Realy want to remove {{entity}}?"
-            },
-            "actionsheet": {
-                "title": "Options"
-            }
-        },
-        "editing": {
-            "actions": {
-                "open": "Open",
-                "apply": "Apply changes",
-                "cancel": "Cancel",
-                "remove": "Remove",
-                "close": "Close"
-            },
-            "notifications": {
-                "saved": "Successfully saved",
-                "removed": "Successfully removed",
-                "noitems": "No selected records"
-            },
-            "import": {
-                "popuptitle": "Import file",
-                "popupmessage": "Upload file containing data for import"
-            }
-        },
-        "documentation": {
-            "popuptitle": "Documentation for {{entity}}",
-            "actions": {
-                "close": "Close"
-            },
-            "notifications": {
-                "nodocumentation": "No documentation supplied"
-            }
-        },
-        "filterbar": {
-            "actions": {
-                "close": "Close"
-            }
-        },
-        "rights": {
-            "notifications": {
-                "routenotallowed": "Access denied, please login with required rights",
-                "loginsuccess": "Login successful",
-                "logininvalid": "Invalid user or password",
-                "logoutsuccess": "Logout successful",
-                "registeredsuccess": "Registration successful",
-                "forgotpasswordsuccess": "Wait for mail with further instructions",
-                "resetpasswordsuccess": "Password reset successful",
-                "changepasswordsuccess": "Password successfully changed"
-            }
+  "translations": {
+    "format": {
+      "date": "MM/dd/yyyy",
+      "datetime": "MM/dd/yyyy HH:mm:ss"
+    },
+    "validation": {
+      "messages": {
+        "required": "Input required"
+      }
+    },
+    "session": {
+      "refresh": "Refresh session",
+      "changepassword": "Change password",
+      "logout": "Logout {{user}}",
+      "manageaccount": "Edit account"
+    },
+    "attachment": {
+      "messages": {
+        "added": "File successfully uploaded",
+        "removed": "File successfully removed"
+      },
+      "actions": {
+        "view": "Show",
+        "remove": "Remove"
+      },
+      "columns": {
+        "name": "Name",
+        "options": "Options"
+      }
+    },
+    "datacontainer": {
+      "titles": {
+        "add": "Add {{entity}}",
+        "view": "Show {{entity}}",
+        "edit": "Edit {{entity}}",
+        "remove": "Drop {{entity}}"
+      },
+      "actions": {
+        "refresh": "Refresh list",
+        "options": "More Options",
+        "add": "Add {{entity}}",
+        "show": "Show",
+        "edit": "Edit",
+        "remove": "Remove",
+        "print": "Print",
+        "export": "Export",
+        "import": "Import",
+        "showSource": "Show source",
+        "showList": "Show list",
+        "selectall": "Select all",
+        "unselectall": "Unselect all",
+        "selection": "Selection: {{count}}",
+        "selectionhint": {
+          "normal": "Selected rows",
+          "danger": "Attention: Not all selected rows are visible on screen"
         }
+      },
+      "messages": {
+        "loading": "Loading data",
+        "remove": "Realy want to remove {{entity}}?"
+      },
+      "actionsheet": {
+        "title": "Options"
+      }
+    },
+    "editing": {
+      "actions": {
+        "open": "Open",
+        "apply": "Apply changes",
+        "cancel": "Cancel",
+        "remove": "Remove",
+        "close": "Close"
+      },
+      "notifications": {
+        "saved": "Successfully saved",
+        "removed": "Successfully removed",
+        "noitems": "No selected records"
+      },
+      "import": {
+        "popuptitle": "Import file",
+        "popupmessage": "Upload file containing data for import"
+      }
+    },
+    "documentation": {
+      "popuptitle": "Documentation for {{entity}}",
+      "actions": {
+        "close": "Close"
+      },
+      "notifications": {
+        "nodocumentation": "No documentation supplied"
+      }
+    },
+    "filterbar": {
+      "actions": {
+        "close": "Close"
+      }
+    },
+    "rights": {
+      "notifications": {
+        "routenotallowed": "Access denied, please login with required rights",
+        "loginsuccess": "Login successful",
+        "logininvalid": "Invalid user or password",
+        "logoutsuccess": "Logout successful",
+        "registeredsuccess": "Registration successful",
+        "forgotpasswordsuccess": "Wait for mail with further instructions",
+        "resetpasswordsuccess": "Password reset successful",
+        "changepasswordsuccess": "Password successfully changed"
+      }
     }
+  }
 }

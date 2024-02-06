@@ -4,6 +4,7 @@ import { CrudService, FunctionIdentifier, LookupService, MetaService, Responsive
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
 import { dxDataGridColumn } from 'devextreme/ui/data_grid';
+import moment from 'moment';
 import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
 import { createColumnConfiguration } from '../../../utils/columns';
 import { createEditableGridDatasource } from '../../../utils/datasource';
@@ -59,6 +60,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
   public editLayoutIdentifier$: Observable<string|undefined>;
 
+  public exportFileName$: Observable<string|undefined>;
+
   public showAdd$: Observable<boolean>;
   public showPrint$: Observable<boolean>;
   public showImport$: Observable<boolean>;
@@ -86,6 +89,9 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     this.mode$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small'))));
+
+    this.exportFileName$ = this.metaService.displayName$
+      .pipe(map((displayName) => `${displayName}_${moment().format('YYYYMMDD')}`));
 
     this.headCustomFunctions$ = this.crudService.headCustomFunctions$;
 
@@ -185,10 +191,6 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
   public isMasterDetailExpandable(e: { data: CrudItem }): boolean {
     return (this.functionAllowed && this.functionAllowed('view', e.data)) ?? false;
-  }
-
-  public get exportFileName(): string {
-    return "";
   }
 
   ngOnInit(): void {
