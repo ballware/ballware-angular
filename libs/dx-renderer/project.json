@@ -71,6 +71,11 @@
         "outputDir": "dist/storybook/dx-renderer",
         "configDir": "libs/dx-renderer/.storybook",
         "browserTarget": "dx-renderer:build-storybook",
+        "styles": [
+          "node_modules/bootstrap/scss/bootstrap.scss",
+          "node_modules/bootstrap-icons/font/bootstrap-icons.scss",
+          "node_modules/devextreme/dist/css/dx.material.blue.light.css"
+        ],
         "compodoc": false
       },
       "configurations": {
@@ -82,7 +87,7 @@
     "test-storybook": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "test-storybook -c libs/dx-renderer/.storybook --url=http://localhost:4400"
+        "command": "test-storybook -c libs/dx-renderer/.storybook --url=https://localhost:4400"
       }
     },
     "static-storybook": {

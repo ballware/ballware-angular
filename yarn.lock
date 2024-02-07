@@ -10496,7 +10496,6 @@ __metadata:
     react-dom: "npm:^18.2.0"
     rxjs: "npm:7.8.1"
     rxjs-marbles: "npm:^7.0.1"
-    storybook-addon-angular-router: "npm:^1.9.1"
     ts-jest: "npm:29.1.1"
     ts-node: "npm:10.9.1"
     tslib: "npm:^2.3.0"
@@ -24208,19 +24207,6 @@ __metadata:
   version: 2.14.2
   resolution: "store2@npm:2.14.2"
   checksum: 2f27c3eaa7207b81410e170e7c41379816d22c1566308a9d97fbf853c4facff531fcb2a85f085c7503c578736570972f747c26018ebeaba7d1341fb82a7b6d52
-  languageName: node
-  linkType: hard
-
-"storybook-addon-angular-router@npm:^1.9.1":
-  version: 1.9.1
-  resolution: "storybook-addon-angular-router@npm:1.9.1"
-  peerDependencies:
-    "@storybook/addon-actions": ^7.0.0
-    "@storybook/angular": ^7.0.0
-    "@storybook/api": ^7.0.0
-    "@storybook/preview-api": ^7.0.0
-    rxjs: ^6.6.7 || ^7.4.0
-  checksum: 191643e79e0b3c4a75a8e383455ec5ea6f89c1eb649bdb7f45320f50dc86422c475be98609616efe1e73df69fd6dd6c4cc790c7db7b05d95f894c576a8d58d5c
   languageName: node
   linkType: hard
 
