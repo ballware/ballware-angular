@@ -1,11 +1,12 @@
 import { combineReducers, createReducer, on } from "@ngrx/store";
+import { AttachmentState } from "../attachment/attachment.state";
 import { CrudState } from "../crud/crud.state";
 import { EditState } from "../edit/edit.state";
 import { LookupState } from "../lookup/lookup.state";
 import { MetaState } from "../meta/meta.state";
 import { PageState } from "../page/page.state";
 import { StatisticState } from "../statistic/statistic.state";
-import { crudDestroyed, crudUpdated, editDestroyed, editUpdated, lookupDestroyed, lookupUpdated, metaDestroyed, metaUpdated, pageDestroyed, pageUpdated, statisticDestroyed, statisticUpdated } from "./component.actions";
+import { attachmentDestroyed, attachmentUpdated, crudDestroyed, crudUpdated, editDestroyed, editUpdated, lookupDestroyed, lookupUpdated, metaDestroyed, metaUpdated, pageDestroyed, pageUpdated, statisticDestroyed, statisticUpdated } from "./component.actions";
 
 export const componentReducer = combineReducers({
     lookup: createReducer(
@@ -70,6 +71,17 @@ export const componentReducer = combineReducers({
             [identifier]: currentState
         })),
         on(statisticDestroyed, (state, { identifier }) => ({
+            ...state,
+            [identifier]: undefined
+        })),
+    ),
+    attachment: createReducer(
+        {} as Record<string, AttachmentState|undefined>,
+        on(attachmentUpdated, (state, { identifier, currentState }) => ({
+            ...state,
+            [identifier]: currentState
+        })),
+        on(attachmentDestroyed, (state, { identifier }) => ({
             ...state,
             [identifier]: undefined
         })),

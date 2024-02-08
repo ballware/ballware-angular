@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
+import { EditLayoutAttachmentsComponent } from '../attachments/attachments.component';
 import { EditLayoutBoolComponent } from '../bool/bool.component';
 import { EditLayoutButtonComponent } from '../button/button.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
@@ -174,7 +175,15 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.instance.initialLayoutItem = this.layoutItem;  
             componentRef.changeDetectorRef.detectChanges();
           }
-          break;            
+          break;          
+        case 'attachements':
+        case 'attachments': {
+            const componentRef = this.itemHost.createComponent(EditLayoutAttachmentsComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          } 
+          break;  
         case 'empty':
           break;
         default: {

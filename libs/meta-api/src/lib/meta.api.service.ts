@@ -1,4 +1,4 @@
-import { MetaEntityApi, MetaTenantApi, MetaStatisticApi, MetaLookupApi, MetaProcessingstateApi, MetaPickvalueApi, MetaDocumentApi, MetaDocumentationApi, MetaPageApi, MetaGenericEntityApi } from "./meta-api.module";
+import { MetaAttachmentApi, MetaDocumentApi, MetaDocumentationApi, MetaEntityApi, MetaGenericEntityApi, MetaLookupApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi, MetaTenantApi } from "./meta-api.module";
 
 export abstract class MetaApiService {
     abstract metaEntityApi: MetaEntityApi;
@@ -11,4 +11,5 @@ export abstract class MetaApiService {
     abstract metaDocumentationApi: MetaDocumentationApi;
     abstract metaPageApi: MetaPageApi;
     abstract metaGenericEntityApiFactory: (baseUrl: string) => MetaGenericEntityApi;
+    abstract metaAttachmentApiFactory: (owner: string) => MetaAttachmentApi;
 }

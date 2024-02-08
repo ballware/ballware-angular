@@ -17,9 +17,13 @@
       "switchtenant": "In Umgebung {{tenant}} wechseln"
     },
     "attachment": {
+      "titles": {
+        "remove": "Anhang entfernen"
+      },
       "messages": {
         "added": "Datei erfolgreich hochgeladen",
-        "removed": "Datei erfolgreich entfernt"
+        "removed": "Datei erfolgreich entfernt",
+        "remove": "{{fileName}} wirklich entfernen?"
       },
       "actions": {
         "view": "Anzeigen",
@@ -27,7 +31,7 @@
       },
       "columns": {
         "name": "Name",
-        "options": "Options"
+        "options": "Optionen"
       }
     },
     "datacontainer": {

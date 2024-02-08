@@ -1,4 +1,5 @@
 import { createAction, props } from "@ngrx/store";
+import { AttachmentState } from "../attachment/attachment.state";
 import { CrudState } from "../crud/crud.state";
 import { EditState } from "../edit/edit.state";
 import { LookupState } from "../lookup/lookup.state";
@@ -57,5 +58,14 @@ export const statisticUpdated = createAction('[Statistic] updated', props<{
 }>());
 
 export const statisticDestroyed = createAction('[Statistic] destroyed', props<{    
+    identifier: string
+}>());
+
+export const attachmentUpdated = createAction('[Attachment] updated', props<{    
+    identifier: string,
+    currentState: AttachmentState|undefined
+}>());
+
+export const attachmentDestroyed = createAction('[Attachment] destroyed', props<{    
     identifier: string
 }>());

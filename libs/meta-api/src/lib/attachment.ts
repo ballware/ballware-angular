@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { from, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 /**
  * Interface for owner specific attachments operations
@@ -8,52 +8,82 @@ import { from, Observable } from 'rxjs';
   /**
    * Query list of attachments by owner
    *
-   * @param owner - Identifier for owner
    * @returns Observable with list of attachment metadata belonging to owner
    */
-  queryByOwner: (    
-    owner: string
-  ) => Observable<Array<Record<string, unknown>>>;
+  query: () => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Upload new attachment
    *
-   * @param owner - Identifier for owner
    * @param file - Uploaded file
    * @returns Observable resolved when upload finished
    */
-  upload: (owner: string, file: File) => Observable<void>;
+  upload: (file: File) => Observable<void>;
 
   /**
    * Fetch file url for display/download
    *
-   * @param owner - Identifier for owner
    * @param fileName - File name from metadata
    * @returns Observable with URL for download of file
    */
-  open: (owner: string, fileName: string) => Observable<string>;
+  open: (fileName: string) => Observable<string>;
 
   /**
    * Remove existing attachment
    *
-   * @param owner - Identifier for owner
    * @param fileName - File name from metadata
    * @returns Observable resolved when remove operation finished
    */
-  remove: (owner: string, fileName: string) => Observable<void>;
+  remove: (fileName: string) => Observable<void>;
 }
+
+const fetchFunc = (http: HttpClient, serviceBaseUrl: string, owner: string): Observable<Array<Record<string, unknown>>> => {
+  const url = `${serviceBaseUrl}/api/file/all/${owner}`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+};
+
+const uploadFunc = (http: HttpClient, serviceBaseUrl: string, owner: string, file: File): Observable<void> => {
+  const url = `${serviceBaseUrl}/api/file/upload/${owner}`;
+
+  const formData = new FormData();
+
+  formData.append('files[]', file);
+
+  return http.post<void>(url, formData);
+};
+
+const openFunc = (_http: HttpClient, serviceBaseUrl: string, owner: string, fileName: string): Observable<string> => {
+  const url = `${serviceBaseUrl}/api/file/byname/${owner}?file=${encodeURIComponent(
+    fileName
+  )}`;
+
+  return of(url);
+};
+
+const deleteFunc = (http: HttpClient, serviceBaseUrl: string, owner: string, fileName: string): Observable<void> => {
+  const url = `${serviceBaseUrl}/api/file/byname/${owner}?file=${encodeURIComponent(
+    fileName
+  )}`;
+
+  return http.delete<void>(url);
+};
 
 /**
  * Create adapter for attachment data operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
  * @returns Adapter object providing data operations
  */
-export abstract class MetaAttachmentApiService implements MetaAttachmentApi {  
-  abstract queryByOwner(    
-    owner: string
-  ): Observable<Array<Record<string, unknown>>>;
-
-  abstract upload(owner: string, file: File): Observable<void>;
-  abstract open(owner: string, fileName: string): Observable<string>;
-  abstract remove(owner: string, fileName: string): Observable<void>;
+export function createMetaBackendAttachmentApi(
+  httpClient: HttpClient, 
+  metaServiceBaseUrl: string,
+  owner: string
+): MetaAttachmentApi {
+  return {
+    query: () => fetchFunc(httpClient, metaServiceBaseUrl, owner),
+    upload: (file) => uploadFunc(httpClient, metaServiceBaseUrl, owner, file),
+    open: (fileName) => openFunc(httpClient, metaServiceBaseUrl, owner, fileName),
+    remove: (fileName) => deleteFunc(httpClient, metaServiceBaseUrl, owner, fileName)
+  } as MetaAttachmentApi;
 }

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
 import dxDateBox from 'devextreme/ui/date_box';
 import dxHtmlEditor from 'devextreme/ui/html_editor';
 import dxNumberBox from 'devextreme/ui/number_box';
@@ -11,6 +11,7 @@ import dxTagBox from 'devextreme/ui/tag_box';
 import dxTextArea from 'devextreme/ui/text_area';
 import dxTextBox from 'devextreme/ui/text_box';
 import { CrudActionsComponent } from './actions/actions.component';
+import { EditLayoutAttachmentsComponent } from './attachments/attachments.component';
 import { EditLayoutBoolComponent } from './bool/bool.component';
 import { EditLayoutButtonComponent } from './button/button.component';
 import { CodeMirrorComponent } from './components/codeeditor/codemirror.component';
@@ -72,6 +73,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,
     EditLayoutButtonComponent,
+    EditLayoutAttachmentsComponent,
     EditDetailComponent,
     DetailEditPopupComponent,
     ForeignEditPopupComponent,
@@ -97,7 +99,8 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     DxValidationGroupModule,
     DxValidationSummaryModule,
     DxScrollViewModule,
-    DxPopupModule
+    DxPopupModule,
+    DxFileUploaderModule
   ],
   exports: [
     EditLayoutContainerComponent,

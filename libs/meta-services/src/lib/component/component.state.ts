@@ -1,3 +1,4 @@
+import { AttachmentState } from "../attachment/attachment.state";
 import { CrudState } from "../crud/crud.state";
 import { EditState } from "../edit/edit.state";
 import { LookupState } from "../lookup/lookup.state";
@@ -13,5 +14,6 @@ export interface ComponentState {
     meta: Record<string, MetaState>,
     crud: Record<string, CrudState>,
     edit: Record<string, EditState>,
-    statistic: Record<string, StatisticState>
+    statistic: Record<string, StatisticState>,
+    attachment: Record<string, AttachmentState>
 }

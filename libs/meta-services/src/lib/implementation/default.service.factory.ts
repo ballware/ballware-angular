@@ -5,6 +5,8 @@ import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AttachmentService } from '../attachment.service';
+import { AttachmentServiceProxy } from '../attachment/attachment.proxy';
+import { AttachmentStore } from '../attachment/attachment.store';
 import { CrudService } from '../crud.service';
 import { CrudServiceProxy } from '../crud/crud.proxy';
 import { CrudStore } from '../crud/crud.store';
@@ -35,7 +37,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createAttachmentService(): AttachmentService {
-        return new AttachmentService();
+        return new AttachmentServiceProxy(new AttachmentStore(this.store, this.notificationService, this.apiServiceFactory.createMetaApi(), this.translationPipe));
     }
 
     override createCrudService(metaService: MetaService): CrudService {

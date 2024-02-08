@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { MetaAttachmentApi } from "../attachment";
+import { MetaAttachmentApi, createMetaBackendAttachmentApi } from "../attachment";
 import { MetaDocumentApi, createMetaBackendDocumentApi } from "../document";
 import { MetaDocumentationApi, createMetaBackendDocumentationApi } from "../documentation";
 import { MetaEntityApi, createMetaBackendEntityApi } from "../entity";
@@ -23,7 +23,8 @@ export class DefaultMetaApiService implements MetaApiService {
         this.metaDocumentApi = createMetaBackendDocumentApi(httpClient, metaBaseUrl, documentServiceBaseUrl);
         this.metaDocumentationApi = createMetaBackendDocumentationApi(httpClient, metaBaseUrl);
         this.metaPageApi = createMetaBackendPageApi(httpClient, metaBaseUrl);
-        this.metaGenericEntityApiFactory = (baseUrl) => createMetaBackendGenericEntityApi(httpClient, baseUrl.replace('{meta}', metaBaseUrl + "/"));
+        this.metaGenericEntityApiFactory = (baseUrl) => createMetaBackendGenericEntityApi(httpClient, baseUrl.replace('{meta}', metaBaseUrl + "/"));        
+        this.metaAttachmentApiFactory = (owner) => createMetaBackendAttachmentApi(httpClient, metaBaseUrl, owner);
     }
 
     metaEntityApi: MetaEntityApi;
@@ -36,4 +37,5 @@ export class DefaultMetaApiService implements MetaApiService {
     metaDocumentationApi: MetaDocumentationApi;
     metaPageApi: MetaPageApi;
     metaGenericEntityApiFactory: (baseUrl: string) => MetaGenericEntityApi;
+    metaAttachmentApiFactory: (owner: string) => MetaAttachmentApi;
 }

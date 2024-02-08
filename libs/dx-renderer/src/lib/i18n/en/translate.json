@@ -16,9 +16,13 @@
       "manageaccount": "Edit account"
     },
     "attachment": {
+      "titles": {
+        "remove": "Remove attachment"
+      },
       "messages": {
         "added": "File successfully uploaded",
-        "removed": "File successfully removed"
+        "removed": "File successfully removed",
+        "remove": "Realy want to remove {{fileName}}?"
       },
       "actions": {
         "view": "Show",
