@@ -1,8 +1,6 @@
-<dx-action-sheet #accountMenu
+<dx-context-menu #accountMenu
   [items]="userMenuItems"
-  [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
-  width="300px"
+  [hideOnOutsideClick]="true"
   [title]="(username$ | async) ?? ''">
-</dx-action-sheet>
+</dx-context-menu>
 
