@@ -28,3 +28,11 @@ export const identityUserExpired = createAction('[Identity] user expired');
 export const identityManageProfile = createAction('[Identity] manage profile');
 
 export const identityRefreshToken = createAction('[Identity] refresh token');
+
+export const identityAllowedTenantsFetched = createAction('[Identity] allowed tenants fetched', props<{
+    allowedTenants: Array<{ Id: string, Name: string }>
+}>());
+
+export const identitySwitchTenant = createAction('[Identity] switch tenant', props<{
+    tenant: string
+}>());

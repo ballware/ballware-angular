@@ -1,7 +1,7 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "../identity.service";
-import { identityInitialize, identityManageProfile, identityRefreshToken, identityUserExpired, identityUserLogout } from "./identity.actions";
-import { selectAccessToken, selectAccessTokenExpiration, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant } from "./identity.state";
+import { identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
+import { selectAccessToken, selectAccessTokenExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant } from "./identity.state";
 
 export class IdentityServiceProxy extends IdentityService {
 
@@ -32,6 +32,10 @@ export class IdentityServiceProxy extends IdentityService {
         return this.store.select(selectAccessToken);
     }
 
+    public get allowedTenants$() {
+        return this.store.select(selectAllowedTenants);
+    }
+
     public initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string) {
         this.store.dispatch(identityInitialize({
             issuer, client, scopes, tenantClaim, usernameClaim, profileUrl
@@ -52,5 +56,9 @@ export class IdentityServiceProxy extends IdentityService {
 
     public expired() {
         this.store.dispatch(identityUserExpired());
+    }
+
+    public switchTenant(tenant: string): void {
+        this.store.dispatch(identitySwitchTenant({ tenant }));
     }
 }

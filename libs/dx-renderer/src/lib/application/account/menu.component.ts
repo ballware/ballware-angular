@@ -1,8 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
-import { ResponsiveService, SCREEN_SIZE, IdentityService } from '@ballware/meta-services';
+import { IdentityService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { DxActionSheetComponent } from 'devextreme-angular';
-import { combineLatest, map, Observable, takeUntil } from 'rxjs';
+import { Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -24,33 +24,49 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
   constructor(private identityService: IdentityService, private responsiveService: ResponsiveService, private translationService: I18NextPipe) {
     super();
 
-    combineLatest([this.identityService.userName$])
+    combineLatest([this.identityService.userName$, this.identityService.allowedTenants$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe((userName) => {
-        this.userMenuItems = userName ? [
-          {
+      .subscribe(([userName, allowedTenants]) => {
+
+        const userMenuItems: Record<string, unknown>[] = [];
+        
+        if (userName) {
+          userMenuItems.push({
             text: this.translationService.transform('session.refresh'),
             onClick: () => {
               this.accountMenu?.instance.hide();              
               this.identityService.refreshToken();
             }
-          },
-          {
+          });
+
+          userMenuItems.push({
             text: this.translationService.transform('session.manageaccount'),
             onClick: () => {
               this.accountMenu?.instance.hide();
               this.identityService.manageProfile();
             }
-          },
-          {
+          });
+
+          if (allowedTenants) {
+            allowedTenants.forEach(t => userMenuItems.push({
+              text: this.translationService.transform('session.switchtenant', { tenant: t.Name }),
+              onClick: () => {
+                this.accountMenu?.instance.hide();
+                this.identityService.switchTenant(t.Id);
+              }
+            }));
+          }
+
+          userMenuItems.push({
             text: this.translationService.transform('session.logout', { user: userName }),
             onClick: () => {
               this.accountMenu?.instance.hide();
               this.identityService.logout();
             }
-          }] : [
-
-          ];
+          });
+        }
+        
+        this.userMenuItems = userMenuItems;        
       });
 
 

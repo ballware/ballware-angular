@@ -19,6 +19,14 @@ import { Observable } from 'rxjs';
    * @returns Promise resoling single element with id and display text for requested identifier
    */
   selectByIdFunc: (identifier: string) => Observable<Record<string, unknown>>;
+
+  /**
+   * Switch current user to tenant
+   * 
+   * @param tenant - identifier of destination tenant
+   * @returns Promise resolved when tenant switch is completed
+   */
+  switchTenantFunc: (tenant: string) => Observable<void>;
 }
 
 const selectListFunc = (http: HttpClient, serviceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
@@ -37,6 +45,15 @@ const selectByIdFunc = (http: HttpClient, serviceBaseUrl: string) => (
     .get<Record<string, unknown>>(url);
 };
 
+const switchTenantFunc = (http: HttpClient, serviceBaseUrl: string) => (  
+  tenant: string
+): Observable<void> => {
+  const url = `${serviceBaseUrl}/ballware-user-api/tenant?tenant=${tenant}`;
+
+  return http
+    .post<void>(url, undefined);
+};
+
 /**
  * Create API adapter for ballware.identity.server user list access
  * @param serviceBaseUrl Base url for ballware.identity.server to use
@@ -48,5 +65,6 @@ export function createIdentityBackendUserApi(
   return {
     selectListFunc: selectListFunc(httpClient, serviceBaseUrl),
     selectByIdFunc: selectByIdFunc(httpClient, serviceBaseUrl),
+    switchTenantFunc: switchTenantFunc(httpClient, serviceBaseUrl)
   } as IdentityUserApi;
 }

@@ -15,6 +15,12 @@ import { CompiledTenant, NavigationLayout, Template } from '@ballware/meta-model
    * @returns Observable containing compiled tenant metadata
    */
   metadataForTenant: (tenant: string) => Observable<CompiledTenant>;
+
+  /**
+   * Fetch list of allowed tenants for current user   
+   * @returns List of tenants 
+   */
+  allowed: () => Observable<{ Id: string, Name: string}[]>;
 }
 
 interface Tenant {
@@ -65,6 +71,13 @@ const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
     .pipe(map(data => compileTenant(data)));
 };
 
+const allowedTenantFunc = (http: HttpClient, serviceBaseUrl: string) => (): Observable<{ Id: string, Name: string}[]> => {
+  const url = `${serviceBaseUrl}/api/tenant/allowed`;
+
+  return http
+    .get<{ Id: string, Name: string}[]>(url);
+}
+
 /**
  * Create adapter for tenant fetch operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -76,5 +89,6 @@ export function createMetaBackendTenantApi(
 ): MetaTenantApi {
   return {
     metadataForTenant: metadataFunc(httpClient, serviceBaseUrl),
+    allowed: allowedTenantFunc(httpClient, serviceBaseUrl)
   } as MetaTenantApi;
 }

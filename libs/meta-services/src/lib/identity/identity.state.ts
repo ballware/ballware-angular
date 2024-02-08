@@ -18,6 +18,8 @@ export interface IdentityState {
     currentUser?: Record<string, unknown>,
     tenant?: string,
     userName?: string
+
+    allowedTenants?: Array<{ Id: string, Name: string }>;
 }
 
 const selectIdentityFeature = createFeatureSelector<IdentityState>(identityFeatureKey);
@@ -28,6 +30,8 @@ export const selectScopes = createSelector(selectIdentityFeature, (state: Identi
 export const selectTenantClaim = createSelector(selectIdentityFeature, (state: IdentityState) => state.tenantClaim);
 export const selectUsernameClaim = createSelector(selectIdentityFeature, (state: IdentityState) => state.usernameClaim);
 export const selectProfileUrl = createSelector(selectIdentityFeature, (state: IdentityState) => state.profileUrl);
+
+export const selectAllowedTenants = createSelector(selectIdentityFeature, (state: IdentityState) => state.allowedTenants);
 
 export const selectAuthenticated = createSelector(selectIdentityFeature, (state: IdentityState) => state.authenticated);
 export const selectUserTenant = createSelector(selectIdentityFeature, (state: IdentityState) => state.tenant);

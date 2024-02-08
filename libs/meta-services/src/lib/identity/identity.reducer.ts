@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
+import { identityAllowedTenantsFetched, identityInitialize, identityUserLogin, identityUserLogout } from "./identity.actions";
 import { IdentityState } from "./identity.state";
-import { identityInitialize, identityUserLogin, identityUserLogout } from "./identity.actions";
 
 const initialState = {
 
@@ -35,6 +35,11 @@ export const identityReducer = createReducer(
         accessTokenExpiration: undefined,
         currentUser: undefined,
         tenant: undefined,
-        userName: undefined
+        userName: undefined,
+        allowedTenants: undefined
+    })),
+    on(identityAllowedTenantsFetched, (state, { allowedTenants }) => ({
+        ...state,
+        allowedTenants
     }))
 );

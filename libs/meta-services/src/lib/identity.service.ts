@@ -13,10 +13,13 @@ export abstract class IdentityService extends WithDestroy() {
     public abstract userName$: Observable<string|undefined>;
     public abstract accessToken$: Observable<string|undefined>;
 
+    public abstract allowedTenants$: Observable<Array<{ Id: string, Name: string }>|undefined>;
+
     public abstract initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string): void;
 
     public abstract refreshToken(): void;
     public abstract manageProfile(): void;
     public abstract logout(): void;
     public abstract expired(): void;
+    public abstract switchTenant(tenant: string): void;
 }
