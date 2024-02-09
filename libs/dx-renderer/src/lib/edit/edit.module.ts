@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxHtmlEditorModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
 import dxDateBox from 'devextreme/ui/date_box';
 import dxHtmlEditor from 'devextreme/ui/html_editor';
 import dxNumberBox from 'devextreme/ui/number_box';
@@ -37,6 +37,7 @@ import { EditLayoutLookupComponent } from './lookup/lookup.component';
 import { EditLayoutMapComponent } from './map/map.component';
 import { EditLayoutMultilookupComponent } from './multilookup/multilookup.component';
 import { EditLayoutNumberComponent } from './number/number.component';
+import { EditLayoutRichtextComponent } from './richtext/richtext.component';
 import { EditLayoutSqlComponent } from './sql/sql.component';
 import { EditLayoutStaticlookupComponent } from './staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from './staticmultilookup/staticmultilookup.component';
@@ -74,6 +75,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutSqlComponent,
     EditLayoutButtonComponent,
     EditLayoutAttachmentsComponent,
+    EditLayoutRichtextComponent,
     EditDetailComponent,
     DetailEditPopupComponent,
     ForeignEditPopupComponent,
@@ -100,7 +102,8 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     DxValidationSummaryModule,
     DxScrollViewModule,
     DxPopupModule,
-    DxFileUploaderModule
+    DxFileUploaderModule,
+    DxHtmlEditorModule
   ],
   exports: [
     EditLayoutContainerComponent,

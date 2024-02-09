@@ -19,10 +19,10 @@ import { Observable } from 'rxjs';
 const loadDocumentationForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (  
   entity: string
 ): Observable<unknown> => {
-  const url = `${metaServiceBaseUrl}api/documentation/documentationforentity/${entity}`;
+  const url = `${metaServiceBaseUrl}/api/documentation/documentationforentity/${entity}`;
 
   return http
-    .get<Array<Record<string, unknown>>>(url);
+    .get(url, { responseType: 'text' });
 };
 
 /**

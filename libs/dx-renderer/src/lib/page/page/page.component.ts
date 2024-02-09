@@ -1,6 +1,7 @@
 import { Component, HostBinding, OnDestroy, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LookupService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { LookupService, MetaServiceFactory, PageDocumentationDialog, PageService } from '@ballware/meta-services';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -25,8 +26,14 @@ export class PageComponent extends WithDestroy() implements OnDestroy {
 
   public readonly initialized$ = this.pageService.initialized$;
 
+  public documentationDialog: PageDocumentationDialog|undefined;
+
   constructor(private pageService: PageService, private lookupService: LookupService) {
     super();
+
+    this.pageService.documentationDialog$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((documentationDialog) => this.documentationDialog = documentationDialog);
   }
 
   override ngOnDestroy(): void {

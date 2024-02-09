@@ -13,6 +13,7 @@ import { EditLayoutLookupComponent } from '../lookup/lookup.component';
 import { EditLayoutMapComponent } from '../map/map.component';
 import { EditLayoutMultilookupComponent } from '../multilookup/multilookup.component';
 import { EditLayoutNumberComponent } from '../number/number.component';
+import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
 import { EditLayoutSqlComponent } from '../sql/sql.component';
 import { EditLayoutStaticlookupComponent } from '../staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from '../staticmultilookup/staticmultilookup.component';
@@ -58,6 +59,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
+        case 'richtext': {
+            const componentRef = this.itemHost.createComponent(EditLayoutRichtextComponent);
+
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;          
         case 'number': {
             //const { EditLayoutNumberComponent } = await import('../number/number.component');
             const componentRef = this.itemHost.createComponent(EditLayoutNumberComponent);

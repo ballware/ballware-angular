@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Observable, takeUntil } from 'rxjs';
-import { I18NextPipe } from 'angular-i18next';
-import { PageService } from '@ballware/meta-services';
 import { PageToolbarItem } from '@ballware/meta-model';
+import { PageService } from '@ballware/meta-services';
+import { I18NextPipe } from 'angular-i18next';
+import { Observable, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 interface ToolbarItem {
@@ -27,6 +27,8 @@ export class ToolbarComponent extends WithDestroy() {
   constructor(private pageService: PageService, private translationService: I18NextPipe) {
     super();
 
+    this.onDocumentationClicked = this.onDocumentationClicked.bind(this);
+
     this.title$ = pageService.title$;
 
     this.pageService.layout$
@@ -46,6 +48,6 @@ export class ToolbarComponent extends WithDestroy() {
   }
 
   onDocumentationClicked(): void {
-    console.log('Documentation clicked');
+    this.pageService.showDocumentation();
   }
 }
