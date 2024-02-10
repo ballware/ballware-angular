@@ -17,7 +17,7 @@ import { WithDestroy } from "../../utils/withdestroy";
       } as Provider,
     ]
   })
-  export class PageLayoutStatisticComponent extends WithDestroy() implements OnInit {
+  export class PageLayoutStatisticComponent extends WithDestroy() implements OnInit { 
 
     @Input() layoutItem!: PageLayoutItem;
 

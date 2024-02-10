@@ -17,6 +17,7 @@ import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
 import { EditLayoutSqlComponent } from '../sql/sql.component';
 import { EditLayoutStaticlookupComponent } from '../staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from '../staticmultilookup/staticmultilookup.component';
+import { EditLayoutStatisticComponent } from '../statistic/statistic.component';
 import { EditLayoutTabsComponent } from '../tabs/tabs.component';
 import { EditLayoutTextComponent } from '../text/text.component';
 import { EditLayoutTextareaComponent } from '../textarea/textarea.component';
@@ -192,6 +193,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           } 
           break;  
+        case 'statistic': {
+            const componentRef = this.itemHost.createComponent(EditLayoutStatisticComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          } 
+          break;            
         case 'empty':
           break;
         default: {

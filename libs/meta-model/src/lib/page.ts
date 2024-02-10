@@ -1,7 +1,7 @@
-import { ScriptUtil } from './scriptutil';
-import { EditUtil } from './entity';
 import { ValueType } from './cruditem';
+import { EditUtil } from './entity';
 import { QueryParams } from './queryparams';
+import { ScriptUtil } from './scriptutil';
 
 /**
  * Options for layout item type 'tabs'
@@ -106,6 +106,11 @@ export interface StatisticOptions {
    * Identifier for page state
    */
   identifier?: string;
+
+  /**
+   * Head params for embedded statistic item
+   */
+  params?: Record<string, unknown>
 }
 
 /**

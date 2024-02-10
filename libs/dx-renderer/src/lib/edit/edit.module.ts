@@ -10,6 +10,7 @@ import dxSelectBox from 'devextreme/ui/select_box';
 import dxTagBox from 'devextreme/ui/tag_box';
 import dxTextArea from 'devextreme/ui/text_area';
 import dxTextBox from 'devextreme/ui/text_box';
+import { StatisticModule } from '../statistic/statistic.module';
 import { CrudActionsComponent } from './actions/actions.component';
 import { EditLayoutAttachmentsComponent } from './attachments/attachments.component';
 import { EditLayoutBoolComponent } from './bool/bool.component';
@@ -41,6 +42,7 @@ import { EditLayoutRichtextComponent } from './richtext/richtext.component';
 import { EditLayoutSqlComponent } from './sql/sql.component';
 import { EditLayoutStaticlookupComponent } from './staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from './staticmultilookup/staticmultilookup.component';
+import { EditLayoutStatisticComponent } from './statistic/statistic.component';
 import { EditLayoutTabsComponent } from './tabs/tabs.component';
 import { EditLayoutTextComponent } from './text/text.component';
 import { EditLayoutTextareaComponent } from './textarea/textarea.component';
@@ -76,6 +78,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutButtonComponent,
     EditLayoutAttachmentsComponent,
     EditLayoutRichtextComponent,
+    EditLayoutStatisticComponent,
     EditDetailComponent,
     DetailEditPopupComponent,
     ForeignEditPopupComponent,
@@ -85,6 +88,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
   imports: [
     CommonModule,
     I18NextModule,
+    StatisticModule,
     DxButtonModule,
     DxActionSheetModule,
     DxCheckBoxModule,

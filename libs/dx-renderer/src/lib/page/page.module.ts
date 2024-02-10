@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxChartModule, DxDeferRenderingModule, DxHtmlEditorModule, DxLoadIndicatorModule, DxMapModule, DxPivotGridModule, DxPopupModule, DxTabPanelModule } from 'devextreme-angular';
+import { DxDeferRenderingModule, DxHtmlEditorModule, DxLoadIndicatorModule, DxMapModule, DxPopupModule, DxTabPanelModule } from 'devextreme-angular';
 import { EditModule } from '../edit/edit.module';
+import { StatisticModule } from '../statistic/statistic.module';
 import { ToolbarModule } from '../toolbar/toolbar.module';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer/crudcontainer.component';
 import { PageLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
@@ -12,9 +13,6 @@ import { PageLayoutItemComponent } from './layout/item.component';
 import { PageLayoutComponent } from './layout/layout.component';
 import { PageLayoutMapComponent } from './map/map.component';
 import { PageComponent } from './page/page.component';
-import { StatisticChartComponent } from './statistic/chart.component';
-import { StatisticMapComponent } from './statistic/map.component';
-import { StatisticPivotgridComponent } from './statistic/pivotgrid.component';
 import { PageLayoutStatisticComponent } from './statistic/statistic.component';
 import { PageLayoutTabsCounterComponent } from './tabs/counter.component';
 import { PageLayoutTabsComponent } from './tabs/tabs.component';
@@ -30,22 +28,18 @@ import { PageLayoutTabsComponent } from './tabs/tabs.component';
     PageLayoutMapComponent,
     PageLayoutTabsComponent,
     PageLayoutTabsCounterComponent,
-    PageLayoutStatisticComponent,
-    StatisticPivotgridComponent,
-    StatisticChartComponent,
-    StatisticMapComponent
+    PageLayoutStatisticComponent
   ],
   imports: [
     CommonModule,
     I18NextModule,
     ToolbarModule,
     EditModule,
+    StatisticModule,
     DxTabPanelModule,
     DxMapModule,
     DxLoadIndicatorModule,
     DxDeferRenderingModule,
-    DxChartModule,
-    DxPivotGridModule,
     DxPopupModule,
     DxHtmlEditorModule
   ],
