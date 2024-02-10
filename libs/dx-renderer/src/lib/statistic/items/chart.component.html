@@ -12,21 +12,11 @@
         [argumentType]="(options$ | async)?.argumentAxis?.argumentType"
         [visualRange]="(visualRange$ | async) ?? []"
         [tickInterval]="(options$ | async)?.argumentAxis?.tickInterval ?? 0"
-        [label]="{ visible: true, customizeText: (argumentAxisCustomizeText$ | async) ?? undefined }">
-            <dxi-constant-line *ngFor="let line in (options$ | async)?.argumentAxis?.lines"
-                [value]="line.value"
-                [color]="line.color"
-                [dashStyle]="line.dashStyle"
-                [label]="line.labelText ? { text: line.labelText } : {}">
-            </dxi-constant-line>
+        [label]="{ visible: true, customizeText: (argumentAxisCustomizeText$ | async) ?? undefined }"
+        [constantLines]="(argumentAxisConstantLines$ | async) ?? []">            
     </dxo-argument-axis>
-    <dxi-value-axis *ngIf="(options$ | async)?.valueAxis">
-        <dxi-constant-line *ngFor="let line in (options$ | async)?.valueAxis.lines"
-            [value]="line.value"
-            [color]="line.color"
-            [dashStyle]="line.dashStyle"
-            [label]="line.labelText ? { text: line.labelText } : {}">
-        </dxi-constant-line>
+    <dxi-value-axis *ngIf="(options$ | async)?.valueAxis"
+        [constantLines]="(valueAxisConstantLines$ | async) ?? []">        
     </dxi-value-axis>
     <dxo-legend *ngIf="(options$ | async)?.legend"
         [title]="(options$ | async)?.legend?.title ?? ''"

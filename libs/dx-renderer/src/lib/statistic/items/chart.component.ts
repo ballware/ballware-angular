@@ -21,7 +21,9 @@ import { WithDestroy } from "../../utils/withdestroy";
     data$: Observable<Record<string, unknown>[]|undefined>;
     series$: Observable<Array<object>|undefined>;
     visualRange$: Observable<number[]|undefined>;
-    argumentAxisCustomizeText$: Observable<((value: unknown) => string|undefined)|undefined>;
+    argumentAxisCustomizeText$: Observable<((arg: { value: number }) => string|number)|undefined>;
+    argumentAxisConstantLines$: Observable<any[]|undefined>;
+    valueAxisConstantLines$: Observable<any[]|undefined>;
 
     constructor(private statisticService: StatisticService) {
       super();
@@ -45,7 +47,24 @@ import { WithDestroy } from "../../utils/withdestroy";
         label: { visible: s.labelVisible, format: { type: s.format, precision: s.precision } }
       }))));
 
-      this.argumentAxisCustomizeText$ = this.statisticService.argumentAxisCustomizeText$;
+      this.argumentAxisCustomizeText$ = this.statisticService.argumentAxisCustomizeText$.pipe(map((customizeText) => customizeText 
+        ? (arg: { value: number }) => customizeText(arg.value) ?? arg.value 
+        : (arg: { value: number }) => arg.value.toString())
+      );
+
+      this.argumentAxisConstantLines$ = this.options$.pipe(map((options) => options?.argumentAxis?.lines?.map(line => ({
+        value: line.value,
+        color: line.color,
+        dashStyle: line.dashStyle,
+        label: line.labelText ? { text: line.labelText } : {}
+      }))));
+
+      this.valueAxisConstantLines$ = this.options$.pipe(map((options) => options?.valueAxis?.lines?.map(line => ({
+        value: line.value,
+        color: line.color,
+        dashStyle: line.dashStyle,
+        label: line.labelText ? { text: line.labelText } : {}
+      }))));
     }
 
     onLegendClick(e: LegendClickEvent) {
