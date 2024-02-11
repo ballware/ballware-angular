@@ -81,8 +81,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
   toggleShow(target?: Element): void {
     if (this.accountMenu?.visible) {
       this.accountMenu?.instance.hide();
-    } else if (target) {
-      this.accountMenu?.instance.option('target', target);
+    } else if (target) {      
       this.accountMenu?.instance.show();
     }
   }

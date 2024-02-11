@@ -44,7 +44,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.usePopover$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize >= SCREEN_SIZE.SM));
+      .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM));
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 

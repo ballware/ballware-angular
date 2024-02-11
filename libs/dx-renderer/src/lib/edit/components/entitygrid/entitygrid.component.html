@@ -12,7 +12,7 @@
     (printClick)="onPrintClicked($event)"
     (exportClick)="onExportClicked($event)"
     (importClick)="onImportClicked($event)"
-    (rowDblClick)="onRowDblClicked()"
+    (rowDblClick)="onRowDblClicked($event)"
     [isMasterDetailExpandable]="isMasterDetailExpandable"
     [exportFileName]="(exportFileName$ | async) ?? 'unknown'"
     [layout]="(gridLayout$ | async) ?? undefined"

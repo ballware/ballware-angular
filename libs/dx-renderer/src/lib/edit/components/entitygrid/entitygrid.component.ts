@@ -185,8 +185,8 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     this.crudService.selectImport({ target: e.target });
   }
 
-  public onRowDblClicked() {
-    console.log('onRowDblClicked');
+  public onRowDblClicked(e: { item: CrudItem, target: Element }) {
+    this.crudService.selectOptions({ item: e.item, target: e.target, defaultEditLayout: 'primary' });
   }
 
   public isMasterDetailExpandable(e: { data: CrudItem }): boolean {

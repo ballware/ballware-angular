@@ -68,7 +68,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Output() exportClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() importClick = new EventEmitter<{ items: Array<CrudItem>, target: Element }>();
   @Output() customFunctionClick = new EventEmitter<{ items: Array<CrudItem>, target: Element, customFunction: EntityCustomFunction }>();
-  @Output() rowDblClick = new EventEmitter<RowDblClickEvent>();
+  @Output() rowDblClick = new EventEmitter<{ item: CrudItem, target: Element }>();
   @Input() isMasterDetailExpandable?: (e: {
       data: CrudItem
     }) => boolean;
@@ -365,6 +365,14 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     const rowData = e.component.getVisibleRows().find(row => row.rowType === 'data' && row.key === e.key);
 
     e.cancel = rowData && this.isMasterDetailExpandable && !this.isMasterDetailExpandable({ data: rowData.data });
+  }
+
+  public onRowDblClick(e: RowDblClickEvent) {
+    if (this.mode === 'small' && e.rowType === 'data') {
+      e.event?.stopPropagation();
+
+      this.rowDblClick.emit({ item: e.data, target: e.rowElement });
+    }
   }
 
   public customizeColumns(columns: Array<Column>) {

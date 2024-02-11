@@ -18,7 +18,7 @@
     [columns]="columns ?? []"
     [summary]="summary ?? {}"
     [(selectedRowKeys)]="selectedRowKeys"
-    (onRowDblClick)="rowDblClick.emit($event)">
+    (onRowDblClick)="onRowDblClick($event)">
     <dxo-paging [enabled]="mode === 'large'"></dxo-paging>
     <dxo-column-chooser [enabled]="mode === 'large'"></dxo-column-chooser>
     <dxo-editing *ngIf="mode === 'large'" mode="cell" [allowUpdating]="layout?.allowEditing ?? false"></dxo-editing>
@@ -28,7 +28,7 @@
     <dxo-filter-row *ngIf="mode === 'large'" [visible]="true"></dxo-filter-row>
     <dxo-group-panel *ngIf="mode === 'large'" [visible]="true"></dxo-group-panel>
     <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
-    <dxo-master-detail [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>
+    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>
     <dxo-state-storing *ngIf="identifier" [enabled]="identifier ? true : false" type="localStorage" [storageKey]="identifier"></dxo-state-storing>
     <div *dxTemplate="let masterDetailItem of 'masterDetail'">
         <ballware-datagrid-masterdetail [item]="masterDetailItem.data">

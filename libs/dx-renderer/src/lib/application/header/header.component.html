@@ -20,7 +20,7 @@
       locateInMenu="never"
       >
       <div *dxTemplate>
-        <dx-button class="menubutton" icon="bi bi-person-circle" stylingMode="text" [text]="(sessionExpiration$ | async) ?? ''" (onClick)="toggleAccountMenu($event)">
+        <dx-button id="ballware-account-button" class="menubutton" icon="bi bi-person-circle" stylingMode="text" [text]="(sessionExpiration$ | async) ?? ''" (onClick)="toggleAccountMenu($event)">
         </dx-button>
       </div>
     </dxi-item>
