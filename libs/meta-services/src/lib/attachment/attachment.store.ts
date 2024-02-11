@@ -22,7 +22,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
                 if (state.identifier) {
                     this.store.dispatch(attachmentUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
-                    console.debug('Meta state update');
+                    console.debug('Attachment state update');
                     console.debug(state);    
                 }
             });

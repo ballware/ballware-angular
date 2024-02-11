@@ -35,7 +35,14 @@ export interface ItemRemoveDialog {
 export interface CrudEditMenuItem {
     id: string, 
     text: string, 
+    icon?: string,
     customFunction?: EntityCustomFunction
+}
+
+export interface ImportDialog {
+    importFunction: EntityCustomFunction
+    apply: (file: File) => void;
+    cancel: () => void;   
 }
 
 export interface CrudServiceApi {
@@ -46,6 +53,7 @@ export interface CrudServiceApi {
     functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
 
     addMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
+
     headCustomFunctions$: Observable<EntityCustomFunction[]|undefined>;
 
     exportMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
@@ -53,6 +61,7 @@ export interface CrudServiceApi {
 
     itemDialog$: Observable<ItemEditDialog|undefined>;
     removeDialog$: Observable<ItemRemoveDialog|undefined>;
+    importDialog$: Observable<ImportDialog|undefined>;
 
     selectAddSheet$: Observable<{
         actions: CrudAction[]
@@ -68,6 +77,15 @@ export interface CrudServiceApi {
         actions: CrudAction[]
     }|undefined>;
 
+    selectExportSheet$: Observable<{ 
+        items: CrudItem[], 
+        actions: CrudAction[]
+    }|undefined>;
+
+    selectImportSheet$: Observable<{ 
+        actions: CrudAction[]
+    }|undefined>;
+
     fetchedItems$: Observable<CrudItem[]|undefined>;
 
     setQuery(query: string): void;
@@ -80,6 +98,8 @@ export interface CrudServiceApi {
     remove(request: { item: CrudItem }): void;
     print(request: { documentId: string, items: CrudItem[] }): void;
     customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
+    exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
+    importItems(request: { customFunction: EntityCustomFunction }): void;
 
     save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
     saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
@@ -88,8 +108,11 @@ export interface CrudServiceApi {
 
     selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { items: CrudItem[], target: Element }): void;
+    selectExport(request: { items: CrudItem[], target: Element }): void;
+    selectImport(request: { target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
     selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
+
 }
 
 @Injectable()
@@ -110,6 +133,7 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
 
   public abstract itemDialog$: Observable<ItemEditDialog|undefined>;
   public abstract removeDialog$: Observable<ItemRemoveDialog|undefined>;
+  public abstract importDialog$: Observable<ImportDialog|undefined>;
 
   public abstract selectAddSheet$: Observable<{
       actions: CrudAction[]
@@ -124,6 +148,15 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
       items: CrudItem[],       
       actions: CrudAction[]
   }|undefined>;
+
+  public abstract selectExportSheet$: Observable<{ 
+    items: CrudItem[]; 
+    actions: CrudAction[]; 
+  } | undefined>;
+  
+  public abstract selectImportSheet$: Observable<{ 
+    actions: CrudAction[]; 
+  } | undefined>;
 
   public abstract fetchedItems$: Observable<CrudItem[]|undefined>;
 
@@ -140,9 +173,14 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
   public abstract saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
   public abstract drop(request: { item: CrudItem }): void;
+  public abstract exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
+  public abstract importItems(request: { customFunction: EntityCustomFunction }): void;
+
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
   public abstract selectPrint(request: { items: CrudItem[], target: Element }): void;
+  public abstract selectExport(request: { items: CrudItem[], target: Element }): void;
+  public abstract selectImport(request: { target: Element }): void;
   public abstract selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
   public abstract selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
 }

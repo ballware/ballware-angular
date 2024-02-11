@@ -33,6 +33,8 @@ export interface MetaServiceApi {
   save$: Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
   saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;
   drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
+  importItems$: Observable<((query: string, file: File) => Observable<void>)|undefined>;
+  exportItems$: Observable<((query: string, items: CrudItem[]) => Observable<string>)|undefined>;
 
   addFunction$: Observable<EntityCustomFunction|undefined>;
   viewFunction$: Observable<EntityCustomFunction|undefined>;
@@ -104,6 +106,8 @@ export abstract class MetaService implements OnDestroy, MetaServiceApi {
   public abstract save$: Observable<((query: string, item: CrudItem) => Observable<void>) | undefined>;
   public abstract saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>) | undefined>;
   public abstract drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
+  public abstract importItems$: Observable<((query: string, file: File) => Observable<void>)|undefined>;
+  public abstract exportItems$: Observable<((query: string, items: CrudItem[]) => Observable<string>)|undefined>;
   
   public abstract addFunction$: Observable<EntityCustomFunction|undefined>;
   public abstract viewFunction$: Observable<EntityCustomFunction|undefined>;

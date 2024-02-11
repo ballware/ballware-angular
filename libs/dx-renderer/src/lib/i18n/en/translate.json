@@ -38,7 +38,8 @@
         "add": "Add {{entity}}",
         "view": "Show {{entity}}",
         "edit": "Edit {{entity}}",
-        "remove": "Drop {{entity}}"
+        "remove": "Drop {{entity}}",
+        "import": "Import {{entity}}"
       },
       "actions": {
         "refresh": "Refresh list",

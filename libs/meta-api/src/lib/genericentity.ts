@@ -251,19 +251,15 @@ const importFunc = (http: HttpClient, baseUrl: string) => (
 
   formData.append('files[]', file);
 
-  return http.post<void>(url, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    },
-  })
-  .pipe(catchError((error: HttpErrorResponse) => {      
-    return throwError(() => ({
-      status: error.status,
-      statusText: error.statusText,
-      message: error.message,
-      payload: error.error
-    } as ApiError))
-  }));
+  return http.post<void>(url, formData)
+    .pipe(catchError((error: HttpErrorResponse) => {      
+      return throwError(() => ({
+        status: error.status,
+        statusText: error.statusText,
+        message: error.message,
+        payload: error.error
+      } as ApiError))
+    }));
 };
 
 const exportFunc = (http: HttpClient, baseUrl: string) => (
@@ -271,12 +267,13 @@ const exportFunc = (http: HttpClient, baseUrl: string) => (
   ids: string[]
 ): Observable<string> => {
   const url = `${baseUrl}/exporturl?identifier=${encodeURIComponent(functionIdentifier)}`;
-
+  
   return http
-    .post<string>(url, `${ids.map(u => `id=${encodeURIComponent(u)}`).join('&')}`, {
+    .post(url, `${ids.map(u => `id=${encodeURIComponent(u)}`).join('&')}`, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
+      responseType: 'text'
     })
     .pipe(catchError((error: HttpErrorResponse) => {      
       return throwError(() => ({

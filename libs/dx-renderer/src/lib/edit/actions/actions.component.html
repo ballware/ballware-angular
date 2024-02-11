@@ -28,6 +28,18 @@
     <p>{{'datacontainer.messages.remove' | i18next: { entity: displayName$ | async } }}</p>
   </div>
 </dx-popup>
+<dx-popup *ngIf="importDialog"
+  [visible]="true" 
+  [showCloseButton]="true"
+  [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
+  (onHidden)="onImportDialogCancel()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
+  </div>
+</dx-popup>
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"

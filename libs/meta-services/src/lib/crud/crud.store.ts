@@ -8,7 +8,7 @@ import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
 import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
-import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
+import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
 import { NotificationService } from '../notification.service';
@@ -63,6 +63,36 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 addMenuItems
             }))(addMenuItems)))
         );
+
+        this.effect(_ => combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
+            .pipe(switchMap(([customFunctions, customFunctionAllowed]) =>
+                of(customFunctions?.filter(f => f.type === 'export' && customFunctionAllowed && customFunctionAllowed(f))
+                    .map(f => ({
+                        id: f.id,
+                        text: f.text,
+                        customFunction: f
+                    } as CrudEditMenuItem))
+                )
+            ))
+            .pipe(tap((exportMenuItems) => this.updater((state, exportMenuItems: CrudEditMenuItem[]|undefined) => ({
+                ...state,
+                exportMenuItems
+            }))(exportMenuItems))));
+
+        this.effect(_ => combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
+            .pipe(switchMap(([customFunctions, customFunctionAllowed]) =>
+                of(customFunctions?.filter(f => f.type === 'import' && customFunctionAllowed && customFunctionAllowed(f))
+                    .map(f => ({
+                        id: f.id,
+                        text: f.text,
+                        customFunction: f
+                    } as CrudEditMenuItem))
+                )
+            ))
+            .pipe(tap((importMenuItems) => this.updater((state, importMenuItems: CrudEditMenuItem[]|undefined) => ({
+                ...state,
+                importMenuItems
+            }))(importMenuItems))));
 
         this.effect(_ => 
             combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
@@ -183,9 +213,13 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     readonly importMenuItems$ = this.select(state => state.importMenuItems);
     readonly itemDialog$ = this.select(state => state.itemDialog);
     readonly removeDialog$ = this.select(state => state.removeDialog);
+    readonly importDialog$ = this.select(state => state.importDialog);
     readonly selectAddSheet$ = this.select(state => state.selectAddSheet);
     readonly selectActionSheet$ = this.select(state => state.selectActionSheet);
     readonly selectPrintSheet$ = this.select(state => state.selectPrintSheet);
+    readonly selectExportSheet$ = this.select(state => state.selectExportSheet);
+    readonly selectImportSheet$ = this.select(state => state.selectImportSheet);
+    
     readonly fetchedItems$ = this.select(state => state.fetchedItems);
 
     readonly setQuery = this.updater((state, queryIdentifier: string) => ({
@@ -448,6 +482,28 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 : of(undefined)
             )));
 
+
+    readonly uploadItems = this.effect((uploadRequest$: Observable<{ query: string, file: File }>) => 
+        combineLatest([uploadRequest$, this.metaService.importItems$])
+            .pipe(switchMap(([uploadRequest, importFiles]) => (uploadRequest && importFiles)
+                ? importFiles(uploadRequest.query, uploadRequest.file)
+                    .pipe(tap(() => { 
+                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        
+                        this.updater((state) => ({
+                            ...state,
+                            importDialog: undefined
+                        }))(); 
+
+                        this.reload();
+                    }))
+                    .pipe(catchError((error: ApiError) => {
+                        this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                        
+                        return of(undefined);              
+                    }))
+                : of(undefined))));
+
     readonly drop = this.effect((dropRequest$: Observable<{ item: CrudItem }>) => 
         combineLatest([dropRequest$, this.metaService.drop$])
             .pipe(switchMap(([dropRequest, drop]) => (dropRequest && drop)
@@ -469,6 +525,34 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     }))
                 : of(undefined)
             ))
+    );
+
+    readonly importItems = this.effect((importRequest$: Observable<{ customFunction: EntityCustomFunction }>) => 
+        importRequest$
+            .pipe(tap((request) => this.updater((state, importDialog: ImportDialog) => ({
+                ...state,
+                importDialog
+            }))({
+                importFunction: request.customFunction,
+                apply: (file) => this.uploadItems({ query: request.customFunction.id, file }),
+                cancel: () => this.updater((state) => ({
+                        ...state,
+                        importDialog: undefined
+                    }))()
+             } as ImportDialog)))
+    );
+
+    readonly exportItems = this.effect((exportRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
+        combineLatest([exportRequest$, this.metaService.exportItems$])
+            .pipe(switchMap(([exportRequest, exportItems]) => exportItems
+                ? exportItems(exportRequest.customFunction.id, exportRequest.items)
+                    .pipe(catchError((error: ApiError) => {
+                        this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                    
+                        return of(undefined);              
+                    }))   
+                    .pipe(map((url) => url && window.open(url)))  
+                : of(undefined)))
     );
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
@@ -532,6 +616,59 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     ...state,
                     selectPrintSheet
                 }))(selectPrintSheet)
+            ))
+    );
+
+    readonly selectExport = this.effect((selectExportRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
+        combineLatest([this.exportMenuItems$, selectExportRequest$])
+            .pipe(map(([exportMenuItems, selectExportRequest]) => {
+                if (exportMenuItems && selectExportRequest) {
+
+                    this.currentInteractionTarget$.next(selectExportRequest.target);
+
+                    return {
+                        items: selectExportRequest.items,
+                        actions: exportMenuItems.map(f => ({ 
+                            id: f.id, 
+                            icon: f.icon, 
+                            text: f.text, 
+                            execute: (_target) => f.customFunction && this.exportItems({ customFunction: f.customFunction, items: selectExportRequest.items })
+                        } as CrudAction))
+                    };
+                }
+
+                return undefined;
+            }))
+            .pipe(tap((selectExportSheet) => this.updater((state, selectExportSheet: { items: CrudItem[], actions: CrudAction[]}|undefined) => ({
+                    ...state,
+                    selectExportSheet
+                }))(selectExportSheet)
+            ))
+    );
+
+    readonly selectImport = this.effect((selectImportRequest$: Observable<{ target: Element }>) => 
+        combineLatest([this.importMenuItems$, selectImportRequest$])
+            .pipe(map(([importMenuItems, selectImportRequest]) => {
+                if (importMenuItems && selectImportRequest) {
+
+                    this.currentInteractionTarget$.next(selectImportRequest.target);
+
+                    return {
+                        actions: importMenuItems.map(f => ({ 
+                            id: f.id, 
+                            icon: f.icon, 
+                            text: f.text, 
+                            execute: (_target) => f.customFunction && this.importItems({ customFunction: f.customFunction })
+                        } as CrudAction))
+                    };
+                }
+
+                return undefined;
+            }))
+            .pipe(tap((selectImportSheet) => this.updater((state, selectImportSheet: { actions: CrudAction[]}|undefined) => ({
+                    ...state,
+                    selectImportSheet
+                }))(selectImportSheet)
             ))
     );
 

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CrudService, EditModes, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CrudService, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { Observable, map, takeUntil, withLatestFrom } from 'rxjs';
@@ -25,6 +25,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public itemDialog: ItemEditDialog|undefined;
   public removeDialog: ItemRemoveDialog|undefined;
+  public importDialog: ImportDialog|undefined;
 
   public sanitizedExternalEditorUrl: SafeUrl|undefined;
 
@@ -37,6 +38,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);
     this.onRemoveDialogCancel = this.onRemoveDialogCancel.bind(this);
+
+    this.onImportDialogApply = this.onImportDialogApply.bind(this);
+    this.onImportDialogCancel = this.onImportDialogCancel.bind(this);
 
     this.usePopover$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
@@ -55,6 +59,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((removeDialog) => {
         this.removeDialog = removeDialog;
+      });
+
+    this.crudService.importDialog$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((importDialog) => {
+        this.importDialog = importDialog;
       });
   }
 
@@ -91,6 +101,28 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.actionMenu?.instance.option('visible', true);
         }
       });
+
+    this.crudService.selectExportSheet$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
+      .subscribe(([exportSheet, target]) => {
+        if (exportSheet) {
+          this.exportMenu?.instance.option('target', target);
+          this.exportMenu?.instance.option('dataSource', exportSheet.actions);
+          this.exportMenu?.instance.option('visible', true);
+        }
+      });      
+
+    this.crudService.selectImportSheet$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this.crudService.currentInteractionTarget$))
+      .subscribe(([importSheet, target]) => {
+        if (importSheet) {
+          this.importMenu?.instance.option('target', target);
+          this.importMenu?.instance.option('dataSource', importSheet.actions);
+          this.importMenu?.instance.option('visible', true);
+        }
+      });            
   }
 
   public actionItemClicked(e: ItemClickEvent) {
@@ -119,6 +151,14 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public onRemoveDialogCancel() {
     this.removeDialog?.cancel();
+  }
+
+  public onImportDialogApply(file: File) {
+    this.importDialog?.apply(file);
+  }
+
+  public onImportDialogCancel() {
+    this.importDialog?.cancel();
   }
 
   public onExternalEditorDialogClose() {

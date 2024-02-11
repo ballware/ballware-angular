@@ -39,7 +39,8 @@
         "add": "{{entity}} hinzufügen",
         "view": "{{entity}} anzeigen",
         "edit": "{{entity}} bearbeiten",
-        "remove": "{{entity}} entfernen"
+        "remove": "{{entity}} entfernen",
+        "import": "{{entity}} importieren"
       },
       "actions": {
         "refresh": "Liste aktualisieren",

@@ -177,12 +177,12 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     this.crudService.selectPrint({ items: e.items, target: e.target });    
   }
 
-  public onExportClicked() {
-    console.log('onExportClicked');
+  public onExportClicked(e: { items: Array<CrudItem>, target: Element }) {
+    this.crudService.selectExport({ items: e.items, target: e.target });
   }
 
-  public onImportClicked() {
-    console.log('onImportClicked');
+  public onImportClicked(e: { target: Element }) {
+    this.crudService.selectImport({ target: e.target });
   }
 
   public onRowDblClicked() {
