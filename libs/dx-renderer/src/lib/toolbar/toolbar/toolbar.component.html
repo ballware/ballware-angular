@@ -1,15 +1,1 @@
-<dx-toolbar>
-  <dxi-item location="before" locateInMenu="never" [text]="title$ | async">    
-  </dxi-item>
-  <dxi-item *ngFor="let toolbarItem of toolbarItems" location="after" locateInMenu="auto" [widget]="toolbarItem.widget" [options]="toolbarItem.options">
-    <div *dxTemplate="let item of 'toolbarItem'">
-      <ballware-toolbar-lookup *ngIf="toolbarItem.item.type === 'lookup'" [item]="toolbarItem.item"></ballware-toolbar-lookup>
-      <ballware-toolbar-multilookup *ngIf="toolbarItem.item.type === 'multilookup'" [item]="toolbarItem.item"></ballware-toolbar-multilookup>
-      <ballware-toolbar-datetime *ngIf="toolbarItem.item.type === 'datetime'" [item]="toolbarItem.item"></ballware-toolbar-datetime>
-      <ballware-toolbar-staticlookup *ngIf="toolbarItem.item.type === 'staticlookup'" [item]="toolbarItem.item"></ballware-toolbar-staticlookup>
-      <ballware-toolbar-dropdownbutton *ngIf="toolbarItem.item.type === 'dropdownbutton'" [item]="toolbarItem.item"></ballware-toolbar-dropdownbutton>
-      <ballware-toolbar-button *ngIf="toolbarItem.item.type === 'button'" [item]="toolbarItem.item"></ballware-toolbar-button>
-    </div>
-  </dxi-item>
-  <dxi-item *ngIf="showDocumentationButton" location="after" widget="dxButton" [options]="{ icon: 'bi bi-question-circle', onClick: onDocumentationClicked }"></dxi-item>
-</dx-toolbar>
+<dx-toolbar [items]="toolbarItems"></dx-toolbar>
