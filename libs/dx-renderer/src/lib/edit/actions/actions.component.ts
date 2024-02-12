@@ -3,7 +3,7 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CrudService, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
-import { Observable, map, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -20,6 +20,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   @ViewChild('addMenu', { static: false }) addMenu?: DxActionSheetComponent;
   @ViewChild('exportMenu', { static: false }) exportMenu?: DxActionSheetComponent;
   @ViewChild('importMenu', { static: false }) importMenu?: DxActionSheetComponent;
+
+  public actionMenuVisible$ = new BehaviorSubject<boolean>(false);
 
   public EditModes = EditModes;
 
@@ -77,6 +79,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.addMenu?.instance.option('target', target);
           this.addMenu?.instance.option('dataSource', addSheet.actions);
           this.addMenu?.instance.option('visible', true);
+
+          this.crudService.selectAddDone();
         }
       });
 
@@ -88,6 +92,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.printMenu?.instance.option('target', target);
           this.printMenu?.instance.option('dataSource', printSheet.actions);
           this.printMenu?.instance.option('visible', true);
+
+          this.crudService.selectPrintDone();
         }
       });
 
@@ -99,6 +105,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.actionMenu?.instance.option('target', target);
           this.actionMenu?.instance.option('dataSource', actionSheet.actions);
           this.actionMenu?.instance.option('visible', true);
+
+          this.crudService.selectOptionsDone();
         }
       });
 
@@ -110,6 +118,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.exportMenu?.instance.option('target', target);
           this.exportMenu?.instance.option('dataSource', exportSheet.actions);
           this.exportMenu?.instance.option('visible', true);
+
+          this.crudService.selectExportDone();
         }
       });      
 
@@ -121,6 +131,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
           this.importMenu?.instance.option('target', target);
           this.importMenu?.instance.option('dataSource', importSheet.actions);
           this.importMenu?.instance.option('visible', true);
+
+          this.crudService.selectImportDone();
         }
       });            
   }

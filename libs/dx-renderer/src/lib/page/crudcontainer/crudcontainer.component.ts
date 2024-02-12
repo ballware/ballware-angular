@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { AttachmentService, CrudService, EditService, LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { AttachmentService, CrudService, LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -29,19 +29,14 @@ import { WithDestroy } from '../../utils/withdestroy';
       provide: CrudService, 
       useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
       deps: [MetaServiceFactory, MetaService]  
-    } as Provider,
-    { 
-      provide: EditService, 
-      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
-      deps: [MetaServiceFactory, MetaService]
-    } as Provider,
+    } as Provider,    
   ]
 })
 export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit, OnDestroy {
 
   @Input() layoutItem?: PageLayoutItem;
 
-  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private editService: EditService) {
+  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
 
     super();
 
@@ -74,7 +69,6 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       this.lookupService.setIdentifier(identifier);
       this.metaService.setIdentifier(identifier);
       this.crudService.setIdentifier(identifier);
-      this.editService.setIdentifier(identifier);
     }
 
   }
@@ -82,7 +76,6 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     
-    this.editService.ngOnDestroy();
     this.crudService.ngOnDestroy();
     this.metaService.ngOnDestroy();
     this.lookupService.ngOnDestroy();

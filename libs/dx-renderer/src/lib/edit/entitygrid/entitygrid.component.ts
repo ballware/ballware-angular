@@ -76,13 +76,12 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
 
   ngOnInit(): void {
 
-    const  identifier = nanoid(11);
+    const identifier = nanoid(11);
 
     if (identifier) {
       this.lookupService.setIdentifier(identifier);
       this.metaService.setIdentifier(identifier);
       this.crudService.setIdentifier(identifier);
-      this.editService.setIdentifier(identifier);
     }
 
     if (this.initialLayoutItem) {

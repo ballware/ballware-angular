@@ -106,13 +106,18 @@ export interface CrudServiceApi {
 
     drop(request: { item: CrudItem }): void;
 
-    selectAdd(request: { target: Element, defaultEditLayout: string }): void;
+    selectAdd(request: { target: Element, defaultEditLayout: string }): void;    
     selectPrint(request: { items: CrudItem[], target: Element }): void;
     selectExport(request: { items: CrudItem[], target: Element }): void;
     selectImport(request: { target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
-    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
-
+    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void; 
+        
+    selectAddDone(): void;    
+    selectPrintDone(): void;
+    selectExportDone(): void;
+    selectImportDone(): void;
+    selectOptionsDone(): void;
 }
 
 @Injectable()
@@ -183,4 +188,10 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract selectImport(request: { target: Element }): void;
   public abstract selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
   public abstract selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
+
+  public abstract selectAddDone(): void;    
+  public abstract selectPrintDone(): void;
+  public abstract selectExportDone(): void;
+  public abstract selectImportDone(): void;
+  public abstract selectOptionsDone(): void;
 }

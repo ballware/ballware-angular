@@ -59,4 +59,10 @@ export class CrudServiceProxy extends CrudService implements OnDestroy {
     readonly selectCustomOptions = this.crudStore.selectCustomOptions;
     readonly selectExport = this.crudStore.selectExport;
     readonly selectImport = this.crudStore.selectImport;
+
+    readonly selectAddDone = this.crudStore.selectAddDone;  
+    readonly selectPrintDone = this.crudStore.selectPrintDone;
+    readonly selectExportDone = this.crudStore.selectExportDone;
+    readonly selectImportDone = this.crudStore.selectImportDone;
+    readonly selectOptionsDone = this.crudStore.selectOptionsDone;
 }

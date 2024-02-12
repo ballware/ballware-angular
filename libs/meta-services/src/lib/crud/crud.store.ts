@@ -251,8 +251,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
-        combineLatest([this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$, request$])
-            .pipe(switchMap(([getEditLayout, create, displayName, headParams, request]) => (getEditLayout && create && displayName && headParams && request) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$))
+            .pipe(switchMap(([request, getEditLayout, create, displayName, headParams]) => (getEditLayout && create && displayName && headParams && request) ?
                 create('primary', headParams)
                     .pipe(map((item) => ({
                         mode: EditModes.CREATE,
@@ -279,8 +279,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
-        combineLatest([this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$, request$])
-            .pipe(switchMap(([getEditLayout, byId, displayName, viewRequest]) => (getEditLayout && byId && displayName && viewRequest) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
+            .pipe(switchMap(([viewRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && viewRequest) ?
                 byId(viewRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.VIEW,
@@ -310,8 +310,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
-        combineLatest([this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$, request$])
-            .pipe(switchMap(([getEditLayout, byId, displayName, editRequest]) => (getEditLayout && byId && displayName && editRequest) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
+            .pipe(switchMap(([editRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && editRequest) ?
                 byId(editRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.EDIT,
@@ -337,9 +337,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }))
     );
 
-    readonly remove = this.effect(($request: Observable<{ item: CrudItem }>) => 
-        combineLatest([this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$, $request])            
-            .pipe(switchMap(([entityMetadata, byId, displayName, removeRequest]) => (entityMetadata && byId && displayName && removeRequest) ? 
+    readonly remove = this.effect((request$: Observable<{ item: CrudItem }>) => 
+        request$.pipe(withLatestFrom(this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$))
+            .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName]) => (entityMetadata && byId && displayName && removeRequest) ? 
                 byId(removeRequest.item.Id)
                     .pipe(map((item) => 
                         ({
@@ -362,8 +362,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) => 
-        combineLatest([request$])
-            .pipe(tap(([request]) => this.router.navigate(['print'], {
+        request$
+            .pipe(tap((request) => this.router.navigate(['print'], {
                 queryParams: {
                     docId: request.documentId,
                     id: request.items.map(item => item.Id)
@@ -372,7 +372,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
-        combineLatest([request$, this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$])
+        request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$))
             .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout]) =>  customFunction.entity 
                 ? this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
@@ -439,7 +439,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             }, (message) => console.log(message)))));           
             
     readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
-        combineLatest([saveRequest$, this.metaService.save$])
+        saveRequest$.pipe(withLatestFrom(this.metaService.save$))
             .pipe(switchMap(([saveRequest, save]) => (saveRequest && save)
                 ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
                     .pipe(tap(() => { 
@@ -461,7 +461,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
             )));
 
     readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
-        combineLatest([saveRequest$, this.metaService.saveBatch$])
+        saveRequest$.pipe(withLatestFrom(this.metaService.saveBatch$))
             .pipe(switchMap(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
                 ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
                     .pipe(tap(() => { 
@@ -484,7 +484,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
 
     readonly uploadItems = this.effect((uploadRequest$: Observable<{ query: string, file: File }>) => 
-        combineLatest([uploadRequest$, this.metaService.importItems$])
+        uploadRequest$.pipe(withLatestFrom(this.metaService.importItems$))
             .pipe(switchMap(([uploadRequest, importFiles]) => (uploadRequest && importFiles)
                 ? importFiles(uploadRequest.query, uploadRequest.file)
                     .pipe(tap(() => { 
@@ -505,7 +505,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 : of(undefined))));
 
     readonly drop = this.effect((dropRequest$: Observable<{ item: CrudItem }>) => 
-        combineLatest([dropRequest$, this.metaService.drop$])
+        dropRequest$.pipe(withLatestFrom(this.metaService.drop$))
             .pipe(switchMap(([dropRequest, drop]) => (dropRequest && drop)
                 ? drop(dropRequest.item)
                     .pipe(tap(() => { 
@@ -543,7 +543,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly exportItems = this.effect((exportRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
-        combineLatest([exportRequest$, this.metaService.exportItems$])
+        exportRequest$.pipe(withLatestFrom(this.metaService.exportItems$))
             .pipe(switchMap(([exportRequest, exportItems]) => exportItems
                 ? exportItems(exportRequest.customFunction.id, exportRequest.items)
                     .pipe(catchError((error: ApiError) => {
@@ -556,7 +556,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
-        combineLatest([selectAddRequest$, this.addMenuItems$])            
+        selectAddRequest$.pipe(withLatestFrom(this.addMenuItems$))            
             .pipe(map(([selectAddRequest, addMenuItems]) => {
                 if (selectAddRequest && addMenuItems) {
                     if (addMenuItems.length === 1) {
@@ -593,8 +593,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
-        combineLatest([this.metaService.entityDocuments$, selectPrintRequest$])
-            .pipe(map(([entityDocuments, selectPrintRequest]) => {
+        selectPrintRequest$.pipe(withLatestFrom(this.metaService.entityDocuments$))
+            .pipe(map(([selectPrintRequest, entityDocuments]) => {
                 if (entityDocuments && selectPrintRequest) {
 
                     this.currentInteractionTarget$.next(selectPrintRequest.target);
@@ -620,8 +620,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectExport = this.effect((selectExportRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
-        combineLatest([this.exportMenuItems$, selectExportRequest$])
-            .pipe(map(([exportMenuItems, selectExportRequest]) => {
+        selectExportRequest$.pipe(withLatestFrom(this.exportMenuItems$))
+            .pipe(map(([selectExportRequest, exportMenuItems]) => {
                 if (exportMenuItems && selectExportRequest) {
 
                     this.currentInteractionTarget$.next(selectExportRequest.target);
@@ -647,8 +647,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectImport = this.effect((selectImportRequest$: Observable<{ target: Element }>) => 
-        combineLatest([this.importMenuItems$, selectImportRequest$])
-            .pipe(map(([importMenuItems, selectImportRequest]) => {
+        selectImportRequest$.pipe(withLatestFrom(this.importMenuItems$))
+            .pipe(map(([selectImportRequest, importMenuItems]) => {
                 if (importMenuItems && selectImportRequest) {
 
                     this.currentInteractionTarget$.next(selectImportRequest.target);
@@ -673,13 +673,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
-        combineLatest([
-            request$,            
-            combineLatest([
-                request$,
+        request$.pipe(withLatestFrom(            
                 this.metaService.customFunctions$, 
                 this.metaService.customFunctionAllowed$
-            ]).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
+            )).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
                     .map(f => ({ 
                         id: f.id, 
@@ -687,14 +684,15 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         text: f.text, 
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
-            )),
-            this.metaService.viewFunction$,
-            this.metaService.editFunction$,
-            this.metaService.customFunctionAllowed$,
-            this.metaService.dropAllowed$,
-            this.metaService.printAllowed$            
-        ])
-        .pipe(map(([{ item, target, defaultEditLayout }, customFunctions, viewFunction, editFunction, customFunctionAllowed, dropAllowed, printAllowed]) => {
+            )).pipe(withLatestFrom(
+                request$,
+                this.metaService.viewFunction$,
+                this.metaService.editFunction$,
+                this.metaService.customFunctionAllowed$,
+                this.metaService.dropAllowed$,
+                this.metaService.printAllowed$            
+            ))
+            .pipe(map(([customFunctions, { item, target, defaultEditLayout }, viewFunction, editFunction, customFunctionAllowed, dropAllowed, printAllowed]) => {
 
             const actions = [] as CrudAction[];
 
@@ -757,13 +755,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
 
 
     readonly selectCustomOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
-        combineLatest([
-            request$,
-            combineLatest([
-                request$,
+        request$.pipe(withLatestFrom(
                 this.metaService.customFunctions$, 
                 this.metaService.customFunctionAllowed$
-            ]).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
+            ))
+            .pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
                     .map(f => ({ 
                         id: f.id, 
@@ -771,9 +767,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         text: f.text, 
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
-            ))          
-        ])
-        .pipe(map(([{ item, target }, customFunctions]) => {
+            ))
+            .pipe(withLatestFrom(request$))
+            .pipe(map(([customFunctions, { item, target }]) => {
 
             const actions = [] as CrudAction[];
 
@@ -791,6 +787,31 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
         .pipe(tap((selectActionSheet) => this.updater((state, selectActionSheet: { item: CrudItem, actions: CrudAction[]}|undefined) => ({
             ...state,
             selectActionSheet
-        }))(selectActionSheet))))
-    ;          
+        }))(selectActionSheet)))
+    );
+    
+    readonly selectAddDone = this.updater((state) => ({
+        ...state,
+        selectAddSheet: undefined
+    }));
+
+    readonly selectPrintDone = this.updater((state) => ({
+        ...state,
+        selectPrintSheet: undefined
+    }));
+
+    readonly selectExportDone = this.updater((state) => ({
+        ...state,
+        selectExportSheet: undefined
+    }));
+
+    readonly selectImportDone = this.updater((state) => ({
+        ...state,
+        selectImportSheet: undefined
+    }));
+
+    readonly selectOptionsDone = this.updater((state) => ({
+        ...state,
+        selectActionSheet: undefined
+    }));
 }
