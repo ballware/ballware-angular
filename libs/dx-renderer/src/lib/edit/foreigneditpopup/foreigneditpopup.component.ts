@@ -35,14 +35,14 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
     @Output() editFinished = new EventEmitter<void>();
 
     public itemDialog: ItemEditDialog|undefined;
-    public usePopover$: Observable<boolean>;
+    public fullscreen$: Observable<boolean>;
 
     constructor(private responsiveService: ResponsiveService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
         super();
 
-        this.usePopover$ = this.responsiveService.onResize$
+        this.fullscreen$ = this.responsiveService.onResize$
             .pipe(takeUntil(this.destroy$))
-            .pipe(map((screenSize) => screenSize >= SCREEN_SIZE.SM));
+            .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
 
         this.crudService.itemDialog$
             .pipe(takeUntil(this.destroy$))

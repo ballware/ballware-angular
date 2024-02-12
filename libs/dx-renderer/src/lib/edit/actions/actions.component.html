@@ -1,4 +1,4 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [popover]="(usePopover$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
@@ -11,12 +11,14 @@
   [visible]="true" 
   [showCloseButton]="true"
   [title]="itemDialog.title"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   (onHidden)="onExternalEditorDialogClose()">
   <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
 <dx-popup *ngIf="removeDialog" 
   [visible]="true" 
   [showCloseButton]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
   (onHidden)="onRemoveDialogCancel()"
   width="auto" 
@@ -31,6 +33,7 @@
 <dx-popup *ngIf="importDialog"
   [visible]="true" 
   [showCloseButton]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
   (onHidden)="onImportDialogCancel()"
   width="auto" 
@@ -43,35 +46,35 @@
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
   [title]="'datacontainer.actionsheet.title' | i18next"
   (onItemClick)="actionItemClicked($event)">
 </dx-action-sheet>
 <dx-action-sheet #printMenu
   width="auto"
   [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
   [title]="'datacontainer.actions.print' | i18next"
   (onItemClick)="printMenuItemClicked($event)">
 </dx-action-sheet>
 <dx-action-sheet #addMenu
   width="auto"
   [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
   [title]="'datacontainer.actions.add' | i18next: { entity: displayName$ | async }"
   (onItemClick)="addMenuItemClicked($event)">
 </dx-action-sheet>
 <dx-action-sheet #exportMenu
   width="auto"
   [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
   [title]="'datacontainer.actions.export' | i18next: { entity: displayName$ }"
   (onItemClick)="exportMenuItemClicked($event)">
 </dx-action-sheet>
 <dx-action-sheet #importMenu
   width="auto"
   [showCancelButton]="true"
-  [usePopover]="(usePopover$ | async) ?? false"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
   [title]="'datacontainer.actions.import' | i18next: { entity: displayName$ }"
   (onItemClick)="importMenuItemClicked($event)">
 </dx-action-sheet>

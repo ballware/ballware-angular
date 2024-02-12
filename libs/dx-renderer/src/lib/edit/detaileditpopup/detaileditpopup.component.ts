@@ -20,7 +20,7 @@ export class DetailEditPopupComponent extends WithDestroy() implements OnInit, O
     dialogItem: Record<string, unknown>|undefined;
     editLayout: EditLayout|undefined;
     dialogVisible = false;
-    usePopover = false;
+    fullscreen = true;
 
     private editLayoutIdentifier$ = new Subject<string>();
 
@@ -35,10 +35,10 @@ export class DetailEditPopupComponent extends WithDestroy() implements OnInit, O
             .subscribe(([screenSize, editLayoutIdentifier, getEditLayout]) => {
                 if (editLayoutIdentifier && getEditLayout) {
                     this.editLayout = getEditLayout(editLayoutIdentifier, this.readOnly ? EditModes.VIEW : EditModes.EDIT);
-                    this.usePopover = screenSize >= SCREEN_SIZE.SM && !this.editLayout?.fullscreen;
+                    this.fullscreen = (screenSize <= SCREEN_SIZE.SM || this.editLayout?.fullscreen) ?? false;
                 } else {
                     this.editLayout = undefined;
-                    this.usePopover = false;
+                    this.fullscreen = true;
                 }
             });
     }

@@ -1,6 +1,6 @@
 <dx-popup
   [visible]="true"
-  [fullScreen]="(!popover || editLayout.fullscreen) ?? false"
+  [fullScreen]="(fullscreen || editLayout.fullscreen) ?? false"
   width="auto"
   height="auto"
   minWidth="800px"

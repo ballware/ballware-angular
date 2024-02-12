@@ -33,7 +33,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public displayName$: Observable<string|undefined>;
 
-  public usePopover$: Observable<boolean>;
+  public fullscreenDialogs$: Observable<boolean>;
 
   constructor(private domSanitizer: DomSanitizer, private metaService: MetaService, private crudService: CrudService, private responsiveService: ResponsiveService) {
     super();
@@ -44,9 +44,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
     this.onImportDialogApply = this.onImportDialogApply.bind(this);
     this.onImportDialogCancel = this.onImportDialogCancel.bind(this);
 
-    this.usePopover$ = this.responsiveService.onResize$
+    this.fullscreenDialogs$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM));
+      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 
