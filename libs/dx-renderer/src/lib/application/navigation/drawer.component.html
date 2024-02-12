@@ -1,6 +1,6 @@
-<dx-drawer template="panel" position="before" [openedStateMode]="(openStateMode$ | async) ?? 'overlap'" [maxSize]="240" [(opened)]="opened">
+<dx-drawer template="panel" position="before" [openedStateMode]="(openStateMode$ | async) ?? 'overlap'" [maxSize]="240" [opened]="opened">
   <div *dxTemplate="let dataMenu of 'panel'" class="application h-100" style="width: 240px;">
-    <ballware-application-navigation-menu></ballware-application-navigation-menu>
+    <ballware-application-navigation-menu (hideNavigation)="hideNavigation()"></ballware-application-navigation-menu>
   </div>  
   <ng-content></ng-content>
 </dx-drawer>

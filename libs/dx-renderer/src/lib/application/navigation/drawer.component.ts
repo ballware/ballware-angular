@@ -27,6 +27,8 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
       .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM ? 'shrink' : 'overlap'));
   }
 
-  
+  hideNavigation() {
+    this.openedChange.emit(false); 
+  }
 }
 

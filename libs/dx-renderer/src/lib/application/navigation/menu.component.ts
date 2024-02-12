@@ -1,6 +1,6 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavigationTreeItem, TenantService } from '@ballware/meta-services';
+import { NavigationTreeItem, ResponsiveService, SCREEN_SIZE, TenantService } from '@ballware/meta-services';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { cloneDeep } from 'lodash';
 import { takeUntil } from 'rxjs';
@@ -17,12 +17,18 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
 
   @Input() opened!: boolean;
 
-  @Output() openedChange = new EventEmitter<boolean>();
+  @Output() hideNavigation = new EventEmitter<void>();
 
   public items: NavigationTreeItem[] = [];
 
-  constructor(private tenantService: TenantService, private router: Router) {
+  private closeOnNavigate = false;
+
+  constructor(private responsiveService: ResponsiveService, private tenantService: TenantService, private router: Router) {
     super();
+
+    this.responsiveService.onResize$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(screenSize => this.closeOnNavigate = screenSize <= SCREEN_SIZE.SM);
 
     this.tenantService.navigationTree$
       .pipe(takeUntil(this.destroy$))
@@ -35,6 +41,10 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
     const url = (event.itemData as any).url;
 
     event.event?.preventDefault();
+
+    if (this.closeOnNavigate) {
+      this.hideNavigation.emit();
+    }
 
     if (url) {
       this.router.navigate([url]);
