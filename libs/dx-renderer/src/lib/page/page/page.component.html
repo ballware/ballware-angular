@@ -6,6 +6,7 @@
   [visible]="true" 
   [showCloseButton]="true"
   [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="documentationDialog.title"
   (onHidden)="documentationDialog.close()"
   width="auto" 
