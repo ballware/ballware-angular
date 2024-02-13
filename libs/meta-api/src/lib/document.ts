@@ -59,7 +59,7 @@ const viewerUrl = (documentServiceBaseUrl: string) => (
   const url = new URL(`${documentServiceBaseUrl}/viewer`);
 
   url.searchParams.append('token', token);
-  url.searchParams.append('docId', documentId);
+  url.searchParams.append('?docId', documentId);
 
   ids.forEach(id => url.searchParams.append('id', id));
   
