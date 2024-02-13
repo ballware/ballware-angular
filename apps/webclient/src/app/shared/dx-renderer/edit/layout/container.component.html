@@ -1,8 +1,0 @@
-<div [style.height]="height ?? 'auto'" class="w-100 container-fluid">
-  <div [style.height]="height ?? 'auto'" class="row row-cols-1 row-cols-xl-{{colCount}}">
-    <div class="col col-xl-{{ (12 / colCount) * (layoutItem.colSpan ?? 1) }}" *ngFor="let layoutItem of items">
-      <ballware-edit-item [layoutItem]="layoutItem" [colCount]="1">
-      </ballware-edit-item>
-    </div>
-  </div>
-</div>

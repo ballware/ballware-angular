@@ -1,0 +1,7 @@
+<dx-context-menu #accountMenu
+  target="#ballware-account-button"
+  [items]="userMenuItems"
+  [hideOnOutsideClick]="true"
+  [title]="(username$ | async) ?? ''">
+</dx-context-menu>
+

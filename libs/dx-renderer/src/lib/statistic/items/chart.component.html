@@ -1,0 +1,26 @@
+<dx-chart 
+    [style.height]="height$ | async"
+    [title]="(name$ | async) ?? ''"
+    [rotated]="(options$ | async)?.rotated ?? false"
+    [dataSource]="(data$ | async) ?? null"
+    (onLegendClick)="onLegendClick($event)"
+    [series]="(series$ | async)">    
+    <dxo-common-series-settings [argumentField]="(options$ | async)?.argumentField"></dxo-common-series-settings>
+    <dxo-tooltip [enabled]="true"></dxo-tooltip>
+    <dxo-export [enabled]="true" [fileName]="(exportFilename$ | async) ?? ''"></dxo-export>
+    <dxo-argument-axis *ngIf="(options$ | async)?.argumentAxis"
+        [argumentType]="(options$ | async)?.argumentAxis?.argumentType"
+        [visualRange]="(visualRange$ | async) ?? []"
+        [tickInterval]="(options$ | async)?.argumentAxis?.tickInterval ?? 0"
+        [label]="{ visible: true, customizeText: (argumentAxisCustomizeText$ | async) ?? undefined }"
+        [constantLines]="(argumentAxisConstantLines$ | async) ?? []">            
+    </dxo-argument-axis>
+    <dxi-value-axis *ngIf="(options$ | async)?.valueAxis"
+        [constantLines]="(valueAxisConstantLines$ | async) ?? []">        
+    </dxi-value-axis>
+    <dxo-legend *ngIf="(options$ | async)?.legend"
+        [title]="(options$ | async)?.legend?.title ?? ''"
+        [horizontalAlignment]="(options$ | async)?.legend?.horizontalAlignment ?? 'left'"
+        [verticalAlignment]="(options$ | async)?.legend?.verticalAlignment ?? 'top'">
+    </dxo-legend>
+</dx-chart>

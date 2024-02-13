@@ -1,0 +1,80 @@
+<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+  <ballware-edit-layout></ballware-edit-layout>
+</ballware-crud-dialog>
+<ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
+  [customFunctionEntity]="itemDialog.foreignEntity"  
+  [customFunctionId]="itemDialog.customFunction.id"
+  [customFunctionParam]="itemDialog.item"
+  (editFinished)="itemDialog.cancel()">
+</ballware-crud-foreigneditpopup>
+<dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
+  [visible]="true" 
+  [showCloseButton]="true"
+  [title]="itemDialog.title"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  (onHidden)="onExternalEditorDialogClose()">
+  <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
+</dx-popup>
+<dx-popup *ngIf="removeDialog" 
+  [visible]="true" 
+  [showCloseButton]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
+  (onHidden)="onRemoveDialogCancel()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'danger', text: 'editing.actions.remove' | i18next, onClick: onRemoveDialogApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onRemoveDialogCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <p>{{'datacontainer.messages.remove' | i18next: { entity: displayName$ | async } }}</p>
+  </div>
+</dx-popup>
+<dx-popup *ngIf="importDialog"
+  [visible]="true" 
+  [showCloseButton]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
+  (onHidden)="onImportDialogCancel()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
+  </div>
+</dx-popup>
+<dx-action-sheet #actionMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
+  [title]="'datacontainer.actionsheet.title' | i18next"
+  (onItemClick)="actionItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #printMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
+  [title]="'datacontainer.actions.print' | i18next"
+  (onItemClick)="printMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #addMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
+  [title]="'datacontainer.actions.add' | i18next: { entity: displayName$ | async }"
+  (onItemClick)="addMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #exportMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
+  [title]="'datacontainer.actions.export' | i18next: { entity: displayName$ }"
+  (onItemClick)="exportMenuItemClicked($event)">
+</dx-action-sheet>
+<dx-action-sheet #importMenu
+  width="auto"
+  [showCancelButton]="true"
+  [usePopover]="!((fullscreenDialogs$ | async) ?? false)"
+  [title]="'datacontainer.actions.import' | i18next: { entity: displayName$ }"
+  (onItemClick)="importMenuItemClicked($event)">
+</dx-action-sheet>

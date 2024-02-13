@@ -1,0 +1,5 @@
+<ballware-application-header [menuToggleEnabled]="true" (menuToggle)="menuOpened = !menuOpened;"></ballware-application-header>
+<ballware-application-navigation-drawer [(opened)]="menuOpened">
+    <router-outlet></router-outlet>
+</ballware-application-navigation-drawer>
+<ballware-notification></ballware-notification>

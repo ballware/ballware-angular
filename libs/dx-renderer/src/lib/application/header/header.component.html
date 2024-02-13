@@ -1,0 +1,29 @@
+<header>
+  <dx-toolbar class="applicationbar shadow">
+    <dxi-item
+      *ngIf="menuToggleEnabled"
+      location="before"
+      locateInMenu="never">
+      <div *dxTemplate>
+        <dx-button class="menubutton" icon="bi bi-list" stylingMode="text" (onClick)="toggleMenu()">    
+        </dx-button>
+      </div>
+    </dxi-item>
+    <dxi-item
+      location="before"
+      locateInMenu="never"
+      *ngIf="(title$ | async)"
+      [text]="title$ | async">
+    </dxi-item>
+    <dxi-item
+      location="after"
+      locateInMenu="never"
+      >
+      <div *dxTemplate>
+        <dx-button id="ballware-account-button" class="menubutton" icon="bi bi-person-circle" stylingMode="text" [text]="(sessionExpiration$ | async) ?? ''" (onClick)="toggleAccountMenu($event)">
+        </dx-button>
+      </div>
+    </dxi-item>
+  </dx-toolbar>
+</header>
+<ballware-application-account-menu #accountMenu></ballware-application-account-menu>

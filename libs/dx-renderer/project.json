@@ -1,0 +1,106 @@
+{
+  "name": "dx-renderer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/dx-renderer/src",
+  "prefix": "ballware",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/dx-renderer/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/dx-renderer/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/dx-renderer/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/dx-renderer/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/dx-renderer/**/*.ts",
+          "libs/dx-renderer/**/*.html",
+          "libs/dx-renderer/package.json"
+        ]
+      }
+    },
+    "storybook": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "port": 4400,
+        "configDir": "libs/dx-renderer/.storybook",
+        "browserTarget": "dx-renderer:build-storybook",
+        "compodoc": false,
+        "https": true,
+        "sslKey": "localhost-key.pem",
+        "sslCert": "localhost.pem"
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build-storybook": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook/dx-renderer",
+        "configDir": "libs/dx-renderer/.storybook",
+        "browserTarget": "dx-renderer:build-storybook",
+        "styles": [
+          "node_modules/bootstrap/scss/bootstrap.scss",
+          "node_modules/bootstrap-icons/font/bootstrap-icons.scss",
+          "node_modules/devextreme/dist/css/dx.material.blue.light.css"
+        ],
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c libs/dx-renderer/.storybook --url=https://localhost:4400"
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "dx-renderer:build-storybook",
+        "staticFilePath": "dist/storybook/dx-renderer"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "dx-renderer:build-storybook:ci"
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,12 @@
-import { v4 as uuid } from 'uuid';
 import { parse, stringify } from 'json5/lib';
 import * as moment from 'moment';
+import { v4 as uuid } from 'uuid';
 
 import { ScriptUtil } from '@ballware/meta-model';
 
+import { HttpClient } from '@angular/common/http';
 import { LookupDescriptor, LookupStoreDescriptor } from '../lookup.service';
 import { geocodeAddress, geocodeLocation } from './geocoder';
-import { HttpClient } from '@angular/common/http';
 
 /*
 export const nameof = <T>(name: keyof T): keyof T => name;
@@ -85,9 +85,10 @@ function localDateToDate(date: Date): Date | null {
  * @param token Token used for authenticated webservice requests
  * @returns Generated util object
  */
-export const createUtil = (http: HttpClient): ScriptUtil => {
+export const createUtil = (http: HttpClient, token: string): ScriptUtil => {
   return {
     http: () => http,
+    token: () => token,
     uuid: () => uuid(),
     parse: json => parse(json),
     stringify: json => stringify(json),

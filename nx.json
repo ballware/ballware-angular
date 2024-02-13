@@ -1,9 +1,10 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "npmScope": "ballware",
+  "neverConnectToCloud": true,
   "tasksRunnerOptions": {
     "default": {
-      "runner": "nx-cloud",
+      "runner": "nx/tasks-runners/default",
       "options": {
         "cacheableOperations": [
           "build",

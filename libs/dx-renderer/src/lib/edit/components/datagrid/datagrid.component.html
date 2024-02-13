@@ -1,0 +1,38 @@
+<dx-data-grid #grid *ngIf="initialized && dataSource"
+    class="w-100"
+    [style]="style"
+    [dataSource]="dataSource"
+    [repaintChangesOnly]="true"
+    [remoteOperations]="{ sorting: false, filtering: false }"
+    [columnAutoWidth]="true"
+    [rowAlternationEnabled]="true"
+    (onEditingStart)="editingStart($event)"
+    (onEditorPreparing)="gridEditorPreparing($event)"
+    (onSelectionChanged)="selectionChanged($event)"
+    (onToolbarPreparing)="toolbarPreparing($event)"
+    (onRowExpanding)="rowExpanding($event)"        
+    (onExporting)="exporting($event)"
+    [customizeColumns]="customizeColumns"
+    [allowColumnResizing]="mode === 'large'"
+    [allowColumnReordering]="true"
+    [columns]="columns ?? []"
+    [summary]="summary ?? {}"
+    [(selectedRowKeys)]="selectedRowKeys"
+    (onRowDblClick)="onRowDblClick($event)">
+    <dxo-paging [enabled]="mode === 'large'"></dxo-paging>
+    <dxo-column-chooser [enabled]="mode === 'large'"></dxo-column-chooser>
+    <dxo-editing *ngIf="mode === 'large'" mode="cell" [allowUpdating]="layout?.allowEditing ?? false"></dxo-editing>
+    <dxo-selection *ngIf="mode === 'large'" [mode]="layout?.allowMultiselect ? 'multiple' : 'none'"></dxo-selection>
+    <dxo-column-fixing [enabled]="true"></dxo-column-fixing>
+    <dxo-search-panel [visible]="true"></dxo-search-panel>
+    <dxo-filter-row *ngIf="mode === 'large'" [visible]="true"></dxo-filter-row>
+    <dxo-group-panel *ngIf="mode === 'large'" [visible]="true"></dxo-group-panel>
+    <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
+    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>
+    <dxo-state-storing *ngIf="identifier" [enabled]="identifier ? true : false" type="localStorage" [storageKey]="identifier"></dxo-state-storing>
+    <div *dxTemplate="let masterDetailItem of 'masterDetail'">
+        <ballware-datagrid-masterdetail [item]="masterDetailItem.data">
+            <ballware-edit-detail slot="masterDetail" [detailLayout]="layout?.details!"></ballware-edit-detail>
+        </ballware-datagrid-masterdetail>
+    </div>
+</dx-data-grid>

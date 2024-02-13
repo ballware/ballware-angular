@@ -1,63 +1,70 @@
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
+import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { AttachmentService } from '../attachment.service';
-import { AuthService } from '../auth.service';
+import { AttachmentServiceProxy } from '../attachment/attachment.proxy';
+import { AttachmentStore } from '../attachment/attachment.store';
 import { CrudService } from '../crud.service';
+import { CrudServiceProxy } from '../crud/crud.proxy';
+import { CrudStore } from '../crud/crud.store';
 import { EditService } from '../edit.service';
+import { EditServiceProxy } from '../edit/edit.proxy';
+import { EditStore } from '../edit/edit.store';
+import { IdentityService } from '../identity.service';
 import { LookupService } from '../lookup.service';
+import { LookupServiceProxy } from '../lookup/lookup.proxy';
+import { LookupStore } from '../lookup/lookup.store';
 import { MetaService } from '../meta.service';
 import { MetaServiceFactory } from '../meta.service.factory';
+import { MetaServiceProxy } from '../meta/meta.proxy';
+import { MetaStore } from '../meta/meta.store';
+import { NotificationService } from '../notification.service';
 import { PageService } from '../page.service';
+import { PageServiceProxy } from '../page/page.proxy';
+import { PageStore } from '../page/page.store';
 import { ResponsiveService } from '../responsive.service';
-import { SettingsService } from '../settings.service';
+import { StatisticService } from '../statistic.service';
+import { StatisticServiceProxy } from '../statistic/statistic.proxy';
+import { StatisticStore } from '../statistic/statistic.store';
 import { TenantService } from '../tenant.service';
-import { DefaultCrudService } from './default.crud.service';
-import { DefaultLookupService } from './default.lookup.service';
-import { DefaultMetaService } from './default.meta.service';
-import { DefaultPageService } from './default.page.service';
-import { DefaultTenantService } from './default.tenant.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private httpClient: HttpClient, private apiServiceFactory: ApiServiceFactory, private settingsService: SettingsService, private oauthService: OAuthService, private translationPipe: I18NextPipe) {
+    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService) {
         super();
     }
 
-    override createAuthService(): AuthService {
-        return new AuthService(this.settingsService, this.oauthService);
-    }
-
     override createAttachmentService(): AttachmentService {
-        return new AttachmentService();
+        return new AttachmentServiceProxy(new AttachmentStore(this.store, this.notificationService, this.apiServiceFactory.createMetaApi(), this.translationPipe));
     }
 
     override createCrudService(metaService: MetaService): CrudService {
-        return new DefaultCrudService(metaService, this.translationPipe);
+        return new CrudServiceProxy(new CrudStore(this.store, metaService, this.notificationService, this.translationPipe, this.router));
     }
 
     override createEditService(metaService: MetaService): EditService {
-        return new EditService(metaService);
+        return new EditServiceProxy(new EditStore(this.store, metaService));
     }
     
     override createLookupService(): LookupService {
-        return new DefaultLookupService(this.httpClient, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi());
+        return new LookupServiceProxy(new LookupStore(this.store, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi()));
     }
 
-    override createMetaService(authService: AuthService, tenantService: TenantService, lookupService: LookupService): MetaService {
-        return new DefaultMetaService(this.httpClient, this.apiServiceFactory.createMetaApi(), authService, tenantService, lookupService);
+    override createMetaService(lookupService: LookupService): MetaService {
+        return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.translationPipe, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
     }
 
     override createResponsiveService(): ResponsiveService {
         return new ResponsiveService();
     }
 
-    override createTenantService(authService: AuthService): TenantService {
-        return new DefaultTenantService(this.httpClient, authService, this.apiServiceFactory.createMetaApi());
+    override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
+        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.notificationService, this.translationPipe, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
-
-    override createPageService(route: ActivatedRoute, router: Router, tenantService: TenantService, lookupService: LookupService): PageService {
-        return new DefaultPageService(this.httpClient, route, router, tenantService, lookupService, this.apiServiceFactory.createMetaApi());
+    
+    override createStatisticService(lookupService: LookupService): StatisticService {
+        return new StatisticServiceProxy(new StatisticStore(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, lookupService));
     }
 }

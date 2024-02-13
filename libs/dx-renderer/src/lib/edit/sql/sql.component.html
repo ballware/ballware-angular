@@ -1,0 +1,9 @@
+<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<ballware-codemirror 
+    mode="sqlserver"
+    [readOnly]="readonly$ | async"
+    width="100%"
+    [height]="height ?? '300px'"
+    [options]="options"
+    [(value)]="value">
+</ballware-codemirror>    

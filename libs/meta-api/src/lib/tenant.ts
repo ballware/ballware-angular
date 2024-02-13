@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledTenant, NavigationLayout } from '@ballware/meta-model';
+import { CompiledTenant, NavigationLayout, Template } from '@ballware/meta-model';
 
 /**
  * Interface for tenant data operations
@@ -11,17 +11,23 @@ import { CompiledTenant, NavigationLayout } from '@ballware/meta-model';
  export interface MetaTenantApi {
   /**
    * Fetch metadatan for tenant
-   * @param token Access token required for authentication
    * @param tenant Identifier of tenant
    * @returns Observable containing compiled tenant metadata
    */
-  metadataForTenant: (http: HttpClient, tenant: string) => Observable<CompiledTenant>;
+  metadataForTenant: (tenant: string) => Observable<CompiledTenant>;
+
+  /**
+   * Fetch list of allowed tenants for current user   
+   * @returns List of tenants 
+   */
+  allowed: () => Observable<{ Id: string, Name: string}[]>;
 }
 
 interface Tenant {
   Id: string;
   Name: string;
   Navigation?: string;
+  Templates?: string;
   RightsCheckScript?: string;
 }
 
@@ -32,6 +38,12 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
     navigation: tenant.Navigation
       ? (parse(tenant.Navigation) as NavigationLayout)
       : ({} as NavigationLayout),
+    templates: tenant.Templates 
+      ? (parse(tenant.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+            identifier: t.identifier,
+            definition: parse(t.definition)
+          } as Template))        
+      : ([]),      
   } as CompiledTenant;
 
   if (tenant.RightsCheckScript) {
@@ -49,8 +61,7 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
   return compiledTenant;
 };
 
-const metadataFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   tenant: string
 ): Observable<CompiledTenant> => {
   const url = `${serviceBaseUrl}/api/tenant/metadatafortenant/${tenant}`;
@@ -60,15 +71,24 @@ const metadataFunc = (serviceBaseUrl: string) => (
     .pipe(map(data => compileTenant(data)));
 };
 
+const allowedTenantFunc = (http: HttpClient, serviceBaseUrl: string) => (): Observable<{ Id: string, Name: string}[]> => {
+  const url = `${serviceBaseUrl}/api/tenant/allowed`;
+
+  return http
+    .get<{ Id: string, Name: string}[]>(url);
+}
+
 /**
  * Create adapter for tenant fetch operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendTenantApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaTenantApi {
   return {
-    metadataForTenant: metadataFunc(serviceBaseUrl),
+    metadataForTenant: metadataFunc(httpClient, serviceBaseUrl),
+    allowed: allowedTenantFunc(httpClient, serviceBaseUrl)
   } as MetaTenantApi;
 }

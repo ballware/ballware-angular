@@ -8,25 +8,21 @@ import { Observable } from 'rxjs';
   /**
    * Fetch select list containing all possible states for business object
    *
-   * @param token Access token required for authentication
    * @param entity Identifier of business object type
    * @returns Observable containing list of available processing states
    */
   selectListForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Fetch select list containing all allowed states for business object ids
    *
-   * @param token Access token required for authentication
    * @param entity Identifier of business object type
    * @param ids Collection of ids to check
    * @returns Observable containing list of allowed processing states
    */
   selectListAllowedForEntityAndIds: (
-    http: HttpClient,
     entity: string,
     ids: Array<string>
   ) => Observable<Array<Record<string, unknown>>>;
@@ -34,19 +30,16 @@ import { Observable } from 'rxjs';
   /**
    * Fetch single processing state by state number
    *
-   * @param token Access token required for authentication
    * @param entity Identifier of business object type
    * @param state Unique state number
    * @returns Observable containing processing state data
    */
   selectByStateForEntity: (
-    http: HttpClient,
     entity: string
   ) => (state: number | string) => Observable<Record<string, unknown>>;
 }
 
-const selectListForEntity = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListForEntity = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string
 ): Observable<Array<Record<string, unknown>>> => {
   const url = `${serviceBaseUrl}/api/processingstate/selectlistforentity/${entity}`;
@@ -55,8 +48,7 @@ const selectListForEntity = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectListAllowedForEntityAndIds = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListAllowedForEntityAndIds = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string,
   ids: Array<string>
 ): Observable<Array<Record<string, unknown>>> => {
@@ -68,8 +60,7 @@ const selectListAllowedForEntityAndIds = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByStateForEntity = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectByStateForEntity = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string
 ) => (state: number | string): Observable<Record<string, unknown>> => {
   const url = `${serviceBaseUrl}/api/processingstate/selectbystateforentity/${entity}/${state}`;
@@ -84,13 +75,15 @@ const selectByStateForEntity = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendProcessingstateApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaProcessingstateApi {
   return {
-    selectListForEntity: selectListForEntity(serviceBaseUrl),
+    selectListForEntity: selectListForEntity(httpClient, serviceBaseUrl),
     selectListAllowedForEntityAndIds: selectListAllowedForEntityAndIds(
+      httpClient,
       serviceBaseUrl
     ),
-    selectByStateForEntity: selectByStateForEntity(serviceBaseUrl),
+    selectByStateForEntity: selectByStateForEntity(httpClient, serviceBaseUrl),
   } as MetaProcessingstateApi;
 }

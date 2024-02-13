@@ -1,0 +1,7 @@
+<ng-template ngFor let-item [ngForOf]="options?.prefixCode">
+    <code>{{item}}</code>
+</ng-template>
+<div #editor [style.width]="width ?? '100%'" [style.height]="height ?? '100%'"></div>
+<ng-template ngFor let-item [ngForOf]="options?.suffixCode">
+    <code>{{item}}</code>
+</ng-template>

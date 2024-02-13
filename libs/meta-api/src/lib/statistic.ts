@@ -12,24 +12,20 @@ import { additionalParamsToUrl } from './util';
  export interface MetaStatisticApi {
   /**
    * Fetch metadata for statistic
-   * @param token Access token required for authentication
    * @param identifier Unique identifier of statistic item
    * @returns Observable containing statistic metadata
    */
   metadataForStatistic: (
-    http: HttpClient,
     identifier: string
   ) => Observable<CompiledStatistic>;
 
   /**
    * Fetch content data for statistic
-   * @param token Access token required for authentication
    * @param identifier Unique identifier of statistic item
    * @param param Optional parameters for query
    * @returns Observable containing statistic content
    */
   dataForStatistic: (
-    http: HttpClient,
     identifier: string,
     params?: QueryParams
   ) => Observable<Array<Record<string, unknown>>>;
@@ -119,23 +115,21 @@ export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
   return compiledStatistic;
 };
 
-const metadataFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string
 ): Observable<CompiledStatistic> => {
-  const url = `${serviceBaseUrl}api/statistic/metadataforidentifier?identifier=${encodeURIComponent(identifier)}`;
+  const url = `${serviceBaseUrl}/api/statistic/metadataforidentifier?identifier=${encodeURIComponent(identifier)}`;
 
   return http
     .get<Statistic>(url)
     .pipe(map(data => compileStatistic(data)));
 };
 
-const dataFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   identifier: string,
   params: QueryParams
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}api/statistic/dataforidentifier?identifier=${encodeURIComponent(identifier)}${additionalParamsToUrl(
+  const url = `${serviceBaseUrl}/api/statistic/dataforidentifier?identifier=${encodeURIComponent(identifier)}${additionalParamsToUrl(
     params
   )}`;
 
@@ -149,10 +143,11 @@ const dataFunc = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendStatisticApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaStatisticApi {
   return {
-    metadataForStatistic: metadataFunc(serviceBaseUrl),
-    dataForStatistic: dataFunc(serviceBaseUrl),
+    metadataForStatistic: metadataFunc(httpClient, serviceBaseUrl),
+    dataForStatistic: dataFunc(httpClient, serviceBaseUrl),
   } as MetaStatisticApi;
 }

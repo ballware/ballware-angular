@@ -8,13 +8,11 @@ import { Observable } from 'rxjs';
   /**
    * Fetch select list for business object property possible values
    *
-   * @param token Access token required for authentication
    * @param entity Business object identifier
    * @param field Business object property
    * @returns Observable containing collection of possible property values
    */
   selectListForEntityAndField: (
-    http: HttpClient,
     entity: string,
     field: string
   ) => Observable<Array<Record<string, unknown>>>;
@@ -22,21 +20,18 @@ import { Observable } from 'rxjs';
   /**
    * Fetch single select list element for business object property
    *
-   * @param token Access token required for authentication
    * @param entity Business object identifier
    * @param field Business object property
    * @param value Value requesting select list element
    * @returns Observable containing single property value
    */
   selectByValueForEntityAndField: (
-    http: HttpClient,
     entity: string,
     field: string
   ) => (value: number | string) => Observable<Record<string, unknown>>;
 }
 
-const selectListForEntityAndField = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectListForEntityAndField = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string,
   field: string
 ): Observable<Array<Record<string, unknown>>> => {
@@ -46,8 +41,7 @@ const selectListForEntityAndField = (serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByValueForEntityAndField = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const selectByValueForEntityAndField = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string,
   field: string
 ) => (value: number | string): Observable<Record<string, unknown>> => {
@@ -63,12 +57,13 @@ const selectByValueForEntityAndField = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendPickvalueApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaPickvalueApi {
   return {
-    selectListForEntityAndField: selectListForEntityAndField(serviceBaseUrl),
+    selectListForEntityAndField: selectListForEntityAndField(httpClient, serviceBaseUrl),
     selectByValueForEntityAndField: selectByValueForEntityAndField(
-      serviceBaseUrl
+      httpClient, serviceBaseUrl
     ),
   } as MetaPickvalueApi;
 }

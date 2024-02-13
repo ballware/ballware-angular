@@ -1,0 +1,11 @@
+<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<dx-check-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"  
+  class="pt-1"
+  [name]="layoutItem.options.dataMember"
+  [(value)]="value"
+  [readOnly]="(readonly$ | async) ?? false"
+  (onFocusIn)="onEntered()">
+  <dx-validator>
+    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+  </dx-validator>
+</dx-check-box>

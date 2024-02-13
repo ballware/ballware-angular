@@ -1,0 +1,56 @@
+<dx-file-uploader [disabled]="(readonly$ | async) ?? false" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="fileUpload"> </dx-file-uploader>
+<dx-data-grid [height]="'100%'" [dataSource]="(dataSource$ | async) ?? null">
+    <dxi-column dataField="Name" [caption]="'attachment.columns.name' | i18next"></dxi-column>
+    <dxi-column [caption]="'attachment.columns.options' | i18next" 
+        [type]="'buttons'"
+        [fixed]="true" 
+        fixedPosition="right" 
+        [width]="100"
+        [allowEditing]="false"
+        [allowExporting]="false"
+        [allowResizing]="false"
+        [buttons]="optionButtons$ | async">
+    </dxi-column>
+    <div *dxTemplate="let cell of 'optionsCell'">
+        <span
+          [title]="'attachment.actions.view' | i18next"
+          [style.marginRight]="'5px'"
+          (onClick)="fileOpen(cell.data)"
+          data-toggle="tooltip"
+        >
+            <span
+                [style.fontSize]="18" [style.textDecoration]="'none'"
+                class="bi bi-eye-fill">
+            </span>
+        </span>
+        <span
+            *ngIf="!((readonly$ | async) ?? false)"
+            [title]="'attachment.actions.remove' | i18next"
+            [style.marginRight]="'5px'"
+            (onClick)="fileDelete(cell.data)"
+            data-toggle="tooltip"
+          >
+            <span
+                [style.fontSize]="18" [style.textDecoration]="'none'"
+                class="bi bi-trash-fill">
+            </span>
+          </span>
+    </div>
+    <div *dxTemplate="let cell of 'optionsHeader'">
+        <p>Options header</p>
+    </div>
+</dx-data-grid>
+<dx-popup *ngIf="removeDialog" 
+  [visible]="true" 
+  [showCloseButton]="true"
+  [title]="'attachment.titles.remove' | i18next"
+  (onHidden)="onRemoveDialogCancel()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'danger', text: 'editing.actions.remove' | i18next, onClick: onRemoveDialogApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onRemoveDialogCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <p>{{'attachment.messages.remove' | i18next: { fileName: removeDialog.fileName } }}</p>
+  </div>
+</dx-popup>

@@ -1,9 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from 'rxjs';
-import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService } from '@ballware/meta-api';
-import { MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from '@ballware/meta-api';
-import { WithDestroy } from './withdestroy';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable } from 'rxjs';
 
 /**
  * Data access adapter for fetching lookup data
@@ -119,193 +115,30 @@ export interface LookupRequest {
   field?: string;
 }
 
-const createUserLookup = (
-  http: HttpClient,
-  api: IdentityUserApi,
-  valueMember: string,
-  displayMember: string
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () => api.selectListFunc(http),
-      byIdFunc: id => api.selectByIdFunc(http, id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
+export interface LookupServiceApi {
 
-const createRoleLookup = (
-  http: HttpClient,
-  api: IdentityRoleApi,
-  valueMember: string,
-  displayMember: string
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () => api.selectListFunc(http),
-      byIdFunc: id => api.selectByIdFunc(http, id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
+  setIdentifier(identifier: string): void;
 
-const createGenericLookup = (
-  http: HttpClient,
-  api: MetaLookupApi,
-  lookupId: string,
-  valueMember: string,
-  displayMember: string
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () => api.selectListForLookup(http, lookupId),
-      byIdFunc: id => api.selectByIdForLookup(http, lookupId)(id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
+  lookups$: Observable<Record<
+      string,
+      LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
+    >|undefined>;
 
-const createGenericLookupWithParam = (
-  http: HttpClient,
-  api: MetaLookupApi,
-  lookupId: string,
-  valueMember: string,
-  displayMember: string
-): LookupCreator => {
-  return (param): LookupDescriptor => {
-    return {
-      type: 'lookup',
-      store: {
-        listFunc: () =>
-          api.selectListForLookupWithParam(http, lookupId, param),
-        byIdFunc: id =>
-          api.selectByIdForLookupWithParam(http, lookupId, param)(id),
-      } as LookupStoreDescriptor,
-      valueMember: valueMember,
-      displayMember: displayMember,
-    };
-  };
-};
+  getGenericLookupByIdentifier$: Observable<((
+      identifier: string,
+      valueExpr: string,
+      displayExpr: string
+    ) => LookupDescriptor) | undefined>;
 
-const createGenericPickvalueLookup = (
-  http: HttpClient,
-  api: MetaPickvalueApi,
-  entity: string,
-  field: string,
-  valueMember = 'Value',
-  displayMember = 'Name'
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () => api.selectListForEntityAndField(http, entity, field),
-      byIdFunc: id =>
-        api.selectByValueForEntityAndField(http, entity, field)(id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
+  requestLookups(request :LookupRequest[]): void;
+}
 
-const createGenericAutocomplete = (
-  http: HttpClient,
-  api: MetaLookupApi,
-  lookupId: string
-): LookupDescriptor => {
-  return {
-    type: 'autocomplete',
-    store: {
-      listFunc: () => api.autoCompleteForLookup(http, lookupId),
-    } as AutocompleteStoreDescriptor,
-  } as LookupDescriptor;
-};
+@Injectable()
+export abstract class LookupService implements OnDestroy, LookupServiceApi {
 
-const createGenericAutocompleteWithParam = (
-  http: HttpClient,
-  api: MetaLookupApi,
-  lookupId: string
-): LookupCreator => {
-  return (param): LookupDescriptor => {
-    return {
-      type: 'autocomplete',
-      store: {
-        listFunc: () =>
-          api.autoCompleteForLookupWithParam(http, lookupId, param),
-      } as AutocompleteStoreDescriptor,
-    };
-  };
-};
+  public abstract ngOnDestroy(): void;
 
-const createGenericStateLookup = (
-  http: HttpClient,
-  api: MetaProcessingstateApi,
-  entity: string,
-  valueMember = 'State',
-  displayMember = 'Name'
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () => api.selectListForEntity(http, entity),
-      byIdFunc: id => api.selectByStateForEntity(http, entity)(id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
-
-const createGenericAllowedStateLookup = (
-  http: HttpClient,
-  api: MetaProcessingstateApi,
-  entity: string,
-  valueMember = 'State',
-  displayMember = 'Name'
-): LookupCreator => {
-  return param => {
-    return {
-      type: 'lookup',
-      store: {
-        listFunc: () =>
-          api.selectListAllowedForEntityAndIds(
-            http,
-            entity,
-            Array.isArray(param) ? param : [param]
-          ),
-        byIdFunc: id => api.selectByStateForEntity(http, entity)(id),
-      } as LookupStoreDescriptor,
-      valueMember: valueMember,
-      displayMember: displayMember,
-    };
-  };
-};
-
-const createGenericLookupByIdentifier = (
-  http: HttpClient,
-  api: MetaLookupApi,
-  lookupIdentifier: string,
-  valueMember: string,
-  displayMember: string
-): LookupDescriptor => {
-  return {
-    type: 'lookup',
-    store: {
-      listFunc: () =>
-        api.selectListForLookupIdentifier(http, lookupIdentifier),
-      byIdFunc: id =>
-        api.selectByIdForLookupIdentifier(http, lookupIdentifier)(id),
-    } as LookupStoreDescriptor,
-    valueMember: valueMember,
-    displayMember: displayMember,
-  } as LookupDescriptor;
-};
-
-export abstract class LookupService extends WithDestroy() {
+  public abstract setIdentifier(identifier: string): void;
 
   public abstract lookups$: Observable<Record<
       string,
@@ -316,7 +149,7 @@ export abstract class LookupService extends WithDestroy() {
       identifier: string,
       valueExpr: string,
       displayExpr: string
-    ) => LookupDescriptor | undefined)|undefined>;
+  ) => LookupDescriptor) | undefined>;
 
   public abstract requestLookups(request :LookupRequest[]): void;
 }

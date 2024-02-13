@@ -1,0 +1,19 @@
+<div class="h-100 mw-100 container-fluid shadow bg-white rounded d-flex flex-column overflow-hidden">
+    <ballware-toolbar></ballware-toolbar>
+    <ballware-page-layout *ngIf="initialized$ | async"></ballware-page-layout>
+</div>
+<dx-popup *ngIf="documentationDialog" 
+  [visible]="true" 
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="documentationDialog.title"
+  (onHidden)="documentationDialog.close()"
+  width="auto" 
+  minWidth="500px" 
+  maxHeight="90vh"
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <dx-html-editor [readOnly]="true" [value]="documentationDialog.content"></dx-html-editor>
+  </div> 
+</dx-popup>

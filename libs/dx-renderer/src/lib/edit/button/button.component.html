@@ -1,0 +1,7 @@
+<dx-button *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"  
+  [text]="layoutItem.options.hint ?? ''"
+  [disabled]="(readonly$ | async) ?? false"
+  [height]="layoutItem.options.height"
+  [width]="layoutItem.options.width"
+  (onClick)="onClick($event)">
+</dx-button>

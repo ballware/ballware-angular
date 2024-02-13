@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { from, Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 /**
  * Select list entry of available document list for printing
@@ -23,12 +23,10 @@ export interface MetaDocumentApi {
   /**
    * Fetch available print documents for business object type
    *
-   * @param token Access token required for authentication
    * @param entity Identifier for business object type
    * @returns Observable containing available print documents for entity
    */
   selectListPrintDocumentsForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<Array<DocumentSelectEntry>>;
 
@@ -36,14 +34,14 @@ export interface MetaDocumentApi {
    * Generate viewer url for document
    *
    * @param token Access token required for authentication
-   * @param search Query expression for generating document
+   * @param documentId Identifier of user selected document
+   * @param ids Ids of selected records to print
    * @returns Observable containing url for rendering document
    */
-  viewerUrl: (token: string, search: string) => Observable<string>;
+  viewerUrl: (token: string, documentId: string, ids: string[]) => Observable<string>;
 }
 
-const selectListPrintDocumentsForEntity = (metaServiceBaseUrl: string) => (
-  http: HttpClient,
+const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
   const url = `${metaServiceBaseUrl}api/document/selectlistdocumentsforentity/${entity}`;
@@ -54,13 +52,20 @@ const selectListPrintDocumentsForEntity = (metaServiceBaseUrl: string) => (
 
 const viewerUrl = (documentServiceBaseUrl: string) => (
   token: string,
-  search: string
+  documentId: string,
+  ids: string[]
 ): Observable<string> => {
-  const url = `${documentServiceBaseUrl}viewer?token=${encodeURIComponent(
-    token
-  )}&${search}`;
 
-  return from(url);
+  const url = new URL(`${documentServiceBaseUrl}/viewer`);
+
+  url.searchParams.append('token', token);
+  url.searchParams.append('docId', documentId);
+
+  ids.forEach(id => url.searchParams.append('id', id));
+  
+  const result = url.toString();
+
+  return of(result);
 };
 
 /**
@@ -69,11 +74,13 @@ const viewerUrl = (documentServiceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendDocumentApi(
+  httpClient: HttpClient, 
   metaServiceBaseUrl: string,
   documentServiceBaseUrl: string
 ): MetaDocumentApi {
   return {
     selectListPrintDocumentsForEntity: selectListPrintDocumentsForEntity(
+      httpClient,
       metaServiceBaseUrl
     ),
     viewerUrl: viewerUrl(documentServiceBaseUrl),

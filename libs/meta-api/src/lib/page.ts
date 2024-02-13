@@ -12,12 +12,10 @@ import { CompiledPageData } from '@ballware/meta-model';
   /**
    * Fetch page metadata by identifier
    *
-   * @param token Access token required for authentication
    * @param page Identifier for page
    * @returns Observable containing page metadata
    */
   pageDataForIdentifier: (
-    http: HttpClient,
     page: string
   ) => Observable<CompiledPageData>;
 }
@@ -190,8 +188,7 @@ const compilePage = (pageData: PageData): CompiledPageData => {
   return compiledPageData;
 };
 
-const pageDataForIdentifier = (metaServiceBaseUrl: string) => (
-  http: HttpClient,
+const pageDataForIdentifier = (http: HttpClient, metaServiceBaseUrl: string) => (
   page: string
 ): Observable<CompiledPageData> => {
   const url = `${metaServiceBaseUrl}/api/page/pagedataforidentifier/${page}`;
@@ -207,9 +204,10 @@ const pageDataForIdentifier = (metaServiceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendPageApi(
+  httpClient: HttpClient, 
   metaServiceBaseUrl: string
 ): MetaPageApi {
   return {
-    pageDataForIdentifier: pageDataForIdentifier(metaServiceBaseUrl),
+    pageDataForIdentifier: pageDataForIdentifier(httpClient, metaServiceBaseUrl),
   } as MetaPageApi;
 }

@@ -1,6 +1,7 @@
 export const environment = {
     production: true,
     name: 'prod',
+    version: '0.0.1',
     envVar: {
         BALLWARE_BASEURL: 'https://localhost:3000',
         BALLWARE_IDENTITYURL: 'https://identity.ballware.de',

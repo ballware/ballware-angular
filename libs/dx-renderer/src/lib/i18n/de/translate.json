@@ -1,0 +1,119 @@
+{
+  "translations": {
+    "format": {
+      "date": "dd.MM.yyyy",
+      "datetime": "dd.MM.yyyy HH:mm:ss"
+    },
+    "validation": {
+      "messages": {
+        "required": "Eingabe erforderlich"
+      }
+    },
+    "session": {
+      "refresh": "Sitzung verlängern",
+      "changepassword": "Passwort ändern",
+      "logout": "{{user}} abmelden",
+      "manageaccount": "Benutzerprofil bearbeiten",
+      "switchtenant": "In Umgebung {{tenant}} wechseln"
+    },
+    "attachment": {
+      "titles": {
+        "remove": "Anhang entfernen"
+      },
+      "messages": {
+        "added": "Datei erfolgreich hochgeladen",
+        "removed": "Datei erfolgreich entfernt",
+        "remove": "{{fileName}} wirklich entfernen?"
+      },
+      "actions": {
+        "view": "Anzeigen",
+        "remove": "Entfernen"
+      },
+      "columns": {
+        "name": "Name",
+        "options": "Optionen"
+      }
+    },
+    "datacontainer": {
+      "titles": {
+        "add": "{{entity}} hinzufügen",
+        "view": "{{entity}} anzeigen",
+        "edit": "{{entity}} bearbeiten",
+        "remove": "{{entity}} entfernen",
+        "import": "{{entity}} importieren"
+      },
+      "actions": {
+        "refresh": "Liste aktualisieren",
+        "options": "Weitere Optionen",
+        "add": "{{entity}} hinzufügen",
+        "show": "Anzeigen",
+        "edit": "Bearbeiten",
+        "remove": "Entfernen",
+        "print": "Drucken",
+        "export": "Exportieren",
+        "import": "Importieren",
+        "showSource": "Als Quellcode zeigen",
+        "showList": "Als Liste zeigen",
+        "selectall": "Alle auswählen",
+        "unselectall": "Auswahl aufheben",
+        "selection": "Auswahl: {{count}}",
+        "selectionhint": {
+          "normal": "Aktuell ausgewählte Zeilen",
+          "danger": "Achtung: Nicht alle ausgewählten Zeilen befinden sich im sichtbaren Bereich"
+        }
+      },
+      "messages": {
+        "loading": "Lade Daten",
+        "remove": "{{entity}} wirklich entfernen?"
+      },
+      "actionsheet": {
+        "title": "Optionen"
+      }
+    },
+    "editing": {
+      "actions": {
+        "open": "Öffnen",
+        "apply": "Speichern",
+        "cancel": "Abbruch",
+        "remove": "Entfernen",
+        "close": "Schliessen"
+      },
+      "notifications": {
+        "saved": "Erfolgreich gespeichert",
+        "removed": "Erfolgreich entfernt",
+        "noitems": "Es wurden keine Datensätze ausgewählt"
+      },
+      "import": {
+        "popuptitle": "Datei importieren",
+        "popupmessage": "Datei mit Daten für den Import hochladen"
+      }
+    },
+    "documentation": {
+      "popuptitle": "Dokumentation für {{entity}}",
+      "actions": {
+        "close": "Schliessen"
+      },
+      "notifications": {
+        "nodocumentation": "Keine Dokumentation verfügbar"
+      }
+    },
+    "filterbar": {
+      "actions": {
+        "close": "Ausblenden"
+      }
+    },
+    "rights": {
+      "notifications": {
+        "routenotallowed": "Zugriff verweigert, Anmeldung mit ausreichenden Benutzerrechten erforderlich",
+        "loginsuccess": "Anmeldung erfolgreich",
+        "logininvalid": "Ungültiger Benutzer oder Passwort",
+        "logoutsuccess": "Abmeldung erfolgreich",
+        "registeredsuccess": "Registrierung erfolgreich",
+        "forgotpasswordsuccess": "Vorgang erfolgreich, Mail mit weiteren Anweisungen wurde versendet",
+        "resetpasswordsuccess": "Passwort erfolgreich zurückgesetzt",
+        "changepasswordsuccess": "Passwort erfolgreich geändert",
+        "logoutfortenantswitch": "Benutzer wird ab- und wieder angemeldet für Umgebungswechsel"
+      }
+    }
+  }
+}

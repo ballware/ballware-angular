@@ -3,7 +3,7 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout } from '@ballware/meta-model';
+import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout, Template } from '@ballware/meta-model';
 
 /**
  * Interface for entity metadata operations
@@ -12,24 +12,20 @@ import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout } f
   /**
    * Fetch metadata by entity identifier
    *
-   * @param token Access token required for authentication
    * @param entity Identifier for business object type
    * @returns Observable containing metadata entity
    */
   metadataForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<CompiledEntityMetadata>;
 
   /**
    * Fetch available print documents for business object type
    *
-   * @param token Access token required for authentication
    * @param entity Identifier for business object type
    * @returns Observable containing available print documents for entity
    */
   documentsForEntity: (
-    http: HttpClient,
     entity: string
   ) => Observable<Array<DocumentSelectEntry>>;
 }
@@ -43,6 +39,7 @@ interface EntityMetadata {
   ItemReverseMappingScript: string;
   Lookups: string;
   Picklists: string;
+  Templates: string;
   CustomScripts?: string;
   CustomFunctions?: string;
   GridLayout: string;
@@ -57,6 +54,7 @@ interface EntityCustomScripts {
   prepareCustomParam?: string;
   prepareGridLayout?: string;
   prepareEditLayout?: string;
+  prepareMaterializedEditItem?: string;  
   editorPreparing?: string;
   editorInitialized?: string;
   editorValueChanged?: string;
@@ -126,6 +124,13 @@ const compileEntityMetadata = (
   if (metaData.Picklists) {
     compiledMetaData.picklists = parse(metaData.Picklists);
   }
+
+  if (metaData.Templates) {
+    compiledMetaData.templates = (parse(metaData.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+      identifier: t.identifier,
+      definition: parse(t.definition)
+    } as Template));
+  }  
 
   if (metaData.CustomFunctions) {
     compiledMetaData.customFunctions = parse(metaData.CustomFunctions);
@@ -247,6 +252,37 @@ const compileEntityMetadata = (
             ])
         : undefined;
     }
+
+    if (customScripts.prepareMaterializedEditItem) {
+      const compiledArgs = [
+        'mode',
+        'lookups',
+        'customParam',
+        'util',
+        'editLayout',
+        'scope',
+        'identifier',
+        'materializedItem'
+      ];
+      const compiledFn = Function.apply(
+        Function,
+        compiledArgs.concat(customScripts.prepareMaterializedEditItem)
+      );
+
+      compiledMetaData.compiledCustomScripts.prepareMaterializedEditItem = compiledFn
+        ? (mode, lookups, customParam, util, editLayout, scope, identifier, materializedItem) =>
+            compiledFn.apply(compiledFn, [
+              mode,
+              lookups,
+              customParam,
+              util,
+              editLayout,
+              scope,
+              identifier,
+              materializedItem
+            ])
+        : undefined;
+    }    
 
     if (customScripts.editorPreparing) {
       const compiledEditorPreparingArgs = [
@@ -546,8 +582,7 @@ const compileEntityMetadata = (
   return compiledMetaData;
 };
 
-const metadataFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string
 ): Observable<CompiledEntityMetadata> => {
   const url = `${serviceBaseUrl}/api/entity/metadataforentity/${entity}`;
@@ -557,8 +592,7 @@ const metadataFunc = (serviceBaseUrl: string) => (
     .pipe(map((value) => compileEntityMetadata(value)));
 };
 
-const documentsForEntityFunc = (serviceBaseUrl: string) => (
-  http: HttpClient,
+const documentsForEntityFunc = (http: HttpClient, serviceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
   const url = `${serviceBaseUrl}/api/document/selectlistdocumentsforentity/${entity}`;
@@ -573,10 +607,11 @@ const documentsForEntityFunc = (serviceBaseUrl: string) => (
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendEntityApi(
+  httpClient: HttpClient, 
   serviceBaseUrl: string
 ): MetaEntityApi {
   return {
-    metadataForEntity: metadataFunc(serviceBaseUrl),
-    documentsForEntity: documentsForEntityFunc(serviceBaseUrl),
+    metadataForEntity: metadataFunc(httpClient, serviceBaseUrl),
+    documentsForEntity: documentsForEntityFunc(httpClient, serviceBaseUrl),
   } as MetaEntityApi;
 }

@@ -1,16 +1,11 @@
-import { Observable } from 'rxjs';
+import { Observable } from "rxjs";
+import { WithDestroy } from "./withdestroy";
 
-export abstract class SettingsService {
+export abstract class SettingsService extends WithDestroy() {
 
-  public abstract version$: Observable<string>;
-  public abstract googlekey$: Observable<string>;
+    public abstract version$: Observable<string|undefined>;
+    public abstract googlekey$: Observable<string|undefined>;
 
-  public abstract identityIssuer$: Observable<string>;
-  public abstract identityClientId$: Observable<string>;
-  public abstract identityScopes$: Observable<string>;
-
-  public abstract identityTenantClaim$: Observable<string>;
-  public abstract identityUsernameClaim$: Observable<string>;
-
-  public abstract identityProfileUrl$: Observable<string>;
+    public abstract initialize(version: string, googlekey: string): void;
 }
+  

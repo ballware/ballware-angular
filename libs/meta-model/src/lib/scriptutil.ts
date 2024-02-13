@@ -8,6 +8,11 @@
   uuid: () => string;
 
   /**
+   * Get current user access token
+   */
+  token: () => string;
+
+  /**
    * Parse JSON to object
    *
    * @param json String with serialized JSON

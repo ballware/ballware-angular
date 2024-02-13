@@ -1,0 +1,35 @@
+<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<dx-html-editor text-area *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  [name]="layoutItem.options.dataMember"
+  [height]="layoutItem.options.height ?? '300px'"
+  [(value)]="value"
+  [readOnly]="(readonly$ | async) ?? false"
+  (onFocusIn)="onEntered()">
+  <dxo-toolbar [multiline]="false">
+    <dxi-item name="undo" />
+    <dxi-item name="redo" />
+    <dxi-item name="separator" />
+    <dxi-item name="header" [acceptedValues]="[false, 1, 2, 3, 4, 5]" />
+    <dxi-item name="separator" />
+    <dxi-item name="bold" />
+    <dxi-item name="italic" />
+    <dxi-item name="strike" />
+    <dxi-item name="underline" />
+    <dxi-item name="separator" />
+    <dxi-item name="alignLeft" />
+    <dxi-item name="alignCenter" />
+    <dxi-item name="alignRight" />
+    <dxi-item name="alignJustify" />
+    <dxi-item name="separator" />
+    <dxi-item name="orderedList" />
+    <dxi-item name="bulletList" />
+    <dxi-item name="separator" />
+    <dxi-item name="color" />
+    <dxi-item name="background" />
+    <dxi-item name="separator" />
+    <dxi-item name="clear" />
+  </dxo-toolbar>
+  <dx-validator>
+    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+  </dx-validator>
+</dx-html-editor>

@@ -1,14 +1,14 @@
-import { Observable, of } from "rxjs";
 import { IdentityApiService } from "../identity.api.service";
 import { createIdentityBackendRoleApi, IdentityRoleApi } from "../role";
 import { createIdentityBackendUserApi, IdentityUserApi } from "../user";
+import { HttpClient } from "@angular/common/http";
 
 export class DefaultIdentityApiService implements IdentityApiService {
-    constructor(protected baseUrl: string) {
-        this.identityUserApiFactory$ = of(() => createIdentityBackendUserApi(baseUrl));
-        this.identityRoleApiFactory$ = of(() => createIdentityBackendRoleApi(baseUrl));
+    constructor(protected httpClient: HttpClient, protected baseUrl: string) {
+        this.identityUserApi = createIdentityBackendUserApi(httpClient, baseUrl);
+        this.identityRoleApi = createIdentityBackendRoleApi(httpClient, baseUrl);
     }
 
-    identityUserApiFactory$: Observable<(() => IdentityUserApi)>;
-    identityRoleApiFactory$: Observable<(() => IdentityRoleApi)>;
+    identityUserApi: IdentityUserApi;
+    identityRoleApi: IdentityRoleApi;
 }

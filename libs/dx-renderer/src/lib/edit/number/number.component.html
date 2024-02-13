@@ -1,0 +1,11 @@
+<dx-number-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  [label]="layoutItem.options.caption ?? ''"
+  [name]="layoutItem.options.dataMember"
+  [(value)]="value"
+  [readOnly]="(readonly$ | async) ?? false"
+  [showClearButton]="true"
+  (onFocusIn)="onEntered()">
+  <dx-validator>
+    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+  </dx-validator>
+</dx-number-box>

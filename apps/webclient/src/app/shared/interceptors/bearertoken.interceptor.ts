@@ -1,6 +1,5 @@
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SettingsService } from '@ballware/meta-services';
 import { OAuthResourceServerErrorHandler, OAuthStorage } from 'angular-oauth2-oidc';
 import { environment } from '../../../environments/environment';
 import { Observable, catchError } from 'rxjs';
@@ -10,7 +9,7 @@ import { Observable, catchError } from 'rxjs';
 })
 export class BearerTokenInterceptor implements HttpInterceptor {
 
-  constructor(private settingsService: SettingsService, private authStorage: OAuthStorage, private errorHandler: OAuthResourceServerErrorHandler) {}
+  constructor(private authStorage: OAuthStorage, private errorHandler: OAuthResourceServerErrorHandler) {}
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
