@@ -28,7 +28,8 @@
         ],
         "scripts": [],
         "serviceWorker": true,
-        "ngswConfigPath": "apps/webclient/ngsw-config.json"
+        "ngswConfigPath": "apps/webclient/ngsw-config.json",
+        "indexTransform": "apps/webclient/index-html-transform.ts"
       },
       "configurations": {
         "production": {
@@ -96,11 +97,12 @@
       },
       "defaultConfiguration": "development",
       "options": {
+        "browserTarget": "webclient:build",
         "host": "localhost",
         "port": 3000,
         "ssl": true,
-        "sslKey": "localhost-key.pem",
-        "sslCert": "localhost.pem"
+        "sslKey": "apps/webclient/localhost-key.pem",
+        "sslCert": "apps/webclient/localhost.pem"
       }
     },
     "extract-i18n": {

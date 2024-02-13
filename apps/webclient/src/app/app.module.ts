@@ -6,6 +6,7 @@ import { MetaServicesModule } from '@ballware/meta-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 
+import { ServiceWorkerModule } from '@angular/service-worker';
 import { RenderFactoryModule } from '@ballware/dx-renderer';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreRouterConnectingModule, routerReducer } from '@ngrx/router-store';
@@ -16,7 +17,8 @@ import { AppRoutingModule } from './app.routing.module';
 import { PrintComponent } from './shared/components/print/print.component';
 import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
-import { ServiceWorkerModule } from '@angular/service-worker';
+
+declare let window :any;
 
 @NgModule({
   declarations: [AppComponent, ResponsiveDetectorComponent, PrintComponent],
@@ -38,9 +40,9 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     OAuthModule.forRoot(),
     AppRoutingModule,
     MetaApiModule.forRoot({
-      identityServiceBaseUrl: environment.envVar.BALLWARE_IDENTITYURL,
-      metaServiceBaseUrl: environment.envVar.BALLWARE_METAURL,
-      documentServiceBaseUrl: environment.envVar.BALLWARE_DOCUMENTURL
+      identityServiceBaseUrl: window.ENV.BALLWARE_IDENTITYURL,
+      metaServiceBaseUrl: window.ENV.BALLWARE_METAURL,
+      documentServiceBaseUrl: window.ENV.BALLWARE_DOCUMENTURL
     }),
     MetaServicesModule.forRoot(),
     RenderFactoryModule,

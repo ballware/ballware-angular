@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { IdentityService, SettingsService } from '@ballware/meta-services';
 
-import { environment } from '../environments/environment';
+
+declare let window :any;
 
 @Component({
   selector: 'ballware-root',
@@ -15,17 +16,17 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.settingsService.initialize(
-      environment.version,
-      environment.envVar.BALLWARE_GOOGLEKEY
+      window.ENV.BALLWARE_VERSION,
+      window.ENV.BALLWARE_GOOGLEKEY
     );
 
     this.identityService.initialize(
-      environment.envVar.BALLWARE_IDENTITYURL,
-      environment.envVar.BALLWARE_CLIENTID,
-      environment.envVar.BALLWARE_IDENTITYSCOPES,
-      environment.envVar.BALLWARE_TENANTCLAIM,
-      environment.envVar.BALLWARE_USERNAMECLAIM,
-      environment.envVar.BALLWARE_ACCOUNTURL
+      window.ENV.BALLWARE_IDENTITYURL,
+      window.ENV.BALLWARE_CLIENTID,
+      window.ENV.BALLWARE_IDENTITYSCOPES,
+      window.ENV.BALLWARE_TENANTCLAIM,
+      window.ENV.BALLWARE_USERNAMECLAIM,
+      window.ENV.BALLWARE_ACCOUNTURL
     );
   }
 }
