@@ -69,6 +69,8 @@
     "@angular/pwa": "16.1.7",
     "@cypress/webpack-dev-server": "^2.0.0",
     "@nguniversal/builders": "16.1.1",
+    "@nx-tools/container-metadata": "^5.2.0",
+    "@nx-tools/nx-container": "^5.2.0",
     "@nx/cypress": "16.6.0",
     "@nx/eslint-plugin": "16.6.0",
     "@nx/jest": "16.6.0",
