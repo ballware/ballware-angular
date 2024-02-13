@@ -36,7 +36,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: '{context}/apps/webclient/Dockerfile'
+          file: '/apps/webclient/Dockerfile'
           platforms: linux/amd64
           push: true
           tags: |
