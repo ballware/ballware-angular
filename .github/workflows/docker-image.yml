@@ -31,7 +31,7 @@ jobs:
       - name: 'Derive appropriate SHAs for base and head for `nx affected` commands'
         uses: nrwl/nx-set-shas@v3
       - name: 'Build images'
-        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx nx build --parallel=2
+        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx nx build --configuration=production --parallel=2
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
