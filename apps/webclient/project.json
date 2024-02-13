@@ -6,7 +6,7 @@
   "prefix": "ballware",
   "targets": {
     "build": {
-      "executor": "@angular-devkit/build-angular:browser",
+      "executor": "@angular-builders/custom-webpack:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/webclient/browser",
@@ -82,7 +82,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-devkit/build-angular:dev-server",
+      "executor": "@angular-builders/custom-webpack:dev-server",
       "configurations": {
         "production": {
           "browserTarget": "webclient:build:production"
@@ -104,7 +104,7 @@
       }
     },
     "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "executor": "@angular-builders/custom-webpack:extract-i18n",
       "options": {
         "browserTarget": "webclient:build"
       }
@@ -128,7 +128,7 @@
       }
     },
     "server": {
-      "executor": "@angular-devkit/build-angular:server",
+      "executor": "@angular-builders/custom-webpack:server",
       "options": {
         "outputPath": "dist/webclient/server",
         "main": "apps/webclient/src/ssr.server.ts",
