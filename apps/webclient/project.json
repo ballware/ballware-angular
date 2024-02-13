@@ -17,7 +17,8 @@
         "inlineStyleLanguage": "scss",
         "assets": [
           "apps/webclient/src/favicon.ico",
-          "apps/webclient/src/assets"
+          "apps/webclient/src/assets",
+          "apps/webclient/src/manifest.webmanifest"
         ],
         "styles": [
           "node_modules/bootstrap/scss/bootstrap.scss",
@@ -25,7 +26,9 @@
           "node_modules/devextreme/dist/css/dx.material.blue.light.css",
           "apps/webclient/src/styles.scss"
         ],
-        "scripts": []
+        "scripts": [],
+        "serviceWorker": true,
+        "ngswConfigPath": "apps/webclient/ngsw-config.json"
       },
       "configurations": {
         "production": {
@@ -33,7 +36,7 @@
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "5mb"
+              "maximumError": "10mb"
             },
             {
               "type": "anyComponentStyle",

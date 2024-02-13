@@ -1,5 +1,5 @@
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MetaApiModule } from '@ballware/meta-api';
 import { MetaServicesModule } from '@ballware/meta-services';
@@ -16,6 +16,7 @@ import { AppRoutingModule } from './app.routing.module';
 import { PrintComponent } from './shared/components/print/print.component';
 import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent, ResponsiveDetectorComponent, PrintComponent],
@@ -42,7 +43,13 @@ import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interc
       documentServiceBaseUrl: environment.envVar.BALLWARE_DOCUMENTURL
     }),
     MetaServicesModule.forRoot(),
-    RenderFactoryModule
+    RenderFactoryModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: BearerTokenInterceptor, multi: true }

@@ -222,6 +222,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-devkit/core@npm:16.1.7":
+  version: 16.1.7
+  resolution: "@angular-devkit/core@npm:16.1.7"
+  dependencies:
+    ajv: "npm:8.12.0"
+    ajv-formats: "npm:2.1.1"
+    jsonc-parser: "npm:3.2.0"
+    rxjs: "npm:7.8.1"
+    source-map: "npm:0.7.4"
+  peerDependencies:
+    chokidar: ^3.5.2
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  checksum: a8e8a571b77ec6e4b0852b88547f89447ec03c9771e211b85a1b7a7cef7a0d2755a1c699f5dc4dfd82f0876a30ae765d8c71ea705fbe1d6f5943fa49f679cec7
+  languageName: node
+  linkType: hard
+
 "@angular-devkit/schematics@npm:12.2.18, @angular-devkit/schematics@npm:^12.2.18":
   version: 12.2.18
   resolution: "@angular-devkit/schematics@npm:12.2.18"
@@ -243,6 +261,19 @@ __metadata:
     ora: "npm:5.4.1"
     rxjs: "npm:7.8.1"
   checksum: 5362f921650fe34177eb32314d12f15e13ed9c1c92ef49d0932a981923e2ef22d147718da2214bcdae8865a8e80aa9fa29d4e12e092ab01d82ea0363289ebc66
+  languageName: node
+  linkType: hard
+
+"@angular-devkit/schematics@npm:16.1.7":
+  version: 16.1.7
+  resolution: "@angular-devkit/schematics@npm:16.1.7"
+  dependencies:
+    "@angular-devkit/core": "npm:16.1.7"
+    jsonc-parser: "npm:3.2.0"
+    magic-string: "npm:0.30.0"
+    ora: "npm:5.4.1"
+    rxjs: "npm:7.8.1"
+  checksum: 3e83ac59f7169c12a503609ccf877ea402c2ae253622491fe71070938cfea869389b8b42b2d0af76ba5c823b1141df43618acdefdff1193a7a439b09cf06e8a2
   languageName: node
   linkType: hard
 
@@ -476,6 +507,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular/pwa@npm:16.1.7":
+  version: 16.1.7
+  resolution: "@angular/pwa@npm:16.1.7"
+  dependencies:
+    "@angular-devkit/schematics": "npm:16.1.7"
+    "@schematics/angular": "npm:16.1.7"
+    parse5-html-rewriting-stream: "npm:7.0.0"
+  peerDependencies:
+    "@angular/cli": ^16.0.0
+  peerDependenciesMeta:
+    "@angular/cli":
+      optional: true
+  checksum: 2fc59bc5bc39e0d90cfb6f2e13031fe12c4b80e28674cebfbe9044fae4fe60e6ceb365cb1bfb377a71f04159d82c7f11bec3523527ae64cd0f3fe9216436f15c
+  languageName: node
+  linkType: hard
+
 "@angular/router@npm:16.1.7":
   version: 16.1.7
   resolution: "@angular/router@npm:16.1.7"
@@ -487,6 +534,20 @@ __metadata:
     "@angular/platform-browser": 16.1.7
     rxjs: ^6.5.3 || ^7.4.0
   checksum: 0dcee494b92bbfbb0ae981824bf92f35e8e07e8af21193960ff280e99901447728bf6e43a6dcebb67e254f2ba8789607d6c4a36e1b5f281986839910bf54ebba
+  languageName: node
+  linkType: hard
+
+"@angular/service-worker@npm:16.1.7":
+  version: 16.1.7
+  resolution: "@angular/service-worker@npm:16.1.7"
+  dependencies:
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@angular/common": 16.1.7
+    "@angular/core": 16.1.7
+  bin:
+    ngsw-config: ngsw-config.js
+  checksum: f2771aaae8e3e5b1dfaae130c1bfe9d79412b06f4bf65a3e7b5cf0c84f7170617a086457da32a408fe19433d8d9f33fa921f4e11866d8501f617880a30b4915e
   languageName: node
   linkType: hard
 
@@ -6572,6 +6633,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@schematics/angular@npm:16.1.7":
+  version: 16.1.7
+  resolution: "@schematics/angular@npm:16.1.7"
+  dependencies:
+    "@angular-devkit/core": "npm:16.1.7"
+    "@angular-devkit/schematics": "npm:16.1.7"
+    jsonc-parser: "npm:3.2.0"
+  checksum: 6b61dc8f0176c292d92a5249fed7b2fde97b6f2c5f7a97d6412261a69f6069c430d237c9e1c59c6e53c909eed525233f8db1e278bef42cfcaccd933b49b16ba9
+  languageName: node
+  linkType: hard
+
 "@schematics/angular@npm:^12.2.18":
   version: 12.2.18
   resolution: "@schematics/angular@npm:12.2.18"
@@ -10417,7 +10489,9 @@ __metadata:
     "@angular/platform-browser": "npm:16.1.7"
     "@angular/platform-browser-dynamic": "npm:16.1.7"
     "@angular/platform-server": "npm:16.1.7"
+    "@angular/pwa": "npm:16.1.7"
     "@angular/router": "npm:16.1.7"
+    "@angular/service-worker": "npm:16.1.7"
     "@codemirror/autocomplete": "npm:^6.12.0"
     "@codemirror/commands": "npm:^6.3.3"
     "@codemirror/lang-javascript": "npm:^6.2.1"
