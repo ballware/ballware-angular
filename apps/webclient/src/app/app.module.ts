@@ -45,7 +45,7 @@ declare let window :any;
       documentServiceBaseUrl: window.ENV.BALLWARE_DOCUMENTURL
     }),
     MetaServicesModule.forRoot(),
-    RenderFactoryModule,
+    RenderFactoryModule.forRoot({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),
       // Register the ServiceWorker as soon as the application is stable
