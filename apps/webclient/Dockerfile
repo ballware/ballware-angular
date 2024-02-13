@@ -1,4 +1,9 @@
 FROM docker.io/nginx:stable-alpine
+
+RUN apk update \
+    && apk add jq \
+    && rm -rf /var/cache/apk/*
+
 COPY dist/webclient/* /usr/share/nginx/html/
 
 COPY apps/webclient/nginx.conf /etc/nginx/nginx.conf
