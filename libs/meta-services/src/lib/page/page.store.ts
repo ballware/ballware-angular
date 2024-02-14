@@ -205,7 +205,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
 
       this.effect(_ => combineLatest([this.activatedRoute.queryParams])
         .pipe(tap(([queryParams]) => {          
-          const headParams = qs.parse(queryParams['page'] ?? "");
+          const headParams = qs.parse(queryParams['page'] ?? "", { arrayLimit: 1000 });
 
           this.updater((state, headParams: QueryParams) => ({
               ...state,
