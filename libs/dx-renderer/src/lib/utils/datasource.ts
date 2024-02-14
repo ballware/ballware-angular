@@ -122,6 +122,7 @@ export function createLookupDataSource(
 
   const dataSource = new DataSource({
     store: dataStore,
+    paginate: false
   });
 
   return dataSource;
