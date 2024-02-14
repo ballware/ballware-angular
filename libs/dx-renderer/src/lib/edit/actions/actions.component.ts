@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CrudService, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
@@ -28,6 +28,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   public itemDialog: ItemEditDialog|undefined;
   public removeDialog: ItemRemoveDialog|undefined;
   public importDialog: ImportDialog|undefined;
+
+  public detailColumnEditDialog: DetailColumnEditDialog|undefined;
 
   public sanitizedExternalEditorUrl: SafeUrl|undefined;
 
@@ -68,6 +70,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .subscribe((importDialog) => {
         this.importDialog = importDialog;
       });
+
+    this.crudService.detailColumnEditDialog$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((detailColumnEditDialog) => {
+        this.detailColumnEditDialog = detailColumnEditDialog;
+      });      
   }
 
   ngOnInit(): void {

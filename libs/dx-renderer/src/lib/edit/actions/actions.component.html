@@ -43,6 +43,9 @@
     <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
   </div>
 </dx-popup>
+<ballware-crud-dialog *ngIf="detailColumnEditDialog" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="detailColumnEditDialog.mode" [title]="detailColumnEditDialog.title" [item]="detailColumnEditDialog.item" [editLayout]="detailColumnEditDialog.editLayout" [apply]="detailColumnEditDialog.apply" [cancel]="detailColumnEditDialog.cancel">
+  <ballware-edit-layout></ballware-edit-layout>
+</ballware-crud-dialog> 
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"

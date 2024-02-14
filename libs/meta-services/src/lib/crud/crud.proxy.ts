@@ -25,7 +25,8 @@ export class CrudServiceProxy extends CrudService implements OnDestroy {
   
     readonly itemDialog$ = this.crudStore.itemDialog$;
     readonly removeDialog$ = this.crudStore.removeDialog$;
-    readonly importDialog$ = this.crudStore.importDialog$;  
+    readonly importDialog$ = this.crudStore.importDialog$;
+    readonly detailColumnEditDialog$ = this.crudStore.detailColumnEditDialog$;
 
     readonly selectAddSheet$ = this.crudStore.selectAddSheet$;  
     readonly selectActionSheet$ = this.crudStore.selectActionSheet$;  
@@ -52,6 +53,8 @@ export class CrudServiceProxy extends CrudService implements OnDestroy {
 
     readonly exportItems = this.crudStore.exportItems;
     readonly importItems = this.crudStore.importItems;
+
+    readonly detailColumnEdit = this.crudStore.detailColumnEdit;
   
     readonly selectAdd = this.crudStore.selectAdd;
     readonly selectPrint = this.crudStore.selectPrint;

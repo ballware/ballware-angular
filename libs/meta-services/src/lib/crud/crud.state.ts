@@ -1,5 +1,5 @@
 import { CrudItem, EntityCustomFunction } from "@ballware/meta-model";
-import { CrudAction, CrudEditMenuItem, ImportDialog, ItemEditDialog, ItemRemoveDialog } from "../crud.service";
+import { CrudAction, CrudEditMenuItem, DetailColumnEditDialog, ImportDialog, ItemEditDialog, ItemRemoveDialog } from "../crud.service";
 
 export interface CrudState {
   
@@ -16,6 +16,8 @@ export interface CrudState {
     removeDialog?: ItemRemoveDialog;
     importDialog?: ImportDialog;
   
+    detailColumnEditDialog?: DetailColumnEditDialog;
+
     selectAddSheet?: {
         actions: CrudAction[]
     };

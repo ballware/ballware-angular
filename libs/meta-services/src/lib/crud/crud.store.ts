@@ -1,14 +1,15 @@
 import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiError } from '@ballware/meta-api';
-import { CrudItem, EntityCustomFunction } from '@ballware/meta-model';
+import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
 import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
-import { CrudAction, CrudEditMenuItem, CrudServiceApi, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
+import { CrudAction, CrudEditMenuItem, CrudServiceApi, DetailColumnEditDialog, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
+import { getByPath, setByPath } from '../databinding';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
 import { NotificationService } from '../notification.service';
@@ -214,6 +215,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     readonly itemDialog$ = this.select(state => state.itemDialog);
     readonly removeDialog$ = this.select(state => state.removeDialog);
     readonly importDialog$ = this.select(state => state.importDialog);
+    readonly detailColumnEditDialog$ = this.select(state => state.detailColumnEditDialog);
     readonly selectAddSheet$ = this.select(state => state.selectAddSheet);
     readonly selectActionSheet$ = this.select(state => state.selectActionSheet);
     readonly selectPrintSheet$ = this.select(state => state.selectPrintSheet);
@@ -553,6 +555,39 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     }))   
                     .pipe(map((url) => url && window.open(url)))  
                 : of(undefined)))
+    );
+
+    readonly detailColumnEdit = this.effect((request$: Observable<{ mode: EditModes, item: unknown, column: GridLayoutColumn }>) => 
+        request$.pipe((withLatestFrom(this.metaService.getEditLayout$)))
+            .pipe(switchMap(([request, getEditLayout]) => getEditLayout 
+                ? of(request).pipe(withLatestFrom(of(getEditLayout(request.column.popuplayout ?? 'primary', request.mode))))
+                : of(request).pipe(withLatestFrom(of(undefined)))))
+            .pipe(tap(([request, editLayout]) => this.updater((state, detailColumnEditDialog: DetailColumnEditDialog|undefined) => ({
+                ...state,
+                detailColumnEditDialog
+            }))((request && editLayout) ? ({
+                mode: request.mode,
+                item: cloneDeep(request.item),   
+                title: request.column.caption,
+                dataMember: request.column.dataMember,                
+                editLayout: editLayout,
+                apply: (item) => { 
+                    if (request.column.dataMember) {
+                        setByPath(request.item as Record<string, unknown>, request.column.dataMember, getByPath(item, request.column.dataMember));
+                    }                    
+
+                    this.updater((state) => ({
+                        ...state,
+                        detailColumnEditDialog: undefined
+                    }))(); 
+                 },
+                 cancel: () => { 
+                    this.updater((state) => ({
+                        ...state,
+                        detailColumnEditDialog: undefined
+                    }))(); 
+                 }             
+            } as DetailColumnEditDialog) : undefined)))
     );
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 

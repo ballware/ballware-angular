@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { CrudItem, EditLayout, EntityCustomFunction } from '@ballware/meta-model';
+import { CrudItem, EditLayout, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
 
@@ -45,6 +45,16 @@ export interface ImportDialog {
     cancel: () => void;   
 }
 
+export interface DetailColumnEditDialog {
+    mode: EditModes,
+    item: unknown, 
+    dataMember: string,
+    title: string, 
+    editLayout: EditLayout, 
+    apply: (item: Record<string, unknown>) => void, 
+    cancel: () => void    
+}
+
 export interface CrudServiceApi {
 
     currentInteractionTarget$: Observable<Element|undefined>;
@@ -62,6 +72,8 @@ export interface CrudServiceApi {
     itemDialog$: Observable<ItemEditDialog|undefined>;
     removeDialog$: Observable<ItemRemoveDialog|undefined>;
     importDialog$: Observable<ImportDialog|undefined>;
+
+    detailColumnEditDialog$: Observable<DetailColumnEditDialog|undefined>;
 
     selectAddSheet$: Observable<{
         actions: CrudAction[]
@@ -101,6 +113,8 @@ export interface CrudServiceApi {
     exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
     importItems(request: { customFunction: EntityCustomFunction }): void;
 
+    detailColumnEdit(request: { mode: EditModes, item: unknown, column: GridLayoutColumn }): void;
+
     save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
     saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
 
@@ -139,6 +153,8 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract itemDialog$: Observable<ItemEditDialog|undefined>;
   public abstract removeDialog$: Observable<ItemRemoveDialog|undefined>;
   public abstract importDialog$: Observable<ImportDialog|undefined>;
+
+  public abstract detailColumnEditDialog$: Observable<DetailColumnEditDialog|undefined>;
 
   public abstract selectAddSheet$: Observable<{
       actions: CrudAction[]
@@ -181,6 +197,7 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
   public abstract exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
   public abstract importItems(request: { customFunction: EntityCustomFunction }): void;
 
+  public abstract detailColumnEdit(request: { mode: EditModes, item: unknown, column: GridLayoutColumn }): void;
 
   public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
   public abstract selectPrint(request: { items: CrudItem[], target: Element }): void;

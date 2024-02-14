@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
 import { GridLayoutColumn } from "@ballware/meta-model";
 import { EditModes, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, MetaService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
@@ -17,7 +17,7 @@ import { WithDestroy } from "../../../utils/withdestroy";
     templateUrl: './dynamiccolumn.component.html',
     styleUrls: ['./dynamiccolumn.component.scss']
 })
-export class DynamicColumnComponent extends WithDestroy() implements OnInit { 
+export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy { 
     @Input() dataMember!: string;
     @Input() column!: GridLayoutColumn;
     @Input() lookupParams!: Record<string, unknown>;

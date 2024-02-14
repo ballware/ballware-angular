@@ -69,7 +69,9 @@ export class CodeMirrorComponent implements AfterViewInit {
             extensions.push(lintGutter());
             extensions.push(keymap.of([indentWithTab]));
             extensions.push(EditorView.updateListener.of((e) => {
-                this.valueChange.emit(this.jsonStructuredMode ? parse(e.state.doc.toString()) : e.state.doc.toString());
+                if (e.docChanged) {
+                    this.valueChange.emit(this.jsonStructuredMode ? parse(e.state.doc.toString()) : e.state.doc.toString());
+                }                
             }));
         }
 

@@ -4,6 +4,3 @@
     [text]="'editing.actions.open' | i18next"
     (onClick)="dialogShow()">
 </dx-button>
-<ballware-crud-dialog *ngIf="dialogVisible && editLayout" [fullscreen]="fullscreen" [mode]="mode" [title]="title" [item]="item" [editLayout]="editLayout" [apply]="dialogApply" [cancel]="dialogCancel">
-    <ballware-edit-layout></ballware-edit-layout>
-</ballware-crud-dialog> 
