@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, Provider } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, Provider } from '@angular/core';
+import { ApiError } from '@ballware/meta-api';
 import { LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
-import { combineLatest, of, switchMap, takeUntil } from 'rxjs';
+import { catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -22,9 +23,12 @@ import { WithDestroy } from '../../utils/withdestroy';
 })
 export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnInit {
 
-  @Input() caption?: string;
-  @Input() entity?: string;
-  @Input() query?: string;
+  @Input() tab!: any;
+  @Input() caption!: string;
+  @Input() entity!: string;
+  @Input() query!: string;
+
+  @Output() tabNotAuthorized = new EventEmitter<{ tab: any }>();
 
   public count: number|undefined = undefined;
 
@@ -49,6 +53,15 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
       .pipe(takeUntil(this.destroy$))
       .pipe(switchMap(([countFunc, pageParam]) => (countFunc && pageParam)
         ? countFunc(this.query ?? 'primary', pageParam)
+          .pipe(catchError((error: ApiError) => {      
+            if (error.status === 401) {              
+              this.tabNotAuthorized.emit({ tab: this.tab });
+
+              return of(0);              
+            }             
+            
+            throw error;
+          }))
         : of(undefined)))
       .subscribe((count) => {
         this.count = count;
