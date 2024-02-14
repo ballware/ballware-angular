@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PageLayoutItem, TabsOptions } from '@ballware/meta-model';
 import { isEqual } from 'lodash';
 import * as qs from 'qs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
-import { PageLayoutItem, TabsOptions } from '@ballware/meta-model';
 import { WithDestroy } from '../../utils/withdestroy';
 
 interface TabsParam {
@@ -73,6 +73,10 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
 
   get styles(): object {
     return { 'height': this.layoutItem?.options?.height ?? '100%' };
+  }
+
+  public onTabNotAuthorized(e: { tab: any }) {
+    e.tab.visible = false;
   }
 
   public onTabChanged(e: number) {
