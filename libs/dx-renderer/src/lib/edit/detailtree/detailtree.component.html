@@ -1,11 +1,14 @@
 <div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
-<dx-data-grid *ngIf="columns" #grid
+<dx-tree-list *ngIf="columns" #grid
     [height]="height" 
     width="100%"
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
+    [allowColumnResizing]="true"
     [columns]="columns"
     [dataSource]="value"
+    [dataStructure]="'tree'"
+    [itemsExpr]="'items'"
     (onEditorPreparing)="onEditorPreparing($event)"
     (onInitNewRow)="onInitNewRow($event)"
     (onRowValidating)="onRowValidating($event)">
@@ -20,4 +23,4 @@
     <div *dxTemplate="let cell of 'dynamicedit'">
         <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
-</dx-data-grid>
+</dx-tree-list>

@@ -5,6 +5,7 @@ import { EditLayoutBoolComponent } from '../bool/bool.component';
 import { EditLayoutButtonComponent } from '../button/button.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
 import { EditLayoutDetailGridComponent } from '../detailgrid/detailgrid.component';
+import { EditLayoutDetailTreeComponent } from '../detailtree/detailtree.component';
 import { EditLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
 import { EditLayoutGroupComponent } from '../group/group.component';
 import { EditLayoutJavascriptComponent } from '../javascript/javascript.component';
@@ -164,6 +165,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
+        case 'detailtree': {
+            const componentRef = this.itemHost.createComponent(EditLayoutDetailTreeComponent);
+
+            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;          
         case 'json': {
             const componentRef = this.itemHost.createComponent(EditLayoutJsonComponent);
 

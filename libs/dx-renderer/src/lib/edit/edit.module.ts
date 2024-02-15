@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxHtmlEditorModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxHtmlEditorModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxTreeListModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
 import dxDateBox from 'devextreme/ui/date_box';
 import dxHtmlEditor from 'devextreme/ui/html_editor';
 import dxNumberBox from 'devextreme/ui/number_box';
@@ -20,6 +20,7 @@ import { CodeMirrorComponent } from './components/codeeditor/codemirror.componen
 import { EditLayoutDatetimeComponent } from './datetime/datetime.component';
 import { EditDetailComponent } from './detail/detail.component';
 import { EditLayoutDetailGridComponent } from './detailgrid/detailgrid.component';
+import { EditLayoutDetailTreeComponent } from './detailtree/detailtree.component';
 import { CrudDialogComponent } from './dialog/dialog.component';
 import { EditLayoutEntitygridComponent } from './entitygrid/entitygrid.component';
 import { EditLayoutFieldsetComponent } from './fieldset/fieldset.component';
@@ -64,6 +65,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutTextareaComponent,
     EditLayoutEntitygridComponent,
     EditLayoutDetailGridComponent,
+    EditLayoutDetailTreeComponent,
     EditLayoutJsonComponent,
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,
@@ -93,6 +95,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     DxTabPanelModule,
     DxMapModule,
     DxDataGridModule,
+    DxTreeListModule,
     DxValidatorModule,
     DxValidationGroupModule,
     DxValidationSummaryModule,
