@@ -9,8 +9,7 @@
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/libs/meta-services"],
       "options": {
-        "project": "libs/meta-services/ng-package.json",
-        "updateBuildableProjectDepsInPackageJson": true
+        "project": "libs/meta-services/ng-package.json"
       },
       "configurations": {
         "production": {
@@ -27,18 +26,11 @@
       "outputs": ["{workspaceRoot}/coverage/libs/meta-services"],
       "options": {
         "jestConfig": "libs/meta-services/jest.config.ts",
-        "passWithNoTests": true,
         "coverageReporters": ["lcov"]
       }
     },
     "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/meta-services/**/*.ts",
-          "libs/meta-services/**/*.html"
-        ]
-      }
+      "executor": "@nx/eslint:lint"
     }
   },
   "tags": []

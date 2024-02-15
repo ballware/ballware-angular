@@ -35,7 +35,7 @@ declare let window :any;
       autoPause: true,
       trace: false,
       traceLimit: 75
-    }),
+    , connectInZone: true}),
     HttpClientModule,
     OAuthModule.forRoot(),
     AppRoutingModule,
