@@ -6,6 +6,7 @@
     [columnAutoWidth]="true"    
     [columns]="columns"
     [dataSource]="value"
+    (onToolbarPreparing)="onToolbarPreparing($event)"
     (onEditorPreparing)="onEditorPreparing($event)"
     (onInitNewRow)="onInitNewRow($event)"
     (onRowValidating)="onRowValidating($event)">
@@ -21,3 +22,6 @@
         <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
 </dx-data-grid>
+<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
+</dx-toolbar>
+<ballware-edit-json *ngIf="showSource" [initialLayoutItem]="layoutItem" ></ballware-edit-json>

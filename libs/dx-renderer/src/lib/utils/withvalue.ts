@@ -1,6 +1,6 @@
 import { EditLayoutItem, ValueType } from "@ballware/meta-model";
 import { EditService } from "@ballware/meta-services";
-import { BehaviorSubject, combineLatest, Subject, takeUntil } from "rxjs";
+import { BehaviorSubject, Subject, combineLatest, takeUntil, withLatestFrom } from "rxjs";
 import { HasDestroy } from "./hasdestroy";
 import { HasValue } from "./hasvalue";
 
@@ -11,7 +11,20 @@ export function WithValue<T extends Constructor<HasDestroy>, TValue>(Base: T = (
       public currentValue$ = new BehaviorSubject<TValue|undefined>(undefined);
       public notifyValueChange$ = new Subject<void>();
 
+      public refreshValueTrigger$ = new Subject<void>();
+     
+
       initValue(layoutItem: EditLayoutItem, editService: EditService): void {
+
+        this.refreshValueTrigger$
+          .pipe(takeUntil(this.destroy$))
+          .pipe(withLatestFrom(editService.getValue$))
+          .subscribe(([, getValue]) => {
+            if (getValue && layoutItem?.options?.dataMember) {
+              this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
+            }
+          });
+
         editService.getValue$.pipe(takeUntil(this.destroy$))
           .subscribe((getValue) => {
             if (getValue && layoutItem?.options?.dataMember) {
@@ -25,6 +38,10 @@ export function WithValue<T extends Constructor<HasDestroy>, TValue>(Base: T = (
                 });
             }
           });
+      }
+
+      public refreshValue() {
+        this.refreshValueTrigger$.next();
       }
 
       public get value() {

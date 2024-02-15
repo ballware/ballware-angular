@@ -3,7 +3,8 @@ import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware
 import { EditItemRef, EditService, LookupService, ResponsiveService } from "@ballware/meta-services";
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
-import { EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, dxDataGridColumn } from "devextreme/ui/data_grid";
+import { EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent, dxDataGridColumn } from "devextreme/ui/data_grid";
+import { dxToolbarItem } from "devextreme/ui/toolbar";
 import { combineLatest, takeUntil } from "rxjs";
 import { createColumnConfiguration } from "../../utils/columns";
 import { WithDestroy } from "../../utils/withdestroy";
@@ -39,6 +40,11 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
     public allowAdd = false;
     public allowUpdate = false;
     public allowDelete = false;
+
+    public allowShowSource = false;
+    public showSource = false;
+
+    public sourceToolbarItems: dxToolbarItem[]|undefined;
     
     private dataMember: string|undefined;
     private detailGridCellPreparing: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, column: GridLayoutColumn) => void) | undefined;
@@ -57,6 +63,24 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
         private lookupService: LookupService,
         private editService: EditService) {
       super();
+
+      this.sourceToolbarItems = [
+        {
+          locateInMenu: 'auto',
+          location: 'after',
+          widget: 'dxButton',
+          showText: 'inMenu',
+          options: {
+            hint: this.translationService.transform('datacontainer.actions.showList'),
+            text: this.translationService.transform('datacontainer.actions.showList'),
+            icon: 'bi bi-table',
+            onClick: () => {              
+              this.showSource = false;
+              this.refreshValue();
+            },
+          },
+        } as dxToolbarItem
+      ]
     }
   
     ngOnInit(): void {
@@ -95,6 +119,7 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
                 this.allowAdd = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).add) ?? false;
                 this.allowUpdate = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).update) ?? false;
                 this.allowDelete = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).delete) ?? false;
+                this.allowShowSource = (layoutItem.options?.itemoptions as DetailGridItemOptions).showSource ?? false;
 
                 this.detailGridCellPreparing = (dataMember, detailItem, identifier, column) => detailGridCellPreparing({ dataMember, detailItem, identifier, options: column });
                 this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
@@ -119,6 +144,25 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
                 this.layoutItem = layoutItem;
             }
           });
+      }
+    }
+
+    public onToolbarPreparing(e: ToolbarPreparingEvent) {
+      if (this.allowShowSource) {
+        e.toolbarOptions.items?.unshift({
+          locateInMenu: 'auto',
+          location: 'after',
+          widget: 'dxButton',
+          showText: 'inMenu',
+          options: {
+            hint: this.translationService.transform('datacontainer.actions.showSource'),
+            text: this.translationService.transform('datacontainer.actions.showSource'),
+            icon: 'bi bi-code',
+            onClick: () => {
+              this.showSource = true;
+            },
+          },
+        } as dxToolbarItem)
       }
     }
 
