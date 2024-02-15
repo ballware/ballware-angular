@@ -2,7 +2,11 @@
   <ballware-entitygrid *ngIf="(gridLayout$ | async)"
     [gridLayout]="(gridLayout$ | async) ?? undefined"
     [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
-    [height]="(height$ | async)!">
+    [height]="(height$ | async)!"
+    [masterDetailTemplate]="masterDetailTemplate">
+    <ng-template #masterDetailTemplate>
+      <ballware-edit-detail [detailLayout]="(gridLayout$ | async)?.details!"></ballware-edit-detail>
+    </ng-template>    
   </ballware-entitygrid>
 </div>
 <ballware-crud-actions>

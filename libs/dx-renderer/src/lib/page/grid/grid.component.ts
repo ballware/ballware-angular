@@ -1,13 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EntityGridOptions, GridLayout, PageLayoutItem } from '@ballware/meta-model';
-import { MetaService } from '@ballware/meta-services';
+import { MasterdetailService, MetaService } from '@ballware/meta-services';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
   selector: 'ballware-page-grid',
   templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss']
+  styleUrls: ['./grid.component.scss'],
+  providers: [
+    { 
+      provide: MasterdetailService, useClass: MasterdetailService 
+    }
+  ]
 })
 export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
 

@@ -8,9 +8,9 @@ import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/numb
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
-import { getByPath, setByPath } from "../../../utils/databinding";
-import { createLookupDataSource } from "../../../utils/datasource";
-import { WithDestroy } from "../../../utils/withdestroy";
+import { getByPath, setByPath } from "../../utils/databinding";
+import { createLookupDataSource } from "../../utils/datasource";
+import { WithDestroy } from "../../utils/withdestroy";
 
 @Component({
     selector: 'ballware-edit-dynamic-column',

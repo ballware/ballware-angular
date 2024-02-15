@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
 import { CrudService, FunctionIdentifier, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
@@ -6,9 +6,9 @@ import DataSource from 'devextreme/data/data_source';
 import { dxDataGridColumn } from 'devextreme/ui/data_grid';
 import moment from 'moment';
 import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
-import { createColumnConfiguration } from '../../../utils/columns';
-import { createEditableGridDatasource } from '../../../utils/datasource';
-import { WithDestroy } from '../../../utils/withdestroy';
+import { createColumnConfiguration } from '../../utils/columns';
+import { createEditableGridDatasource } from '../../utils/datasource';
+import { WithDestroy } from '../../utils/withdestroy';
 import { DatagridSummary } from '../datagrid/datagrid.component';
 
 const createSummaryConfiguration = (gridLayout: GridLayout) => {
@@ -44,6 +44,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   @Input() gridLayout?: GridLayout;
   @Input() storageIdentifier?: string;
   @Input() height?: string;
+  @Input() masterDetailTemplate!: TemplateRef<any>;
 
   public height$ = new BehaviorSubject<string|undefined>('100%');
   public storageIdentifier$ = new BehaviorSubject<string|undefined>(undefined);

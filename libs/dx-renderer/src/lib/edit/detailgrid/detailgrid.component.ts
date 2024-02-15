@@ -20,7 +20,7 @@ export interface DetailGridItemOptions {
   }
 
 @Component({
-    selector: 'ballware-edit-javascript',
+    selector: 'ballware-edit-detailgrid',
     templateUrl: './detailgrid.component.html',
     styleUrls: ['./detailgrid.component.scss']
 })

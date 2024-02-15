@@ -29,6 +29,7 @@ export * from './edititemref';
 export * from './editmodes';
 export * from './identity.service';
 export * from './lookup.service';
+export * from './masterdetail.service';
 export * from './meta.service';
 export * from './meta.service.factory';
 export * from './notification.service';

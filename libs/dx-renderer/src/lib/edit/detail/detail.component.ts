@@ -1,9 +1,8 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
 import { DetailLayout } from '@ballware/meta-model';
-import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { EditModes, EditService, MasterdetailService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
-import { MasterdetailService } from '../components/datagrid/masterdetail.service';
 
 @Component({
   selector: 'ballware-edit-detail',

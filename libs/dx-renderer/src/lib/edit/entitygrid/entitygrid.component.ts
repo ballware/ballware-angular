@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -41,7 +41,10 @@ interface EntityGridItemOptions {
       provide: CrudService, 
       useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
       deps: [MetaServiceFactory, MetaService]  
-    } as Provider
+    } as Provider,
+    { 
+      provide: MasterdetailService, useClass: MasterdetailService 
+    }
   ]
 })
 export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {

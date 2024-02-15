@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
 import { DxDeferRenderingModule, DxHtmlEditorModule, DxLoadIndicatorModule, DxMapModule, DxPopupModule, DxTabPanelModule } from 'devextreme-angular';
+import { DatacontainerModule } from '../datacontainer/datacontainer.module';
 import { EditModule } from '../edit/edit.module';
 import { StatisticModule } from '../statistic/statistic.module';
 import { ToolbarModule } from '../toolbar/toolbar.module';
@@ -34,6 +35,7 @@ import { PageLayoutTabsComponent } from './tabs/tabs.component';
     CommonModule,
     I18NextModule,
     ToolbarModule,
+    DatacontainerModule,
     EditModule,
     StatisticModule,
     DxTabPanelModule,

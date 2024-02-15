@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
-import { CrudService, EditModes, MetaService } from '@ballware/meta-services';
+import { CrudService, EditModes, MasterdetailService, MetaService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import DevExpress from 'devextreme';
 import { DxDataGridComponent } from 'devextreme-angular';
@@ -12,7 +12,7 @@ import { dxToolbarItem } from 'devextreme/ui/toolbar';
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
 import { combineLatest, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../../utils/withdestroy';
+import { WithDestroy } from '../../utils/withdestroy';
 
 interface EditComponentWithOptions {
   /**
@@ -61,6 +61,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Input() showExport!: boolean;
   @Input() showImport!: boolean;
   @Input() customFunctions!: Array<EntityCustomFunction>;
+  @Input() masterDetailTemplate!: TemplateRef<any>;
 
   @Output() reloadClick = new EventEmitter<{ target: Element }>();
   @Output() addClick = new EventEmitter<{ target: Element }>();
@@ -87,6 +88,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
   constructor(private metaService: MetaService,
     private crudService: CrudService,
+    private masterDetailService: MasterdetailService,
     private i18next: I18NextPipe) {
     super();
 
@@ -365,6 +367,10 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     const rowData = e.component.getVisibleRows().find(row => row.rowType === 'data' && row.key === e.key);
 
     e.cancel = rowData && this.isMasterDetailExpandable && !this.isMasterDetailExpandable({ data: rowData.data });
+
+    if (!e.cancel && rowData) {
+      this.masterDetailService.item$.next(rowData.data);
+    }
   }
 
   public onRowDblClick(e: RowDblClickEvent) {
@@ -397,7 +403,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     });
 
     e.cancel = true;  
-  };
+  }
 
   public onSelectAllClick() {
     this.grid?.instance.selectAll();
