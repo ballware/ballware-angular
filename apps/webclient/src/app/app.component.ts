@@ -15,6 +15,8 @@ export class AppComponent implements OnInit {
   constructor(private settingsService: SettingsService, private identityService: IdentityService) {}
 
   ngOnInit(): void {
+    console.log(`Version ${window.ENV.BALLWARE_VERSION}`);
+
     this.settingsService.initialize(
       window.ENV.BALLWARE_VERSION,
       window.ENV.BALLWARE_GOOGLEKEY
