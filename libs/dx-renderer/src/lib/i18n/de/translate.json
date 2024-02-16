@@ -81,7 +81,8 @@
       "notifications": {
         "saved": "Erfolgreich gespeichert",
         "removed": "Erfolgreich entfernt",
-        "noitems": "Es wurden keine Datensätze ausgewählt"
+        "noitems": "Es wurden keine Datensätze ausgewählt",
+        "notallowed": "Nicht für alle gewählten Datensätze zugelassen"
       },
       "import": {
         "popuptitle": "Datei importieren",

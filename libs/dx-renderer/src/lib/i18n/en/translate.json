@@ -80,7 +80,8 @@
       "notifications": {
         "saved": "Successfully saved",
         "removed": "Successfully removed",
-        "noitems": "No selected records"
+        "noitems": "No selected records",
+        "notallowed": "Not allowed for all selected records"
       },
       "import": {
         "popuptitle": "Import file",

@@ -628,9 +628,16 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
 
     readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
-        selectPrintRequest$.pipe(withLatestFrom(this.metaService.entityDocuments$))
-            .pipe(map(([selectPrintRequest, entityDocuments]) => {
-                if (entityDocuments && selectPrintRequest) {
+        selectPrintRequest$
+            .pipe(withLatestFrom(this.metaService.entityDocuments$, this.metaService.printAllowed$))
+            .pipe(map(([selectPrintRequest, entityDocuments, printAllowed]) => {
+                if (entityDocuments && selectPrintRequest && printAllowed) {
+
+                    if (selectPrintRequest?.items.filter(item => !printAllowed(item)).length) {
+                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.notallowed'), severity: 'info' });
+                        
+                        return undefined;
+                    }
 
                     this.currentInteractionTarget$.next(selectPrintRequest.target);
 
