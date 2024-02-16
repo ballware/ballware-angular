@@ -11,6 +11,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { json5, json5Language, json5ParseLinter } from 'codemirror-json5';
+import { js_beautify } from "js-beautify";
 import { parse, stringify } from "json5";
 
 export interface CodeMirrorEditorOptions {
@@ -29,7 +30,7 @@ export class CodeMirrorComponent implements AfterViewInit {
 
     @Input() value!: unknown;
     @Input() readOnly!: boolean|null;
-    @Input() mode!: 'json5' | 'javascript' | 'sqlserver';
+    @Input() mode!: 'json' | 'object' | 'javascript' | 'sqlserver';
     @Input() width: string|undefined;
     @Input() height: string|undefined;
     @Input() options: CodeMirrorEditorOptions|undefined;
@@ -45,7 +46,7 @@ export class CodeMirrorComponent implements AfterViewInit {
 
         const extensions = [basicSetup, theme, search()];
 
-        if (this.mode === 'json5') {
+        if (this.mode === 'json') {
             extensions.push(json5());
             extensions.push(json5Language.data.of({
                 autocomplete: this.options?.snippets?.map(s => snippetCompletion(s.snippet, { label: s.label, info: s.info, detail: s.detail })) ?? []
@@ -75,11 +76,11 @@ export class CodeMirrorComponent implements AfterViewInit {
             }));
         }
 
-        this.jsonStructuredMode = this.mode === 'json5' && typeof(this.value) !== 'string';
+        this.jsonStructuredMode = this.mode === 'json' && typeof(this.value) !== 'string';
 
         const state = EditorState.create({
             extensions: extensions,
-            doc: (this.jsonStructuredMode ? stringify(this.value) : this.value as string) ?? ""            
+            doc: (this.jsonStructuredMode ? js_beautify(stringify(this.value)) : this.value as string) ?? ""            
         });
  
         if (this.editorHost?.element) {
