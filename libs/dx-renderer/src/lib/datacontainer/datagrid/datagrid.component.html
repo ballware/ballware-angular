@@ -28,8 +28,7 @@
     <dxo-filter-row *ngIf="mode === 'large'" [visible]="true"></dxo-filter-row>
     <dxo-group-panel *ngIf="mode === 'large'" [visible]="true"></dxo-group-panel>
     <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
-    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>
-    <dxo-state-storing *ngIf="identifier" [enabled]="identifier ? true : false" type="localStorage" [storageKey]="identifier"></dxo-state-storing>
+    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>    
     <div *dxTemplate="let masterDetailItem of 'masterDetail'">        
         <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>                    
     </div>
