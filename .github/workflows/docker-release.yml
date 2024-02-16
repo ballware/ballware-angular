@@ -38,4 +38,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ballware.azurecr.io/ballware-angular:{{ env.RELEASE_VERSION }}
+            ballware.azurecr.io/ballware-angular:${{ env.RELEASE_VERSION }}
