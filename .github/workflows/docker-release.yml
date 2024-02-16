@@ -1,8 +1,9 @@
 name: Docker Image Release
 
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   docker:
@@ -38,4 +39,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ballware.azurecr.io/ballware-angular:${{ github.event.tag_name }}
+            ballware.azurecr.io/ballware-angular:${{github.ref_name}}
