@@ -79,5 +79,13 @@
       "style": "scss"
     }
   },
-  "defaultProject": "webclient"
+  "defaultProject": "webclient",
+  "release": {
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": false
+      }
+    }
+  }
 }
