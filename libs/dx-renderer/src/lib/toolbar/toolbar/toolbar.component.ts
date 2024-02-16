@@ -3,7 +3,7 @@ import { LookupDescriptor, LookupService, LookupStoreDescriptor, PageService, To
 import { I18NextPipe } from 'angular-i18next';
 import { ClickEvent as ButtonClickEvent, InitializedEvent as ButtonInitializedEvent } from 'devextreme/ui/button';
 import { InitializedEvent as DateBoxInitializedEvent, ValueChangedEvent as DateBoxValueChangedEvent } from 'devextreme/ui/date_box';
-import { InitializedEvent as DropDownButtonInitializedEvent, ItemClickEvent as DropDownButtonItemClickEvent } from 'devextreme/ui/drop_down_button';
+import { ButtonClickEvent as DropDownButtonClickEvent, InitializedEvent as DropDownButtonInitializedEvent, ItemClickEvent as DropDownButtonItemClickEvent } from 'devextreme/ui/drop_down_button';
 import { InitializedEvent as SelectBoxInitializedEvent, ValueChangedEvent as SelectBoxValueChangedEvent } from 'devextreme/ui/select_box';
 import { InitializedEvent as TagBoxInitializedEvent, ValueChangedEvent as TagBoxValueChangedEvent } from 'devextreme/ui/tag_box';
 import { combineLatest, takeUntil } from 'rxjs';
@@ -220,7 +220,12 @@ export class ToolbarComponent extends WithDestroy() {
 
                       this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
                     }                    
-                  },                  
+                  },    
+                  onButtonClick: (e: DropDownButtonClickEvent) => {
+                    if (toolbarItem.name) {
+                      this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: undefined });
+                    }
+                  },             
                   onItemClick: (e: DropDownButtonItemClickEvent) => {
                     if (toolbarItem.name) {
                       this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: e.itemData['id'] });
