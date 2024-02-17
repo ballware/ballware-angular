@@ -22,6 +22,6 @@ export class ResponsiveService {
   private resizeSubject = new BehaviorSubject(SCREEN_SIZE.LG);
 
   onResize(size: SCREEN_SIZE) {
-    this.resizeSubject.next(size);
+    setInterval(() => this.resizeSubject.next(size));
   }
 }

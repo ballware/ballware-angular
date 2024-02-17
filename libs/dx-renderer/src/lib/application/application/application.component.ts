@@ -1,5 +1,6 @@
 import { Component, HostBinding } from '@angular/core';
-import { ResponsiveService } from '@ballware/meta-services';
+import { ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -15,12 +16,10 @@ export class ApplicationComponent extends WithDestroy() {
 
   constructor(private responsiveService: ResponsiveService) {
     super();
-
-    /*
+    
     this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM ? true : false))
-      .subscribe(opened => this.menuOpened = opened);
-    */
+      .subscribe(opened => this.menuOpened = opened);    
   }
 }

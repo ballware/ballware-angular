@@ -40,13 +40,13 @@ export class ApplicationNavigationMenuComponent extends WithDestroy() {
   onItemClick(event: ItemClickEvent) {
     const url = (event.itemData as any).url;
 
-    event.event?.preventDefault();
-
-    if (this.closeOnNavigate) {
-      this.hideNavigation.emit();
-    }
-
     if (url) {
+      event.event?.preventDefault();
+
+      if (this.closeOnNavigate) {
+        this.hideNavigation.emit();
+      }
+      
       this.router.navigate([url]);
     }    
   }
