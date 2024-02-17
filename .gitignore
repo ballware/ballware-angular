@@ -41,5 +41,14 @@ Thumbs.db
 
 .angular
 
+# yarn
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
 # Private environments
 .env
