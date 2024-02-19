@@ -1,9 +1,9 @@
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService, SettingsService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { DxMapComponent } from 'devextreme-angular';
-import { combineLatest, Observable, takeUntil } from 'rxjs';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef, SettingsService } from '@ballware/meta-services';
+import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -67,6 +67,9 @@ export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemL
         }
 
         if (value) {
+          value.lat = value.lat ?? 0.0;
+          value.lng = value.lng ?? 0.0;  
+          
           this.map?.instance.addMarker({
             location: value
           }).then((marker) => {
