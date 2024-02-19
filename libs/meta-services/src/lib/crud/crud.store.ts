@@ -611,7 +611,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                                 id: f.id,
                                 text: f.text,
                                 icon: f.customFunction?.icon ?? 'bi bi-plus',
-                                execute: (_target) => f.customFunction 
+                                execute: (_target) => (f.customFunction && f.customFunction.id !== 'add')
                                     ? this.customEdit({ customFunction: f.customFunction }) 
                                     : this.create({ editLayout: selectAddRequest.defaultEditLayout })
                             } as CrudAction))
