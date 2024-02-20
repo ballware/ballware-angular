@@ -43,6 +43,7 @@ Thumbs.db
 
 # yarn
 .yarn/*
+.yarn/install-state.gz
 !.yarn/cache
 !.yarn/patches
 !.yarn/plugins
