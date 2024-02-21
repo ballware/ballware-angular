@@ -1,4 +1,4 @@
-<dx-tab-panel [showNavButtons]="true" [swipeEnabled]="true" [style]="styles" [items]="panels" (selectedIndexChange)="onTabChanged($event)" [selectedIndex]="(selectedTab$ | async) ?? 0">
+<dx-tab-panel [showNavButtons]="true" [style]="styles" [items]="panels" (selectedIndexChange)="onTabChanged($event)" [selectedIndex]="(selectedTab$ | async) ?? 0">
     <div *dxTemplate="let item of 'title'">        
         <span *ngIf="!item.options.itemoptions.entity" class="dx-tab-text">{{item.options.itemoptions.caption}}</span>
         <ballware-page-tabs-counter *ngIf="item.options.itemoptions.entity" (tabNotAuthorized)="onTabNotAuthorized($event)" [tab]="item" [caption]="item.options.itemoptions.caption" [entity]="item.options.itemoptions.entity" [query]="item.options.itemoptions.query"></ballware-page-tabs-counter>        
