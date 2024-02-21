@@ -1,6 +1,14 @@
 <dx-drawer template="panel" position="before" [openedStateMode]="(openStateMode$ | async) ?? 'overlap'" [maxSize]="240" [opened]="opened">
   <div *dxTemplate="let dataMenu of 'panel'" class="application h-100" style="width: 240px;">
-    <ballware-application-navigation-menu (hideNavigation)="hideNavigation()"></ballware-application-navigation-menu>
+    <dx-tree-view
+      class="w-100"
+      [dataSource]="navigationItems"
+      keyExpr="path"
+      selectionMode="single"
+      [focusStateEnabled]="false"
+      expandEvent="click"
+      (onItemClick)="onNavigationItemClick($event)">
+    </dx-tree-view>
   </div>  
   <ng-content></ng-content>
 </dx-drawer>

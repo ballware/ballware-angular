@@ -14,7 +14,6 @@ import { BallwareApplicationRoutingModule } from './application.routing.module';
 import { ApplicationComponent } from './application/application.component';
 import { ApplicationHeaderComponent } from './header/header.component';
 import { ApplicationNavigationDrawerComponent } from './navigation/drawer.component';
-import { ApplicationNavigationMenuComponent } from './navigation/menu.component';
 import { ApplicationNotificationComponent } from './notification/notification.component';
 
 export { ApplicationComponent } from './application/application.component';
@@ -25,7 +24,6 @@ export { ApplicationComponent } from './application/application.component';
     ApplicationHeaderComponent,
     ApplicationAccountMenuComponent,
     ApplicationNavigationDrawerComponent,
-    ApplicationNavigationMenuComponent,
     ApplicationNotificationComponent
   ],
   imports: [

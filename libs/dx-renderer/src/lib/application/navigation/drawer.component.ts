@@ -1,6 +1,9 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
-import { ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { Router } from '@angular/router';
+import { NavigationTreeItem, ResponsiveService, SCREEN_SIZE, TenantService } from '@ballware/meta-services';
 import { OpenedStateMode } from 'devextreme/ui/drawer';
+import { ItemClickEvent } from 'devextreme/ui/tree_view';
+import { cloneDeep } from 'lodash';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -19,16 +22,40 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
 
   openStateMode$: Observable<OpenedStateMode>;
 
-  constructor(private responsiveService: ResponsiveService) {
+  public navigationItems: NavigationTreeItem[] = [];
+
+  private closeOnNavigate = false;
+
+  constructor(private responsiveService: ResponsiveService, private tenantService: TenantService, private router: Router) {
     super();
+    
+    this.tenantService.navigationTree$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((navigation) => {
+        this.navigationItems = cloneDeep(navigation ?? []);
+      });
 
     this.openStateMode$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM ? 'shrink' : 'overlap'));
+
+    this.responsiveService.onResize$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(screenSize => this.closeOnNavigate = screenSize <= SCREEN_SIZE.SM);
   }
 
-  hideNavigation() {
-    this.openedChange.emit(false); 
+  onNavigationItemClick(event: ItemClickEvent) {
+    const url = (event.itemData as any).url;
+
+    if (url) {
+      event.event?.preventDefault();
+      
+      if (this.closeOnNavigate) {
+        this.openedChange.emit(false);
+      }
+
+      this.router.navigate([url]);
+    }    
   }
 }
 
