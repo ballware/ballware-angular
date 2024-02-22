@@ -261,8 +261,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         item: item,
                         title: this.translationService.transform('datacontainer.titles.add', { entity: displayName }),
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
-                        apply: () => { 
-                            this.save({ item });
+                        apply: (editedItem) => { 
+                            this.save({ item: editedItem as CrudItem });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -320,8 +320,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         item: item,
                         title: this.translationService.transform('datacontainer.titles.edit', { entity: displayName }),
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
-                        apply: () => { 
-                            this.save({ item });
+                        apply: (editedItem) => { 
+                            this.save({ item: editedItem as CrudItem });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -412,9 +412,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                     externalEditor: customFunction.externalEditor,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction,
-                    apply: () => { 
+                    apply: (editedItem) => { 
                         if (!customFunction.externalEditor && !customFunction.entity) {
-                            evaluateCustomFunction(customFunction.id, params, 
+                            evaluateCustomFunction(customFunction.id, editedItem, 
                                 (evaluatedResult) => {
                                     if (Array.isArray(evaluatedResult)) {
                                         this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem> });
