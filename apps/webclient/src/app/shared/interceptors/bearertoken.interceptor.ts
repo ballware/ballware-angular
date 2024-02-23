@@ -17,7 +17,8 @@ export class BearerTokenInterceptor implements HttpInterceptor {
     const url = req.url.toLowerCase();
 
     if (url.startsWith(window.ENV.BALLWARE_METAURL.toLowerCase())
-      || url.startsWith(window.ENV.BALLWARE_IDENTITYURL.toLowerCase())) {
+      || url.startsWith(window.ENV.BALLWARE_IDENTITYURL.toLowerCase())
+      || url.startsWith(window.ENV.BALLWARE_DOCUMENTURL.toLowerCase())) {
         const token = this.authStorage.getItem('access_token');
         const header = 'Bearer ' + token;
         const headers = req.headers
