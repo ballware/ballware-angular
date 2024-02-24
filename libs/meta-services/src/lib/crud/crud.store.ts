@@ -438,7 +438,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         }))(); 
                      }
                 } as ItemEditDialog);
-            }, (message) => console.log(message)))));           
+            }, (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'info' })))));           
             
     readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
         saveRequest$.pipe(withLatestFrom(this.metaService.save$))
