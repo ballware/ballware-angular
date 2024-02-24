@@ -45,7 +45,8 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
-        case 'text': {
+        case 'text':
+        case 'mail': {
             //const { EditLayoutTextComponent } = await import('../text/text.component');
             const componentRef = this.itemHost.createComponent(EditLayoutTextComponent);
 

@@ -7,5 +7,6 @@
   (onFocusIn)="onEntered()">
   <dx-validator>
     <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
+    <dxi-validation-rule *ngIf="layoutItem.type === 'mail'" type="email"></dxi-validation-rule>
   </dx-validator>
 </dx-text-box>
