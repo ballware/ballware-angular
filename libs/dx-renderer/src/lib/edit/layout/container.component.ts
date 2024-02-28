@@ -20,7 +20,7 @@ export class EditLayoutContainerComponent implements OnChanges {
     let currentRow: EditLayoutItem[] = [];
     let currentRowColCount = 0;
 
-    this.items?.forEach(layoutItem => {
+    this.items?.filter(layoutItem => !layoutItem.ignore).forEach(layoutItem => {
       if ((this.colCount ?? 1) < currentRowColCount + (layoutItem.colSpan ?? 1) ) {
         if (currentRow.length) {
           this.rows.push(currentRow);

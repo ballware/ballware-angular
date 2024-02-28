@@ -232,6 +232,11 @@ export interface EditLayoutItem {
   type: string;
 
   /**
+   * Ignore item on rendering
+   */
+  ignore?: boolean;
+
+  /**
    * Options for editor component configuration
    */
   options?: EditLayoutItemOptions;
