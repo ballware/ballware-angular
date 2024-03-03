@@ -7,6 +7,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
+import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
 @Component({
@@ -14,7 +15,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './text.component.html',
   styleUrls: ['./text.component.scss']
 })
-export class EditLayoutTextComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))) implements OnInit, EditItemRef {
+export class EditLayoutTextComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "")))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -34,7 +35,12 @@ export class EditLayoutTextComponent extends WithRequired(WithReadonly(WithValue
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+
+            if (layoutItem.type === 'mail') {
+              this.validateEmail(true);
+            }
 
             this.layoutItem = layoutItem;
           }

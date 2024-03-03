@@ -6,9 +6,7 @@
   [(value)]="value"
   [readOnly]="(readonly$ | async) ?? false"
   [showClearButton]="true"
-  (onFocusIn)="onEntered()"
+  (onFocusIn)="onEntered()"  
   >
-    <dx-validator>
-      <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
-    </dx-validator>
+    <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>      
 </dx-date-box>

@@ -8,6 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
+import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
 @Component({
@@ -15,7 +16,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './datetime.component.html',
   styleUrls: ['./datetime.component.scss']
 })
-export class EditLayoutDatetimeComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as string|number|Date))) implements OnInit, EditItemRef {
+export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as string|number|Date)))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -35,6 +36,7 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithReadonly(WithV
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;

@@ -6,6 +6,7 @@ import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithRequired } from "../../utils/withrequired";
+import { WithValidation } from "../../utils/withvalidation";
 import { WithValue } from "../../utils/withvalue";
 import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.component";
 
@@ -14,7 +15,7 @@ import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.com
     templateUrl: './sql.component.html',
     styleUrls: ['./sql.component.scss']
 })
-export class EditLayoutSqlComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))) implements OnInit, EditItemRef {
+export class EditLayoutSqlComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown)))) implements OnInit, EditItemRef {
 
     @Input() initialLayoutItem?: EditLayoutItem;
   
@@ -39,6 +40,7 @@ export class EditLayoutSqlComponent extends WithRequired(WithReadonly(WithValue(
                 
                 this.initValue(layoutItem, this.editService);
                 this.initReadonly(layoutItem, this.editService);
+                this.initValidation(layoutItem, this.editService);
                 this.initRequired(layoutItem, this.editService);
     
                 this.layoutItem = layoutItem;

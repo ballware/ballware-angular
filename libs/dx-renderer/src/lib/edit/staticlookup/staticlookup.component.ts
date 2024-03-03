@@ -8,6 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
+import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
 @Component({
@@ -15,7 +16,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './staticlookup.component.html',
   styleUrls: ['./staticlookup.component.scss']
 })
-export class EditLayoutStaticlookupComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null))) implements OnInit, EditItemRef {
+export class EditLayoutStaticlookupComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -37,6 +38,7 @@ export class EditLayoutStaticlookupComponent extends WithRequired(WithReadonly(W
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;

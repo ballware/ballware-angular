@@ -8,6 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
+import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
 @Component({
@@ -15,7 +16,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './multilookup.component.html',
   styleUrls: ['./multilookup.component.scss']
 })
-export class EditLayoutMultilookupComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[]))) implements OnInit, EditItemRef {
+export class EditLayoutMultilookupComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -38,6 +39,7 @@ export class EditLayoutMultilookupComponent extends WithRequired(WithReadonly(Wi
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;

@@ -1,12 +1,13 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { takeUntil } from 'rxjs';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EditService, EditItemRef } from '@ballware/meta-services';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
+import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
 @Component({
@@ -14,7 +15,7 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './number.component.html',
   styleUrls: ['./number.component.scss']
 })
-export class EditLayoutNumberComponent extends WithRequired(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))) implements OnInit, EditItemRef {
+export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0)))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -34,6 +35,7 @@ export class EditLayoutNumberComponent extends WithRequired(WithReadonly(WithVal
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;

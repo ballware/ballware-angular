@@ -29,7 +29,5 @@
     <dxi-item name="separator" />
     <dxi-item name="clear" />
   </dxo-toolbar>
-  <dx-validator>
-    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
-  </dx-validator>
+  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
 </dx-html-editor>

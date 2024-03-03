@@ -14,7 +14,5 @@
   [maxDisplayedTags]=3
   [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false"
   (onFocusIn)="onEntered()">
-  <dx-validator>
-    <dxi-validation-rule *ngIf="(required$ | async) ?? false" type="required"></dxi-validation-rule>
-  </dx-validator>
+  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
 </dx-tag-box>
