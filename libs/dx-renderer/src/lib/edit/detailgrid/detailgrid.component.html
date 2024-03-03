@@ -15,11 +15,17 @@
         [allowUpdating]="allowUpdate" 
         [allowDeleting]="allowDelete">
     </dxo-editing>
+    <div *dxTemplate="let cell of 'static'">
+        <ballware-edit-dynamic-column [editing]="false" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+    </div>
+    <div *dxTemplate="let cell of 'staticedit'">
+        <ballware-edit-dynamic-column [editing]="true" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+    </div>        
     <div *dxTemplate="let cell of 'dynamic'">
-        <ballware-edit-dynamic-column [editing]="false" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+        <ballware-edit-dynamic-column [editing]="false" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+        <ballware-edit-dynamic-column [editing]="true" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
 </dx-data-grid>
 <dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    

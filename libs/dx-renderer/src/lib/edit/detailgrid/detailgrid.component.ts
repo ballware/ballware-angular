@@ -35,6 +35,8 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
     public options: DetailGridItemOptions|undefined;
     public height: string|undefined;
 
+    public lookupParams: Record<string, unknown>|undefined;
+
     public columns: dxDataGridColumn[]|undefined;
 
     public allowAdd = false;
@@ -46,7 +48,8 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
 
     public sourceToolbarItems: dxToolbarItem[]|undefined;
     
-    private dataMember: string|undefined;
+    private dataMember: string|undefined;    
+
     private detailGridCellPreparing: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, column: GridLayoutColumn) => void) | undefined;
     private detailGridRowValidating: ((dataMember: string, detailItem: Record<string, unknown>) => string) | undefined;
     private initNewDetailItem: ((dataMember: string, detailItem: Record<string, unknown>) => void) | undefined;
@@ -115,6 +118,7 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
                 this.dataMember = layoutItem.options?.dataMember;
                 this.height = layoutItem.options?.height;
                 this.options = layoutItem.options?.itemoptions as DetailGridItemOptions;
+                this.lookupParams = item;
 
                 this.allowAdd = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).add) ?? false;
                 this.allowUpdate = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).update) ?? false;
