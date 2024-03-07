@@ -27,7 +27,8 @@ export * from './user';
 export interface MetaApiModuleConfig {
   identityServiceBaseUrl: string,
   metaServiceBaseUrl: string,
-  documentServiceBaseUrl: string
+  documentServiceBaseUrl: string,
+  storageServiceBaseUrl: string
 }
 
 @NgModule({
@@ -52,7 +53,7 @@ export class MetaApiModule {
       providers: [
         {
           provide: ApiServiceFactory,
-          useFactory: (httpClient: HttpClient) => new DefaultApiServiceFactory(httpClient, config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl),
+          useFactory: (httpClient: HttpClient) => new DefaultApiServiceFactory(httpClient, config.identityServiceBaseUrl, config.metaServiceBaseUrl, config.documentServiceBaseUrl, config.storageServiceBaseUrl),
           deps: [
             HttpClient
           ]

@@ -6,7 +6,7 @@ import { DefaultIdentityApiService } from "./default.identity.api.service";
 import { DefaultMetaApiService } from "./default.meta.api.service";
 
 export class DefaultApiServiceFactory extends ApiServiceFactory {
-    constructor(private httpClient: HttpClient, private identityBaseUrl: string, private metaBaseUrl: string, private documentBaseUrl: string) {
+    constructor(private httpClient: HttpClient, private identityBaseUrl: string, private metaBaseUrl: string, private documentBaseUrl: string, private storageBaseUrl: string) {
         super();
     }
 
@@ -15,6 +15,6 @@ export class DefaultApiServiceFactory extends ApiServiceFactory {
     }
     
     createMetaApi(): MetaApiService {
-        return new DefaultMetaApiService(this.httpClient, this.metaBaseUrl, this.documentBaseUrl);
+        return new DefaultMetaApiService(this.httpClient, this.metaBaseUrl, this.documentBaseUrl, this.storageBaseUrl);
     }
 }

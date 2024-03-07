@@ -42,7 +42,8 @@ declare let window :any;
     MetaApiModule.forRoot({
       identityServiceBaseUrl: window.ENV.BALLWARE_IDENTITYURL,
       metaServiceBaseUrl: window.ENV.BALLWARE_METAURL,
-      documentServiceBaseUrl: window.ENV.BALLWARE_DOCUMENTURL
+      documentServiceBaseUrl: window.ENV.BALLWARE_DOCUMENTURL,
+      storageServiceBaseUrl: window.ENV.BALLWARE_STORAGEURL
     }),
     MetaServicesModule.forRoot(),
     RenderFactoryModule.forRoot({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),

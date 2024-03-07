@@ -13,7 +13,7 @@ import { MetaStatisticApi, createMetaBackendStatisticApi } from "../statistic";
 import { MetaTenantApi, createMetaBackendTenantApi } from "../tenant";
 
 export class DefaultMetaApiService implements MetaApiService {
-    constructor(protected httpClient: HttpClient, protected metaBaseUrl: string, protected documentServiceBaseUrl: string) {
+    constructor(protected httpClient: HttpClient, protected metaBaseUrl: string, protected documentServiceBaseUrl: string, protected storageBaseUrl: string) {
         this.metaEntityApi = createMetaBackendEntityApi(httpClient, metaBaseUrl);
         this.metaTenantApi = createMetaBackendTenantApi(httpClient, metaBaseUrl);
         this.metaStatisticApi = createMetaBackendStatisticApi(httpClient, metaBaseUrl);
@@ -24,7 +24,7 @@ export class DefaultMetaApiService implements MetaApiService {
         this.metaDocumentationApi = createMetaBackendDocumentationApi(httpClient, metaBaseUrl);
         this.metaPageApi = createMetaBackendPageApi(httpClient, metaBaseUrl);
         this.metaGenericEntityApiFactory = (baseUrl) => createMetaBackendGenericEntityApi(httpClient, baseUrl.replace('{meta}', metaBaseUrl + "/"));        
-        this.metaAttachmentApiFactory = (owner) => createMetaBackendAttachmentApi(httpClient, metaBaseUrl, owner);
+        this.metaAttachmentApiFactory = (owner) => createMetaBackendAttachmentApi(httpClient, storageBaseUrl, owner);
     }
 
     metaEntityApi: MetaEntityApi;
