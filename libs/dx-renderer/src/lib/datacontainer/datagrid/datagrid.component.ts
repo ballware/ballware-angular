@@ -369,6 +369,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     e.cancel = rowData && this.isMasterDetailExpandable && !this.isMasterDetailExpandable({ data: rowData.data });
 
     if (!e.cancel && rowData) {
+      e.component.collapseAll(-1);
+
       this.masterDetailService.item$.next(rowData.data);
     }
   }
