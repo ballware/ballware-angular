@@ -10,6 +10,11 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 
+export interface NumberItemOptions {  
+  min?: number;
+  max?: number;
+}
+
 @Component({
   selector: 'ballware-edit-number',
   templateUrl: './number.component.html',
@@ -20,6 +25,7 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
+  public itemOptions: NumberItemOptions|undefined;
 
   constructor(private translationService: I18NextPipe, private editService: EditService) {
     super();
@@ -39,6 +45,7 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;
+            this.itemOptions = layoutItem.options?.itemoptions as NumberItemOptions;
           }
         });
     }
@@ -52,6 +59,10 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'min':
+        return this.itemOptions?.min;
+      case 'max':
+        return this.itemOptions?.max;
     }
 
     return undefined;
@@ -67,6 +78,20 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
         break;
       case 'readonly':
         this.setReadonly(value as boolean)
+        break;
+      case 'min':
+        if (!this.itemOptions) {
+          this.itemOptions = {};
+        }
+
+        this.itemOptions.min = value as number;
+        break;
+      case 'max':
+        if (!this.itemOptions) {
+          this.itemOptions = {};
+        }
+
+        this.itemOptions.max = value as number;
         break;
     }
   }
