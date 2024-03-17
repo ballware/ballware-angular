@@ -374,8 +374,8 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     );
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
-        request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$))
-            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout]) =>  customFunction.entity 
+        request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$, this.metaService.headParams$))
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, headParams]) =>  customFunction.entity 
                 ? this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
                     itemDialog
@@ -438,7 +438,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                         }))(); 
                      }
                 } as ItemEditDialog);
-            }, (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'info' })))));           
+            }, (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'info' }), headParams))));           
             
     readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
         saveRequest$.pipe(withLatestFrom(this.metaService.save$))
