@@ -212,8 +212,8 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
                 }
             } : undefined)
         );
-    
-    readonly validate = () => this.select(state => state.validator ? state.validator() : true);
+        
+    readonly validator$ = this.select(state => state.validator);
 
     private readonly getEditor = (request: { dataMember: string }) => this.editItems[request.dataMember];
 

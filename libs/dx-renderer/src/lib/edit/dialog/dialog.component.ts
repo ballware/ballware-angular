@@ -3,7 +3,7 @@ import { EditLayout } from '@ballware/meta-model';
 import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { nanoid } from 'nanoid';
-import { withLatestFrom } from 'rxjs';
+import { Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -30,6 +30,8 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   public EditModes = EditModes;
 
+  private apply$ = new Subject<void>();
+
   constructor(
     private translationService: I18NextPipe,
     private editService: EditService) {
@@ -38,6 +40,15 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
     this.onHidden = this.onHidden.bind(this);
     this.onApply = this.onApply.bind(this);
+
+    this.apply$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
+      .subscribe(([, validator, item]) => {
+        if (item && (!validator || validator())) {
+          this.apply && this.apply(item as Record<string, unknown>);
+        }
+      });
   }
 
   ngOnInit(): void {
@@ -72,13 +83,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   }
 
   public onApply() {
-    this.editService.validate()
-      .pipe(withLatestFrom(this.editService.item$))
-      .subscribe(([result, item]) => {
-        if (result) {
-          item && this.apply && this.apply(item as Record<string, unknown>);  
-        }
-    });
+    this.apply$.next();
   }
 
 }

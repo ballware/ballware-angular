@@ -30,6 +30,8 @@ export interface EditServiceApi {
     detailEditorEvent$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
     detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
     
+    validator$: Observable<(() => boolean)|undefined>;
+
     setIdentifier(identifier: string): void;
 
     setMode(mode: EditModes): void;  
@@ -37,12 +39,12 @@ export interface EditServiceApi {
     setEditLayout(editLayout: EditLayout): void;
   
     setValidator(validator: (() => boolean)): void;  
-    validate(): Observable<boolean>;
+    
 }
 
 @Injectable()
 export abstract class EditService implements OnDestroy, EditServiceApi {
-
+    
     public abstract ngOnDestroy(): void;
 
     public abstract setIdentifier(identifier: string): void;
@@ -72,10 +74,11 @@ export abstract class EditService implements OnDestroy, EditServiceApi {
     public abstract detailEditorEvent$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
     public abstract detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
     
+    public abstract validator$: Observable<(() => boolean)|undefined>;
+
     public abstract setMode(mode: EditModes): void;  
     public abstract setItem(item: Record<string, unknown>): void;  
     public abstract setEditLayout(editLayout: EditLayout): void;
   
     public abstract setValidator(validator: (() => boolean)|undefined): void;  
-    public abstract validate(): Observable<boolean>;
 }
