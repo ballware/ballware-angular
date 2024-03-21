@@ -3,9 +3,7 @@
   "neverConnectToCloud": true,
   "tasksRunnerOptions": {
     "default": {
-      "options": {
-        "accessToken": "OGQ0ZTBmYzgtNzVmMC00ODk5LWFmMzktODI3NDllZGE1MWJhfHJlYWQtd3JpdGU="
-      }
+      "runner": "nx/tasks-runners/default"
     }
   },
   "targetDefaults": {
