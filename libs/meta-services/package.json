@@ -1,6 +1,6 @@
 {
   "name": "@ballware/meta-services",
-  "version": "8.2.3",
+  "version": "8.2.4",
   "peerDependencies": {
     "@angular/common": "^14.2.0",
     "@angular/core": "^14.2.0"
