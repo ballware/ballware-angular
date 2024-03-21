@@ -16,11 +16,14 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './datetime.component.html',
   styleUrls: ['./datetime.component.scss']
 })
-export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as string|number|Date)))) implements OnInit, EditItemRef {
+export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => (null as unknown) as string|number|Date)))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
+
+  public type!: DateType;
+  public displayFormat!: string;
 
   constructor(private translationService: I18NextPipe, private editService: EditService) {
     super();
@@ -40,25 +43,19 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(Wit
             this.initRequired(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;
+            this.type = layoutItem.type as DateType;
+
+            switch (layoutItem.type) {              
+              case 'datetime':
+                this.displayFormat = this.translationService.transform('format.datetime');
+                break;
+              case 'date':
+              default:
+                this.displayFormat = this.translationService.transform('format.date');
+            }
           }
         });
     }
-  }
-
-  public get type(): DateType {
-    return this.layoutItem?.type as DateType;
-  }
-
-  public get displayFormat(): string {
-
-    switch (this.layoutItem?.type) {
-      case 'date':
-        return this.translationService.transform('format.date');
-      case 'datetime':
-        return this.translationService.transform('format.datetime');
-    }
-
-    return this.translationService.transform('format.date');
   }
 
   public getOption(option: string): any {
