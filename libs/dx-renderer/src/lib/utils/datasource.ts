@@ -1,7 +1,7 @@
 import { CrudItem } from '@ballware/meta-model';
 import CustomStore from 'devextreme/data/custom_store';
 import DataSource from 'devextreme/data/data_source';
-import { firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable, tap } from 'rxjs';
 
 export function createReadonlyDatasource(
   fetchFunc: () => Promise<Array<Record<string, unknown>>>,
@@ -112,11 +112,11 @@ export function createLookupDataSource(
         return valueCache[key];
       }
 
-      return firstValueFrom(byIdFunc(key).pipe(result => {
+      return firstValueFrom(byIdFunc(key).pipe(tap(result => {
         valueCache[key] = result;
 
         return result;
-      }));
+      })));
     },
   });
 
