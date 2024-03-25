@@ -12,6 +12,24 @@ import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithValue } from "../../utils/withvalue";
 
+interface EditComponentWithOptions {
+  /**
+    * Gets the value of a single property.
+    */
+  option<TPropertyName extends string, TValue = unknown>(optionName: TPropertyName): TValue;
+  /**
+    * Updates the value of a single property.
+    */
+  option<TPropertyName extends string, TValue = unknown>(optionName: TPropertyName, optionValue: TValue): void;
+}
+
+const componentToEditItemRef = (component: EditComponentWithOptions) => {
+  return {
+    getOption: option => component.option(option),
+    setOption: (option, value) => component.option(option, value),
+  } as EditItemRef;
+};
+
 export interface DetailTreeItemOptions {  
     add?: boolean;
     update?: boolean;
@@ -218,13 +236,13 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
           }
         }
 
-        e.editorOptions.onInitialized = (args: { component: EditItemRef }) => {
+        e.editorOptions.onInitialized = (args: { component: EditComponentWithOptions }) => {
           if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
             this.detailEditorInitialized(
               this.dataMember,
               e.row.data,
               e.dataField,
-              args.component
+              componentToEditItemRef(args.component)
             );
           }
         };
