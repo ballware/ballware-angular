@@ -1,8 +1,8 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
 import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor } from "@ballware/meta-services";
 import { dxEvent } from "devextreme/events";
-import { dxDataGridColumn } from "devextreme/ui/data_grid";
-import { dxTreeListColumn } from "devextreme/ui/tree_list";
+import { Column as DataGridColumn } from "devextreme/ui/data_grid";
+import { Column as TreeListColumn } from "devextreme/ui/tree_list";
 import { cloneDeep } from "lodash";
 import { getByPath } from "./databinding";
 import { createLookupDataSource } from "./datasource";
@@ -16,7 +16,7 @@ export type OptionButtons =
   | 'options'
   | 'customoptions';
 
-  function createColumn<ColumnType extends dxTreeListColumn | dxDataGridColumn>(
+  function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
     t: (id: string, param?: Record<string, unknown>) => string,
     c: GridLayoutColumn,
     lookups:
@@ -204,7 +204,7 @@ export type OptionButtons =
   }
 
 export function createColumnConfiguration<
-  ColumnType extends dxTreeListColumn | dxDataGridColumn
+  ColumnType extends TreeListColumn | DataGridColumn
 >(
   t: (id: string, param?: Record<string, unknown>) => string,
   columns: Array<GridLayoutColumn>,

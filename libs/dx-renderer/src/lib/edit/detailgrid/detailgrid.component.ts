@@ -3,7 +3,8 @@ import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware
 import { EditItemRef, EditService, LookupService, ResponsiveService } from "@ballware/meta-services";
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
-import { EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent, dxDataGridColumn } from "devextreme/ui/data_grid";
+import { ValidationCallbackData } from "devextreme/common";
+import { Column, DataChange, EditorPreparingEvent, InitNewRowEvent, RowClickEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/data_grid";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
 import { combineLatest, takeUntil } from "rxjs";
 import { createColumnConfiguration } from "../../utils/columns";
@@ -55,7 +56,7 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
 
     public lookupParams: Record<string, unknown>|undefined;
 
-    public columns: dxDataGridColumn[]|undefined;
+    public columns: Column[]|undefined;
 
     public allowAdd = false;
     public allowUpdate = false;
@@ -65,6 +66,24 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
     public showSource = false;
 
     public sourceToolbarItems: dxToolbarItem[]|undefined;
+
+    public validationAdapterConfig = {      
+      getValue: () => ({
+        editChanges: this.gridEditChanges
+      })
+    };
+
+    public gridEditChanges: DataChange<any, any>[] = [];
+    public gridEditRowKey: number|null = null;
+    
+    /*{        
+        applyValidationResults?: Function | undefined;
+        bypass?: Function | undefined;
+        focus?: Function | undefined;
+        getValue?: Function | undefined;
+        reset?: Function | undefined;
+        validationRequestsCallbacks?: Function[] | undefined;
+    }|undefined;*/
     
     private dataMember: string|undefined;    
 
@@ -84,6 +103,8 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
         private lookupService: LookupService,
         private editService: EditService) {
       super();
+
+      this.onGridValidateNotEditing = this.onGridValidateNotEditing.bind(this);
 
       this.sourceToolbarItems = [
         {
@@ -153,7 +174,7 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
                 this.detailEditorValueChanged = (dataMember, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItem, identifier, value, notify });
                 this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
 
-                this.columns = createColumnConfiguration<dxDataGridColumn>(
+                this.columns = createColumnConfiguration<Column>(
                     (key: string, options?: PipeOptions) => this.translationService.transform(key, options),
                     this.options.columns,                    
                     lookups,
@@ -235,9 +256,9 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
         e.editorOptions.onFocusOut = (args: unknown) => {
           if (defaultFocusOut) defaultFocusOut(args);
 
-          if (this.grid?.instance.hasEditData()) {
-            this.grid?.instance.saveEditData();
-          }
+          //if (this.grid?.instance.hasEditData()) {
+          //  this.grid?.instance.saveEditData();
+          //}
         }
 
         e.editorOptions.onInitialized = (args: { component: EditComponentWithOptions }) => {
@@ -255,6 +276,20 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
       } 
     }
 
+    public onRowClick(e: RowClickEvent) {      
+      if (this.allowUpdate) {
+        if (e.component.hasEditData()) {
+          if ((e.component as any).getController('validating').validate()) {
+            e.component.saveEditData();
+          }
+        }
+
+        if (!e.component.hasEditData()) {
+          e.component.editRow(e.rowIndex);
+        }       
+      }
+    }
+
     public onInitNewRow(e: InitNewRowEvent) {
       if (this.dataMember && this.initNewDetailItem) {
         this.initNewDetailItem(this.dataMember, e.data);
@@ -269,9 +304,20 @@ export class EditLayoutDetailGridComponent extends WithReadonly(WithValue(WithEd
 
         if (newErrorText) {
           e.errorText = newErrorText;
-          e.isValid = false;
+          e.isValid = false;          
         }
       }
+    }
+
+    public onGridValidateNotEditing(options: ValidationCallbackData) {
+
+      if (this.grid?.instance.hasEditData()) {
+        if ((this.grid?.instance as any).getController('validating').validate()) {
+          this.grid?.instance.saveEditData();
+        }
+      }
+
+      return !this.grid?.instance.hasEditData();
     }
   
     public getOption(option: string): any {

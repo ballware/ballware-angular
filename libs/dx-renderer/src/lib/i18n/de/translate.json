@@ -64,7 +64,8 @@
       },
       "messages": {
         "loading": "Lade Daten",
-        "remove": "{{entity}} wirklich entfernen?"
+        "remove": "{{entity}} wirklich entfernen?",
+        "validationfailure": "Ungültige Eingabe"
       },
       "actionsheet": {
         "title": "Optionen"

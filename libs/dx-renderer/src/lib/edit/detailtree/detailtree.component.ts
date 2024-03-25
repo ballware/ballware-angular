@@ -4,7 +4,7 @@ import { EditItemRef, EditService, LookupService, ResponsiveService } from "@bal
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
-import { EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent, dxTreeListColumn } from "devextreme/ui/tree_list";
+import { Column, EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/tree_list";
 import { combineLatest, takeUntil } from "rxjs";
 import { createColumnConfiguration } from "../../utils/columns";
 import { WithDestroy } from "../../utils/withdestroy";
@@ -53,7 +53,7 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
     public options: DetailTreeItemOptions|undefined;
     public height: string|undefined;
 
-    public columns: dxTreeListColumn[]|undefined;
+    public columns: Column[]|undefined;
 
     public allowAdd = false;
     public allowUpdate = false;
@@ -149,7 +149,7 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
                 this.detailEditorValueChanged = (dataMember, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItem, identifier, value, notify });
                 this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
 
-                this.columns = createColumnConfiguration<dxTreeListColumn>(
+                this.columns = createColumnConfiguration<Column>(
                     (key: string, options?: PipeOptions) => this.translationService.transform(key, options),
                     this.options.columns,                    
                     lookups,

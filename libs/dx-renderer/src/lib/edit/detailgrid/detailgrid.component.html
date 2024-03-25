@@ -8,12 +8,15 @@
     [dataSource]="value"
     (onToolbarPreparing)="onToolbarPreparing($event)"
     (onEditorPreparing)="onEditorPreparing($event)"
+    (onRowClick)="onRowClick($event)"
     (onInitNewRow)="onInitNewRow($event)"
     (onRowValidating)="onRowValidating($event)">
-    <dxo-editing mode="cell" [useIcons]="true" 
+    <dxo-editing mode="row" [useIcons]="true" 
         [allowAdding]="allowAdd" 
         [allowUpdating]="allowUpdate" 
-        [allowDeleting]="allowDelete">
+        [allowDeleting]="allowDelete"
+        [(editRowKey)]="gridEditRowKey"
+        [(changes)]="gridEditChanges">
     </dxo-editing>
     <div *dxTemplate="let cell of 'static'">
         <ballware-edit-dynamic-column [editing]="false" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
@@ -28,6 +31,9 @@
         <ballware-edit-dynamic-column [editing]="true" [lookupParams]="lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
 </dx-data-grid>
+<dx-validator [adapter]="validationAdapterConfig">
+    <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
+</dx-validator>
 <dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
 </dx-toolbar>
 <ballware-edit-json *ngIf="showSource" [initialLayoutItem]="layoutItem" ></ballware-edit-json>

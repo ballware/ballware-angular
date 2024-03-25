@@ -3,7 +3,7 @@ import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model
 import { CrudService, FunctionIdentifier, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
-import { dxDataGridColumn } from 'devextreme/ui/data_grid';
+import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
 import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
 import { createColumnConfiguration } from '../../utils/columns';
@@ -54,7 +54,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
   private _gridLayout$ = new BehaviorSubject<GridLayout|undefined>(undefined);
 
-  public columns$: Observable<dxDataGridColumn[]|undefined>;
+  public columns$: Observable<Column[]|undefined>;
   public dataSource$: Observable<DataSource|undefined>;
   public mode$: Observable<'large'|'medium'|'small'>;
   public headCustomFunctions$: Observable<EntityCustomFunction[]|undefined>;
@@ -124,7 +124,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
       this.crudService.functionExecute$
     ])
       .pipe(takeUntil(this.destroy$))
-      .pipe(map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<dxDataGridColumn>(
+      .pipe(map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
         (key: string, options?: PipeOptions) => this.translationService.transform(key, options),
         gridLayout?.columns ?? [],
         lookups,

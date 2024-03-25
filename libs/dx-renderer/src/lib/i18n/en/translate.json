@@ -63,7 +63,8 @@
       },
       "messages": {
         "loading": "Loading data",
-        "remove": "Realy want to remove {{entity}}?"
+        "remove": "Realy want to remove {{entity}}?",
+        "validationfailure": "Invalid input"
       },
       "actionsheet": {
         "title": "Options"
