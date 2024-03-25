@@ -34,6 +34,7 @@ import { EditLayoutComponent } from './layout/layout.component';
 import { EditLayoutLookupComponent } from './lookup/lookup.component';
 import { EditLayoutMapComponent } from './map/map.component';
 import { EditLayoutMultilookupComponent } from './multilookup/multilookup.component';
+import { EditLayoutMultivalueComponent } from './multivalue/multivalue.component';
 import { EditLayoutNumberComponent } from './number/number.component';
 import { EditLayoutRichtextComponent } from './richtext/richtext.component';
 import { EditLayoutSqlComponent } from './sql/sql.component';
@@ -60,6 +61,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutNumberComponent,
     EditLayoutStaticlookupComponent,
     EditLayoutStaticmultilookupComponent,
+    EditLayoutMultivalueComponent,
     EditLayoutTabsComponent,
     EditLayoutTextComponent,
     EditLayoutTextareaComponent,

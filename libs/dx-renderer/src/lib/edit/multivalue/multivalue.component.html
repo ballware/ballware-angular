@@ -1,0 +1,15 @@
+<dx-tag-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  [label]="layoutItem.options.caption ?? ''"
+  [name]="layoutItem.options.dataMember"
+  [(value)]="value"
+  [readOnly]="(readonly$ | async) ?? false"
+  [dataSource]="dataSource"
+  [searchEnabled]=true
+  [showClearButton]=true
+  [showSelectionControls]=true
+  [showDropDownButton]=true
+  [multiline]=false
+  [acceptCustomValue]="true"
+  (onFocusIn)="onEntered()">
+  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
+</dx-tag-box>
