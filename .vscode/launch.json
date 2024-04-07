@@ -1,0 +1,25 @@
+{
+    "configurations": [   
+    {
+        "name": "Launch Chrome Debugger",
+        "request": "launch",
+        "type": "chrome",
+        "url": "https://localhost:3000",
+        "webRoot": "${workspaceFolder}",
+        "presentation": {
+            "hidden": true
+        }
+    }, {
+        "command": "yarn nx serve",
+        "name": "Debug webclient",
+        "cwd": "${workspaceFolder}",
+        "request": "launch",
+        "type": "node-terminal",
+        "serverReadyAction": {
+            "action": "startDebugging",
+            "name": "Launch Chrome Debugger",
+            "pattern": "listening on localhost:3000"
+        }
+    }
+    ]
+}
