@@ -330,21 +330,23 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     private readonly headAllowed$ = combineLatest([
             this.readOnly$,
             this.customParam$,
+            this.headParams$,
             this.identityService.currentUser$,
             this.tenantService.hasRight$,
             this.entityMetadata$
         ])
-        .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (right: string) => {
+        .pipe(map(([readOnly, customParam, headParams, currentUser, hasRight, entityMetadata]) => (right: string) => {
             return (
                 entityMetadata &&
                 customParam &&
+                headParams &&
                 currentUser &&
                 !readOnly &&
                 hasRight &&
                 (entityMetadata.compiledCustomScripts?.rightsCheck ?
                 entityMetadata.compiledCustomScripts?.rightsCheck(currentUser, entityMetadata.application, entityMetadata.entity, readOnly ?? false, right, entityMetadata.compiledCustomScripts?.rightsParamForHead
-                    ? entityMetadata.compiledCustomScripts.rightsParamForHead(customParam)
-                    : undefined,
+                    ? entityMetadata.compiledCustomScripts.rightsParamForHead(customParam, headParams)
+                    : headParams,
                     hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
                 : hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
             ) ?? false;
@@ -353,17 +355,18 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaServiceA
     private readonly itemAllowed$ = combineLatest([
             this.readOnly$,
             this.customParam$,
+            this.headParams$,
             this.identityService.currentUser$,
             this.tenantService.hasRight$,
             this.entityMetadata$
         ])
-        .pipe(map(([readOnly, customParam, currentUser, hasRight, entityMetadata]) => (item: CrudItem, right: string) => {
+        .pipe(map(([readOnly, customParam, headParams, currentUser, hasRight, entityMetadata]) => (item: CrudItem, right: string) => {
             return (
-            entityMetadata && customParam && hasRight && currentUser &&
+            entityMetadata && customParam && headParams && hasRight && currentUser &&
             (entityMetadata.compiledCustomScripts?.rightsCheck ?
                 entityMetadata.compiledCustomScripts?.rightsCheck(currentUser, entityMetadata.application, entityMetadata.entity, readOnly ?? false, right, entityMetadata.compiledCustomScripts?.rightsParamForItem
-                ? entityMetadata.compiledCustomScripts.rightsParamForItem(item, customParam)
-                : undefined,
+                ? entityMetadata.compiledCustomScripts.rightsParamForItem(item, customParam, headParams)
+                : headParams,
                 hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
                 : hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
             ) ?? false;

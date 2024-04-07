@@ -173,27 +173,27 @@ const compileEntityMetadata = (
     }
 
     if (customScripts.rightsParamForHead) {
-      const compiledArgs = ['customParam'];
+      const compiledArgs = ['customParam', 'headParams'];
       const compiledFn = Function.apply(
         Function,
         compiledArgs.concat(customScripts.rightsParamForHead)
       );
 
       compiledMetaData.compiledCustomScripts.rightsParamForHead = compiledFn
-        ? customParam => compiledFn.apply(compiledFn, [customParam])
+        ? (customParam, headParams) => compiledFn.apply(compiledFn, [customParam, headParams])
         : undefined;
     }
 
     if (customScripts.rightsParamForItem) {
-      const compiledArgs = ['item', 'customParam'];
+      const compiledArgs = ['item', 'customParam', 'headParams'];
       const compiledFn = Function.apply(
         Function,
         compiledArgs.concat(customScripts.rightsParamForItem)
       );
 
       compiledMetaData.compiledCustomScripts.rightsParamForItem = compiledFn
-        ? (item, customParam) =>
-            compiledFn.apply(compiledFn, [item, customParam])
+        ? (item, customParam, headParams) =>
+            compiledFn.apply(compiledFn, [item, customParam, headParams])
         : undefined;
     }
 

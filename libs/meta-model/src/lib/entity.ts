@@ -421,20 +421,23 @@ export interface CompiledEntityCustomScripts {
    * (default add operation, custom function with type 'add')
    *
    * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+   * @param headParams Current value of parent object or page params
    * @returns Object containing values needed for extendedRightsCheck implementation
    */
-  rightsParamForHead?: (customParam: unknown) => Record<string, unknown>;
+  rightsParamForHead?: (customParam: unknown, headParams: QueryParams) => Record<string, unknown>;
 
   /**
    * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object  (edit, delete)
    *
    * @param item Business object instance
    * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+   * @param headParams Current value of parent object or page params
    * @returns Object containing values needed for extendedRightsCheck implementation
    */
   rightsParamForItem?: (
     item: Record<string, unknown>,
-    customParam: unknown
+    customParam: unknown,
+    headParams: QueryParams
   ) => Record<string, unknown>;
 
   /**
