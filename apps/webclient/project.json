@@ -21,7 +21,9 @@
           "apps/webclient/src/manifest.webmanifest"
         ],
         "styles": [
-          "node_modules/bootstrap/scss/bootstrap.scss",
+          "node_modules/bootstrap/scss/bootstrap-grid.scss",
+          "node_modules/bootstrap/scss/bootstrap-utilities.scss",
+          "node_modules/bootstrap/scss/bootstrap-reboot.scss",
           "node_modules/bootstrap-icons/font/bootstrap-icons.scss",
           "node_modules/devextreme/dist/css/dx.material.blue.light.css",
           "apps/webclient/src/styles.scss"

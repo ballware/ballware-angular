@@ -7,3 +7,26 @@
   padding-left: 10px;
 }
 
+::ng-deep .dx-htmleditor-content h1 {
+  font-size: 1rem * 1.75;
+}
+
+::ng-deep .dx-htmleditor-content h2 {
+  font-size: 1rem * 1.5;
+}
+
+::ng-deep .dx-htmleditor-content h3 {
+  font-size: 1rem * 1.25;
+}
+
+::ng-deep .dx-htmleditor-content h4 {
+  font-size: 1rem * 1.1;
+}
+
+::ng-deep .dx-htmleditor-content h5 {
+  font-size: 1rem * 1.0;
+}
+
+::ng-deep .dx-htmleditor-content h6 {
+  font-size: 1rem * 1.0;
+}
