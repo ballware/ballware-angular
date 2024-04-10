@@ -5,11 +5,9 @@
   [(value)]="value"
   [readOnly]="(readonly$ | async) ?? false"
   (onFocusIn)="onEntered()">
-  <dxo-toolbar [multiline]="false">
+  <dxo-toolbar [multiline]="true">
     <dxi-item name="undo" />
     <dxi-item name="redo" />
-    <dxi-item name="separator" />
-    <dxi-item name="header" [acceptedValues]="[false, 1, 2, 3, 4, 5]" />
     <dxi-item name="separator" />
     <dxi-item name="bold" />
     <dxi-item name="italic" />
@@ -23,11 +21,35 @@
     <dxi-item name="separator" />
     <dxi-item name="orderedList" />
     <dxi-item name="bulletList" />
+    <dxi-item name="separator" />    
+    <dxi-item name="header" [acceptedValues]="[false, 1, 2, 3, 4]" />    
     <dxi-item name="separator" />
     <dxi-item name="color" />
     <dxi-item name="background" />
     <dxi-item name="separator" />
+    <dxi-item name="link"></dxi-item>
+    <dxi-item name="image"></dxi-item>
+    <dxi-item name="separator" />
     <dxi-item name="clear" />
+    <dxi-item name="codeBlock"></dxi-item>
+    <dxi-item name="blockquote"></dxi-item>
+    <dxi-item name="separator"></dxi-item>
+    <dxi-item name="insertTable"></dxi-item>
+    <dxi-item name="deleteTable"></dxi-item>
+    <dxi-item name="insertRowAbove"></dxi-item>
+    <dxi-item name="insertRowBelow"></dxi-item>
+    <dxi-item name="deleteRow"></dxi-item>
+    <dxi-item name="insertColumnLeft"></dxi-item>
+    <dxi-item name="insertColumnRight"></dxi-item>
+    <dxi-item name="deleteColumn"></dxi-item>
+    <dxi-item name="cellProperties"></dxi-item>
+    <dxi-item name="tableProperties"></dxi-item>
   </dxo-toolbar>
+  <dxo-table-context-menu
+    [enabled]="true">
+  </dxo-table-context-menu>
+  <dxo-media-resizing
+    [enabled]="true">
+  </dxo-media-resizing>
   <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
 </dx-html-editor>
