@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CrudService, ItemEditDialog, LookupService, MetaService, MetaServiceFactory, ResponsiveService, SCREEN_SIZE } from "@ballware/meta-services";
-import { Observable, combineLatest, map, takeUntil } from "rxjs";
+import { CrudService, ItemEditDialog, LookupService, MetaService, MetaServiceFactory } from "@ballware/meta-services";
+import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 
 @Component({
@@ -28,6 +28,7 @@ import { WithDestroy } from "../../utils/withdestroy";
 })
 export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, OnDestroy {
 
+    @Input() fullscreen!: boolean;
     @Input() customFunctionEntity!: string;
     @Input() customFunctionId!: string;
     @Input() customFunctionParam!: unknown;
@@ -35,15 +36,10 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
     @Output() editFinished = new EventEmitter<void>();
 
     public itemDialog: ItemEditDialog|undefined;
-    public fullscreen$: Observable<boolean>;
 
-    constructor(private responsiveService: ResponsiveService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
+    constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
         super();
-
-        this.fullscreen$ = this.responsiveService.onResize$
-            .pipe(takeUntil(this.destroy$))
-            .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
-
+        
         this.crudService.itemDialog$
             .pipe(takeUntil(this.destroy$))
             .subscribe((itemDialog) => {

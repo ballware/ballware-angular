@@ -2,6 +2,7 @@
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
+  [fullscreen]="(fullscreenDialogs$ | async) ?? false"
   [customFunctionEntity]="itemDialog.foreignEntity"  
   [customFunctionId]="itemDialog.customFunction.id"
   [customFunctionParam]="itemDialog.item"
@@ -11,7 +12,7 @@
   [visible]="true" 
   [showCloseButton]="true"
   [title]="itemDialog.title"
-  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [fullScreen]="true"
   (onHidden)="onExternalEditorDialogClose()">
   <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
