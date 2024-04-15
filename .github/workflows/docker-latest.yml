@@ -54,3 +54,6 @@ jobs:
           ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+        env:
+          TRIVY_USERNAME: ${{ secrets.AZURE_USERNAME }}
+          TRIVY_PASSWORD: ${{ secrets.AZURE_TOKEN }}
