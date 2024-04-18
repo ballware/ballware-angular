@@ -13,6 +13,7 @@
   [showCloseButton]="true"
   [title]="itemDialog.title"
   [fullScreen]="true"
+  [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onExternalEditorDialogClose()">
   <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
@@ -21,6 +22,7 @@
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
+  [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onRemoveDialogCancel()"
   width="auto" 
   minWidth="500px" 
@@ -36,6 +38,7 @@
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
+  [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onImportDialogCancel()"
   width="auto" 
   minWidth="500px" 

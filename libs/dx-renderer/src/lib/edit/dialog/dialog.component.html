@@ -8,6 +8,7 @@
   maxWidth="90vw"
   [showCloseButton]="true"
   [resizeEnabled]="true"
+  [animation]="{ hide: undefined, show: undefined }"
   [title]="title ?? ''"
   (onHidden)="onHidden()">
   <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: applyText, onClick: onApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
