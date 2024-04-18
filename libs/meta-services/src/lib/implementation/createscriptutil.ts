@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { ScriptUtil } from '@ballware/meta-model';
 
 import { HttpClient } from '@angular/common/http';
-import { LookupDescriptor, LookupStoreDescriptor } from '../lookup.service';
+import { LookupCreator, LookupDescriptor, LookupStoreDescriptor } from '../lookup.service';
 import { geocodeAddress, geocodeLocation } from './geocoder';
 
 /*
@@ -103,6 +103,11 @@ export const createUtil = (http: HttpClient, token: string): ScriptUtil => {
       callback: (items: Array<Record<string, unknown>>) => void
     ) => {
       ((lookup as LookupDescriptor).store as LookupStoreDescriptor)
+        .listFunc()
+        .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
+    },
+    withLookupListParam: (lookup: unknown, param: string | string[], callback: (items: Array<Record<string, unknown>>) => void) => {
+      ((lookup as LookupCreator)(param).store as LookupStoreDescriptor)
         .listFunc()
         .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
     },
