@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
-import { DxActionSheetModule, DxButtonModule, DxContextMenuModule, DxDrawerModule, DxListModule, DxToastModule, DxToolbarModule, DxTreeViewModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonModule, DxContextMenuModule, DxDrawerModule, DxHtmlEditorModule, DxListModule, DxPopupModule, DxToastModule, DxToolbarModule, DxTreeViewModule } from 'devextreme-angular';
 
 import { loadMessages, locale } from 'devextreme/localization';
 import deMessages from 'devextreme/localization/messages/de.json';
@@ -38,7 +38,9 @@ export { ApplicationComponent } from './application/application.component';
     DxDrawerModule,
     DxTreeViewModule,
     DxActionSheetModule,
-    DxToastModule
+    DxToastModule,
+    DxPopupModule,
+    DxHtmlEditorModule
   ],
   exports: [
     ApplicationComponent

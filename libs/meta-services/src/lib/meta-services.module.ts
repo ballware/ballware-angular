@@ -21,6 +21,9 @@ import { SettingsServiceProxy } from './settings/settings.proxy';
 import { TenantEffectsModule, TenantFeatureModule } from './tenant';
 import { TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
+import { ToolbarEffectsModule, ToolbarFeatureModule } from './toolbar';
+import { ToolbarService } from './toolbar.service';
+import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -38,6 +41,7 @@ export * from './responsive.service';
 export * from './settings.service';
 export * from './statistic.service';
 export * from './tenant.service';
+export * from './toolbar.service';
 export * from './toolbaritemref';
 
 @NgModule({
@@ -49,6 +53,8 @@ export * from './toolbaritemref';
     IdentityEffectsModule,
     TenantFeatureModule,
     TenantEffectsModule,
+    ToolbarFeatureModule,
+    ToolbarEffectsModule,
     ComponentFeatureModule
   ],
 })
@@ -78,6 +84,11 @@ export class MetaServicesModule {
           deps: [ Store ]
         },          
         {
+          provide: ToolbarService,
+          useFactory: (store: Store) => new ToolbarServiceProxy(store),
+          deps: [ Store ]
+        },
+        {
           provide: MetaServiceFactory,
           useFactory: (
             store: Store,
@@ -88,7 +99,8 @@ export class MetaServicesModule {
             oauthService: OAuthService, 
             translationPipe: I18NextPipe,
             identityService: IdentityService,
-            tenantService: TenantService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, notificationService, identityService, tenantService),
+            tenantService: TenantService,
+            toolbarService: ToolbarService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, notificationService, identityService, tenantService, toolbarService),
           deps: [
             Store,            
             HttpClient,
@@ -98,7 +110,8 @@ export class MetaServicesModule {
             OAuthService,
             I18NextPipe,
             IdentityService,
-            TenantService
+            TenantService,
+            ToolbarService
           ]
         }
       ]

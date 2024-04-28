@@ -1,6 +1,6 @@
 import { Component, HostBinding, OnDestroy, Provider } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LookupService, MetaServiceFactory, PageDocumentationDialog, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { LookupService, MetaServiceFactory, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -26,8 +26,6 @@ export class PageComponent extends WithDestroy() implements OnDestroy {
 
   public readonly initialized$ = this.pageService.initialized$;
 
-  public documentationDialog: PageDocumentationDialog|undefined;
-
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(private responsiveService: ResponsiveService, private pageService: PageService, private lookupService: LookupService) {
@@ -36,10 +34,6 @@ export class PageComponent extends WithDestroy() implements OnDestroy {
     this.fullscreenDialogs$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
-
-    this.pageService.documentationDialog$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((documentationDialog) => this.documentationDialog = documentationDialog);
   }
 
   override ngOnDestroy(): void {

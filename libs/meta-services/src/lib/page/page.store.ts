@@ -1,21 +1,22 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ApiError, MetaApiService } from "@ballware/meta-api";
+import { MetaApiService } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { I18NextPipe } from "angular-i18next";
 import { cloneDeep, isEqual } from "lodash";
 import * as qs from "qs";
-import { Observable, catchError, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
+import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
 import { NotificationService } from "../notification.service";
-import { PageDocumentationDialog, PageServiceApi } from "../page.service";
+import { PageServiceApi } from "../page.service";
 import { TenantService } from "../tenant.service";
+import { ToolbarService } from "../toolbar.service";
 import { ToolbarItemRef } from "../toolbaritemref";
 import { PageState } from "./page.state";
 
@@ -36,6 +37,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         private notificationService: NotificationService,
         private translationService: I18NextPipe,
         private tenantService: TenantService,
+        private toolbarService: ToolbarService,
         private lookupService: LookupService,      
         private metaApiService: MetaApiService) {
 
@@ -81,13 +83,17 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 ? this.metaApiService.metaPageApi.pageDataForIdentifier(pageId)
                 : of(undefined)
             ))
-            .pipe(tap((page) => this.updater((state) => ({
-                ...state,
-                page,
-                layout: page?.layout,
-                title: page?.layout?.title,
-                documentationIdentifier: page?.layout?.documentationEntity
-            }))()))            
+            .pipe(tap((page) => {
+                this.updater((state) => ({
+                    ...state,
+                    page,
+                    layout: page?.layout,
+                    title: page?.layout?.title,
+                    documentationIdentifier: page?.layout?.documentationEntity
+                }))();
+
+                this.toolbarService.setPage(page?.layout.title ?? "", page?.layout.documentationEntity);
+            }))            
             .pipe(tap((page) => {
                 this.toolbarItems = {};
         
@@ -214,7 +220,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         }))
       );
     }
-
+  
     readonly initialized$ = this.select((state) => state.initialized);
     readonly page$ = this.select((state) => state.page);
     readonly title$ = this.select((state) => state.title);
@@ -222,9 +228,6 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     readonly customParam$ = this.select((state) => state.customParam);
     readonly headParams$ = this.select((state) => state.headParams);
 
-    readonly documentationIdentifier$ = this.select((state) => state.documentationIdentifier);
-    readonly documentationDialog$ = this.select((state) => state.documentationDialog);
-    
     readonly setPageId = this.updater((state, pageIdentifier: string) => ({
       ...state,
       pageIdentifier
@@ -240,33 +243,6 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                     initialized: true
                 }))();
             }))
-    );
-
-    readonly showDocumentation = this.effect<void>((trigger$) => 
-        trigger$
-            .pipe(withLatestFrom(this.documentationIdentifier$))
-            .pipe(switchMap(([, documentationIdentifier]) => documentationIdentifier
-              ? this.metaApiService.metaDocumentationApi.loadDocumentationForEntity(documentationIdentifier)
-              : of(undefined)))
-            .pipe(catchError((error: ApiError) => {
-                this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                
-                return of(undefined);              
-            }))      
-            .pipe(tap((documentation) => {
-              if (!documentation) {
-                this.notificationService.triggerNotification({ message: this.translationService.transform('documentation.notifications.nodocumentation'), severity: 'info'});
-              }
-            }))        
-            .pipe(withLatestFrom(this.layout$))
-            .pipe(tap(([documentation, layout]) => this.updater((state, documentation: unknown) => ({
-                ...state,
-                documentationDialog: documentation ? {
-                  title: this.translationService.transform('documentation.popuptitle', { entity: layout?.title ?? '' }),
-                  content: documentation,
-                  close: this.updater((state) => ({ ...state }))
-                } as PageDocumentationDialog : undefined
-              }))(documentation)))
     );
 
     readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) => 

@@ -28,11 +28,9 @@ export class ToolbarComponent extends WithDestroy() {
   constructor(private lookupService: LookupService, private pageService: PageService, private translationService: I18NextPipe) {
     super();
 
-    this.onDocumentationClicked = this.onDocumentationClicked.bind(this);
-
-    combineLatest([this.pageService.title$, this.pageService.layout$, this.lookupService.lookups$])
+    combineLatest([this.pageService.layout$, this.lookupService.lookups$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([title, layout, lookups]) => {
+      .subscribe(([layout, lookups]) => {
         this.toolbarItems = [];
 
         const createLookup = (identifier: string|undefined) => {
@@ -53,14 +51,6 @@ export class ToolbarComponent extends WithDestroy() {
           return undefined;
         }
 
-        if (title) {
-          this.toolbarItems.push({ 
-            location: "before",
-            locateInMenu: "never",
-            text: title 
-          });
-        }
-
         layout?.toolbaritems?.forEach(toolbarItem => {
           switch (toolbarItem.type) {
             case 'lookup': {
@@ -68,7 +58,7 @@ export class ToolbarComponent extends WithDestroy() {
                 const dataSource = createDataSource(lookup);
 
                 this.toolbarItems.push({
-                  location: "after",
+                  location: "before",
                   locateInMenu: "auto",
                   widget: 'dxSelectBox',
                   options: {
@@ -101,7 +91,7 @@ export class ToolbarComponent extends WithDestroy() {
               break;
             case 'staticlookup':
               this.toolbarItems.push({
-                location: "after",
+                location: "before",
                 locateInMenu: "auto",
                 widget: 'dxSelectBox',
                 options: {
@@ -136,7 +126,7 @@ export class ToolbarComponent extends WithDestroy() {
                 const dataSource = createDataSource(lookup);
 
                 this.toolbarItems.push({
-                  location: "after",
+                  location: "before",
                   locateInMenu: "auto",
                   widget: 'dxTagBox',
                   options: {
@@ -172,7 +162,7 @@ export class ToolbarComponent extends WithDestroy() {
               break;              
             case 'datetime':
               this.toolbarItems.push({
-                location: "after",
+                location: "before",
                 locateInMenu: "auto",
                 widget: 'dxDateBox',
                 options: {
@@ -201,7 +191,7 @@ export class ToolbarComponent extends WithDestroy() {
               break;
             case 'dropdownbutton':
               this.toolbarItems.push({
-                location: "after",
+                location: "before",
                 locateInMenu: "auto",
                 widget: 'dxDropDownButton',
                 options: {
@@ -236,7 +226,7 @@ export class ToolbarComponent extends WithDestroy() {
               break;            
             case 'button':
               this.toolbarItems.push({
-                location: "after",
+                location: "before",
                 locateInMenu: "auto",
                 widget: 'dxButton',
                 options: {
@@ -262,19 +252,6 @@ export class ToolbarComponent extends WithDestroy() {
               break;                
           }
         });
-        
-        if (layout?.documentationEntity) {
-          this.toolbarItems.push({ 
-            location: "after",
-            locateInMenu: "never",
-            widget: 'dxButton',
-            options: { icon: 'bi bi-question-circle', onClick: this.onDocumentationClicked }
-          });
-        }
       });
-  }
-
-  onDocumentationClicked(): void {
-    this.pageService.showDocumentation();
   }
 }

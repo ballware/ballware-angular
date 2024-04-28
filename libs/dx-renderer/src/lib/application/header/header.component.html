@@ -11,9 +11,28 @@
     </dxi-item>
     <dxi-item
       location="before"
+      locateInMenu="auto"
+      *ngIf="(tenantTitle$ | async)"
+      [text]="tenantTitle$ | async">
+    </dxi-item>
+    <dxi-item
+      location="before"
+      *ngIf="(tenantTitle$ | async) && (pageTitle$ | async)"
+      text=" - ">
+    </dxi-item>
+    <dxi-item
+      location="before"
+      *ngIf="(pageTitle$ | async)"
+      [text]="pageTitle$ | async">
+    </dxi-item>
+    <dxi-item
+      location="after"
       locateInMenu="never"
-      *ngIf="(title$ | async)"
-      [text]="title$ | async">
+      *ngIf="(documentationIdentifier$ | async)">
+      <div *dxTemplate>
+        <dx-button id="ballware-help-button" class="menubutton" icon="bi bi-question-circle" stylingMode="text" (onClick)="showDocumentation()">
+        </dx-button>
+      </div>
     </dxi-item>
     <dxi-item
       location="after"
@@ -27,3 +46,18 @@
   </dx-toolbar>
 </header>
 <ballware-application-account-menu #accountMenu></ballware-application-account-menu>
+<dx-popup *ngIf="documentation$ | async" 
+  [visible]="true" 
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="(documentationPopupTitle$ | async) ?? ''"
+  (onHidden)="hideDocumentation()"
+  width="auto" 
+  minWidth="500px" 
+  maxHeight="90vh"
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <dx-html-editor [readOnly]="true" [value]="documentation$ | async"></dx-html-editor>
+  </div> 
+</dx-popup>

@@ -30,9 +30,10 @@ import { StatisticService } from '../statistic.service';
 import { StatisticServiceProxy } from '../statistic/statistic.proxy';
 import { StatisticStore } from '../statistic/statistic.store';
 import { TenantService } from '../tenant.service';
+import { ToolbarService } from '../toolbar.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService) {
+    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
         super();
     }
 
@@ -61,7 +62,7 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
     }
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.notificationService, this.translationPipe, this.tenantService, lookupService, this.apiServiceFactory.createMetaApi()));
+        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.notificationService, this.translationPipe, this.tenantService, this.toolbarService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
     
     override createStatisticService(lookupService: LookupService): StatisticService {
