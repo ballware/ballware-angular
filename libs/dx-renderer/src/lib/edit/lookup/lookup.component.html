@@ -8,7 +8,12 @@
   [valueExpr]="layoutItem.options.valueExpr ?? lookup?.valueMember ?? ''"
   [showClearButton]="true"
   [searchEnabled]="true"
-  [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false"  
+  [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false"    
   (onFocusIn)="onEntered()">
+  <div *dxTemplate="let item of 'item'">
+    {{getLookupItemDisplayValue(item)}}
+    <br *ngIf="hasLookupItemHint"/>
+    <small *ngIf="hasLookupItemHint">{{getLookupItemHintValue(item)}}</small>
+  </div>
   <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
 </dx-select-box>

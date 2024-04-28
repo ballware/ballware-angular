@@ -2,10 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
-import { combineLatest, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
+import { WithLookup } from '../../utils/withlookup';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
@@ -16,13 +17,11 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './staticlookup.component.html',
   styleUrls: ['./staticlookup.component.scss']
 })
-export class EditLayoutStaticlookupComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit, EditItemRef {
+export class EditLayoutStaticlookupComponent extends WithLookup(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
-
-  public dataSource: any;
 
   constructor(private translationService: I18NextPipe, private editService: EditService) {
     super();
@@ -40,16 +39,9 @@ export class EditLayoutStaticlookupComponent extends WithRequired(WithValidation
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initStaticLookup(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;
-
-            combineLatest([this.editService.getValue$])
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(([getValue]) => {
-                if (getValue) {
-                  this.dataSource = createArrayDatasource(this.layoutItem?.options?.items ?? (this.layoutItem?.options?.itemsMember ? getValue({ dataMember: this.layoutItem?.options?.itemsMember }) as any[] : []));
-                }
-              });
           }
         });
     }

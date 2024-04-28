@@ -1,11 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { AutocompleteStoreDescriptor, EditItemRef, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from '@ballware/meta-services';
+import { EditItemRef, EditService, LookupService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
-import { combineLatest, takeUntil } from 'rxjs';
-import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from '../../utils/datasource';
+import { takeUntil } from 'rxjs';
+import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
+import { WithLookup } from '../../utils/withlookup';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
@@ -16,14 +17,11 @@ import { WithValue } from '../../utils/withvalue';
   templateUrl: './lookup.component.html',
   styleUrls: ['./lookup.component.scss']
 })
-export class EditLayoutLookupComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit, EditItemRef {
+export class EditLayoutLookupComponent extends WithLookup(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
-
-  public lookup: LookupDescriptor|undefined;
-  public dataSource: any;
 
   constructor(private translationService: I18NextPipe, private lookupService: LookupService, private editService: EditService) {
     super();
@@ -41,43 +39,9 @@ export class EditLayoutLookupComponent extends WithRequired(WithValidation(WithR
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initLookup(layoutItem, this.editService, this.lookupService);
 
             this.layoutItem = layoutItem;
-
-            combineLatest([this.editService.getValue$, this.lookupService.lookups$])
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(([getValue, lookups]) => {
-                if (getValue && lookups) {
-                  const lookup = this.layoutItem?.options?.lookup;
-                  const lookupParam = this.layoutItem?.options?.lookupParam;
-
-                  const myLookup = lookup && lookups ? (lookups[lookup] as LookupDescriptor|LookupCreator) : undefined;
-
-                  if (myLookup) {
-                    if (lookupParam && myLookup as LookupCreator) {
-                      this.lookup = (myLookup as LookupCreator)(getValue({ dataMember: lookupParam }) as string|string[]);
-                    } else if (myLookup as LookupDescriptor) {
-                      this.lookup = myLookup as LookupDescriptor;
-                    }
-
-                    if (this.lookup) {
-                      const currentLookup = this.lookup;
-
-                      if (currentLookup.type === 'lookup') {
-                        this.dataSource = createLookupDataSource(
-                          () => (currentLookup.store as LookupStoreDescriptor).listFunc(),
-                          (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
-                        );
-                      } else if (currentLookup.type === 'autocomplete') {
-                        this.dataSource = createAutocompleteDataSource(
-                          () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
-                        );
-                      }
-                      
-                    }
-                  }
-                }
-              });
           }
         });
     }
