@@ -1,6 +1,6 @@
 {
   "name": "ballware",
-  "version": "8.4.1",
+  "version": "8.5.0",
   "license": "MIT",
   "scripts": {
     "ng": "nx",
