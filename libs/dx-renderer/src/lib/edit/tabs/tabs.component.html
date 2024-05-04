@@ -1,6 +1,9 @@
-<dx-tab-panel [showNavButtons]="true" [width]="width" [height]="height" [items]="panels" [deferRendering]="false">
-    <div *dxTemplate="let item of 'title'">
-        <span class="dx-tab-text">{{item.options.caption}}</span>
+<dx-tab-panel [showNavButtons]="true" [width]="width" [height]="height" [items]="panels" [deferRendering]="false" [(selectedIndex)]="value" iconPosition="start">
+    <div *dxTemplate="let item of 'title'">      
+      <div class="dx-tab-text">
+        <i *ngIf="item.options.icon" [class]="'dx-icon {{item.options.icon}}'"></i>
+        <span class="dx-tab-text-span">{{item.options.caption}}</span>
+      </div>
     </div>
     <div *dxTemplate="let item of 'item'">
       <ballware-edit-container [colCount]="item?.colCount ?? 1" [items]="item?.items ?? []">

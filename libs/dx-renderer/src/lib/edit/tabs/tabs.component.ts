@@ -1,27 +1,68 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
+import { EditItemRef, EditService } from '@ballware/meta-services';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
+import { WithValue } from '../../utils/withvalue';
 
 @Component({
   selector: 'ballware-edit-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss']
 })
-export class EditLayoutTabsComponent extends WithDestroy() implements OnChanges {
+export class EditLayoutTabsComponent extends WithValue(WithEditItemLifecycle(WithDestroy()), () => 0) implements OnInit, EditItemRef {
 
   private _height: string|undefined;
   private _width: string|undefined;
   private _panels: EditLayoutItem[] = [];
+  
+  @Input() initialLayoutItem?: EditLayoutItem;
 
-  @Input() layoutItem!: EditLayoutItem;
-
+  public layoutItem: EditLayoutItem|undefined;
+  
   get panels() { return this._panels; }
   get height() { return this._height; }
   get width() { return this._width; }
 
-  ngOnChanges(): void {
-    this._height = this.layoutItem.options?.height;
-    this._width = this.layoutItem.options?.width;
-    this._panels = this.layoutItem.items?.filter(item => item.type === 'tab' && !item.ignore) ?? [];
+  constructor(private editService: EditService) {
+    super();
+  }
+
+  ngOnInit(): void {
+    if (this.initialLayoutItem) {
+      this.initLifecycle(this.initialLayoutItem, this.editService, this);
+
+      this.preparedLayoutItem$
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((layoutItem) => {
+          if (layoutItem) {
+            this.initValue(layoutItem, this.editService);
+
+            this._height = layoutItem.options?.height;
+            this._width = layoutItem.options?.width;
+            this._panels = layoutItem.items?.filter(item => item.type === 'tab' && !item.ignore) ?? [];
+
+            this.layoutItem = layoutItem;
+          }
+        });
+    }
+  }
+
+  setOption(option: string, value: unknown): void {
+    switch (option) {
+      case 'value':
+        this.setValueWithoutNotification(value as number);
+        break;
+    }
+  }
+
+  getOption(option: string) {
+    switch (option) {
+      case 'value':
+        return this.value;
+    }
+
+    return undefined;
   }
 }

@@ -22,12 +22,16 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
         combineLatest([editService.editorPreparing$])
           .pipe(takeUntil(this.destroy$))
           .pipe(map(([editorPreparing]) => {
-              if (editorPreparing && layoutItem.options?.dataMember) {
-                const preparedLayoutItem = cloneDeep(layoutItem);
+              if (editorPreparing) {
+                if (layoutItem.options?.dataMember) {
+                  const preparedLayoutItem = cloneDeep(layoutItem);
 
-                editorPreparing({ dataMember: layoutItem.options.dataMember, layoutItem: preparedLayoutItem });
+                  editorPreparing({ dataMember: layoutItem.options.dataMember, layoutItem: preparedLayoutItem });
 
-                return preparedLayoutItem;
+                  return preparedLayoutItem;
+                } else {
+                  return layoutItem;
+                }
               }
 
               return undefined;

@@ -1,6 +1,6 @@
 <dx-tab-panel [showNavButtons]="true" [style]="styles" [items]="panels" (selectedIndexChange)="onTabChanged($event)" [selectedIndex]="(selectedTab$ | async) ?? 0">
     <div *dxTemplate="let item of 'title'">        
-        <span *ngIf="!item.options.itemoptions.entity" class="dx-tab-text">{{item.options.itemoptions.caption}}</span>
+        <div *ngIf="!item.options.itemoptions.entity" class="dx-tab-text"><span class="dx-tab-text-span">{{item.options.itemoptions.caption}}</span></div>
         <ballware-page-tabs-counter *ngIf="item.options.itemoptions.entity" (tabNotAuthorized)="onTabNotAuthorized($event)" [tab]="item" [caption]="item.options.itemoptions.caption" [entity]="item.options.itemoptions.entity" [query]="item.options.itemoptions.query"></ballware-page-tabs-counter>        
     </div>
     <div *dxTemplate="let item of 'item'" class="flex-fill overflow-hidden row row-cols-xs-1 row-cols-lg-12">
