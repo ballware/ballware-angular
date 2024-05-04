@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 
-import { DxActionSheetModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxHtmlEditorModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxToolbarModule, DxTreeListModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
+import { DxActionSheetModule, DxButtonGroupModule, DxButtonModule, DxCheckBoxModule, DxDataGridModule, DxDateBoxModule, DxFileUploaderModule, DxHtmlEditorModule, DxMapModule, DxNumberBoxModule, DxPopupModule, DxScrollViewModule, DxSelectBoxModule, DxTabPanelModule, DxTagBoxModule, DxTextAreaModule, DxTextBoxModule, DxToolbarModule, DxTreeListModule, DxValidationGroupModule, DxValidationSummaryModule, DxValidatorModule } from 'devextreme-angular';
 import dxDateBox from 'devextreme/ui/date_box';
 import dxHtmlEditor from 'devextreme/ui/html_editor';
 import dxNumberBox from 'devextreme/ui/number_box';
@@ -38,6 +38,7 @@ import { EditLayoutMultivalueComponent } from './multivalue/multivalue.component
 import { EditLayoutNumberComponent } from './number/number.component';
 import { EditLayoutRichtextComponent } from './richtext/richtext.component';
 import { EditLayoutSqlComponent } from './sql/sql.component';
+import { EditLayoutStaticButtonGroupComponent } from './staticbuttongroup/staticbuttongroup.component';
 import { EditLayoutStaticlookupComponent } from './staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from './staticmultilookup/staticmultilookup.component';
 import { EditLayoutStatisticComponent } from './statistic/statistic.component';
@@ -72,6 +73,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     EditLayoutJavascriptComponent,
     EditLayoutSqlComponent,
     EditLayoutButtonComponent,
+    EditLayoutStaticButtonGroupComponent,
     EditLayoutAttachmentsComponent,
     EditLayoutRichtextComponent,
     EditLayoutStatisticComponent,
@@ -87,6 +89,7 @@ import { EditLayoutTextareaComponent } from './textarea/textarea.component';
     StatisticModule,
     DxToolbarModule,
     DxButtonModule,
+    DxButtonGroupModule,
     DxActionSheetModule,
     DxCheckBoxModule,
     DxDateBoxModule,

@@ -17,6 +17,7 @@ import { EditLayoutMultivalueComponent } from '../multivalue/multivalue.componen
 import { EditLayoutNumberComponent } from '../number/number.component';
 import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
 import { EditLayoutSqlComponent } from '../sql/sql.component';
+import { EditLayoutStaticButtonGroupComponent } from '../staticbuttongroup/staticbuttongroup.component';
 import { EditLayoutStaticlookupComponent } from '../staticlookup/staticlookup.component';
 import { EditLayoutStaticmultilookupComponent } from '../staticmultilookup/staticmultilookup.component';
 import { EditLayoutStatisticComponent } from '../statistic/statistic.component';
@@ -46,6 +47,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
+        case 'staticbuttongroup': {
+            const componentRef = this.itemHost.createComponent(EditLayoutStaticButtonGroupComponent);
+
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
+            componentRef.changeDetectorRef.detectChanges();
+          }
+          break;          
         case 'text':
         case 'mail': {
             //const { EditLayoutTextComponent } = await import('../text/text.component');
@@ -139,7 +147,7 @@ export class EditLayoutItemComponent implements AfterViewInit {
             //const { EditLayoutTabsComponent } = await import('../tabs/tabs.component');
             const componentRef = this.itemHost.createComponent(EditLayoutTabsComponent);
 
-            componentRef.setInput('layoutItem', this.layoutItem);            
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
             componentRef.changeDetectorRef.detectChanges();
           }
           break;

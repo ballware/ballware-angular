@@ -3,7 +3,7 @@ import DataSource from "devextreme/data/data_source";
 
 export interface HasLookup {
   lookup: LookupDescriptor|undefined;
-  dataSource: DataSource;
+  dataSource: DataSource|null;
 
   getLookupItemDisplayValue(item: Record<string, unknown>): string|undefined;
   getLookupItemHintValue(item: Record<string, unknown>): string|undefined;

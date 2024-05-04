@@ -1,5 +1,6 @@
 import { EditLayoutItem } from "@ballware/meta-model";
 import { AutocompleteStoreDescriptor, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from "@ballware/meta-services";
+import DataSource from "devextreme/data/data_source";
 import { compileGetter } from 'devextreme/utils';
 import { combineLatest, takeUntil } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "./datasource";
@@ -12,12 +13,18 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
     return class extends Base implements HasLookup {
       
       public lookup: LookupDescriptor|undefined;
-      public dataSource: any;
+      public dataSource: DataSource|null = null;
 
       public hasLookupItemHintValue!: boolean;
+
+      public lookupItemKeyValueGetter: ((item: Record<string, unknown>) => unknown)|undefined;
       public lookupItemDisplayValueGetter: ((item: Record<string, unknown>) => string)|undefined;
       public lookupItemHintValueGetter: ((item: Record<string, unknown>) => string)|undefined;
       
+      public getLookupItemKeyValue(item: Record<string, unknown>) {    
+        return this.lookupItemKeyValueGetter ? this.lookupItemKeyValueGetter(item) : undefined;
+      }    
+
       public getLookupItemDisplayValue(item: Record<string, unknown>) {    
         return this.lookupItemDisplayValueGetter ? this.lookupItemDisplayValueGetter(item) : undefined;
       }
@@ -65,6 +72,10 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
 
                     this.hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
 
+                    const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? this.dataSource?.key() ?? 'Id');
+
+                    this.lookupItemKeyValueGetter = (item) => keyValueGetter(item);
+
                     const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');                
             
                     this.lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
@@ -85,6 +96,10 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
                   this.dataSource = createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []));
 
                   this.hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
+
+                  const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? this.dataSource?.key() ?? 'Id');
+
+                  this.lookupItemKeyValueGetter = (item) => keyValueGetter(item);
 
                   const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? 'Name');                
           
