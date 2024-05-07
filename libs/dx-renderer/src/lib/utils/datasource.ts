@@ -27,16 +27,22 @@ export function createReadonlyDatasource(
 }
 
 export function createEditableGridDatasource(
-  items: Array<CrudItem>,
-  save: (item: CrudItem) => void,
+  fetchFunc: () => Promise<Array<Record<string, unknown>>>,
+  save: (item: CrudItem) => Promise<CrudItem>,
   keyProperty = 'Id'
 ) {
+  let items: Array<CrudItem> = [];
+
   const dataStore = new CustomStore({
     loadMode: 'raw',
     key: keyProperty,
     load: function() {
-      return Promise.resolve(items);
-    },
+      return fetchFunc().then(result => {
+        items = result as Array<CrudItem>;
+
+        return result;
+      });
+    },    
     byKey: function(key: string) {
       const item = items?.find(item => item.Id === key);
 
@@ -45,16 +51,14 @@ export function createEditableGridDatasource(
       }
 
       return Promise.resolve(item);
-    },
+    },    
     update: function(key: string, values: CrudItem) {
       let item = items?.find(item => item[keyProperty] === key);
 
       if (item) {
         item = Object.assign(item, values);
 
-        save(item);
-
-        return Promise.resolve({ key: key, values: item });
+        return save(item).then(() => ({ key: key, values: item }));
       }
 
       return Promise.reject(`Item with key ${key} not found`);

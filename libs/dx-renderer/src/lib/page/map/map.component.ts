@@ -4,6 +4,7 @@ import { CrudService, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent } from 'devextreme-angular';
 import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { getByPath } from '../../utils/databinding';
+import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -21,7 +22,7 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   private mouseTarget: Element|undefined|null;
 
-  constructor(private settingsService: SettingsService, private crudService: CrudService) {
+  constructor(private settingsService: SettingsService, private crudService: CrudService, private dataSourceService: DataSourceService) {
     super();
 
     this.onMapMouseMove = this.onMapMouseMove.bind(this);
@@ -34,27 +35,36 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
     this.map?.instance.element().addEventListener('mousemove', this.onMapMouseMove);
 
-    combineLatest([this.crudService.fetchedItems$])
+    combineLatest([this.dataSourceService.dataSource$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([fetchedItems]) => {
-        const existingMarkers = this.map?.instance.option(
-          'markers'
-        ) as Array<object>;
-
-        for (const marker of existingMarkers) {
-          this.map?.instance.removeMarker(marker);
-        }
-
+      .subscribe(([dataSource]) => {
         const locationMember = (this.layoutItem?.options?.itemoptions as EntityMapOptions)?.locationMember;
 
-        if (fetchedItems && locationMember) {
+        if (dataSource && locationMember) {
 
-          fetchedItems.forEach(item => {
-            this.map?.instance.addMarker({
-              location: getByPath(item, locationMember),
-              onClick: () => this.onMarkerClicked(item)
-            });
+          dataSource.on('changed', () => {
+
+            const existingMarkers = this.map?.instance.option(
+              'markers'
+            ) as Array<object>;
+    
+            for (const marker of existingMarkers) {
+              this.map?.instance.removeMarker(marker);
+            }
+
+            const fetchedItems = dataSource.items();
+
+            if (fetchedItems) {
+              fetchedItems.forEach(item => {
+                this.map?.instance.addMarker({
+                  location: getByPath(item, locationMember),
+                  onClick: () => this.onMarkerClicked(item)
+                });
+              });
+            }
           });
+
+          dataSource.load();
         }
       });
   }

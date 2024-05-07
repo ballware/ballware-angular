@@ -3,6 +3,7 @@ import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { AttachmentService, CrudService, LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
+import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -29,14 +30,19 @@ import { WithDestroy } from '../../utils/withdestroy';
       provide: CrudService, 
       useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
       deps: [MetaServiceFactory, MetaService]  
-    } as Provider,    
+    } as Provider,
+    {
+      provide: DataSourceService,
+      useFactory: (metaService: MetaService, crudService: CrudService) => new DataSourceService(metaService, crudService),
+      deps: [MetaService, CrudService]
+    }
   ]
 })
 export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit, OnDestroy {
 
   @Input() layoutItem?: PageLayoutItem;
 
-  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
+  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService : DataSourceService) {
 
     super();
 
@@ -76,6 +82,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     
+    this.datasourceService.ngOnDestroy();
     this.crudService.ngOnDestroy();
     this.metaService.ngOnDestroy();
     this.lookupService.ngOnDestroy();
