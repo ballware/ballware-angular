@@ -1,8 +1,9 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory, NotificationService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
+import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -42,6 +43,11 @@ interface EntityGridItemOptions {
       useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
       deps: [MetaServiceFactory, MetaService]  
     } as Provider,
+    {
+      provide: DataSourceService,
+      useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
+      deps: [NotificationService, MetaService, CrudService]
+    },
     { 
       provide: MasterdetailService, useClass: MasterdetailService 
     }
@@ -59,7 +65,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public height$ = new BehaviorSubject<string|undefined>('100%');
 
-  constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private editService: EditService) {
+  constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService: DataSourceService, private editService: EditService) {
     super();
 
     combineLatest([this.metaService.headParams$])
@@ -121,6 +127,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
       super.ngOnDestroy();
 
       this.editService.ngOnDestroy();
+      this.datasourceService.ngOnDestroy();
       this.crudService.ngOnDestroy();
       this.metaService.ngOnDestroy();
       this.lookupService.ngOnDestroy();
