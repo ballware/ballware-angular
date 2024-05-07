@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService, LookupService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { EditItemRef, EditService, LookupService, NotificationService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -23,7 +22,7 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(With
 
   public layoutItem: EditLayoutItem|undefined;
 
-  constructor(private translationService: I18NextPipe, private lookupService: LookupService, private editService: EditService) {
+  constructor(private notificationService: NotificationService, private lookupService: LookupService, private editService: EditService) {
     super();
   }
 
@@ -39,7 +38,7 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(With
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
-            this.initLookup(layoutItem, this.editService, this.lookupService);
+            this.initLookup(layoutItem, this.editService, this.lookupService, this.notificationService);
 
             this.layoutItem = layoutItem;            
           }

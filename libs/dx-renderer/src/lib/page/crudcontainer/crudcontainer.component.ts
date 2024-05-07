@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { AttachmentService, CrudService, LookupService, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { AttachmentService, CrudService, LookupService, MetaService, MetaServiceFactory, NotificationService, PageService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -33,8 +33,8 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     {
       provide: DataSourceService,
-      useFactory: (metaService: MetaService, crudService: CrudService) => new DataSourceService(metaService, crudService),
-      deps: [MetaService, CrudService]
+      useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
+      deps: [NotificationService, MetaService, CrudService]
     }
   ]
 })
