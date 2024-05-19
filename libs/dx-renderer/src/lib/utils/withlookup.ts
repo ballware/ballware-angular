@@ -68,22 +68,22 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
                           () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
                         );
                       }                      
-                    }
+                    }                    
+                  }  
+                  
+                  this.hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
 
-                    this.hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
+                  const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? this.dataSource?.key() ?? 'Id');
 
-                    const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? this.dataSource?.key() ?? 'Id');
+                  this.lookupItemKeyValueGetter = (item) => keyValueGetter(item);
 
-                    this.lookupItemKeyValueGetter = (item) => keyValueGetter(item);
-
-                    const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');                
-            
-                    this.lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
-            
-                    const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
-            
-                    this.lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;
-                  }                  
+                  const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');                
+          
+                  this.lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
+          
+                  const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
+          
+                  this.lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;
                 }                
               });
       }
