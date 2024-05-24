@@ -1,6 +1,7 @@
-<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="'mt-2 dx-texteditor-label' + !((visible$ | async) ?? false) ? ' hidden' : ''" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
 <dx-check-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"  
   class="pt-1"
+  [visible]="(visible$ | async) ?? false"
   [name]="layoutItem.options.dataMember"
   [(value)]="value"
   [readOnly]="(readonly$ | async) ?? false"

@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { StatisticChartOptions } from "@ballware/meta-model";
 import { StatisticService } from "@ballware/meta-services";
 import { LegendClickEvent } from "devextreme/viz/chart";
@@ -13,6 +13,8 @@ import { WithDestroy } from "../../utils/withdestroy";
     providers: []
   })
   export class StatisticChartComponent extends WithDestroy() {
+
+    @Input() visible!: boolean|null;
 
     name$: Observable<string|undefined>;
     height$: Observable<string|undefined>;

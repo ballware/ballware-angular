@@ -9,13 +9,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-bool',
   templateUrl: './bool.component.html',
   styleUrls: ['./bool.component.scss']
 })
-export class EditLayoutBoolComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => false as boolean|null|undefined)))) implements OnInit, EditItemRef {
+export class EditLayoutBoolComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => false as boolean|null|undefined))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -37,6 +38,7 @@ export class EditLayoutBoolComponent extends WithRequired(WithValidation(WithRea
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
           }
@@ -52,6 +54,8 @@ export class EditLayoutBoolComponent extends WithRequired(WithValidation(WithRea
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();        
     }
 
     return undefined;
@@ -67,6 +71,9 @@ export class EditLayoutBoolComponent extends WithRequired(WithValidation(WithRea
         break;
       case 'readonly':
         this.setReadonly(value as boolean)
+        break;
+      case 'visible':
+        this.setVisible(value as boolean);
         break;
     }
   }

@@ -146,6 +146,11 @@ export interface EditLayoutItemOptions {
   dataMember?: string;
 
   /**
+   * If set or undefined, the element will be visible for user
+   */
+  visible?: boolean;
+
+  /**
    * If set, property of business object is required to have a value
    */
   required?: boolean;

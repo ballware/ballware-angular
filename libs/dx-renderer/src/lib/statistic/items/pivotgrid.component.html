@@ -1,4 +1,5 @@
 <dx-pivot-grid
+    [class]="!visible ? 'hidden' : ''"
     [style.height]="(height$ | async) ?? '100%'"
     [allowSortingBySummary]="true"
     [allowSorting]="true"

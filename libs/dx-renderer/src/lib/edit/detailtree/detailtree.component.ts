@@ -11,6 +11,7 @@ import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithValue } from "../../utils/withvalue";
+import { WithVisible } from "../../utils/withvisible";
 
 interface EditComponentWithOptions {
   /**
@@ -43,7 +44,7 @@ export interface DetailTreeItemOptions {
     templateUrl: './detailtree.component.html',
     styleUrls: ['./detailtree.component.scss']
 })
-export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [])) implements OnInit, EditItemRef {
+export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit, EditItemRef {
 
     @ViewChild('grid', { static: false }) grid?: DxDataGridComponent;
 
@@ -111,6 +112,7 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
             if (layoutItem) {
               this.initValue(layoutItem, this.editService);
               this.initReadonly(layoutItem, this.editService);
+              this.initVisible(layoutItem);
             }            
           });
 
@@ -276,6 +278,8 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
           return this.value;
         case 'readonly':
           return this.readonly$.getValue();
+        case 'visible':
+          return this.visible$.getValue();                  
       }
   
       return undefined;
@@ -289,6 +293,9 @@ export class EditLayoutDetailTreeComponent extends WithReadonly(WithValue(WithEd
         case 'readonly':
           this.setReadonly(value as boolean)
           break;
+        case 'visible':
+          this.setVisible(value as boolean);
+          break;          
       }
     }
 

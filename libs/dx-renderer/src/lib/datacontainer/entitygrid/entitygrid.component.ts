@@ -41,6 +41,7 @@ const createSummaryConfiguration = (gridLayout: GridLayout) => {
 })
 export class EntitygridComponent extends WithDestroy() implements OnInit {
 
+  @Input() visible!: boolean|null;
   @Input() gridLayout?: GridLayout;
   @Input() storageIdentifier?: string;
   @Input() height?: string;

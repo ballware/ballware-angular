@@ -7,13 +7,14 @@ import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-button',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss']
 })
-export class EditLayoutButtonComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, EditItemRef {
+export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -35,6 +36,7 @@ export class EditLayoutButtonComponent extends WithReadonly(WithEditItemLifecycl
         .subscribe((layoutItem) => {
           if (layoutItem) {
             this.initReadonly(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;            
             this.dataMember = layoutItem.options?.dataMember;
@@ -61,6 +63,8 @@ export class EditLayoutButtonComponent extends WithReadonly(WithEditItemLifecycl
     switch (option) {
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();        
     }
 
     return undefined;
@@ -71,6 +75,9 @@ export class EditLayoutButtonComponent extends WithReadonly(WithEditItemLifecycl
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 }

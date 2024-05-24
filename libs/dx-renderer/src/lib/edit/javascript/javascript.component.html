@@ -1,6 +1,7 @@
-<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="'mt-2 dx-texteditor-label' + !((visible$ | async) ?? false) ? ' hidden' : ''" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
 <ballware-codemirror 
     mode="javascript"
+    [visible]="((visible$ | async) ?? false)"
     [readOnly]="readonly$ | async"
     width="100%"
     [height]="height ?? '300px'"

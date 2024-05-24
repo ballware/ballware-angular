@@ -11,20 +11,21 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-lookup',
   templateUrl: './lookup.component.html',
   styleUrls: ['./lookup.component.scss']
 })
-export class EditLayoutLookupComponent extends WithLookup(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null))))) implements OnInit, EditItemRef {
+export class EditLayoutLookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
 
   constructor(private translationService: I18NextPipe, private lookupService: LookupService, private editService: EditService) {
-    super();
+    super();    
   }
 
   ngOnInit(): void {
@@ -39,6 +40,7 @@ export class EditLayoutLookupComponent extends WithLookup(WithRequired(WithValid
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
             this.initLookup(layoutItem, this.editService, this.lookupService);
 
             this.layoutItem = layoutItem;
@@ -55,6 +57,8 @@ export class EditLayoutLookupComponent extends WithLookup(WithRequired(WithValid
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();
     }
 
     return undefined;
@@ -70,6 +74,9 @@ export class EditLayoutLookupComponent extends WithLookup(WithRequired(WithValid
         break;
       case 'readonly':
         this.setReadonly(value as boolean)
+        break;
+      case 'visible':
+        this.visible$.next(value as boolean);
         break;
       case 'items':
         this.dataSource = createArrayDatasource(value as []);

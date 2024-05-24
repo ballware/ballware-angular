@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-statistic',
@@ -18,7 +19,7 @@ import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
     } as Provider,
   ]
 })
-export class EditLayoutStatisticComponent extends WithEditItemLifecycle(WithDestroy()) implements OnInit, OnDestroy, EditItemRef {
+export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -56,13 +57,16 @@ export class EditLayoutStatisticComponent extends WithEditItemLifecycle(WithDest
       this.preparedLayoutItem$
         .pipe(takeUntil(this.destroy$))
         .subscribe((layoutItem) => {
+          if (layoutItem) {
+            this.initVisible(layoutItem); 
 
-          const statisticIdentifier = (layoutItem?.options?.itemoptions as StatisticOptions).identifier;
-
-          if (layoutItem && statisticIdentifier) {            
-            this.statisticService.setHeadParams((layoutItem.options?.itemoptions as StatisticOptions).params ?? {});
-            this.statisticService.setStatistic(statisticIdentifier);
-          }
+            const statisticIdentifier = (layoutItem?.options?.itemoptions as StatisticOptions).identifier;
+          
+            if (statisticIdentifier) {            
+              this.statisticService.setHeadParams((layoutItem.options?.itemoptions as StatisticOptions).params ?? {});
+              this.statisticService.setStatistic(statisticIdentifier);
+            }
+          }          
         });
     }
   }
@@ -74,11 +78,18 @@ export class EditLayoutStatisticComponent extends WithEditItemLifecycle(WithDest
   }
   
   public getOption(option: string): any {
-    throw new Error("Method not implemented.");
+    switch (option) {
+      case 'visible':
+        return this.visible$.getValue();        
+    }
   }
 
   public setOption(option: string, value: unknown) {
-    throw new Error("Method not implemented.");
+    switch (option) {
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;
+    }
   }
 
 }

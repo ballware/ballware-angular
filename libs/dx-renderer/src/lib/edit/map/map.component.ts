@@ -8,6 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 declare let google: any;
 
@@ -21,7 +22,7 @@ interface MapValue {
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss']
 })
-export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined)) implements OnInit, AfterViewInit, EditItemRef {
+export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined))) implements OnInit, AfterViewInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -47,6 +48,7 @@ export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemL
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
           }
@@ -100,6 +102,8 @@ export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemL
         return this.value;
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
     }
 
     return undefined;
@@ -113,6 +117,9 @@ export class EditLayoutMapComponent extends WithReadonly(WithValue(WithEditItemL
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 }

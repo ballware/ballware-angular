@@ -1,5 +1,6 @@
-<div class="dx-texteditor-label" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="'mt-2 dx-texteditor-label' + !((visible$ | async) ?? false) ? ' hidden' : ''" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
 <dx-html-editor text-area *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  [visible]="(visible$ | async) ?? false"
   [name]="layoutItem.options.dataMember"
   [height]="layoutItem.options.height ?? '300px'"
   [(value)]="value"

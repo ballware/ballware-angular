@@ -10,13 +10,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-multivalue',
   templateUrl: './multivalue.component.html',
   styleUrls: ['./multivalue.component.scss']
 })
-export class EditLayoutMultivalueComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))) implements OnInit, EditItemRef {
+export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[]))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -40,6 +41,7 @@ export class EditLayoutMultivalueComponent extends WithRequired(WithValidation(W
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
 
@@ -63,6 +65,8 @@ export class EditLayoutMultivalueComponent extends WithRequired(WithValidation(W
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
     }
 
     return undefined;
@@ -79,6 +83,9 @@ export class EditLayoutMultivalueComponent extends WithRequired(WithValidation(W
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
       case 'items':
         this.dataSource = createArrayDatasource(value as []);
         break;

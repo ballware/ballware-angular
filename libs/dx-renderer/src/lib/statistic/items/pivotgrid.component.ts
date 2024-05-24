@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { StatisticPivotOptions } from "@ballware/meta-model";
 import { StatisticService } from "@ballware/meta-services";
 import { exportPivotGrid } from 'devextreme/excel_exporter';
@@ -17,6 +17,8 @@ import { WithDestroy } from "../../utils/withdestroy";
     providers: []
   })
   export class StatisticPivotgridComponent extends WithDestroy() {
+
+    @Input() visible!: boolean|null;
 
     name$: Observable<string|undefined>;
     height$: Observable<string|undefined>;

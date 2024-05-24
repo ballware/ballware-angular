@@ -1,4 +1,6 @@
 <dx-select-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+  class="mt-2"
+  [visible]="((visible$ | async) ?? false)"
   [label]="layoutItem.options.caption ?? ''"
   [name]="layoutItem.options.dataMember"
   [(value)]="value"

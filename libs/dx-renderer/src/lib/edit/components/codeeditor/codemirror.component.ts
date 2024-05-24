@@ -29,6 +29,7 @@ export class CodeMirrorComponent implements AfterViewInit {
     @ViewChild('editor', { read: ViewContainerRef }) private editorHost?: ViewContainerRef;
 
     @Input() value!: unknown;
+    @Input() visible!: boolean|null;
     @Input() readOnly!: boolean|null;
     @Input() mode!: 'json' | 'object' | 'javascript' | 'sqlserver';
     @Input() width: string|undefined;

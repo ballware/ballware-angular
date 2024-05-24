@@ -9,6 +9,7 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 export interface NumberItemOptions {  
   min?: number;
@@ -20,7 +21,7 @@ export interface NumberItemOptions {
   templateUrl: './number.component.html',
   styleUrls: ['./number.component.scss']
 })
-export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0)))) implements OnInit, EditItemRef {
+export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -43,6 +44,7 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
             this.itemOptions = layoutItem.options?.itemoptions as NumberItemOptions;
@@ -59,6 +61,8 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
       case 'min':
         return this.itemOptions?.min;
       case 'max':
@@ -79,6 +83,9 @@ export class EditLayoutNumberComponent extends WithRequired(WithValidation(WithR
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
       case 'min':
         if (!this.itemOptions) {
           this.itemOptions = {};
