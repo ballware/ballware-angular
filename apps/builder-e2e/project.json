@@ -1,0 +1,26 @@
+{
+  "name": "builder-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/builder-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nx/cypress:cypress",
+      "options": {
+        "cypressConfig": "apps/builder-e2e/cypress.config.ts",
+        "testingType": "e2e",
+        "devServerTarget": "builder:serve:development"
+      },
+      "configurations": {
+        "production": {
+          "devServerTarget": "builder:serve:production"
+        },
+        "ci": {
+          "devServerTarget": "builder:serve-static"
+        }
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["builder"]
+}

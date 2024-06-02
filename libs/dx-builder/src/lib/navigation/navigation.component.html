@@ -1,0 +1,14 @@
+<dx-drawer class="h-100" template="panel" position="before" [openedStateMode]="'overlap'" [maxSize]="240" [opened]="opened">
+    <div *dxTemplate="let dataMenu of 'panel'" class="h-100" style="width: 240px;">
+      <dx-list
+        class="w-100 h-100"
+        [dataSource]="navigationItems"
+        keyExpr="path"
+        selectionMode="single"
+        [focusStateEnabled]="false"
+        expandEvent="click"
+        (onItemClick)="onNavigationItemClick($event)">
+      </dx-list>
+    </div>  
+    <ng-content></ng-content>
+  </dx-drawer>

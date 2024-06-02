@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { ResponsiveService } from "@ballware/common-services";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
-import { EditItemRef, EditService, LookupService, ResponsiveService } from "@ballware/meta-services";
+import { EditItemRef, EditService, LookupService } from "@ballware/meta-services";
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
 import { ValidationCallbackData } from "devextreme/common";

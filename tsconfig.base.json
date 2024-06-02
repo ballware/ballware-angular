@@ -17,6 +17,12 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ballware/angular-utils": ["libs/angular-utils/src/index.ts"],
+      "@ballware/builder-models": ["libs/builder-models/src/index.ts"],
+      "@ballware/builder-services": ["libs/builder-services/src/index.ts"],
+      "@ballware/common-services": ["libs/common-services/src/index.ts"],
+      "@ballware/dx-builder": ["libs/dx-builder/src/index.ts"],
+      "@ballware/dx-commons": ["libs/dx-commons/src/index.ts"],
       "@ballware/dx-renderer": ["libs/dx-renderer/src/index.ts"],
       "@ballware/meta-api": ["libs/meta-api/src/index.ts"],
       "@ballware/meta-model": ["libs/meta-model/src/index.ts"],

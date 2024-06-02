@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { NotificationService } from "@ballware/common-services";
 import { MetaApiService } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
@@ -13,7 +14,6 @@ import { pageDestroyed, pageUpdated } from "../component";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
-import { NotificationService } from "../notification.service";
 import { PageServiceApi } from "../page.service";
 import { TenantService } from "../tenant.service";
 import { ToolbarService } from "../toolbar.service";

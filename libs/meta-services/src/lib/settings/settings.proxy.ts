@@ -1,8 +1,8 @@
 import { Injectable } from "@angular/core";
-import { SettingsService } from "../settings.service";
 import { Store } from "@ngrx/store";
-import { selectGooglekey, selectVersion } from "./settings.state";
+import { SettingsService } from "../settings.service";
 import { settingsInitialize } from "./settings.actions";
+import { selectGooglekey, selectVersion } from "./settings.state";
 
 @Injectable()
 export class SettingsServiceProxy extends SettingsService {

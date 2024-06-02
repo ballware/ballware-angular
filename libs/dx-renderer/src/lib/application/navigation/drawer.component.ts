@@ -1,6 +1,7 @@
 import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavigationTreeItem, ResponsiveService, SCREEN_SIZE, TenantService } from '@ballware/meta-services';
+import { ResponsiveService, SCREEN_SIZE } from '@ballware/common-services';
+import { NavigationTreeItem, TenantService } from '@ballware/meta-services';
 import { OpenedStateMode } from 'devextreme/ui/drawer';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { cloneDeep } from 'lodash';
@@ -35,11 +36,11 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
         this.navigationItems = cloneDeep(navigation ?? []);
       });
 
-    this.openStateMode$ = this.responsiveService.onResize$
+    this.openStateMode$ = this.responsiveService.resize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize > SCREEN_SIZE.SM ? 'shrink' : 'overlap'));
 
-    this.responsiveService.onResize$
+    this.responsiveService.resize$
       .pipe(takeUntil(this.destroy$))
       .subscribe(screenSize => this.closeOnNavigate = screenSize <= SCREEN_SIZE.SM);
   }

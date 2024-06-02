@@ -1,0 +1,14 @@
+<dx-popup *ngIf="visible"
+  [visible]="true" 
+  [showCloseButton]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="title"
+  [animation]="{ hide: undefined, show: undefined }"
+  (onHidden)="onClose()"
+  width="auto" 
+  minWidth="500px" 
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <dx-file-uploader width="400px" [multiple]="multiple" accept="*" uploadMode="instantly" [uploadFile]="onFileUploaded"> </dx-file-uploader>
+  </div>
+</dx-popup>

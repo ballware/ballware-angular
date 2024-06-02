@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { Router } from '@angular/router';
+import { NotificationService } from '@ballware/common-services';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
@@ -12,9 +13,6 @@ import { IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
 import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
 import { MetaServiceFactory } from './meta.service.factory';
-import { NotificationFeatureModule } from './notification';
-import { NotificationService } from './notification.service';
-import { NotificationServiceProxy } from './notification/notification.proxy';
 import { SettingsFeatureModule } from './settings';
 import { SettingsService } from './settings.service';
 import { SettingsServiceProxy } from './settings/settings.proxy';
@@ -35,9 +33,7 @@ export * from './lookup.service';
 export * from './masterdetail.service';
 export * from './meta.service';
 export * from './meta.service.factory';
-export * from './notification.service';
 export * from './page.service';
-export * from './responsive.service';
 export * from './settings.service';
 export * from './statistic.service';
 export * from './tenant.service';
@@ -48,7 +44,6 @@ export * from './toolbaritemref';
   imports: [
     CommonModule,    
     SettingsFeatureModule,
-    NotificationFeatureModule,
     IdentityFeatureModule,
     IdentityEffectsModule,
     TenantFeatureModule,
@@ -66,11 +61,6 @@ export class MetaServicesModule {
         {
           provide: SettingsService,
           useFactory: (store: Store) => new SettingsServiceProxy(store),
-          deps: [ Store ]
-        },    
-        {
-          provide: NotificationService,
-          useFactory: (store: Store) => new NotificationServiceProxy(store),
           deps: [ Store ]
         },          
         {

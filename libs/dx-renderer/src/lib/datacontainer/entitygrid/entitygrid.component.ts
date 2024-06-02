@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { ResponsiveService, SCREEN_SIZE } from '@ballware/common-services';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { CrudService, FunctionIdentifier, LookupService, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CrudService, FunctionIdentifier, LookupService, MetaService } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
@@ -88,7 +89,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
     this.isMasterDetailExpandable = this.isMasterDetailExpandable.bind(this);
 
-    this.mode$ = this.responsiveService.onResize$
+    this.mode$ = this.responsiveService.resize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small'))));
 
@@ -116,7 +117,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
       .pipe(map((gridLayout) => gridLayout?.editLayout ?? gridLayout?.identifier ?? 'primary'));
 
     this.columns$ = combineLatest([
-      this.responsiveService.onResize$,
+      this.responsiveService.resize$,
       this.editLayoutIdentifier$,
       this.metaService.headParams$,
       this._gridLayout$,

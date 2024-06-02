@@ -1,5 +1,6 @@
 import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { NotificationService } from '@ballware/common-services';
 import { ApiError } from '@ballware/meta-api';
 import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
@@ -12,7 +13,6 @@ import { CrudAction, CrudEditMenuItem, CrudServiceApi, DetailColumnEditDialog, F
 import { getByPath, setByPath } from '../databinding';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
-import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi, OnDestroy {

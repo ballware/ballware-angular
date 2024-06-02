@@ -8,13 +8,14 @@ import deMessages from 'devextreme/localization/messages/de.json';
 
 import moment from 'moment';
 
+import { NotificationFeatureModule, NotificationService, NotificationServiceProxy, ResponsiveFeatureModule, ResponsiveService, ResponsiveServiceProxy } from '@ballware/common-services';
+import { BallwareNotificationComponent, BallwareResponsiveDetectorComponent } from '@ballware/dx-commons';
 import { PageModule } from '../page/page.module';
 import { ApplicationAccountMenuComponent } from './account/menu.component';
 import { BallwareApplicationRoutingModule } from './application.routing.module';
 import { ApplicationComponent } from './application/application.component';
 import { ApplicationHeaderComponent } from './header/header.component';
 import { ApplicationNavigationDrawerComponent } from './navigation/drawer.component';
-import { ApplicationNotificationComponent } from './notification/notification.component';
 
 export { ApplicationComponent } from './application/application.component';
 
@@ -23,13 +24,16 @@ export { ApplicationComponent } from './application/application.component';
     ApplicationComponent,
     ApplicationHeaderComponent,
     ApplicationAccountMenuComponent,
-    ApplicationNavigationDrawerComponent,
-    ApplicationNotificationComponent
+    ApplicationNavigationDrawerComponent
   ],
   imports: [
     CommonModule,
     I18NextModule,
     BallwareApplicationRoutingModule,
+    BallwareResponsiveDetectorComponent,
+    BallwareNotificationComponent,
+    ResponsiveFeatureModule,
+    NotificationFeatureModule,
     PageModule,
     DxToolbarModule,
     DxButtonModule,
@@ -44,6 +48,10 @@ export { ApplicationComponent } from './application/application.component';
   ],
   exports: [
     ApplicationComponent
+  ],
+  providers: [
+    { provide: ResponsiveService, useClass: ResponsiveServiceProxy },
+    { provide: NotificationService, useClass: NotificationServiceProxy }
   ]
 })
 export class ApplicationModule {

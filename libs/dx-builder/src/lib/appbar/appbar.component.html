@@ -1,0 +1,11 @@
+<header>
+    <dx-toolbar>      
+        <dxi-item location="before" locateInMenu="never" widget="dxButton" [options]="{ icon: 'bi bi-list', hint: 'Navigation öffnen', stylingMode: 'text', onClick: clickToggleMenu }"></dxi-item>        
+        <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="{ icon: 'bi bi-file-earmark-plus', hint: 'Neue Vorlage', stylingMode: 'text', onClick: clickNew }"></dxi-item>        
+        <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="{ icon: 'bi bi-file-earmark-arrow-up', hint: 'Vorlage öffnen', stylingMode: 'text', onClick: clickOpen }"></dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="{ icon: 'bi bi-file-earmark-arrow-down', hint: 'Vorlage herunterladen', stylingMode: 'text', onClick: clickDownload }"></dxi-item>
+        <dxi-item location="before" locateInMenu="auto" widget="dxButton" [options]="{ icon: 'bi bi-x-square', hint: 'Vorlage schließen', stylingMode: 'text', onClick: clickClose }"></dxi-item>
+        <dxi-item location="before" text="ballware Template Builder"></dxi-item>
+    </dx-toolbar>
+</header>
+<lib-ballware-commons-upload-dialog [(visible)]="uploadVisible" title="Vorlagendatei hochladen" [multiple]="false" (fileUploaded)="templateUploaded($event)"></lib-ballware-commons-upload-dialog>

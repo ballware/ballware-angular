@@ -42,6 +42,29 @@
     "@nx/eslint:lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
       "cache": true
+    },
+    "@angular-devkit/build-angular:browser": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "server": {
+      "cache": true
+    },
+    "@nx/angular:ng-packagr-lite": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "@nx/angular:package": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "namedInputs": {
@@ -64,10 +87,10 @@
   },
   "generators": {
     "@nx/angular:application": {
-      "style": "scss",
+      "e2eTestRunner": "cypress",
       "linter": "eslint",
-      "unitTestRunner": "jest",
-      "e2eTestRunner": "cypress"
+      "style": "scss",
+      "unitTestRunner": "jest"
     },
     "@nx/angular:library": {
       "linter": "eslint",
@@ -85,5 +108,13 @@
         "file": false
       }
     }
-  }
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    }
+  ]
 }

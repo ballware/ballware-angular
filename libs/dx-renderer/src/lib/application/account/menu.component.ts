@@ -1,5 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
-import { IdentityService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { ResponsiveService, SCREEN_SIZE } from '@ballware/common-services';
+import { IdentityService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { Observable, combineLatest, map, takeUntil } from 'rxjs';
@@ -70,7 +71,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
       });
 
 
-    this.usePopover$ = this.responsiveService.onResize$
+    this.usePopover$ = this.responsiveService.resize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize >= SCREEN_SIZE.SM));
 

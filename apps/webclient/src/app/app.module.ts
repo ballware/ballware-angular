@@ -15,13 +15,12 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app.routing.module';
 import { PrintComponent } from './shared/components/print/print.component';
-import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 
 declare let window :any;
 
 @NgModule({
-  declarations: [AppComponent, ResponsiveDetectorComponent, PrintComponent],
+  declarations: [AppComponent, PrintComponent],
   imports: [
     BrowserModule.withServerTransition({ appId: 'serverApp' }),    
     StoreModule.forRoot({

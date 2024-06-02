@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { IdentityService, ResponsiveService, SCREEN_SIZE, TenantService, ToolbarService } from '@ballware/meta-services';
+import { ResponsiveService } from '@ballware/common-services';
+import { IdentityService, TenantService, ToolbarService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -35,9 +36,8 @@ export class ApplicationHeaderComponent extends WithDestroy() {
   constructor(private responsiveService: ResponsiveService, private translationService: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
     super();
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.small$
+      .pipe(takeUntil(this.destroy$));
 
     this.tenantTitle$ = this.tenantService.title$;
     this.pageTitle$ = this.toolbarService.title$;

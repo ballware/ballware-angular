@@ -1,0 +1,19 @@
+{
+  "name": "dx-builder",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/dx-builder/src",
+  "prefix": "ballware",
+  "tags": [],
+  "projectType": "library",
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "libs/dx-builder/jest.config.ts"
+      }
+    }
+  }
+}

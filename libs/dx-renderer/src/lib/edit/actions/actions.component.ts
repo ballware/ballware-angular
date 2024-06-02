@@ -1,9 +1,10 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { ResponsiveService } from '@ballware/common-services';
+import { CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
-import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, Observable, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
 @Component({
@@ -46,9 +47,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
     this.onImportDialogApply = this.onImportDialogApply.bind(this);
     this.onImportDialogCancel = this.onImportDialogCancel.bind(this);
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.small$
+      .pipe(takeUntil(this.destroy$));
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 

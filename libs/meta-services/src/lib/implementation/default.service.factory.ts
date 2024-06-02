@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NotificationService } from '@ballware/common-services';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
@@ -21,11 +22,9 @@ import { MetaService } from '../meta.service';
 import { MetaServiceFactory } from '../meta.service.factory';
 import { MetaServiceProxy } from '../meta/meta.proxy';
 import { MetaStore } from '../meta/meta.store';
-import { NotificationService } from '../notification.service';
 import { PageService } from '../page.service';
 import { PageServiceProxy } from '../page/page.proxy';
 import { PageStore } from '../page/page.store';
-import { ResponsiveService } from '../responsive.service';
 import { StatisticService } from '../statistic.service';
 import { StatisticServiceProxy } from '../statistic/statistic.proxy';
 import { StatisticStore } from '../statistic/statistic.store';
@@ -55,10 +54,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
 
     override createMetaService(lookupService: LookupService): MetaService {
         return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.translationPipe, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
-    }
-
-    override createResponsiveService(): ResponsiveService {
-        return new ResponsiveService();
     }
 
     override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {

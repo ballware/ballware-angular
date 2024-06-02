@@ -1,4 +1,5 @@
 import { OnDestroy } from "@angular/core";
+import { NotificationService } from "@ballware/common-services";
 import { ApiError, MetaApiService } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -7,7 +8,6 @@ import { cloneDeep, isEqual } from "lodash";
 import { Observable, catchError, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { AttachmentServiceApi } from "../attachment.service";
 import { attachmentDestroyed, attachmentUpdated } from "../component";
-import { NotificationService } from "../notification.service";
 import { AttachmentState } from "./attachment.state";
 
 export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentServiceApi, OnDestroy {
