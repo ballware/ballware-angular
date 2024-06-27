@@ -1,6 +1,6 @@
 <div [style.height]="height ?? 'auto'" class="w-100 container-fluid">
   <div class="row row-cols-1 row-cols-xl-{{colCount}}" *ngFor="let row of rows">
-    <div class="col col-xl-{{ (12 / colCount) * (layoutItem.colSpan ?? 1) }} gy-2" [style.height]="layoutItem.options?.height ?? 'auto'" *ngFor="let layoutItem of row">
+    <div class="col col-xl-{{ (12 / colCount) * (layoutItem.colSpan ?? 1) }}" [style.height]="layoutItem.options?.height ?? 'auto'" *ngFor="let layoutItem of row">
       <ballware-edit-item [layoutItem]="layoutItem">
       </ballware-edit-item>
     </div>

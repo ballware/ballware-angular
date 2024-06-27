@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { StatisticMapOptions } from "@ballware/meta-model";
 import { SettingsService, StatisticService } from "@ballware/meta-services";
 import { Observable, combineLatest, map } from "rxjs";
@@ -12,6 +12,9 @@ import { WithDestroy } from "../../utils/withdestroy";
     providers: []
   })
   export class StatisticMapComponent extends WithDestroy() {
+
+    @Input() visible!: boolean|null;
+
     name$: Observable<string|undefined>;
     height$: Observable<string|undefined>;
     options$: Observable<StatisticMapOptions|undefined>;

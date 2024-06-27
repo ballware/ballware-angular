@@ -11,13 +11,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-staticmultilookup',
   templateUrl: './staticmultilookup.component.html',
   styleUrls: ['./staticmultilookup.component.scss']
 })
-export class EditLayoutStaticmultilookupComponent extends WithLookup(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[]))))) implements OnInit, EditItemRef {
+export class EditLayoutStaticmultilookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -39,6 +40,7 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithRequire
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
             this.initStaticLookup(layoutItem, this.editService);
 
             this.layoutItem = layoutItem;
@@ -55,6 +57,8 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithRequire
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
     }
 
     return undefined;
@@ -71,6 +75,9 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithRequire
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
       case 'items':
         this.dataSource = createArrayDatasource(value as []);
         break;

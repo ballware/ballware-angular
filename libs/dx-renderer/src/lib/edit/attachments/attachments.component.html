@@ -1,5 +1,5 @@
-<dx-file-uploader [disabled]="(readonly$ | async) ?? false" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="fileUpload"> </dx-file-uploader>
-<dx-data-grid [height]="'100%'" [dataSource]="(dataSource$ | async) ?? null">
+<dx-file-uploader [visible]="(visible$ | async) ?? false" [disabled]="(readonly$ | async) ?? false" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="fileUpload"> </dx-file-uploader>
+<dx-data-grid [visible]="(visible$ | async) ?? false" [height]="'100%'" [dataSource]="(dataSource$ | async) ?? null">
     <dxi-column dataField="Name" [caption]="'attachment.columns.name' | i18next"></dxi-column>
     <dxi-column [caption]="'attachment.columns.options' | i18next" 
         [type]="'buttons'"

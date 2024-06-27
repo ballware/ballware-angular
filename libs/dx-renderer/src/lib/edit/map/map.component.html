@@ -1,12 +1,12 @@
-<div class="dx-fieldset">
-  <dx-map #map
-    [height]="layoutItem?.options?.height ?? '100%'"
-    [width]="'100%'"
-    [apiKey]="{ google: (googlekey$ | async) ?? 'unlicensed' }"
-    [provider]="'google'"
-    [type]="'hybrid'"
-    [autoAdjust]="true"
-    [zoom]="30"
-    [controls]="true">
-  </dx-map>
-</div>
+<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<dx-map #map
+  [visible]="(visible$ | async) ?? false"
+  [height]="layoutItem?.options?.height ?? '100%'"
+  [width]="'100%'"
+  [apiKey]="{ google: (googlekey$ | async) ?? 'unlicensed' }"
+  [provider]="'google'"
+  [type]="'hybrid'"
+  [autoAdjust]="true"
+  [zoom]="30"
+  [controls]="true">
+</dx-map>

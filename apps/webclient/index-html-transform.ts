@@ -1,6 +1,6 @@
 import { TargetOptions } from '@angular-builders/custom-webpack';
 
-import { version } from '../../package.json';
+import { version } from './package.json';
 
 export default (targetOptions: TargetOptions, indexHtml: string) => {
  

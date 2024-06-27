@@ -7,6 +7,7 @@ import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
+import { WithVisible } from '../../utils/withvisible';
 
 interface EntityGridItemOptions {
   uniqueKey?: string;
@@ -53,7 +54,7 @@ interface EntityGridItemOptions {
     }
   ]
 })
-export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
+export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -95,7 +96,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
 
     if (this.initialLayoutItem) {
       this.initLifecycle(this.initialLayoutItem, this.editService, this);
-
+      
       this.preparedLayoutItem$
         .pipe(takeUntil(this.destroy$))
         .subscribe((layoutItem) => {
@@ -118,6 +119,7 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
             this.layoutItem = layoutItem;
 
             this.initReadonly(layoutItem, this.editService);
+            this.initVisible(layoutItem);
           }
         });
     }
@@ -137,6 +139,8 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
     switch (option) {
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
     }
 
     return undefined;
@@ -147,6 +151,9 @@ export class EditLayoutEntitygridComponent extends WithReadonly(WithEditItemLife
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 

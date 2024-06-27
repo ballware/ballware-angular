@@ -47,6 +47,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
   @ViewChild('grid', { static: false }) grid?: DxDataGridComponent;
 
+  @Input() visible!: boolean|null;
   @Input() identifier?: string;
   @Input() height!: string;
   @Input() mode!: 'large' | 'medium' | 'small';

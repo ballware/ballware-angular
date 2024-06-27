@@ -9,13 +9,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-textarea',
   templateUrl: './textarea.component.html',
   styleUrls: ['./textarea.component.scss']
 })
-export class EditLayoutTextareaComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "")))) implements OnInit, EditItemRef {
+export class EditLayoutTextareaComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem!: EditLayoutItem;
 
@@ -37,6 +38,7 @@ export class EditLayoutTextareaComponent extends WithRequired(WithValidation(Wit
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
           }
@@ -52,6 +54,8 @@ export class EditLayoutTextareaComponent extends WithRequired(WithValidation(Wit
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();           
     }
 
     return undefined;
@@ -68,6 +72,9 @@ export class EditLayoutTextareaComponent extends WithRequired(WithValidation(Wit
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 }

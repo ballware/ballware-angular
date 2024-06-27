@@ -1,5 +1,6 @@
 <dx-data-grid #grid *ngIf="initialized && dataSource"
     class="w-100"
+    [visible]="visible ?? false"
     [style]="style"
     [dataSource]="dataSource"
     [repaintChangesOnly]="true"

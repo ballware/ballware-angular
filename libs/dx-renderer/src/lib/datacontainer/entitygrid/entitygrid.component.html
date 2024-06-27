@@ -1,4 +1,5 @@
 <ballware-datagrid *ngIf="(columns$ | async) && (dataSource$ | async)"
+    [visible]="visible"
     [identifier]="(storageIdentifier$ | async) ?? undefined"
     [customFunctions]="(headCustomFunctions$ | async) ?? []"
     [showReload]="true"

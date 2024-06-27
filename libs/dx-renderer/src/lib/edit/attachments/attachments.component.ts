@@ -10,6 +10,7 @@ import { createArrayDatasource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
+import { WithVisible } from "../../utils/withvisible";
 
 @Component({
     selector: 'ballware-edit-attachments',
@@ -23,7 +24,7 @@ import { WithReadonly } from "../../utils/withreadonly";
         } as Provider,
     ]
   })
-  export class EditLayoutAttachmentsComponent extends WithReadonly(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
+  export class EditLayoutAttachmentsComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
     @Input() initialLayoutItem?: EditLayoutItem;
 
     public layoutItem: EditLayoutItem|undefined;
@@ -79,6 +80,7 @@ import { WithReadonly } from "../../utils/withreadonly";
               .subscribe((layoutItem) => {
                 if (layoutItem) {
                   this.initReadonly(layoutItem, this.editService);
+                  this.initVisible(layoutItem);
       
                   this.layoutItem = layoutItem;            
                 }
@@ -128,11 +130,19 @@ import { WithReadonly } from "../../utils/withreadonly";
     }
 
     setOption(option: string, value: unknown): void {
-        throw new Error("Method not implemented.");
+        switch (option) {
+            case 'visible':
+                this.setVisible(value as boolean);
+        }
     }
 
-    getOption(option: string) {
-        throw new Error("Method not implemented.");
+    getOption(option: string): any {
+        switch (option) {
+            case 'visible':
+                return this.visible$.getValue();
+        }
+
+        return undefined;
     }
-  }
+}
 

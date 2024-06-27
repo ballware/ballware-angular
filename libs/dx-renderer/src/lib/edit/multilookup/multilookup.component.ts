@@ -10,13 +10,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-multilookup',
   templateUrl: './multilookup.component.html',
   styleUrls: ['./multilookup.component.scss']
 })
-export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[]))))) implements OnInit, EditItemRef {
+export class EditLayoutMultilookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -38,7 +39,8 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(With
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
-            this.initLookup(layoutItem, this.editService, this.lookupService, this.notificationService);
+            this.initVisible(layoutItem);
+            this.initLookup(layoutItem, this.editService, this.lookupService, this.notificationService);            
 
             this.layoutItem = layoutItem;            
           }
@@ -54,6 +56,8 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(With
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();                
     }
 
     return undefined;
@@ -70,6 +74,9 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithRequired(With
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
       case 'items':
         this.dataSource = createArrayDatasource(value as []);
         break;

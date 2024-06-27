@@ -10,13 +10,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-datetime',
   templateUrl: './datetime.component.html',
   styleUrls: ['./datetime.component.scss']
 })
-export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => (null as unknown) as string|number|Date)))) implements OnInit, EditItemRef {
+export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => (null as unknown) as string|number|Date))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -41,6 +42,7 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(Wit
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this.layoutItem = layoutItem;
             this.type = layoutItem.type as DateType;
@@ -66,6 +68,8 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(Wit
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();        
     }
 
     return undefined;
@@ -82,6 +86,9 @@ export class EditLayoutDatetimeComponent extends WithRequired(WithValidation(Wit
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 }

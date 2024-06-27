@@ -1,13 +1,13 @@
-<div class="dx-fieldset">
-  <ballware-entitygrid *ngIf="(gridLayout$ | async)"
-    [gridLayout]="(gridLayout$ | async) ?? undefined"
-    [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
-    [height]="(height$ | async)!"
-    [masterDetailTemplate]="masterDetailTemplate">
-    <ng-template #masterDetailTemplate>
-      <ballware-edit-detail [detailLayout]="(gridLayout$ | async)?.details!"></ballware-edit-detail>
-    </ng-template>    
-  </ballware-entitygrid>
-</div>
+<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<ballware-entitygrid *ngIf="(gridLayout$ | async)"
+  [visible]="((visible$ | async) ?? false)"
+  [gridLayout]="(gridLayout$ | async) ?? undefined"
+  [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
+  [height]="(height$ | async)!"
+  [masterDetailTemplate]="masterDetailTemplate">
+  <ng-template #masterDetailTemplate>
+    <ballware-edit-detail [detailLayout]="(gridLayout$ | async)?.details!"></ballware-edit-detail>
+  </ng-template>    
+</ballware-entitygrid>
 <ballware-crud-actions>
 </ballware-crud-actions>

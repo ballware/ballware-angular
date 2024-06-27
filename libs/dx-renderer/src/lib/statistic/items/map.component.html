@@ -1,4 +1,5 @@
 <dx-map
+    [class]="!visible ? 'hidden' : ''"
     [height]="(height$ | async) ?? '100%'"
     [width]="'100%'"
     [apiKey]="{ google: (googlekey$ | async) ?? 'unlicensed' }"

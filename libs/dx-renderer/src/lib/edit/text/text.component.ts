@@ -9,13 +9,14 @@ import { WithReadonly } from '../../utils/withreadonly';
 import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-text',
   templateUrl: './text.component.html',
   styleUrls: ['./text.component.scss']
 })
-export class EditLayoutTextComponent extends WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "")))) implements OnInit, EditItemRef {
+export class EditLayoutTextComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -37,6 +38,7 @@ export class EditLayoutTextComponent extends WithRequired(WithValidation(WithRea
             this.initReadonly(layoutItem, this.editService);
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             if (layoutItem.type === 'mail') {
               this.validateEmail(true);
@@ -56,6 +58,8 @@ export class EditLayoutTextComponent extends WithRequired(WithValidation(WithRea
         return this.required$.getValue();
       case 'readonly':
         return this.readonly$.getValue();
+      case 'visible':
+        return this.visible$.getValue();           
     }
 
     return undefined;
@@ -72,6 +76,9 @@ export class EditLayoutTextComponent extends WithRequired(WithValidation(WithRea
       case 'readonly':
         this.setReadonly(value as boolean)
         break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
     }
   }
 }

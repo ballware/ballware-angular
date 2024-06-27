@@ -5,13 +5,14 @@ import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithValue } from '../../utils/withvalue';
+import { WithVisible } from '../../utils/withvisible';
 
 @Component({
   selector: 'ballware-edit-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: ['./tabs.component.scss']
 })
-export class EditLayoutTabsComponent extends WithValue(WithEditItemLifecycle(WithDestroy()), () => 0) implements OnInit, EditItemRef {
+export class EditLayoutTabsComponent extends WithVisible(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0)) implements OnInit, EditItemRef {
 
   private _height: string|undefined;
   private _width: string|undefined;
@@ -38,6 +39,7 @@ export class EditLayoutTabsComponent extends WithValue(WithEditItemLifecycle(Wit
         .subscribe((layoutItem) => {
           if (layoutItem) {
             this.initValue(layoutItem, this.editService);
+            this.initVisible(layoutItem);
 
             this._height = layoutItem.options?.height;
             this._width = layoutItem.options?.width;
@@ -49,20 +51,25 @@ export class EditLayoutTabsComponent extends WithValue(WithEditItemLifecycle(Wit
     }
   }
 
-  setOption(option: string, value: unknown): void {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as number);
-        break;
-    }
-  }
-
   getOption(option: string) {
     switch (option) {
+      case 'visible':
+        return this.visible$.getValue();              
       case 'value':
         return this.value;
     }
 
     return undefined;
+  }  
+
+  setOption(option: string, value: unknown): void {
+    switch (option) {
+      case 'value':
+        this.setValueWithoutNotification(value as number);
+        break;
+      case 'visible':
+        this.setVisible(value as boolean);
+        break;        
+    }
   }
 }

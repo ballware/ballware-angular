@@ -1,4 +1,5 @@
 <dx-chart 
+    [class]="!visible ? 'hidden' : ''"
     [style.height]="height$ | async"
     [title]="(name$ | async) ?? ''"
     [rotated]="(options$ | async)?.rotated ?? false"
