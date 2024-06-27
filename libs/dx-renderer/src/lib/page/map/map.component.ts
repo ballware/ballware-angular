@@ -2,7 +2,7 @@ import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
 import { CrudService, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent } from 'devextreme-angular';
-import { Observable, combineLatest, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, takeUntil } from 'rxjs';
 import { getByPath } from '../../utils/databinding';
 import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -19,6 +19,8 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
   @ViewChild('map', { static: false }) map?: DxMapComponent;
 
   public googlekey$: Observable<string|undefined>;
+
+  public markers$ = new BehaviorSubject<any[]>([]);
 
   private mouseTarget: Element|undefined|null;
 
@@ -44,24 +46,10 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
           dataSource.on('changed', () => {
 
-            const existingMarkers = this.map?.instance.option(
-              'markers'
-            ) as Array<object>;
-    
-            for (const marker of existingMarkers) {
-              this.map?.instance.removeMarker(marker);
-            }
-
-            const fetchedItems = dataSource.items();
-
-            if (fetchedItems) {
-              fetchedItems.forEach(item => {
-                this.map?.instance.addMarker({
-                  location: getByPath(item, locationMember),
-                  onClick: () => this.onMarkerClicked(item)
-                });
-              });
-            }
+            this.markers$.next(dataSource.items()?.map(item => ({
+              location: getByPath(item, locationMember),
+              onClick: () => this.onMarkerClicked(item)
+            })));            
           });
 
           dataSource.load();
