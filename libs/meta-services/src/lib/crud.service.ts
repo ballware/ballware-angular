@@ -98,7 +98,8 @@ export interface CrudServiceApi {
         actions: CrudAction[]
     }|undefined>;
 
-    fetchedItems$: Observable<CrudItem[]|undefined>;
+    queryIdentifier$: Observable<string|undefined>;
+    reload$: Observable<void>;
 
     setQuery(query: string): void;
     setIdentifier(identifier: string): void;
@@ -179,7 +180,8 @@ export abstract class CrudService implements OnDestroy, CrudServiceApi {
     actions: CrudAction[]; 
   } | undefined>;
 
-  public abstract fetchedItems$: Observable<CrudItem[]|undefined>;
+  public abstract queryIdentifier$: Observable<string|undefined>;
+  public abstract reload$: Observable<void>;
 
   public abstract setQuery(query: string): void;
   public abstract setIdentifier(identifier: string): void;

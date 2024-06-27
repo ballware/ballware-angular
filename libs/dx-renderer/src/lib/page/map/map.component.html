@@ -6,5 +6,6 @@
   [type]="'hybrid'"
   [autoAdjust]="true"
   [zoom]="30"
-  [controls]="true">
+  [controls]="true"
+  [markers]="(markers$ | async) ?? []">
 </dx-map>

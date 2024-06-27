@@ -115,25 +115,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
                 }))(headCustomFunctions)))
         );        
 
-        this.effect(_ => combineLatest([this.queryIdentifier$, this.metaService.query$, this.metaService.headParams$])
-            .pipe(switchMap(([queryIdentifier, query, fetchParams]) => {
-                if (queryIdentifier && fetchParams && query) {
-                    return query(queryIdentifier, fetchParams);
-                }                        
-                else {
-                    return of(undefined);
-                }
-            }))
-            .pipe(tap((fetchedItems) =>
-                this.updater((state, fetchedItems: CrudItem[]|undefined) => ({
-                    ...state,
-                    fetchedItems
-                }))(fetchedItems)
-            ))
-        );
     }
-
+    
     readonly currentInteractionTarget$: Subject<Element | undefined> = new Subject<Element|undefined>();
+
+    readonly reload$ = new Subject<void>();
 
     readonly functionAllowed$ = combineLatest(([
             this.metaService.addFunction$,
@@ -222,8 +208,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
     readonly selectExportSheet$ = this.select(state => state.selectExportSheet);
     readonly selectImportSheet$ = this.select(state => state.selectImportSheet);
     
-    readonly fetchedItems$ = this.select(state => state.fetchedItems);
-
     readonly setQuery = this.updater((state, queryIdentifier: string) => ({
         ...state,
         queryIdentifier
@@ -234,23 +218,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudServiceA
         identifier
     }));
     
-    readonly reload = this.effect<void>((trigger$) => 
-        trigger$.pipe(withLatestFrom(this.queryIdentifier$, this.metaService.query$, this.metaService.headParams$))        
-            .pipe(switchMap(([, queryIdentifier, query, fetchParams]) => {
-                if (queryIdentifier && fetchParams && query) {
-                    return query(queryIdentifier, fetchParams);
-                }                        
-                else {
-                    return of(undefined);
-                }
-            }))
-            .pipe(tap((fetchedItems) =>
-                this.updater((state, fetchedItems: CrudItem[]|undefined) => ({
-                    ...state,
-                    fetchedItems
-                }))(fetchedItems)
-            ))
-    );
+    readonly reload = () => {
+        setTimeout(() => this.reload$.next());
+    }
 
     readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$))

@@ -34,7 +34,8 @@ export class CrudServiceProxy extends CrudService implements OnDestroy {
     readonly selectExportSheet$ = this.crudStore.selectExportSheet$;
     readonly selectImportSheet$ = this.crudStore.selectImportSheet$;
   
-    readonly fetchedItems$ = this.crudStore.fetchedItems$;
+    readonly queryIdentifier$ = this.crudStore.queryIdentifier$;
+    readonly reload$ = this.crudStore.reload$;
   
     readonly setQuery = this.crudStore.setQuery;
     readonly setIdentifier = this.crudStore.setIdentifier;

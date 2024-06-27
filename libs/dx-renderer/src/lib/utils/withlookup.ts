@@ -1,8 +1,9 @@
+import { ApiError } from "@ballware/meta-api";
 import { EditLayoutItem } from "@ballware/meta-model";
-import { AutocompleteStoreDescriptor, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor } from "@ballware/meta-services";
+import { AutocompleteStoreDescriptor, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NotificationService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { compileGetter } from 'devextreme/utils';
-import { combineLatest, takeUntil } from "rxjs";
+import { catchError, combineLatest, of, takeUntil } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "./datasource";
 import { HasDestroy } from "./hasdestroy";
 import { HasLookup } from "./haslookup";
@@ -37,7 +38,7 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
         return !!this.hasLookupItemHintValue;
       }
 
-      initLookup(layoutItem: EditLayoutItem, editService: EditService, lookupService: LookupService): void {
+      initLookup(layoutItem: EditLayoutItem, editService: EditService, lookupService: LookupService, notificationService: NotificationService): void {
 
         combineLatest([editService.getValue$, lookupService.lookups$])
               .pipe(takeUntil(this.destroy$))
@@ -60,12 +61,27 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
 
                       if (currentLookup.type === 'lookup') {
                         this.dataSource = createLookupDataSource(
-                          () => (currentLookup.store as LookupStoreDescriptor).listFunc(),
+                          () => (currentLookup.store as LookupStoreDescriptor).listFunc()
+                            .pipe(catchError((error: ApiError) => {
+                              notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                              
+                              return of([]);              
+                            })),
                           (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
+                            .pipe(catchError((error: ApiError) => {
+                              notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });       
+                              
+                              return of();
+                            }))
                         );
                       } else if (currentLookup.type === 'autocomplete') {
                         this.dataSource = createAutocompleteDataSource(
                           () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
+                            .pipe(catchError((error: ApiError) => {
+                              notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                              
+                              return of([]);              
+                            }))
                         );
                       }                      
                     }                    

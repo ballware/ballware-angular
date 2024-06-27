@@ -238,10 +238,12 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             .pipe(tap((params) => {
                 this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: { page: qs.stringify(params) }, queryParamsHandling: 'merge' });
 
-                this.updater((state) => ({
-                    ...state,
-                    initialized: true
-                }))();
+                setTimeout(() => 
+                  this.updater((state) => ({
+                      ...state,
+                      initialized: true
+                  }))()
+                );
             }))
     );
 

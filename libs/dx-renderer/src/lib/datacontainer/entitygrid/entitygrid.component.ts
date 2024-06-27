@@ -7,7 +7,7 @@ import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
 import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
 import { createColumnConfiguration } from '../../utils/columns';
-import { createEditableGridDatasource } from '../../utils/datasource';
+import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 import { DatagridSummary } from '../datagrid/datagrid.component';
 
@@ -81,6 +81,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     private lookupService: LookupService,
     private metaService: MetaService,
     private crudService: CrudService,
+    private dataSourceService: DataSourceService,
     private translationService: I18NextPipe,
     private responsiveService: ResponsiveService) {
 
@@ -136,13 +137,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
     this.summary$ = this._gridLayout$.pipe(map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined));
 
-    this.dataSource$ = combineLatest([this.metaService.editFunction$, this.crudService.fetchedItems$])
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map(([editFunction, fetchedItems]) => fetchedItems ? createEditableGridDatasource(fetchedItems, (item) => {
-        if (editFunction) {
-          this.crudService.save({ customFunction: editFunction, item });  
-        }        
-      }) : undefined));
+    this.dataSource$ = this.dataSourceService.dataSource$;
 
     combineLatest([this.selectAddRequest$, this.editLayoutIdentifier$])
       .pipe(takeUntil(this.destroy$))
