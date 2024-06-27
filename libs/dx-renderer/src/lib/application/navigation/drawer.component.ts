@@ -54,9 +54,7 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
         this.openedChange.emit(false);
       }
 
-      if (!this.router.url.startsWith(url)) {
-        this.router.navigate([url]);
-      }      
+      this.router.navigate([url]);
     }    
   }
 }
