@@ -441,6 +441,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@angular-devkit/core@npm:16.2.14":
+  version: 16.2.14
+  resolution: "@angular-devkit/core@npm:16.2.14"
+  dependencies:
+    ajv: "npm:8.12.0"
+    ajv-formats: "npm:2.1.1"
+    jsonc-parser: "npm:3.2.0"
+    picomatch: "npm:2.3.1"
+    rxjs: "npm:7.8.1"
+    source-map: "npm:0.7.4"
+  peerDependencies:
+    chokidar: ^3.5.2
+  peerDependenciesMeta:
+    chokidar:
+      optional: true
+  checksum: 1e18fab162a0f95c198c294240c94f7e9a97c8ae622ac191b1a58adc25e639b5f8b00396c1156b12504ae3e164687ad9a4be58d297d9343cfe7f89acedc3d8fd
+  languageName: node
+  linkType: hard
+
 "@angular-devkit/core@npm:17.2.0, @angular-devkit/core@npm:^17.0.0":
   version: 17.2.0
   resolution: "@angular-devkit/core@npm:17.2.0"
@@ -487,6 +506,19 @@ __metadata:
     ora: "npm:5.4.1"
     rxjs: "npm:6.6.7"
   checksum: f9556b15420c58ab621227c8257271859881977d45914ab05b3bd61f5d26375d750f006392bae4e048ace5800497b7ff4bf0b9dc2bfb43206bcb69f7ade65190
+  languageName: node
+  linkType: hard
+
+"@angular-devkit/schematics@npm:16.2.14":
+  version: 16.2.14
+  resolution: "@angular-devkit/schematics@npm:16.2.14"
+  dependencies:
+    "@angular-devkit/core": "npm:16.2.14"
+    jsonc-parser: "npm:3.2.0"
+    magic-string: "npm:0.30.1"
+    ora: "npm:5.4.1"
+    rxjs: "npm:7.8.1"
+  checksum: 56fc2e56406c4258f7fe804b7955df94aca6d8b5747a05d74a8245585db41c133307a354442efd6884c0bdf832f45b30358a11b4bb0cf84b0fcab759b18e8713
   languageName: node
   linkType: hard
 
@@ -3727,32 +3759,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devexpress/utils@npm:1.3.16":
-  version: 1.3.16
-  resolution: "@devexpress/utils@npm:1.3.16"
-  dependencies:
-    tslib: "npm:2.0.1"
-  checksum: 23393a141858b2c7890935b31c1621c557eb70b3f688494e7bfdb32ac13cf19d597b65f541907a5d6cad5ab018b448cf666fc6828f7fa259e81693acd4ee10e7
-  languageName: node
-  linkType: hard
-
-"@devexpress/utils@npm:1.4.1":
-  version: 1.4.1
-  resolution: "@devexpress/utils@npm:1.4.1"
+"@devexpress/utils@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "@devexpress/utils@npm:1.4.3"
   dependencies:
     tslib: "npm:2.3.1"
-  checksum: 16c6a791d4d728ff382740f690657884dbaa4835e329c2fc9ffed9f148bc2093bb23e65fd233d2f6e5921dbc3bb7f7bfe29262b74baddf85ff61fd05348351a0
+  checksum: ff75927b68d76af95f9395cd1e185b42c00a6c69f2476a8e590efbbe5666ab52bda9b288c925f8ad4a0ba4a687b2d06e9957a6359c46a6d0b4e9a933925b04a6
   languageName: node
   linkType: hard
 
-"@devextreme/runtime@npm:3.0.12":
-  version: 3.0.12
-  resolution: "@devextreme/runtime@npm:3.0.12"
+"@devextreme/runtime@npm:3.0.13":
+  version: 3.0.13
+  resolution: "@devextreme/runtime@npm:3.0.13"
   dependencies:
     inferno: "npm:^7.4.6"
     inferno-create-element: "npm:^7.4.6"
     inferno-hydrate: "npm:^7.4.6"
-  checksum: 27dc00726c2e55ae6dabb59e40629e208247eb265c021346ed7d7223fa16a1279e6c7be9839054be43154426378cf9cc8651e0df37b7b6bc2f1124fa521bd801
+  checksum: 04de61109e15d58ff50be409a0dc53f65cb0c1fe617498c5ccde24d06add4a4dcb212afcabd6ff5835a9492bc716f1c588ec6b84e4d911eb19b3aa96c63f0e59
   languageName: node
   linkType: hard
 
@@ -11473,8 +11496,8 @@ __metadata:
     codemirror: "npm:^6.0.1"
     codemirror-json5: "npm:^1.0.3"
     cypress: "npm:13.9.0"
-    devextreme: "npm:^23.2.4"
-    devextreme-angular: "npm:^23.2.4"
+    devextreme: "npm:^24.1.3"
+    devextreme-angular: "npm:^24.1.3"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:9.1.0"
     eslint-plugin-cypress: "npm:2.15.1"
@@ -13740,46 +13763,46 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devexpress-diagram@npm:2.2.5":
-  version: 2.2.5
-  resolution: "devexpress-diagram@npm:2.2.5"
+"devexpress-diagram@npm:2.2.8":
+  version: 2.2.8
+  resolution: "devexpress-diagram@npm:2.2.8"
   dependencies:
-    "@devexpress/utils": "npm:1.3.16"
+    "@devexpress/utils": "npm:^1.4.3"
     es6-object-assign: "npm:^1.1.0"
-  checksum: e6f3de025282309030cd16f3f61a9931f575dd9b30202cf550d80dba01e688d1b3cce962207149a007d1a8cc7284feb3f5e81408ec088c88c14f51beb8f3c3a4
+  checksum: c8de00d1b4145d6c5ee059b4903ecb06071421cb4ec11c8edf43975661631155523d4672b84ed14d91ecbf03f26999791076936dc285312a658de4c892a653e4
   languageName: node
   linkType: hard
 
-"devexpress-gantt@npm:4.1.51":
-  version: 4.1.51
-  resolution: "devexpress-gantt@npm:4.1.51"
+"devexpress-gantt@npm:4.1.55":
+  version: 4.1.55
+  resolution: "devexpress-gantt@npm:4.1.55"
   dependencies:
-    "@devexpress/utils": "npm:1.4.1"
+    "@devexpress/utils": "npm:^1.4.3"
     tslib: "npm:2.3.1"
-  checksum: 272a4106db643129f5caa011edc01aa6658101df196114dc8c93a2d9ce9818f19799c2abba647e4f9a9e1bcf1fd7db28ba5bc9c017222e2ead85c85344b26fd3
+  checksum: b81862a7cee8785eeb0534915574138050a0ac5062ab1a8b50d22859e12816aa5d4e72807b11fb4640da32fc34149f47db40bc7cbc125b5dabb6e2584fc3ed42
   languageName: node
   linkType: hard
 
-"devextreme-angular@npm:^23.2.4":
-  version: 23.2.4
-  resolution: "devextreme-angular@npm:23.2.4"
+"devextreme-angular@npm:^24.1.3":
+  version: 24.1.3
+  resolution: "devextreme-angular@npm:24.1.3"
   dependencies:
-    "@angular-devkit/schematics": "npm:^12.2.18"
+    "@angular-devkit/schematics": "npm:16.2.14"
     devextreme-schematics: "npm:*"
     inferno-server: "npm:7.4.11"
-    tslib: "npm:^2.2.0"
+    tslib: "npm:^2.3.0"
   peerDependencies:
-    "@angular/common": ">12.0.0"
-    "@angular/core": ">12.0.0"
-    "@angular/forms": ">12.0.0"
-    devextreme: ~23.2.4
-  checksum: 7875df54e02ed16c18f7fca5fb0edc9858d0424d5fc275dc06b3f94522c2a6956bf1fe93b17aedd074c4aede614a3f89eda42306b00697c6e91a7dafb976aa64
+    "@angular/common": ">=16.0.0"
+    "@angular/core": ">=16.0.0"
+    "@angular/forms": ">=16.0.0"
+    devextreme: ~24.1.3
+  checksum: 3992bef5b0370154cea80a0147a673e87fddcc0aee53c30898dc2960315c9a57625706aed36701dc97f32c6f6a328de92e9a64ed50b2c01d1a39008383efdde0
   languageName: node
   linkType: hard
 
-"devextreme-quill@npm:1.6.4":
-  version: 1.6.4
-  resolution: "devextreme-quill@npm:1.6.4"
+"devextreme-quill@npm:1.7.1":
+  version: 1.7.1
+  resolution: "devextreme-quill@npm:1.7.1"
   dependencies:
     core-js: "npm:^3.34.0"
     eventemitter3: "npm:^4.0.7"
@@ -13788,7 +13811,7 @@ __metadata:
     lodash.merge: "npm:^4.6.2"
     parchment: "npm:^2.0.1"
     quill-delta: "npm:^5.0.0"
-  checksum: 38317c0b81376c12634de764f59b7e2cdb2f845814e9050c125f393ad0504890ad96cf1e593371bd42c928f57c2f05cc711a80c1588c3872a18433962d0765a6
+  checksum: d387ead9672ddeeb4f0827cf5a70731c356e0e2f572c712d84a3f7ac9a3d41e81dbea8b7b0d3f9b62483774c7e4fe5d8fdf8bcf01d40c1501b4814b7494958bc
   languageName: node
   linkType: hard
 
@@ -13803,36 +13826,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"devextreme-showdown@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "devextreme-showdown@npm:1.0.1"
-  dependencies:
-    yargs: "npm:^17.2.1"
-  bin:
-    showdown: bin/showdown.js
-  checksum: a49f89ed61069838b9396a52e1985a319716466b0425d6cf11f6a678203c55b8945cb2dd640da147c34cc33e0c45fbb7cdfa41cf85760cc1c9b1ab864a7332ac
-  languageName: node
-  linkType: hard
-
-"devextreme@npm:^23.2.4":
-  version: 23.2.4
-  resolution: "devextreme@npm:23.2.4"
+"devextreme@npm:^24.1.3":
+  version: 24.1.3
+  resolution: "devextreme@npm:24.1.3"
   dependencies:
     "@babel/runtime": "npm:^7.12.1"
-    "@devextreme/runtime": "npm:3.0.12"
-    devexpress-diagram: "npm:2.2.5"
-    devexpress-gantt: "npm:4.1.51"
-    devextreme-quill: "npm:1.6.4"
-    devextreme-showdown: "npm:^1.0.1"
+    "@devextreme/runtime": "npm:3.0.13"
+    devexpress-diagram: "npm:2.2.8"
+    devexpress-gantt: "npm:4.1.55"
+    devextreme-quill: "npm:1.7.1"
     inferno: "npm:^7.4.9"
     inferno-hydrate: "npm:^7.4.9"
-    jszip: "npm:^3.7.1"
+    jszip: "npm:^3.10.1"
     rrule: "npm:^2.7.1"
+    showdown: "npm:^2.1.0"
     turndown: "npm:~7.1.0"
   bin:
     devextreme-bundler: bin/bundler.js
     devextreme-bundler-init: bin/bundler-init.js
-  checksum: 85928047b499fb56b11687241f65893bfbddb75609cd13d8c3d793fb6137b189c0ac23f0225fb6643ca3f2871a24bc872ea02ac2d2fdc9fd6440896b9ab65933
+  checksum: 394ed84fa83eac630c18463097374300b8c872a7ac0eaa626d107beb578fefa257960554597e9539ca114a4572c324966af7ac9525d53c62db9490f026162a96
   languageName: node
   linkType: hard
 
@@ -19870,7 +19882,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jszip@npm:^3.10.1, jszip@npm:^3.7.1":
+"jszip@npm:^3.10.1":
   version: 3.10.1
   resolution: "jszip@npm:3.10.1"
   dependencies:
@@ -20471,6 +20483,15 @@ __metadata:
   dependencies:
     "@jridgewell/sourcemap-codec": "npm:^1.4.13"
   checksum: 5fac57cf190bee966d3b5c55e0c23d6148b043a43220de91a369c4a81301b483418712b38440d15055a2ac04beec63dea4866a4e5c84ad6b919186e1c5c61241
+  languageName: node
+  linkType: hard
+
+"magic-string@npm:0.30.1":
+  version: 0.30.1
+  resolution: "magic-string@npm:0.30.1"
+  dependencies:
+    "@jridgewell/sourcemap-codec": "npm:^1.4.15"
+  checksum: 30471bbe363196a57795f903025166ba9930f9a98ea4e23d2cfbb379756414aff01309eaa06d3ae23d3cc0497babf5c5d7d98c7aeca726335cddf2d9cd873e1c
   languageName: node
   linkType: hard
 
@@ -22272,17 +22293,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"picomatch@npm:2.3.1, picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.2.3, picomatch@npm:^2.3.0, picomatch@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "picomatch@npm:2.3.1"
+  checksum: 26c02b8d06f03206fc2ab8d16f19960f2ff9e81a658f831ecb656d8f17d9edc799e8364b1f4a7873e89d9702dff96204be0fa26fe4181f6843f040f819dac4be
+  languageName: node
+  linkType: hard
+
 "picomatch@npm:4.0.1":
   version: 4.0.1
   resolution: "picomatch@npm:4.0.1"
   checksum: a036a085b18b376493e8ccef155bb03c65a2be7203582b717bb0498d1446e6a80f7f86a36e07877590abd0431f26c64c6154058c31f4f46105d3686a34fa3cf6
-  languageName: node
-  linkType: hard
-
-"picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.2.3, picomatch@npm:^2.3.0, picomatch@npm:^2.3.1":
-  version: 2.3.1
-  resolution: "picomatch@npm:2.3.1"
-  checksum: 26c02b8d06f03206fc2ab8d16f19960f2ff9e81a658f831ecb656d8f17d9edc799e8364b1f4a7873e89d9702dff96204be0fa26fe4181f6843f040f819dac4be
   languageName: node
   linkType: hard
 
@@ -25061,6 +25082,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"showdown@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "showdown@npm:2.1.0"
+  dependencies:
+    commander: "npm:^9.0.0"
+  bin:
+    showdown: bin/showdown.js
+  checksum: 8508e060874c42338b9ebfe884763e8042d9575185d9dd3a12f7380736732893a4738f37140add97bde0c4c87d6bad66ed0761505f310df6044ee3385e2ae349
+  languageName: node
+  linkType: hard
+
 "side-channel@npm:^1.0.4":
   version: 1.0.4
   resolution: "side-channel@npm:1.0.4"
@@ -26419,13 +26451,6 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 09a5877402d082bb1134930c10249edeebc0211f36150c35e1c542e5b91f1047b1ccf7da1e59babca1ef1f014c525510f4f870de7c9bda470c73bb4e2721b3ea
-  languageName: node
-  linkType: hard
-
-"tslib@npm:2.0.1":
-  version: 2.0.1
-  resolution: "tslib@npm:2.0.1"
-  checksum: 5f370da8ac0e9c7f2440a3fd8013682c042a8eeace93849a44a8d4252770e4830fce3201b0bc5a6045c7e28b80eaebe3a3b48e656aa7b4f9681b9a9d7263cfaf
   languageName: node
   linkType: hard
 
