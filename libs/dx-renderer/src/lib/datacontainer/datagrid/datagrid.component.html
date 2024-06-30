@@ -30,6 +30,7 @@
     <dxo-group-panel *ngIf="mode === 'large'" [visible]="true"></dxo-group-panel>
     <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
     <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>    
+    <dxo-scrolling mode="standard" rowRenderingMode="virtual"></dxo-scrolling>
     <div *dxTemplate="let masterDetailItem of 'masterDetail'">        
         <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>                    
     </div>
