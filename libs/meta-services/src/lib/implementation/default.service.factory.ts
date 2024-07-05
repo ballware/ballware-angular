@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
@@ -61,8 +61,8 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
         return new ResponsiveService();
     }
 
-    override createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService {
-        return new PageServiceProxy(new PageStore(this.store, this.httpClient, activatedRoute, router, this.identityService, this.notificationService, this.translationPipe, this.tenantService, this.toolbarService, lookupService, this.apiServiceFactory.createMetaApi()));
+    override createPageService(router: Router, lookupService: LookupService): PageService {
+        return new PageServiceProxy(new PageStore(this.store, this.httpClient, router, this.identityService, this.tenantService, this.toolbarService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
     
     override createStatisticService(lookupService: LookupService): StatisticService {

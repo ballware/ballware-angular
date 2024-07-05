@@ -1,4 +1,4 @@
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AttachmentService } from './attachment.service';
 import { CrudService } from './crud.service';
 import { EditService } from './edit.service';
@@ -15,6 +15,6 @@ export abstract class MetaServiceFactory {
     abstract createLookupService(): LookupService;
     abstract createMetaService(lookupService: LookupService): MetaService;
     abstract createResponsiveService(): ResponsiveService;
-    abstract createPageService(activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService): PageService;
+    abstract createPageService(router: Router, lookupService: LookupService): PageService;
     abstract createStatisticService(lookupService: LookupService): StatisticService;
 }

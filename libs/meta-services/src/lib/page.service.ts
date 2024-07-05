@@ -12,6 +12,8 @@ export interface PageServiceApi {
   customParam$: Observable<Record<string, unknown>|undefined>;
   headParams$: Observable<QueryParams|undefined>;
 
+  setPageUrl(pageUrl: string): void;
+  setPageQuery(pageQuery: string): void;
   loadData(params: QueryParams): void;
   paramEditorInitialized(editor: { name: string, item: ToolbarItemRef }): void;
   paramEditorDestroyed(name: string): void;
@@ -31,6 +33,8 @@ export abstract class PageService implements OnDestroy, PageServiceApi {
   public abstract customParam$: Observable<Record<string, unknown>|undefined>;
   public abstract headParams$: Observable<QueryParams|undefined>;
 
+  public abstract setPageUrl(pageUrl: string): void;
+  public abstract setPageQuery(pageQuery: string): void;
   public abstract loadData(params: QueryParams): void;
   public abstract paramEditorInitialized(editor: { name: string, item: ToolbarItemRef }): void;
   public abstract paramEditorDestroyed(name: string): void;

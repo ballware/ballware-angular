@@ -20,6 +20,8 @@ export class PageServiceProxy extends PageService implements OnDestroy {
     readonly customParam$ = this.pageStore.customParam$;
     readonly headParams$ = this.pageStore.headParams$;
     
+    readonly setPageUrl = this.pageStore.setPageUrl;
+    readonly setPageQuery = this.pageStore.setPageQuery;
     readonly loadData = this.pageStore.loadData;
     readonly paramEditorInitialized = this.pageStore.paramEditorInitialized;
     readonly paramEditorDestroyed = this.pageStore.paramEditorDestroyed;

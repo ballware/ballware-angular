@@ -1,4 +1,4 @@
-import { Component, HostBinding, OnDestroy, Provider } from '@angular/core';
+import { Component, HostBinding, Input, OnChanges, OnDestroy, OnInit, Provider, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LookupService, MetaServiceFactory, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
@@ -16,17 +16,20 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: PageService, 
-      useFactory: (serviceFactory: MetaServiceFactory, activatedRoute: ActivatedRoute, router: Router, lookupService: LookupService) => serviceFactory.createPageService(activatedRoute, router, lookupService),
-      deps: [MetaServiceFactory, ActivatedRoute, Router, LookupService]  
+      useFactory: (serviceFactory: MetaServiceFactory, router: Router, lookupService: LookupService) => serviceFactory.createPageService(router, lookupService),
+      deps: [MetaServiceFactory, Router, LookupService]  
     } as Provider
   ]
 })
-export class PageComponent extends WithDestroy() implements OnDestroy {  
+export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges {  
   @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
 
   public fullscreenDialogs$: Observable<boolean>;
+
+  @Input() id!: string;
+  @Input() page!: string; 
 
   constructor(private responsiveService: ResponsiveService, private pageService: PageService, private lookupService: LookupService) {
     super();
@@ -35,11 +38,22 @@ export class PageComponent extends WithDestroy() implements OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
   }
-
+  
   override ngOnDestroy(): void {
     super.ngOnDestroy();
     
     this.pageService.ngOnDestroy();
     this.lookupService.ngOnDestroy();
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['id']) {
+      this.pageService.setPageUrl(changes['id'].currentValue);
+    }
+
+    if (changes['page']) {
+      this.pageService.setPageQuery(changes['page'].currentValue);
+    }
+  }
+  
 }

@@ -1,19 +1,17 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable, OnDestroy } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { Router } from "@angular/router";
 import { MetaApiService } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { I18NextPipe } from "angular-i18next";
-import { cloneDeep, isEqual } from "lodash";
+import { cloneDeep, isEmpty, isEqual } from "lodash";
 import * as qs from "qs";
 import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
-import { NotificationService } from "../notification.service";
 import { PageServiceApi } from "../page.service";
 import { TenantService } from "../tenant.service";
 import { ToolbarService } from "../toolbar.service";
@@ -31,11 +29,8 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     constructor(
         private store: Store,
         private httpClient: HttpClient,
-        private activatedRoute: ActivatedRoute,
         private router: Router,
         private identityService: IdentityService,
-        private notificationService: NotificationService,
-        private translationService: I18NextPipe,
         private tenantService: TenantService,
         private toolbarService: ToolbarService,
         private lookupService: LookupService,      
@@ -189,10 +184,8 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 }))
         );
 
-        this.effect(_ => combineLatest([this.tenantService.navigationLayout$, this.tenantService.pages$, this.activatedRoute.paramMap])
-          .pipe(tap(([navigationLayout, pages, paramMap]) => {
-            const pageUrl = paramMap.get('id') as string;
-
+        this.effect(_ => combineLatest([this.select(state => state.pageUrl), this.tenantService.navigationLayout$, this.tenantService.pages$])
+          .pipe(tap(([pageUrl, navigationLayout, pages]) => {            
             if (navigationLayout && pages && pageUrl) {
               if (pageUrl === 'default') {
                 if (navigationLayout.defaultUrl) {
@@ -209,14 +202,19 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
           }))
         );
 
-      this.effect(_ => combineLatest([this.activatedRoute.queryParams])
-        .pipe(tap(([queryParams]) => {          
-          const headParams = qs.parse(queryParams['page'] ?? "", { arrayLimit: 1000 });
+      this.effect(_ => this.select(state => state.pageQuery)
+        .pipe(withLatestFrom(this.select(state => state.headParams), this.select(state => state.pageIdentifier)))
+        .pipe(tap(([queryParams, headParams, pageIdentifier]) => {          
 
-          this.updater((state, headParams: QueryParams) => ({
+          if ((!queryParams || isEmpty(queryParams)) && !isEmpty(headParams) && pageIdentifier) {
+            this.resetPage();
+            this.setPageId(pageIdentifier);
+          } else {
+            this.updater((state, headParams: QueryParams) => ({
               ...state,
               headParams
-          }))(headParams);
+            }))(queryParams ?? {});
+          }
         }))
       );
     }
@@ -228,6 +226,18 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     readonly customParam$ = this.select((state) => state.customParam);
     readonly headParams$ = this.select((state) => state.headParams);
 
+    readonly resetPage = this.updater(() => ({ initialized: false, headParams: {} }));
+
+    readonly setPageUrl = this.updater((state, pageUrl: string) => ({
+      ...state,
+      pageUrl
+    }));
+
+    readonly setPageQuery = this.updater((state, pageQuery: string) => ({
+      ...state,
+      pageQuery: qs.parse(pageQuery ?? "", { arrayLimit: 1000 })
+    }));
+
     readonly setPageId = this.updater((state, pageIdentifier: string) => ({
       ...state,
       pageIdentifier
@@ -236,7 +246,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     readonly loadData = this.effect((params$: Observable<QueryParams>) => 
         params$
             .pipe(tap((params) => {
-                this.router.navigate([], { relativeTo: this.activatedRoute, queryParams: { page: qs.stringify(params) }, queryParamsHandling: 'merge' });
+                this.router.navigate([], { queryParams: { page: qs.stringify(params) }, queryParamsHandling: 'merge' });
 
                 setTimeout(() => 
                   this.updater((state) => ({
