@@ -20,6 +20,7 @@
       "@ballware/dx-renderer": ["libs/dx-renderer/src/index.ts"],
       "@ballware/meta-api": ["libs/meta-api/src/index.ts"],
       "@ballware/meta-model": ["libs/meta-model/src/index.ts"],
+      "@ballware/meta-scripting": ["libs/meta-scripting/src/index.ts"],
       "@ballware/meta-services": ["libs/meta-services/src/index.ts"]
     }
   },

@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { parse } from 'json5/lib';
 
 import { CompiledPageData } from '@ballware/meta-model';
+import { compilePrepareCustomParam, compileParamsInitialized, compileParamEditorInitialized, compileParamEditorValueChanged, compileParamEditorEvent } from '@ballware/meta-scripting';
 
 /**
  * Interface for page metadata operations
@@ -30,8 +31,6 @@ interface PageData {
 }
 
 interface PageCustomScripts {
-  pageVisible?: string;
-  pageEnabled?: string;
   prepareCustomParam?: string;
   paramsInitialized?: string;
   paramEditorInitialized?: string;
@@ -47,143 +46,17 @@ const compilePage = (pageData: PageData): CompiledPageData => {
     layout: pageData.Layout ? parse(pageData.Layout) : {},
   } as CompiledPageData;
 
-  if (pageData.CustomScripts) {
-    compiledPageData.compiledCustomScripts = {};
+  const customScripts = parse(
+    pageData.CustomScripts ?? '{}'
+  ) as PageCustomScripts;
 
-    const customScripts = parse(
-      pageData.CustomScripts
-    ) as PageCustomScripts;
-
-    if (customScripts.pageVisible) {
-      const compiledArgs = ['rights', 'page'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.pageVisible)
-      );
-
-      compiledPageData.compiledCustomScripts.pageVisible = compiledFn
-        ? (rights, page) => compiledFn.apply(compiledFn, [rights, page])
-        : undefined;
-    }
-
-    if (customScripts.pageEnabled) {
-      const compiledArgs = ['rights', 'page'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.pageEnabled)
-      );
-
-      compiledPageData.compiledCustomScripts.pageEnabled = compiledFn
-        ? (rights, page) => compiledFn.apply(compiledFn, [rights, page])
-        : undefined;
-    }
-
-    if (customScripts.prepareCustomParam) {
-      const compiledArgs = ['lookups', 'util', 'callback'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.prepareCustomParam)
-      );
-
-      compiledPageData.compiledCustomScripts.prepareCustomParam = compiledFn
-        ? (lookups, util, callback) =>
-            compiledFn.apply(compiledFn, [lookups, util, callback])
-        : undefined;
-    }
-
-    if (customScripts.paramsInitialized) {
-      const compiledArgs = ['hidden', 'lookups', 'util', 'actions', 'pageParam'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.paramsInitialized)
-      );
-
-      compiledPageData.compiledCustomScripts.paramsInitialized = compiledFn
-        ? (hidden, lookups, util, actions, pageParam) =>
-            compiledFn.apply(compiledFn, [hidden, lookups, util, actions, pageParam])
-        : undefined;
-    }
-
-    if (customScripts.paramEditorInitialized) {
-      const compiledArgs = ['name', 'editUtil', 'lookups', 'util', 'actions', 'pageParam'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.paramEditorInitialized)
-      );
-
-      compiledPageData.compiledCustomScripts.paramEditorInitialized = compiledFn
-        ? (name, editUtil, lookups, util, actions, pageParam) =>
-            compiledFn.apply(compiledFn, [
-              name,
-              editUtil,
-              lookups,
-              util,
-              actions,
-              pageParam,
-            ])
-        : undefined;
-    }
-
-    if (customScripts.paramEditorValueChanged) {
-      const compiledArgs = [
-        'name',
-        'value',
-        'editUtil',
-        'lookups',
-        'util',
-        'actions',
-        'pageParam',
-      ];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.paramEditorValueChanged)
-      );
-
-      compiledPageData.compiledCustomScripts.paramEditorValueChanged = compiledFn
-        ? (name, value, editUtil, lookups, util, actions, pageParam) =>
-            compiledFn.apply(compiledFn, [
-              name,
-              value,
-              editUtil,
-              lookups,
-              util,
-              actions,
-              pageParam,
-            ])
-        : undefined;
-    }
-
-    if (customScripts.paramEditorEvent) {
-      const compiledArgs = [
-        'name',
-        'event',
-        'editUtil',
-        'lookups',
-        'util',
-        'actions',
-        'pageParam',
-        'param',
-      ];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(customScripts.paramEditorEvent)
-      );
-
-      compiledPageData.compiledCustomScripts.paramEditorEvent = compiledFn
-        ? (name, event, editUtil, lookups, util, actions, pageParam, param) =>
-            compiledFn.apply(compiledFn, [
-              name,
-              event,
-              editUtil,
-              lookups,
-              util,
-              actions,
-              pageParam,
-              param,
-            ])
-        : undefined;
-    }
-  }
+  compiledPageData.compiledCustomScripts = {
+    prepareCustomParam: compilePrepareCustomParam(customScripts.prepareCustomParam),
+    paramsInitialized: compileParamsInitialized(customScripts.paramsInitialized),
+    paramEditorInitialized: compileParamEditorInitialized(customScripts.paramEditorInitialized),
+    paramEditorValueChanged: compileParamEditorValueChanged(customScripts.paramEditorValueChanged),
+    paramEditorEvent: compileParamEditorEvent(customScripts.paramEditorEvent)
+  };
 
   return compiledPageData;
 };

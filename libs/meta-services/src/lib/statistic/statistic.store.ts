@@ -66,11 +66,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
                         data: updates.data
                     }));
 
-                    if (metadata.mappingScript) {
-                        metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, createUtil(this.httpClient, accessToken), (layout, data) => updater({ name: layout?.title ?? metadata.name, layout, data }));
-                    } else {
-                        updater({ name: metadata.layout?.title ?? metadata.name, layout: metadata.layout, data });
-                    }
+                    metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, createUtil(this.httpClient, accessToken), (layout, data) => updater({ name: layout?.title ?? metadata.name, layout, data }));
                 }
             }))
         );
@@ -85,14 +81,8 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
     readonly data$ = this.select(state => state.data);
     
     readonly argumentAxisCustomizeText$ = combineLatest([this.metadata$, this.layout$, this.customParam$, this.headParams$, this.identityService.accessToken$])
-        .pipe(map(([metadata, layout, customParam, headParams, accessToken]) => (metadata && metadata.customScripts?.argumentAxisCustomizeText && layout && customParam && headParams && accessToken) 
-            ? (value: unknown) => {
-                if (metadata.customScripts?.argumentAxisCustomizeText) {
-                    return metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, createUtil(this.httpClient, accessToken));
-                } else {
-                    return undefined;
-                }
-            }
+        .pipe(map(([metadata, layout, customParam, headParams, accessToken]) => (metadata && layout && customParam && headParams && accessToken) 
+            ? (value: unknown) => metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, createUtil(this.httpClient, accessToken))    
             : undefined));
 
     readonly setStatistic = this.updater((state, statistic: string) => ({

@@ -79,7 +79,14 @@
   },
   "defaultProject": "webclient",
   "release": {
-    "projects": ["meta-api", "meta-model", "meta-services", "dx-renderer", "webclient"],
+    "projects": [
+      "meta-api",
+      "meta-model",
+      "meta-scripting",
+      "meta-services",
+      "dx-renderer",
+      "webclient"
+    ],
     "changelog": {
       "workspaceChangelog": {
         "createRelease": "github",

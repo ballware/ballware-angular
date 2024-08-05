@@ -1,0 +1,37 @@
+{
+  "name": "meta-scripting",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/meta-scripting/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/meta-scripting",
+        "main": "libs/meta-scripting/src/index.ts",
+        "tsConfig": "libs/meta-scripting/tsconfig.lib.json",
+        "assets": ["libs/meta-scripting/*.md"]
+      }
+    },
+    "publish": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node tools/scripts/publish.mjs meta-scripting {args.ver} {args.tag}"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/meta-scripting/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

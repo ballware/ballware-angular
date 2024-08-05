@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { parse } from 'json5/lib';
 
 import { CompiledTenant, NavigationLayout, Template } from '@ballware/meta-model';
+import { compileTenantRightsCheck } from '@ballware/meta-scripting';
 
 /**
  * Interface for tenant data operations
@@ -44,19 +45,8 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
             definition: parse(t.definition)
           } as Template))        
       : ([]),      
+      hasRight: compileTenantRightsCheck(tenant.RightsCheckScript)
   } as CompiledTenant;
-
-  if (tenant.RightsCheckScript) {
-    const compiledArgs = ['userinfo', 'right'];
-    const compiledFn = Function.apply(
-      Function,
-      compiledArgs.concat(tenant.RightsCheckScript)
-    );
-
-    compiledTenant.hasRight = compiledFn
-      ? (userinfo, right) => compiledFn.apply(compiledFn, [userinfo, right])
-      : () => true;
-  }
 
   return compiledTenant;
 };

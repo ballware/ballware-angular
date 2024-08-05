@@ -1,3 +1,4 @@
+import { TenantRightsCheckFunc } from "./rights";
 import { Template } from "./template";
 
 /**
@@ -86,9 +87,6 @@ export interface CompiledTenant {
 
   /**
    * Custom script for access rights check of tenant
-   * @param userinfo Assigned user rights
-   * @param right Requested right
-   * @returns true if access allowed, false if access denied
    */
-  hasRight: (userinfo: Record<string, unknown>, right: string) => boolean;
+  hasRight: TenantRightsCheckFunc;
 }

@@ -342,25 +342,53 @@ export interface StatisticLayout {
 }
 
 /**
+ * Customize display text for argument axis label
+ * @param layout Statistic layout
+ * @param value Current axis value
+ * @param params Head params of containing page
+ * @param customParam Prepared custom param of containing page
+ * @param util Util for misc script operations
+ * @returns Display text for label
+ */
+export type ArgumentAxisCustomizeTextFunc = (
+  layout: StatisticLayout,
+  value: unknown,
+  params: Record<string, unknown>,
+  customParam: Record<string, unknown>,
+  util: ScriptUtil
+) => string|undefined;
+
+/**
+ * Mapping script to prepare fetched data for statistic display
+ * @param data Fetched raw data
+ * @param layout Layout for display statistic
+ * @param customParam Custom param prepared by containing page
+ * @param params Head params by containing page
+ * @param lookups Lookups prepared by containing page
+ * @param util Util for misc operations in scripts
+ * @param callback Callback executed after preparation of layout and data
+ */
+export type StatisticMappingFunc = (
+  data: Array<Record<string, unknown>>,
+  layout: StatisticLayout,
+  customParam: Record<string, unknown>,
+  params: Record<string, unknown>,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  callback: (
+    layout: StatisticLayout,
+    data: Array<Record<string, unknown>>
+  ) => void
+) => void;
+
+/**
  * Custom scripts for statistic layout
  */
 export interface CompiledStatisticCustomScripts {
   /**
    * Customize display text for argument axis label
-   * @param layout Statistic layout
-   * @param value Current axis value
-   * @param params Head params of containing page
-   * @param customParam Prepared custom param of containing page
-   * @param util Util for misc script operations
-   * @returns Display text for label
    */
-  argumentAxisCustomizeText?: (
-    layout: StatisticLayout,
-    value: unknown,
-    params: Record<string, unknown>,
-    customParam: Record<string, unknown>,
-    util: ScriptUtil
-  ) => string;
+  argumentAxisCustomizeText: ArgumentAxisCustomizeTextFunc;
 }
 
 /**
@@ -392,21 +420,10 @@ export interface CompiledStatistic {
    * @param util Util for misc operations in scripts
    * @param callback Callback executed after preparation of layout and data
    */
-  mappingScript?: (
-    data: Array<Record<string, unknown>>,
-    layout: StatisticLayout,
-    customParam: Record<string, unknown>,
-    params: Record<string, unknown>,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    callback: (
-      layout: StatisticLayout,
-      data: Array<Record<string, unknown>>
-    ) => void
-  ) => void;
+  mappingScript: StatisticMappingFunc;
 
   /**
    * Compiled custom scripts for statistic layout
    */
-  customScripts?: CompiledStatisticCustomScripts;
+  customScripts: CompiledStatisticCustomScripts;
 }

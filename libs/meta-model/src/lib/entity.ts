@@ -1,6 +1,7 @@
 import { CrudItem, ValueType } from "./cruditem";
+import { PrepareCustomParamFunc } from "./customparam";
 import { QueryParams } from "./queryparams";
-import { RightsCheckFunc } from "./rights";
+import { EntityRightsCheckFunc } from "./rights";
 import { ScriptUtil } from "./scriptutil";
 import { Template } from "./template";
 
@@ -26,6 +27,307 @@ import { Template } from "./template";
    */
   setEditorOption: (dataMember: string, option: string, value: unknown) => void;
 }
+
+/**
+ * Map items after received from or before sent to API
+ *
+ * @param item Unmapped item
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param util Utility for performing misc operations
+ * @returns Mapped item for usage in client application
+ */
+export type ItemMappingFunc = (
+  item: CrudItem,
+  customParam: unknown,
+  util: ScriptUtil
+) => CrudItem;
+
+/**
+ * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object
+ * (default add operation, custom function with type 'add')
+ *
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param headParams Current value of parent object or page params
+ * @returns Object containing values needed for extendedRightsCheck implementation
+ */
+export type RightsParamForHeadFunc = (customParam: unknown, headParams: QueryParams) => Record<string, unknown>;
+
+/**
+ * Prepare custom param for extendedRightsCheck if operation is connected to specific business object  (view, edit, delete)
+ *
+ * @param item Business object instance
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param headParams Current value of parent object or page params
+ * @returns Object containing values needed for extendedRightsCheck implementation
+ */
+export type RightsParamForItemFunc = (
+  item: Record<string, unknown>,
+  customParam: unknown,
+  headParams: QueryParams
+) => Record<string, unknown>;
+
+/**
+ * Manipulate configured grid layout before rendering
+ *
+ * @param lookups Lookup definitions prepared for business object
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param util Utility for performing misc operations
+ * @param gridLayout Grid layout instance
+ */
+export type PrepareGridLayoutFunc = (
+  lookups: Record<string, unknown>,
+  customParam: unknown,
+  util: ScriptUtil,
+  gridLayout: GridLayout
+) => void;
+
+/**
+ * Manipulate configured edit layout before rendering
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param lookups Lookup definitions prepared for business object
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param util Utility for performing misc operations
+ * @param editLayout Edit layout instance
+ */
+export type PrepareEditLayoutFunc = (
+  mode: string,
+  lookups: Record<string, unknown>,
+  customParam: unknown,
+  util: ScriptUtil,
+  editLayout: EditLayout
+) => void;
+
+/**
+ * Manipulate materialized edit layout item template instance before rendering
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param lookups Lookup definitions prepared for business object
+ * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
+ * @param util Utility for performing misc operations
+ * @param editLayout Edit layout instance
+ * @param scope Source scope of template definition
+ * @param identifier Identifier of template definition
+ * @param materializedItem Generated edit layout item instance of template
+ */
+export type PrepareMaterializedEditItemFunc = (
+  mode: string, 
+  lookups: Record<string, unknown>, 
+  customParam: unknown, 
+  util: ScriptUtil, 
+  editLayout: EditLayout, 
+  scope: 'tenant' | 'meta', 
+  identifier: string, 
+  materializedItem: EditLayoutItem
+) => void;  
+
+/**
+ * Manipulate editor options before rendering
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param item Instance of business object for editing
+ * @param layoutItem Configured options of editor
+ * @param identifier Configured data member of editor
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type EditorPreparingFunc = (
+  mode: string,
+  item: Record<string, unknown>,
+  layoutItem: EditLayoutItemOptions,
+  identifier: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Configure editor instance after rendering
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param identifier Configured data member of editor
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type EditorInitializedFunc = (
+  mode: string,
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  identifier: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Custom functionality on editor value changed
+ *
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param identifier Configured data member of editor
+ * @param value Current value of editor
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type EditorValueChangedFunc = (
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  identifier: string,
+  value: ValueType,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Custom functionality on editor specific event
+ *
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param identifier Configured data member of editor
+ * @param event Event identifier (editor specific)
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type EditorEventFunc = (
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  identifier: string,
+  event: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Custom functionality on editor got focus
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param identifier Configured data member of editor
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type EditorEnteredFunc = (
+  mode: string,
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  identifier: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Custom functionality on editor validation (if custom validation rules are set)
+ *
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param identifier Configured data member of editor
+ * @param value Current value of editor
+ * @param validation Identifier of custom validation rule
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ * @returns true if current value is valid, false if not
+ */
+export type EditorValidatingFunc = (
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  identifier: string,
+  value: ValueType,
+  validation: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => boolean;
+
+/**
+ * Manipulate cell options on detail member grid before rendering
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param item Instance of edited root business object
+ * @param detailItem Instance of edited detail item
+ * @param identifier Configured data member of editor
+ * @param options Configured cell options
+ * @param util Utility for performing misc operations
+ */
+export type DetailGridCellPreparingFunc = (
+  mode: string,
+  item: CrudItem,
+  detailItem: Record<string, unknown>,
+  identifier: string,
+  options: GridLayoutColumn,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Validate detail row values
+ *
+ * @param mode Edit mode (add, edit, view)
+ * @param item Instance of edited root business object
+ * @param detailItem Instance of edited detail item
+ * @param identifier Configured data member of detail grid
+ * @param util Utility for performing misc operations
+ * @returns Custom validation message if validation failed, otherwise undefined
+ */
+export type DetailGridRowValidatingFunc = (
+  mode: string,
+  item: CrudItem,
+  detailItem: Record<string, unknown>,
+  identifier: string,
+  util: ScriptUtil
+) => string|undefined;
+
+/**
+ * Initialize new instance of detail item
+ *
+ * @param dataMember Configured data member of detail grid
+ * @param item Instance of edited root business object
+ * @param detailItem Instance of edited detail item
+ * @param util Utility for performing misc operations
+ */
+export type InitNewDetailItemFunc = (
+  dataMember: string,
+  item: CrudItem,
+  detailItem: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
+ * Prepare custom function before execution
+ *
+ * @param identifier Identifier of custom function
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ * @param executeCallback Execute custom function with prepared params
+ * @param messageCallback Show notification message to user
+ * @param params Optional additional query params provided by parent
+ * @param selection Current selected business objects (only for function type 'edit')
+ */
+export type PrepareCustomFunctionFunc = (
+  identifier: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  executeCallback: (param: Record<string, unknown>) => void,
+  messageCallback: (message: string) => void,
+  params?: QueryParams,
+  selection?: Array<CrudItem>
+) => void;
+
+/**
+ * Evaluation custom function result after execution
+ *
+ * @param identifier Identifier of custom function
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ * @param saveCallback Execute save or batch save operation with prepared objects
+ * @param messageCallback Show notification message to user
+ */
+export type EvaluateCustomFunctionFunc = (
+  identifier: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  param: Record<string, unknown>,
+  saveCallback: (param: Record<string, unknown>) => void,
+  messageCallback: (message: string) => void
+) => void;
 
 /**
  * Additional options for custom import function
@@ -424,307 +726,92 @@ export interface CompiledEntityCustomScripts {
   /**
    * Custom rights check operations
    */
-  rightsCheck?: RightsCheckFunc;
+  rightsCheck: EntityRightsCheckFunc;
 
   /**
-   * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object
-   * (default add operation, custom function with type 'add')
-   *
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param headParams Current value of parent object or page params
-   * @returns Object containing values needed for extendedRightsCheck implementation
+   * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object   
    */
-  rightsParamForHead?: (customParam: unknown, headParams: QueryParams) => Record<string, unknown>;
+  rightsParamForHead: RightsParamForHeadFunc;
 
   /**
-   * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object  (edit, delete)
-   *
-   * @param item Business object instance
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param headParams Current value of parent object or page params
-   * @returns Object containing values needed for extendedRightsCheck implementation
+   * Prepare custom param for extendedRightsCheck if operation is connected to specific business object  (view, edit, delete)
    */
-  rightsParamForItem?: (
-    item: Record<string, unknown>,
-    customParam: unknown,
-    headParams: QueryParams
-  ) => Record<string, unknown>;
+  rightsParamForItem: RightsParamForItemFunc;
 
   /**
    * Prepare custom param object containing values needed for other custom scripts
-   *
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
-   * @param callback Async callback operation performed by custom script when custom param preparation is finished
    */
-  prepareCustomParam?: (
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    callback: (customParam: Record<string, unknown>) => void
-  ) => void;
+  prepareCustomParam: PrepareCustomParamFunc;
 
   /**
    * Manipulate configured grid layout before rendering
-   *
-   * @param lookups Lookup definitions prepared for business object
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param util Utility for performing misc operations
-   * @param gridLayout Grid layout instance
    */
-  prepareGridLayout?: (
-    lookups: Record<string, unknown>,
-    customParam: unknown,
-    util: ScriptUtil,
-    gridLayout: GridLayout
-  ) => void;
+  prepareGridLayout: PrepareGridLayoutFunc;
 
   /**
    * Manipulate configured edit layout before rendering
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param lookups Lookup definitions prepared for business object
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param util Utility for performing misc operations
-   * @param editLayout Edit layout instance
    */
-  prepareEditLayout?: (
-    mode: string,
-    lookups: Record<string, unknown>,
-    customParam: unknown,
-    util: ScriptUtil,
-    editLayout: EditLayout
-  ) => void;
+  prepareEditLayout: PrepareEditLayoutFunc;
 
   /**
    * Manipulate materialized edit layout item template instance before rendering
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param lookups Lookup definitions prepared for business object
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param util Utility for performing misc operations
-   * @param editLayout Edit layout instance
-   * @param scope Source scope of template definition
-   * @param identifier Identifier of template definition
-   * @param materializedItem Generated edit layout item instance of template
    */
-  prepareMaterializedEditItem?: (
-    mode: string, 
-    lookups: Record<string, unknown>, 
-    customParam: unknown, 
-    util: ScriptUtil, 
-    editLayout: EditLayout, 
-    scope: 'tenant' | 'meta', 
-    identifier: string, 
-    materializedItem: EditLayoutItem
-  ) => void;  
+  prepareMaterializedEditItem: PrepareMaterializedEditItemFunc;  
 
   /**
    * Manipulate editor options before rendering
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param item Instance of business object for editing
-   * @param layoutItem Configured options of editor
-   * @param identifier Configured data member of editor
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
    */
-  editorPreparing?: (
-    mode: string,
-    item: Record<string, unknown>,
-    layoutItem: EditLayoutItemOptions,
-    identifier: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  editorPreparing: EditorPreparingFunc;
 
   /**
    * Configure editor instance after rendering
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param item Instance of business object for editing
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param identifier Configured data member of editor
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
    */
-  editorInitialized?: (
-    mode: string,
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    identifier: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  editorInitialized: EditorInitializedFunc;
 
   /**
    * Custom functionality on editor value changed
-   *
-   * @param item Instance of business object for editing
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param identifier Configured data member of editor
-   * @param value Current value of editor
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
    */
-  editorValueChanged?: (
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    identifier: string,
-    value: ValueType,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  editorValueChanged: EditorValueChangedFunc;
 
   /**
    * Custom functionality on editor specific event
-   *
-   * @param item Instance of business object for editing
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param identifier Configured data member of editor
-   * @param event Event identifier (editor specific)
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
    */
-  editorEvent?: (
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    identifier: string,
-    event: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  editorEvent: EditorEventFunc;
 
   /**
    * Custom functionality on editor got focus
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param item Instance of business object for editing
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param identifier Configured data member of editor
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
    */
-  editorEntered?: (
-    mode: string,
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    identifier: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  editorEntered: EditorEnteredFunc;
 
   /**
    * Custom functionality on editor validation (if custom validation rules are set)
-   *
-   * @param item Instance of business object for editing
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param identifier Configured data member of editor
-   * @param value Current value of editor
-   * @param validation Identifier of custom validation rule
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
-   * @returns true if current value is valid, false if not
    */
-  editorValidating?: (
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    identifier: string,
-    value: ValueType,
-    validation: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil
-  ) => boolean;
+  editorValidating: EditorValidatingFunc;
 
   /**
    * Manipulate cell options on detail member grid before rendering
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param item Instance of edited root business object
-   * @param detailItem Instance of edited detail item
-   * @param identifier Configured data member of editor
-   * @param options Configured cell options
-   * @param util Utility for performing misc operations
    */
-  detailGridCellPreparing?: (
-    mode: string,
-    item: CrudItem,
-    detailItem: Record<string, unknown>,
-    identifier: string,
-    options: GridLayoutColumn,
-    util: ScriptUtil
-  ) => void;
+  detailGridCellPreparing: DetailGridCellPreparingFunc;
 
   /**
    * Validate detail row values
-   *
-   * @param mode Edit mode (add, edit, view)
-   * @param item Instance of edited root business object
-   * @param detailItem Instance of edited detail item
-   * @param identifier Configured data member of detail grid
-   * @param util Utility for performing misc operations
-   * @returns Custom validation message if validation failed, otherwise undefined
    */
-  detailGridRowValidating?: (
-    mode: string,
-    item: CrudItem,
-    detailItem: Record<string, unknown>,
-    identifier: string,
-    util: ScriptUtil
-  ) => string;
+  detailGridRowValidating: DetailGridRowValidatingFunc;
 
   /**
    * Initialize new instance of detail item
-   *
-   * @param dataMember Configured data member of detail grid
-   * @param item Instance of edited root business object
-   * @param detailItem Instance of edited detail item
-   * @param util Utility for performing misc operations
    */
-  initNewDetailItem?: (
-    dataMember: string,
-    item: CrudItem,
-    detailItem: Record<string, unknown>,
-    util: ScriptUtil
-  ) => void;
+  initNewDetailItem: InitNewDetailItemFunc;
 
   /**
-   * Prepare custom function before execution
-   *
-   * @param identifier Identifier of custom function
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
-   * @param executeCallback Execute custom function with prepared params
-   * @param messageCallback Show notification message to user
-   * @param params Optional additional query params provided by parent
-   * @param selection Current selected business objects (only for function type 'edit')
+   * Prepare custom function before execution   
    */
-  prepareCustomFunction?: (
-    identifier: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    executeCallback: (param: Record<string, unknown>) => void,
-    messageCallback: (message: string) => void,
-    params?: QueryParams,
-    selection?: Array<CrudItem>
-  ) => void;
+  prepareCustomFunction: PrepareCustomFunctionFunc;
 
   /**
    * Evaluation custom function result after execution
-   *
-   * @param identifier Identifier of custom function
-   * @param lookups Lookup definitions prepared for business object
-   * @param util Utility for performing misc operations
-   * @param saveCallback Execute save or batch save operation with prepared objects
-   * @param messageCallback Show notification message to user
    */
-  evaluateCustomFunction?: (
-    identifier: string,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    param: Record<string, unknown>,
-    saveCallback: (param: Record<string, unknown>) => void,
-    messageCallback: (message: string) => void
-  ) => void;
+  evaluateCustomFunction: EvaluateCustomFunctionFunc;
 }
 
 /**
@@ -753,36 +840,18 @@ export interface CompiledEntityMetadata {
 
   /**
    * Map items received from API
-   *
-   * @param item Unmapped item
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param util Utility for performing misc operations
-   * @returns Mapped item for usage in client application
    */
-  itemMappingScript: (
-    item: CrudItem,
-    customParam: unknown,
-    util: ScriptUtil
-  ) => CrudItem;
+  itemMappingScript: ItemMappingFunc;
 
   /**
    * Reverse map items for sending to API
-   *
-   * @param item Item used in client application
-   * @param customParam Current value of prepared custom param (previous result of prepareCustomParam function)
-   * @param util Utility for performing misc operations
-   * @returns Mapped item for usage in API
    */
-  itemReverseMappingScript: (
-    item: CrudItem,
-    customParam: unknown,
-    util: ScriptUtil
-  ) => CrudItem;
+  itemReverseMappingScript: ItemMappingFunc;
 
   /**
    * Container for custom script operations
    */
-  compiledCustomScripts?: CompiledEntityCustomScripts;
+  compiledCustomScripts: CompiledEntityCustomScripts;
 
   /**
    * Collection of defined custom functions

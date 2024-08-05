@@ -1,4 +1,5 @@
 export * from './lib/cruditem';
+export * from './lib/customparam';
 export * from './lib/document';
 export * from './lib/entity';
 export * from './lib/page';

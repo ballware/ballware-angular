@@ -10,7 +10,7 @@
  * @param result Rights check result from default function
  * @returns true if access is allowed, false if not
  */
- export type RightsCheckFunc = (
+ export type EntityRightsCheckFunc = (
   userinfo: Record<string, unknown>,
   application: string,
   entity: string,
@@ -19,3 +19,11 @@
   param: Record<string, unknown> | undefined,
   result: boolean
 ) => boolean;
+
+/**
+ * Custom script for access rights check of tenant
+ * @param userinfo Assigned user rights
+ * @param right Requested right
+ * @returns true if access allowed, false if access denied
+ */
+export type TenantRightsCheckFunc = (userinfo: Record<string, unknown>, right: string) => boolean;

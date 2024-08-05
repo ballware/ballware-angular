@@ -92,11 +92,11 @@ export const tenantReducer = createReducer(
     on(tenantFetched, (state, { user, tenant }) => ({
         ...state,
         tenant,
-        title: tenant?.name,
-        hasRight: tenant?.hasRight ? (right) => tenant.hasRight(user, right) : undefined,
-        navigationLayout: tenant?.navigation,
-        navigationTree: tenant?.navigation ? buildNavigationTree((right) => tenant?.hasRight(user, right), tenant?.navigation) : undefined,
-        pages: tenant?.navigation ? buildPageList((right) => tenant?.hasRight(user, right), tenant.navigation) : undefined,
-        templates: tenant?.templates ?? []
+        title: tenant.name,
+        hasRight: (right) => tenant.hasRight(user, right),
+        navigationLayout: tenant.navigation,
+        navigationTree: tenant.navigation ? buildNavigationTree((right) => tenant?.hasRight(user, right), tenant?.navigation) : undefined,
+        pages: tenant.navigation ? buildPageList((right) => tenant?.hasRight(user, right), tenant.navigation) : undefined,
+        templates: tenant.templates ?? []
     }))    
 );

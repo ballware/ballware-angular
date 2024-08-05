@@ -3,8 +3,9 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledStatistic, CompiledStatisticCustomScripts, QueryParams, StatisticLayout } from '@ballware/meta-model';
+import { CompiledStatistic, QueryParams, StatisticLayout } from '@ballware/meta-model';
 import { additionalParamsToUrl } from './util';
+import { compileArgumentAxisCustomizeText, compileStatisticMapping } from '@ballware/meta-scripting';
 
 /**
  * Interface for statistic data operations
@@ -46,6 +47,10 @@ interface StatisticCustomScripts {
 }
 
 export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
+  const scripts = parse(
+    statistic.CustomScripts ?? '{}'
+  ) as StatisticCustomScripts;
+
   const compiledStatistic = {
     id: statistic.Id,
     entity: statistic.Entity,
@@ -54,63 +59,11 @@ export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
     layout: statistic.Layout
       ? (parse(statistic.Layout) as StatisticLayout)
       : ({} as StatisticLayout),
-  } as CompiledStatistic;
-
-  if (statistic.MappingScript) {
-    const compiledArgs = [
-      'data',
-      'layout',
-      'customParam',
-      'params',
-      'lookups',
-      'util',
-      'callback',
-    ];
-    const compiledFn = Function.apply(
-      Function,
-      compiledArgs.concat(statistic.MappingScript)
-    );
-
-    compiledStatistic.mappingScript = compiledFn
-      ? (data, layout, customParam, params, lookups, util, callback) =>
-          compiledFn.apply(compiledFn, [
-            data,
-            layout,
-            customParam,
-            params,
-            lookups,
-            util,
-            callback,
-          ])
-      : undefined;
-  }
-
-  if (statistic.CustomScripts) {
-    compiledStatistic.customScripts = {} as CompiledStatisticCustomScripts;
-
-    const scripts = parse(
-      statistic.CustomScripts
-    ) as StatisticCustomScripts;
-
-    if (scripts.argumentAxisCustomizeText) {
-      const compiledArgs = ['layout', 'value', 'params', 'customParam', 'util'];
-      const compiledFn = Function.apply(
-        Function,
-        compiledArgs.concat(scripts.argumentAxisCustomizeText)
-      );
-
-      compiledStatistic.customScripts.argumentAxisCustomizeText = compiledFn
-        ? (layout, value, params, customParam, util) =>
-            compiledFn.apply(compiledFn, [
-              layout,
-              value,
-              params,
-              customParam,
-              util,
-            ])
-        : undefined;
+    mappingScript: compileStatisticMapping(statistic.MappingScript),
+    customScripts: {
+      argumentAxisCustomizeText: compileArgumentAxisCustomizeText(scripts.argumentAxisCustomizeText)
     }
-  }
+  } as CompiledStatistic;
 
   return compiledStatistic;
 };

@@ -169,17 +169,10 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$])                
                 .pipe(tap(([page, lookups, accessToken]) => {
                     if (page && lookups && accessToken) {
-                        if (page.compiledCustomScripts?.prepareCustomParam) {
-                            page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), (p) => this.updater((state) => ({
+                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), (p) => this.updater((state) => ({
                                 ...state,
                                 customParam: p
-                            }))());
-                        } else {
-                            this.updater((state) => ({
-                                ...state,
-                                customParam: {}
-                            }))();
-                        }
+                        }))());
                     }
                 }))
         );
@@ -264,13 +257,11 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 if (page && lookups && pageParam && accessToken) {
                     this.toolbarItems[name] = item;
 
-                    if (page.compiledCustomScripts?.paramEditorInitialized) {
-                        page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
-                    }
-
+                    page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
+                    
                     if (!Object.keys(this.toolbarItems).some(item => !this.toolbarItems[item])) {
-                        if (page && page.compiledCustomScripts?.paramsInitialized) {
-                            page.compiledCustomScripts?.paramsInitialized(false, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
+                        if (page) {
+                            page.compiledCustomScripts.paramsInitialized(false, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
                         }
                     }
                 }
@@ -288,9 +279,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, this.headParams$, params$])
             .pipe(tap(([page, lookups, accessToken, pageParam, { name, value }]) => {
                 if (page && lookups && accessToken && pageParam) {
-                    if (page.compiledCustomScripts?.paramEditorValueChanged) {
-                        page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
-                    }
+                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);  
                 }
             }))
     );
@@ -300,9 +289,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             .pipe(withLatestFrom(this.headParams$))
             .pipe(tap(([[page, lookups, accessToken, { name, event, param }], pageParam]) => {
                 if (page && lookups && accessToken && pageParam && name && event) {
-                    if (page.compiledCustomScripts?.paramEditorEvent) {
-                      page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam, param);
-                    }
+                  page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam, param);
                 }
             }))
     );

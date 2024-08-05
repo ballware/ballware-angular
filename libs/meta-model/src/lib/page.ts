@@ -1,7 +1,88 @@
 import { ValueType } from './cruditem';
+import { PrepareCustomParamFunc } from './customparam';
 import { EditUtil } from './entity';
 import { QueryParams } from './queryparams';
 import { ScriptUtil } from './scriptutil';
+
+/**
+ * Toolbar initialization finished
+ *
+ * @param hidden Set if toolbar is not displayed on small screens
+ * @param lookups Lookup definitions prepared for page
+ * @param util Utility for performing misc operations
+ * @param actions Container containing action triggers for page
+ * @param pageParam Current or predefined page param
+ */
+export type ParamsInitializedFunc = (
+  hidden: boolean,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  actions: ScriptActions,
+  pageParam?: Record<string, unknown>
+) => void;
+
+/**
+ * Single toolbar component initialized
+ *
+ * @param name Unique name of toolbar item
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param lookups Lookup definitions prepared for page
+ * @param util Utility for performing misc operations
+ * @param actions Container containing action triggers for page
+ * @param pageParam Current or predefined page param
+ */
+export type ParamEditorInitializedFunc = (
+  name: string,
+  editUtil: EditUtil,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  actions: ScriptActions,
+  pageParam?: Record<string, unknown>
+) => void;
+
+/**
+ * toolbar component value changed
+ *
+ * @param name Unique name of toolbar item
+ * @param value Current value of toolbar item
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param lookups Lookup definitions prepared for page
+ * @param util Utility for performing misc operations
+ * @param actions Container containing action triggers for page
+ * @param pageParam Current or predefined page param
+ */
+export type ParamEditorValueChangedFunc = (
+  name: string,
+  value: unknown | Array<unknown>,
+  editUtil: EditUtil,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  actions: ScriptActions,
+  pageParam?: Record<string, unknown>
+) => void;
+
+/**
+ * Toolbar component event triggered
+ *
+ * @param name Unique name of toolbar item
+ * @param event Event identifier
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param lookups Lookup definitions prepared for page
+ * @param util Utility for performing misc operations
+ * @param actions Container containing action triggers for page
+ * @param pageParam Current or predefined page param
+ * @param param Additional parameter to item event
+ */
+export type ParamEditorEventFunc = (
+  name: string,
+  event: string,
+  editUtil: EditUtil,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil,
+  actions: ScriptActions,
+  pageParam?: Record<string, unknown>,
+  param?: ValueType
+) => void;
 
 /**
  * Options for layout item type 'tabs'
@@ -258,116 +339,31 @@ export interface ScriptActions {
  * Definition of page specific custom scripts
  */
 export interface CompiledPageCustomScripts {
-  /**
-   * Check if user is allowed to view page in navigation
-   *
-   * @param userinfo User rights container
-   * @param page Identifier of page
-   * @returns true if page is allowed, false if not
-   */
-  pageVisible?: (userinfo: Record<string, unknown>, page: string) => boolean;
-
-  /**
-   * Check if user is allowed to navigate to page
-   *
-   * @param userinfo User rights container
-   * @param page Identifier of page
-   * @returns true if page is allowed, false if not
-   */
-  pageEnabled?: (userinfo: Record<string, unknown>, page: string) => boolean;
 
   /**
    * Prepare custom param object containing values needed for other custom scripts
-   *
-   * @param lookups Lookup definitions prepared for page
-   * @param util Utility for performing misc operations
-   * @param callback Async callback operation performed by custom script when custom param preparation is finished
    */
-  prepareCustomParam?: (
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    callback: (customParam: Record<string, unknown>) => void
-  ) => void;
+  prepareCustomParam: PrepareCustomParamFunc;
 
   /**
    * Toolbar initialization finished
-   *
-   * @param hidden Set if toolbar is not displayed on small screens
-   * @param lookups Lookup definitions prepared for page
-   * @param util Utility for performing misc operations
-   * @param actions Container containing action triggers for page
-   * @param pageParam Current or predefined page param
    */
-  paramsInitialized?: (
-    hidden: boolean,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    actions: ScriptActions,
-    pageParam?: Record<string, unknown>
-  ) => void;
+  paramsInitialized: ParamsInitializedFunc;
 
   /**
    * Single toolbar component initialized
-   *
-   * @param name Unique name of toolbar item
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param lookups Lookup definitions prepared for page
-   * @param util Utility for performing misc operations
-   * @param actions Container containing action triggers for page
-   * @param pageParam Current or predefined page param
    */
-  paramEditorInitialized?: (
-    name: string,
-    editUtil: EditUtil,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    actions: ScriptActions,
-    pageParam?: Record<string, unknown>
-  ) => void;
+  paramEditorInitialized: ParamEditorInitializedFunc;
 
   /**
    * toolbar component value changed
-   *
-   * @param name Unique name of toolbar item
-   * @param value Current value of toolbar item
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param lookups Lookup definitions prepared for page
-   * @param util Utility for performing misc operations
-   * @param actions Container containing action triggers for page
-   * @param pageParam Current or predefined page param
    */
-  paramEditorValueChanged?: (
-    name: string,
-    value: unknown | Array<unknown>,
-    editUtil: EditUtil,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    actions: ScriptActions,
-    pageParam?: Record<string, unknown>
-  ) => void;
+  paramEditorValueChanged: ParamEditorValueChangedFunc;
 
   /**
    * Toolbar component event triggered
-   *
-   * @param name Unique name of toolbar item
-   * @param event Event identifier
-   * @param editUtil Adapter for accessing editor components by data member
-   * @param lookups Lookup definitions prepared for page
-   * @param util Utility for performing misc operations
-   * @param actions Container containing action triggers for page
-   * @param pageParam Current or predefined page param
-   * @param param Additional parameter to item event
    */
-  paramEditorEvent?: (
-    name: string,
-    event: string,
-    editUtil: EditUtil,
-    lookups: Record<string, unknown>,
-    util: ScriptUtil,
-    actions: ScriptActions,
-    pageParam?: Record<string, unknown>,
-    param?: ValueType
-  ) => void;
+  paramEditorEvent: ParamEditorEventFunc;
 }
 
 /**
@@ -409,5 +405,5 @@ export interface CompiledPageData {
   /**
    * Container for custom script operations
    */
-  compiledCustomScripts?: CompiledPageCustomScripts;
+  compiledCustomScripts: CompiledPageCustomScripts;
 }
