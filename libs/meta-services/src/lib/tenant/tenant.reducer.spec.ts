@@ -146,7 +146,7 @@ describe('reducer', () => {
         expect(newState.navigationLayout).toBeUndefined();
         expect(newState.navigationTree).toBeUndefined();
         expect(newState.pages).toBeUndefined();
-        expect(newState.hasRight).toBeUndefined();
+        expect(newState.hasRight).toBeDefined();
     });
 
     it('fetch tenant should add fetched tenant to state', () => {

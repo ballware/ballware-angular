@@ -42,7 +42,8 @@ describe('TenantEffects', () => {
         const actions$ = of(identityUserLogin(mockedUser));
 
         metaApiServiceMock.metaTenantApi =  {
-            metadataForTenant: jest.fn().mockReturnValue(of(mockedTenant))
+            metadataForTenant: jest.fn().mockReturnValue(of(mockedTenant)),
+            allowed: jest.fn().mockReturnValue(true)
         };
         
         const callbackSpy = jest.fn();
