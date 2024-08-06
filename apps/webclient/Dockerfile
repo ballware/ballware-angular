@@ -1,6 +1,7 @@
 FROM docker.io/nginx:stable-alpine
 
 RUN apk update \
+    && apk upgrade \
     && apk add jq \
     && rm -rf /var/cache/apk/*
 
