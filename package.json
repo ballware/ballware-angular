@@ -7,7 +7,7 @@
     "postinstall": "node ./decorate-angular-cli.js",
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx run-many --target test --coverage"
+    "test": "nx run-many --target test --coverage --coverageReporters=lcov && node ./tools/scripts/coverageMerger.js"
   },
   "private": true,
   "dependencies": {
