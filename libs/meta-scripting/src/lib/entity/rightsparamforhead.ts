@@ -8,6 +8,8 @@ export const compileRightsParamForHead = (customScript: string|undefined): Right
             compiledArgs.concat(customScript)
         );
 
+        console.warn('Use of deprecated rightsParamForHead script');
+
         return (customParam, headParams) => compiledFn.apply(compiledFn, [customParam, headParams]);
     }
 
