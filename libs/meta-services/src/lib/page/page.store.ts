@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnDestroy } from "@angular/core";
+import { OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { MetaApiService } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
@@ -18,7 +18,6 @@ import { ToolbarService } from "../toolbar.service";
 import { ToolbarItemRef } from "../toolbaritemref";
 import { PageState } from "./page.state";
 
-@Injectable()
 export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageServiceApi {
     
     private scriptActions: ScriptActions;

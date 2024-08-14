@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { IdentityService, ResponsiveService, SCREEN_SIZE, TenantService, ToolbarService } from '@ballware/meta-services';
+import { Component, EventEmitter, Inject, Input, Output, ViewChild } from '@angular/core';
+import { IDENTITY_SERVICE, IdentityService, ResponsiveService, SCREEN_SIZE, TenantService, ToolbarService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -32,7 +32,7 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
   public fullscreenDialogs$: Observable<boolean>;
 
-  constructor(private responsiveService: ResponsiveService, private translationService: I18NextPipe, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
+  constructor(private responsiveService: ResponsiveService, private translationService: I18NextPipe, @Inject(IDENTITY_SERVICE) private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
     super();
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$

@@ -3,11 +3,9 @@ import { IdentityService } from "../identity.service";
 import { identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
 import { selectAccessToken, selectAccessTokenExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant } from "./identity.state";
 
-export class IdentityServiceProxy extends IdentityService {
+export class IdentityServiceProxy implements IdentityService {
 
-    constructor(private store: Store) {
-        super();
-    }
+    constructor(private store: Store) {}
     
     public readonly profileUrl$ = this.store.select(selectProfileUrl);
     public readonly authenticated$ = this.store.select(selectAuthenticated);

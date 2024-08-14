@@ -1,25 +1,27 @@
+import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { WithDestroy } from "./withdestroy";
 
-export abstract class IdentityService extends WithDestroy() {
+export interface IdentityService {
     
-    public abstract profileUrl$: Observable<string|undefined>;
+    profileUrl$: Observable<string|undefined>;
 
-    public abstract authenticated$: Observable<boolean|undefined>;
-    public abstract accessTokenExpiration$: Observable<Date|undefined>;
+    authenticated$: Observable<boolean|undefined>;
+    accessTokenExpiration$: Observable<Date|undefined>;
 
-    public abstract currentUser$: Observable<Record<string, unknown>|undefined>;
-    public abstract userTenant$: Observable<string|undefined>;
-    public abstract userName$: Observable<string|undefined>;
-    public abstract accessToken$: Observable<string|undefined>;
+    currentUser$: Observable<Record<string, unknown>|undefined>;
+    userTenant$: Observable<string|undefined>;
+    userName$: Observable<string|undefined>;
+    accessToken$: Observable<string|undefined>;
 
-    public abstract allowedTenants$: Observable<Array<{ Id: string, Name: string }>|undefined>;
+    allowedTenants$: Observable<Array<{ Id: string, Name: string }>|undefined>;
 
-    public abstract initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string): void;
+    initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string): void;
 
-    public abstract refreshToken(): void;
-    public abstract manageProfile(): void;
-    public abstract logout(): void;
-    public abstract expired(): void;
-    public abstract switchTenant(tenant: string): void;
+    refreshToken(): void;
+    manageProfile(): void;
+    logout(): void;
+    expired(): void;
+    switchTenant(tenant: string): void;
 }
+
+export const IDENTITY_SERVICE = new InjectionToken<IdentityService>('Identity service');

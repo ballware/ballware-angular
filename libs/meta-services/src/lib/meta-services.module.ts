@@ -8,7 +8,7 @@ import { I18NextPipe } from 'angular-i18next';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ComponentFeatureModule } from './component';
 import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
-import { IdentityService } from './identity.service';
+import { IDENTITY_SERVICE, IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
 import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
 import { MetaServiceFactory } from './meta.service.factory';
@@ -74,7 +74,7 @@ export class MetaServicesModule {
           deps: [ Store ]
         },          
         {
-          provide: IdentityService,
+          provide: IDENTITY_SERVICE,
           useFactory: (store: Store) => new IdentityServiceProxy(store),
           deps: [ Store ]
         },  
@@ -109,7 +109,7 @@ export class MetaServicesModule {
             NOTIFICATION_SERVICE,
             OAuthService,
             I18NextPipe,
-            IdentityService,
+            IDENTITY_SERVICE,
             TenantService,
             ToolbarService
           ]

@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, OnDestroy } from "@angular/core";
+import { OnDestroy } from "@angular/core";
 import { MetaApiService } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
@@ -21,7 +21,6 @@ interface TemplateItemOptions {
     identifier: string;
 }
 
-@Injectable()
 export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi, OnDestroy {
     constructor(private store: Store, private httpClient: HttpClient, private i18next: I18NextPipe, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
