@@ -13,7 +13,7 @@ import { IdentityServiceProxy } from './identity/identity.proxy';
 import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
 import { MetaServiceFactory } from './meta.service.factory';
 import { NotificationFeatureModule } from './notification';
-import { NotificationService } from './notification.service';
+import { NOTIFICATION_SERVICE, NotificationService } from './notification.service';
 import { NotificationServiceProxy } from './notification/notification.proxy';
 import { SettingsFeatureModule } from './settings';
 import { SETTINGS_SERVICE } from './settings.service';
@@ -69,7 +69,7 @@ export class MetaServicesModule {
           deps: [ Store ]
         },         
         {
-          provide: NotificationService,
+          provide: NOTIFICATION_SERVICE,
           useFactory: (store: Store) => new NotificationServiceProxy(store),
           deps: [ Store ]
         },          
@@ -106,7 +106,7 @@ export class MetaServicesModule {
             HttpClient,
             Router,
             ApiServiceFactory,
-            NotificationService,
+            NOTIFICATION_SERVICE,
             OAuthService,
             I18NextPipe,
             IdentityService,

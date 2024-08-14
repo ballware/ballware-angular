@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { NotificationService } from '@ballware/meta-services';
+import { Component, Inject } from '@angular/core';
+import { NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import notify from 'devextreme/ui/notify';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -12,7 +12,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 })
 export class ApplicationNotificationComponent extends WithDestroy() {
     
-  constructor(private notificationService: NotificationService) {    
+  constructor(@Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService) {    
     super();
 
     this.notificationService.notification$

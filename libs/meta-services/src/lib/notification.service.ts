@@ -1,15 +1,17 @@
+import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { WithDestroy } from "./withdestroy";
 
 export interface Notification {
     message: string;
     severity: 'info'|'warning'|'error';
 }
 
-export abstract class NotificationService extends WithDestroy() {
+export interface NotificationService {
 
-    public abstract notification$: Observable<Notification|undefined>;    
+    notification$: Observable<Notification|undefined>;    
 
-    public abstract triggerNotification(notification: Notification): void;
-    public abstract hideNotification(): void;
+    triggerNotification(notification: Notification): void;
+    hideNotification(): void;
 }
+
+export const NOTIFICATION_SERVICE = new InjectionToken<NotificationService>('Notification service');

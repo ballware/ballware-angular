@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory, NotificationService } from '@ballware/meta-services';
+import { AttachmentService, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -47,7 +47,7 @@ interface EntityGridItemOptions {
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
-      deps: [NotificationService, MetaService, CrudService]
+      deps: [NOTIFICATION_SERVICE, MetaService, CrudService]
     },
     { 
       provide: MasterdetailService, useClass: MasterdetailService 

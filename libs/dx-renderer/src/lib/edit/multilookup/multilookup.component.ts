@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService, LookupService, NotificationService } from '@ballware/meta-services';
+import { EditItemRef, EditService, LookupService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -23,7 +23,7 @@ export class EditLayoutMultilookupComponent extends WithLookup(WithVisible(WithR
 
   public layoutItem: EditLayoutItem|undefined;
 
-  constructor(private notificationService: NotificationService, private lookupService: LookupService, private editService: EditService) {
+  constructor(@Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService, private lookupService: LookupService, private editService: EditService) {
     super();
   }
 
