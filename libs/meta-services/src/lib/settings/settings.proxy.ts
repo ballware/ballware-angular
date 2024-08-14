@@ -1,15 +1,11 @@
-import { Injectable } from "@angular/core";
 import { SettingsService } from "../settings.service";
 import { Store } from "@ngrx/store";
 import { selectGooglekey, selectVersion } from "./settings.state";
 import { settingsInitialize } from "./settings.actions";
 
-@Injectable()
-export class SettingsServiceProxy extends SettingsService {
+export class SettingsServiceProxy implements SettingsService {
 
-    constructor(private store: Store) {
-        super();
-    }
+    constructor(private store: Store) {}
     
     public get version$() {
         return this.store.select(selectVersion);
@@ -19,7 +15,7 @@ export class SettingsServiceProxy extends SettingsService {
         return this.store.select(selectGooglekey);
     }
 
-    public override initialize(version: string, googlekey: string): void {
+    public initialize(version: string, googlekey: string): void {
         this.store.dispatch(settingsInitialize({ version, googlekey }));
     }
 }

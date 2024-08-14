@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, ViewChild } from '@angular/core';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
-import { CrudService, SettingsService } from '@ballware/meta-services';
+import { CrudService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent } from 'devextreme-angular';
 import { BehaviorSubject, Observable, combineLatest, takeUntil } from 'rxjs';
 import { getByPath } from '../../utils/databinding';
@@ -24,7 +24,7 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   private mouseTarget: Element|undefined|null;
 
-  constructor(private settingsService: SettingsService, private crudService: CrudService, private dataSourceService: DataSourceService) {
+  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, private crudService: CrudService, private dataSourceService: DataSourceService) {
     super();
 
     this.onMapMouseMove = this.onMapMouseMove.bind(this);

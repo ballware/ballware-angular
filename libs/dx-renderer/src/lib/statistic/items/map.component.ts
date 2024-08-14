@@ -1,6 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { Component, Inject, Input } from "@angular/core";
 import { StatisticMapOptions } from "@ballware/meta-model";
-import { SettingsService, StatisticService } from "@ballware/meta-services";
+import { SETTINGS_SERVICE, SettingsService, StatisticService } from "@ballware/meta-services";
 import { Observable, combineLatest, map } from "rxjs";
 import { getByPath } from "../../utils/databinding";
 import { WithDestroy } from "../../utils/withdestroy";
@@ -22,7 +22,7 @@ import { WithDestroy } from "../../utils/withdestroy";
     
     public googlekey$: Observable<string|undefined>;
 
-    constructor(private settingsService: SettingsService, private statisticService: StatisticService) {
+    constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, private statisticService: StatisticService) {
       super();
 
       this.googlekey$ = this.settingsService.googlekey$;

@@ -16,7 +16,7 @@ import { NotificationFeatureModule } from './notification';
 import { NotificationService } from './notification.service';
 import { NotificationServiceProxy } from './notification/notification.proxy';
 import { SettingsFeatureModule } from './settings';
-import { SettingsService } from './settings.service';
+import { SETTINGS_SERVICE } from './settings.service';
 import { SettingsServiceProxy } from './settings/settings.proxy';
 import { TenantEffectsModule, TenantFeatureModule } from './tenant';
 import { TenantService } from './tenant.service';
@@ -62,12 +62,12 @@ export class MetaServicesModule {
   static forRoot(): ModuleWithProviders<MetaServicesModule> {
     return {
       ngModule: MetaServicesModule,
-      providers: [   
+      providers: [  
         {
-          provide: SettingsService,
+          provide: SETTINGS_SERVICE,
           useFactory: (store: Store) => new SettingsServiceProxy(store),
           deps: [ Store ]
-        },    
+        },         
         {
           provide: NotificationService,
           useFactory: (store: Store) => new NotificationServiceProxy(store),

@@ -1,11 +1,12 @@
+import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { WithDestroy } from "./withdestroy";
 
-export abstract class SettingsService extends WithDestroy() {
+export interface SettingsService {
 
-    public abstract version$: Observable<string|undefined>;
-    public abstract googlekey$: Observable<string|undefined>;
+    version$: Observable<string|undefined>;
+    googlekey$: Observable<string|undefined>;
 
-    public abstract initialize(version: string, googlekey: string): void;
+    initialize(version: string, googlekey: string): void;
 }
   
+export const SETTINGS_SERVICE = new InjectionToken<SettingsService>('Setting service');

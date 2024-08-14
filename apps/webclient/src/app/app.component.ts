@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { IdentityService, SettingsService } from '@ballware/meta-services';
+import { Component, Inject, OnInit } from '@angular/core';
+import { IdentityService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 
 
 declare let window :any;
@@ -12,7 +12,7 @@ declare let window :any;
 export class AppComponent implements OnInit {
   title = 'ballware';
 
-  constructor(private settingsService: SettingsService, private identityService: IdentityService) {}
+  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, private identityService: IdentityService) {}
 
   ngOnInit(): void {
     console.log(`Version ${window.ENV.BALLWARE_VERSION}`);
