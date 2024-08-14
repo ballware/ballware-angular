@@ -1,6 +1,6 @@
 import { CompiledTenant, NavigationLayout, NavigationLayoutItem, Template } from "@ballware/meta-model";
 import { Observable } from "rxjs";
-import { WithDestroy } from "./withdestroy";
+import { InjectionToken } from "@angular/core";
 
 export interface NavigationTreeItem {
     type: 'page'|'section'|'group';
@@ -13,13 +13,15 @@ export interface NavigationTreeItem {
     items?: NavigationTreeItem[];    
 }
 
-export abstract class TenantService extends WithDestroy() {
+export interface TenantService {
 
-    public abstract tenant$: Observable<CompiledTenant|undefined>;
-    public abstract title$: Observable<string|undefined>;
-    public abstract navigationLayout$: Observable<NavigationLayout|undefined>;
-    public abstract navigationTree$: Observable<NavigationTreeItem[]|undefined>;
-    public abstract pages$: Observable<NavigationLayoutItem[]|undefined>;
-    public abstract tenantTemplates$: Observable<Template[]|undefined>;
-    public abstract hasRight$: Observable<((rights: string) => boolean) | undefined>;
+    tenant$: Observable<CompiledTenant|undefined>;
+    title$: Observable<string|undefined>;
+    navigationLayout$: Observable<NavigationLayout|undefined>;
+    navigationTree$: Observable<NavigationTreeItem[]|undefined>;
+    pages$: Observable<NavigationLayoutItem[]|undefined>;
+    tenantTemplates$: Observable<Template[]|undefined>;
+    hasRight$: Observable<((rights: string) => boolean) | undefined>;
 }
+
+export const TENANT_SERVICE = new InjectionToken<TenantService>('Tenant service');

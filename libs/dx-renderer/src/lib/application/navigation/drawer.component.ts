@@ -1,6 +1,6 @@
-import { Component, EventEmitter, HostBinding, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Inject, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { NavigationTreeItem, ResponsiveService, SCREEN_SIZE, TenantService } from '@ballware/meta-services';
+import { NavigationTreeItem, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService } from '@ballware/meta-services';
 import { OpenedStateMode } from 'devextreme/ui/drawer';
 import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { cloneDeep } from 'lodash';
@@ -26,7 +26,7 @@ export class ApplicationNavigationDrawerComponent extends WithDestroy() {
 
   private closeOnNavigate = false;
 
-  constructor(private responsiveService: ResponsiveService, private tenantService: TenantService, private router: Router) {
+  constructor(private responsiveService: ResponsiveService, @Inject(TENANT_SERVICE) private tenantService: TenantService, private router: Router) {
     super();
     
     this.tenantService.navigationTree$

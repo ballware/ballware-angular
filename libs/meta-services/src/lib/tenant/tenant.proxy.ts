@@ -1,13 +1,9 @@
-import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { TenantService } from "../tenant.service";
 import { selectHasRight, selectNavigationLayout, selectNavigationTree, selectPages, selectTemplates, selectTenant, selectTitle } from "./tenant.state";
 
-@Injectable()
-export class TenantServiceProxy extends TenantService {
-    constructor(private store: Store) {
-        super();
-    }
+export class TenantServiceProxy implements TenantService {
+    constructor(private store: Store) {}
 
     public get tenant$() {
         return this.store.select(selectTenant);

@@ -19,7 +19,7 @@ import { SettingsFeatureModule } from './settings';
 import { SETTINGS_SERVICE } from './settings.service';
 import { SettingsServiceProxy } from './settings/settings.proxy';
 import { TenantEffectsModule, TenantFeatureModule } from './tenant';
-import { TenantService } from './tenant.service';
+import { TENANT_SERVICE, TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
 import { ToolbarEffectsModule, ToolbarFeatureModule } from './toolbar';
 import { ToolbarService } from './toolbar.service';
@@ -79,7 +79,7 @@ export class MetaServicesModule {
           deps: [ Store ]
         },  
         {
-          provide: TenantService,
+          provide: TENANT_SERVICE,
           useFactory: (store: Store) => new TenantServiceProxy(store),
           deps: [ Store ]
         },          
@@ -110,7 +110,7 @@ export class MetaServicesModule {
             OAuthService,
             I18NextPipe,
             IDENTITY_SERVICE,
-            TenantService,
+            TENANT_SERVICE,
             ToolbarService
           ]
         }
