@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayout } from '@ballware/meta-model';
-import { EditModes, EditService, META_SERVICE, MetaService, ServiceFactory } from '@ballware/meta-services';
+import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
@@ -12,9 +12,9 @@ import { WithDestroy } from '../../utils/withdestroy';
   styleUrls: ['./dialog.component.scss'],
   providers: [
     { 
-      provide: EditService, 
-      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
-      deps: [ServiceFactory, META_SERVICE]  
+      provide: EDIT_SERVICE, 
+      useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
+      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]  
     } as Provider
   ]
 })
@@ -34,7 +34,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   constructor(
     private translationService: I18NextPipe,
-    private editService: EditService) {
+    @Inject(EDIT_SERVICE) private editService: EditService) {
 
     super();
 

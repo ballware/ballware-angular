@@ -6,13 +6,13 @@ import { cloneDeep, isEqual } from "lodash";
 import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
 import { getByPath, setByPath } from "../databinding";
-import { EditServiceApi } from "../edit.service";
+import { EditService } from "../edit.service";
 import { EditItemRef } from "../edititemref";
 import { EditModes } from "../editmodes";
 import { MetaService } from "../meta.service";
 import { EditState } from "./edit.state";
 
-export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditServiceApi {
+export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
 
     private editItems: Record<string, EditItemRef|undefined> = {}; 
 

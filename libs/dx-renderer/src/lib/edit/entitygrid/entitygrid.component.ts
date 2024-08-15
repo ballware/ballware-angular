@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -72,7 +72,7 @@ export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(With
     @Inject(META_SERVICE) private metaService: MetaService, 
     @Inject(CRUD_SERVICE) private crudService: CrudService, 
     private datasourceService: DataSourceService, 
-    private editService: EditService) {
+    @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
 
     combineLatest([this.metaService.headParams$])

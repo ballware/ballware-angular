@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from "@angular/core";
+import { Component, Inject, Input, OnInit } from "@angular/core";
 import { EditLayoutItem } from "@ballware/meta-model";
-import { EditItemRef, EditService } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
 import { takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
@@ -24,7 +24,7 @@ export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(With
     public options: CodeMirrorEditorOptions|undefined;
     public height: string|undefined;
       
-    constructor(private editService: EditService) {
+    constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
       super();
     }
   

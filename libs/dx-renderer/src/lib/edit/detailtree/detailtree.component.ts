@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
-import { EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService } from "@ballware/meta-services";
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
@@ -80,7 +80,7 @@ export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(With
         private translationService: I18NextPipe,
         @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        private editService: EditService) {
+        @Inject(EDIT_SERVICE) private editService: EditService) {
       super();
 
       this.sourceToolbarItems = [

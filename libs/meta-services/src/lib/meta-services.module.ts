@@ -9,8 +9,6 @@ import { ComponentFeatureModule } from './component';
 import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
 import { IDENTITY_SERVICE, IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
-import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
-import { ServiceFactory } from './meta.service.factory';
 import { NotificationFeatureModule } from './notification';
 import { NOTIFICATION_SERVICE, NotificationService } from './notification.service';
 import { NotificationServiceProxy } from './notification/notification.proxy';
@@ -36,6 +34,8 @@ import { CrudStore } from './crud/crud.store';
 import { STATISTIC_SERVICE_FACTORY } from './statistic.service';
 import { StatisticStore } from './statistic/statistic.store';
 import { RESPONSIVE_SERVICE, ResponsiveServiceImplementation } from './responsive.service';
+import { EDIT_SERVICE_FACTORY } from './edit.service';
+import { EditStore } from './edit/edit.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -46,7 +46,6 @@ export * from './identity.service';
 export * from './lookup.service';
 export * from './masterdetail.service';
 export * from './meta.service';
-export * from './meta.service.factory';
 export * from './notification.service';
 export * from './page.service';
 export * from './responsive.service';
@@ -156,6 +155,15 @@ export class MetaServicesModule {
           ]
         },        
         {
+          provide: EDIT_SERVICE_FACTORY,
+          useFactory: (
+            store: Store
+          ) => (metaService: MetaService) => new EditStore(store, metaService),
+          deps: [ 
+            Store
+          ]
+        },             
+        {
           provide: STATISTIC_SERVICE_FACTORY,
           useFactory: (
             store: Store,
@@ -184,30 +192,6 @@ export class MetaServicesModule {
             Store, 
             ApiServiceFactory,
             HttpClient,
-            IDENTITY_SERVICE,
-            TENANT_SERVICE,
-            TOOLBAR_SERVICE
-          ]
-        },
-        {
-          provide: ServiceFactory,
-          useFactory: (
-            store: Store,
-            httpClient: HttpClient, 
-            router: Router,
-            apiServiceFactory: ApiServiceFactory, 
-            notificationService: NotificationService,
-            translationPipe: I18NextPipe,
-            identityService: IdentityService,
-            tenantService: TenantService,
-            toolbarService: ToolbarService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, translationPipe, notificationService, identityService, tenantService, toolbarService),
-          deps: [
-            Store,            
-            HttpClient,
-            Router,
-            ApiServiceFactory,
-            NOTIFICATION_SERVICE,
-            I18NextPipe,
             IDENTITY_SERVICE,
             TENANT_SERVICE,
             TOOLBAR_SERVICE

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -22,7 +22,7 @@ export class EditLayoutTextareaComponent extends WithVisible(WithRequired(WithVa
 
   public layoutItem: EditLayoutItem|undefined;
 
-  constructor(private translationService: I18NextPipe, private editService: EditService) {
+  constructor(private translationService: I18NextPipe, @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 

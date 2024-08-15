@@ -1,8 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, Inject, OnDestroy } from '@angular/core';
 import dxValidationGroup, { InitializedEvent } from 'devextreme/ui/validation_group';
 import { Observable } from 'rxjs';
 import { EditLayout } from '@ballware/meta-model';
-import { EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 
 @Component({
   selector: 'ballware-edit-layout',
@@ -13,7 +13,7 @@ export class EditLayoutComponent implements OnDestroy {
 
   public layout$: Observable<EditLayout|undefined>;
 
-  constructor(private editService: EditService) {
+  constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
     this.layout$ = editService.editLayout$;
   }
 

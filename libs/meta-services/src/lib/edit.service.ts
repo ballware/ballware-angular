@@ -1,10 +1,11 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { EditLayout, EditLayoutItem, GridLayoutColumn, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
+import { MetaService } from './meta.service';
 
-export interface EditServiceApi {
+export interface EditService extends OnDestroy {
     item$: Observable<Record<string, unknown>|undefined>;
     mode$: Observable<EditModes|undefined>;
     editLayout$: Observable<EditLayout|undefined>;
@@ -38,47 +39,11 @@ export interface EditServiceApi {
     setItem(item: Record<string, unknown>): void;  
     setEditLayout(editLayout: EditLayout): void;
   
-    setValidator(validator: (() => boolean)): void;  
+    setValidator(validator: (() => boolean)|undefined): void;  
     
 }
 
-@Injectable()
-export abstract class EditService implements OnDestroy, EditServiceApi {
-    
-    public abstract ngOnDestroy(): void;
+export type EditServiceFactory = (metaService: MetaService) => EditService;
 
-    public abstract setIdentifier(identifier: string): void;
-
-    public abstract item$: Observable<Record<string, unknown>|undefined>;
-    public abstract mode$: Observable<EditModes|undefined>;
-    public abstract editLayout$: Observable<EditLayout|undefined>;
-    public abstract readonly$: Observable<boolean|undefined>;
-
-    public abstract getValue$: Observable<((request: { dataMember: string }) => unknown)|undefined>;
-    public abstract setValue$: Observable<((request: { dataMember: string, value: unknown }) => void)|undefined>;
-
-    public abstract editorPreparing$: Observable<((request: { dataMember: string, layoutItem: EditLayoutItem }) => void)|undefined>;
-    public abstract editorInitialized$: Observable<((request: { dataMember: string, ref: EditItemRef }) => void)|undefined>;
-    public abstract editorValidating$: Observable<((request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
-    public abstract editorValueChanged$: Observable<((request: { dataMember: string, value: ValueType, notify: boolean }) => void)|undefined>;
-    public abstract editorEntered$: Observable<((request: { dataMember: string }) => void)|undefined>;
-    public abstract editorEvent$: Observable<((request: { dataMember: string, event: string }) => void)|undefined>;    
-
-    public abstract detailGridCellPreparing$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => void) | undefined>;
-    public abstract detailGridRowValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => string) | undefined>;
-    public abstract initNewDetailItem$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => void) | undefined>;
-
-    public abstract detailEditorInitialized$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => void)|undefined>;
-    public abstract detailEditorValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
-    public abstract detailEditorEntered$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string }) => void)|undefined>;
-    public abstract detailEditorEvent$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
-    public abstract detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
-    
-    public abstract validator$: Observable<(() => boolean)|undefined>;
-
-    public abstract setMode(mode: EditModes): void;  
-    public abstract setItem(item: Record<string, unknown>): void;  
-    public abstract setEditLayout(editLayout: EditLayout): void;
-  
-    public abstract setValidator(validator: (() => boolean)|undefined): void;  
-}
+export const EDIT_SERVICE = new InjectionToken<EditService>('Edit service');
+export const EDIT_SERVICE_FACTORY = new InjectionToken<EditServiceFactory>('Edit service factory');

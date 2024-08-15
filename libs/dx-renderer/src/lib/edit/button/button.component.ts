@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { ClickEvent } from 'devextreme/ui/button';
 import { combineLatest, takeUntil } from 'rxjs';
@@ -23,7 +23,9 @@ export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEdit
   private dataMember: string|undefined;
   private editorEvent: ((dataMember: string, event: string) => void)|undefined;
 
-  constructor(private translationService: I18NextPipe, private editService: EditService) {
+  constructor(
+    private translationService: I18NextPipe, 
+    @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 

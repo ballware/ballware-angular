@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from "@angular/core";
 import { CrudItem, EditLayoutItem } from "@ballware/meta-model";
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EditItemRef, EditService } from "@ballware/meta-services";
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
 import { I18NextPipe } from "angular-i18next";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
@@ -34,7 +34,10 @@ import { WithVisible } from "../../utils/withvisible";
     public dataSource$: Observable<DataSource|undefined>;
     public optionButtons$: Observable<Array<ColumnButton>|undefined>;
 
-    constructor(@Inject(ATTACHMENT_SERVICE) private attachmentService: AttachmentService, private editService: EditService, private translationService: I18NextPipe) {
+    constructor(
+        @Inject(ATTACHMENT_SERVICE) private attachmentService: AttachmentService, 
+        @Inject(EDIT_SERVICE) private editService: EditService, 
+        private translationService: I18NextPipe) {
         super();
 
         this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);

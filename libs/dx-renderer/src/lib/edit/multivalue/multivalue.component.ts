@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { combineLatest, takeUntil } from 'rxjs';
 import { createArrayDatasource } from '../../utils/datasource';
@@ -25,7 +25,7 @@ export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(With
 
   public dataSource: any;
 
-  constructor(private translationService: I18NextPipe, private editService: EditService) {
+  constructor(private translationService: I18NextPipe, @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 

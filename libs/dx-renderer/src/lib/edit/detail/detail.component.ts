@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, Provider } from '@angular/core';
+import { Component, Inject, Input, OnInit, Provider } from '@angular/core';
 import { DetailLayout } from '@ballware/meta-model';
-import { EditModes, EditService, MasterdetailService, META_SERVICE, MetaService, ServiceFactory } from '@ballware/meta-services';
+import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -10,9 +10,9 @@ import { WithDestroy } from '../../utils/withdestroy';
   styleUrls: ['./detail.component.scss'],
   providers: [
     {
-      provide: EditService,
-      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
-      deps: [ServiceFactory, META_SERVICE]
+      provide: EDIT_SERVICE,
+      useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
+      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
     } as Provider
   ]
 })
@@ -22,7 +22,7 @@ export class EditDetailComponent extends WithDestroy() implements OnInit {
 
   public layout$ = new BehaviorSubject<DetailLayout|undefined>(undefined);
 
-  constructor(private masterdetailService: MasterdetailService, private editService: EditService) {
+  constructor(private masterdetailService: MasterdetailService, @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, ServiceFactory } from "@ballware/meta-services";
+import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory } from "@ballware/meta-services";
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { Router } from "@angular/router";

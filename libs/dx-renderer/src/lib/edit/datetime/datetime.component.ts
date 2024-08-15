@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { DateType } from 'devextreme/ui/date_box';
 import { takeUntil } from 'rxjs';
@@ -26,7 +26,9 @@ export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithVa
   public type!: DateType;
   public displayFormat!: string;
 
-  constructor(private translationService: I18NextPipe, private editService: EditService) {
+  constructor(
+    private translationService: I18NextPipe, 
+    @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 
