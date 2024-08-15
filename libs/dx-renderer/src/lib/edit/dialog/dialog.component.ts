@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayout } from '@ballware/meta-model';
-import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -33,7 +32,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   private apply$ = new Subject<void>();
 
   constructor(
-    private translationService: I18NextPipe,
+    @Inject(TRANSLATOR) private translator: Translator,
     @Inject(EDIT_SERVICE) private editService: EditService) {
 
     super();
@@ -67,15 +66,15 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   }
 
   public get applyText(): string {
-    return this.translationService.transform('editing.actions.apply');
+    return this.translator('editing.actions.apply');
   }
 
   public get cancelText(): string {
-    return this.translationService.transform('editing.actions.cancel');
+    return this.translator('editing.actions.cancel');
   }
 
   public get closeText(): string {
-    return this.translationService.transform('editing.actions.close');
+    return this.translator('editing.actions.close');
   }
 
   public onHidden() {

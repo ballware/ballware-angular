@@ -4,7 +4,6 @@ import { ApiError } from '@ballware/meta-api';
 import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
-import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
 import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
@@ -14,10 +13,11 @@ import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
 import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
+import { Translator } from '../translation.service';
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudService, OnDestroy {
     
-    constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
+    constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translator: Translator, private router: Router) {
         super({});
 
         this.state$
@@ -229,7 +229,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     .pipe(map((item) => ({
                         mode: EditModes.CREATE,
                         item: item,
-                        title: this.translationService.transform('datacontainer.titles.add', { entity: displayName }),
+                        title: this.translator('datacontainer.titles.add', { entity: displayName }),
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
                         apply: (editedItem) => { 
                             this.save({ item: editedItem as CrudItem });
@@ -257,7 +257,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     .pipe(map((item) => ({
                         mode: EditModes.VIEW,
                         item: item,
-                        title: this.translationService.transform('datacontainer.titles.view', { entity: displayName }),
+                        title: this.translator('datacontainer.titles.view', { entity: displayName }),
                         editLayout: getEditLayout(viewRequest.editLayout, EditModes.VIEW),
                         apply: () => { 
                             this.updater((state) => ({
@@ -288,7 +288,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     .pipe(map((item) => ({
                         mode: EditModes.EDIT,
                         item: item,
-                        title: this.translationService.transform('datacontainer.titles.edit', { entity: displayName }),
+                        title: this.translator('datacontainer.titles.edit', { entity: displayName }),
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
                         apply: (editedItem) => { 
                             this.save({ item: editedItem as CrudItem });
@@ -316,7 +316,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     .pipe(map((item) => 
                         ({
                             item: item,
-                            title: this.translationService.transform('datacontainer.titles.remove', { entity: displayName }),
+                            title: this.translator('datacontainer.titles.remove', { entity: displayName }),
                             apply: () => { 
                                 this.drop({ item });
                             },
@@ -392,7 +392,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                         this.save({ customFunction, item: evaluatedResult as CrudItem });
                                     }                                
                                 },
-                                (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'warning' })
+                                (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'warning' })
                             );
                         } else  {
                             this.updater((state) => ({
@@ -408,14 +408,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         }))(); 
                      }
                 } as ItemEditDialog);
-            }, (message) => this.notificationService.triggerNotification({ message: this.translationService.transform(message), severity: 'info' }), headParams))));           
+            }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));           
             
     readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
         saveRequest$.pipe(withLatestFrom(this.metaService.save$))
             .pipe(switchMap(([saveRequest, save]) => (saveRequest && save)
                 ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
                     .pipe(tap(() => { 
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
                         
                         this.updater((state) => ({
                             ...state,
@@ -437,7 +437,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             .pipe(switchMap(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
                 ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
                     .pipe(tap(() => { 
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
                         
                         this.updater((state) => ({
                             ...state,
@@ -460,7 +460,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             .pipe(switchMap(([uploadRequest, importFiles]) => (uploadRequest && importFiles)
                 ? importFiles(uploadRequest.query, uploadRequest.file)
                     .pipe(tap(() => { 
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.saved'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
                         
                         this.updater((state) => ({
                             ...state,
@@ -481,7 +481,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             .pipe(switchMap(([dropRequest, drop]) => (dropRequest && drop)
                 ? drop(dropRequest.item)
                     .pipe(tap(() => { 
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.removed'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('editing.notifications.removed'), severity: 'info' });
                         
                         this.updater((state) => ({
                             ...state,
@@ -604,7 +604,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 if (entityDocuments && selectPrintRequest && printAllowed) {
 
                     if (selectPrintRequest?.items.filter(item => !printAllowed(item)).length) {
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('editing.notifications.notallowed'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('editing.notifications.notallowed'), severity: 'info' });
                         
                         return undefined;
                     }
@@ -734,7 +734,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 actions.push({
                     id: 'delete',                  
                     icon: 'bi bi-trash-fill',
-                    text: this.translationService.transform('datacontainer.actions.remove'),
+                    text: this.translator('datacontainer.actions.remove'),
                     execute: (_target) => this.remove({ item })
                 });
             }              
@@ -743,7 +743,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 actions.push({
                     id: 'print',                    
                     icon: 'bi bi-printer-fill',
-                    text: this.translationService.transform('datacontainer.actions.print'),
+                    text: this.translator('datacontainer.actions.print'),
                     execute: (target) => this.selectPrint({ items: [item], target })
                 });
             }

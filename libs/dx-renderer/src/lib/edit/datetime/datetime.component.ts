@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { EDIT_SERVICE, EditItemRef, EditService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DateType } from 'devextreme/ui/date_box';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -27,7 +26,7 @@ export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithVa
   public displayFormat!: string;
 
   constructor(
-    private translationService: I18NextPipe, 
+    @Inject(TRANSLATOR) private translator: Translator, 
     @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
@@ -51,11 +50,11 @@ export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithVa
 
             switch (layoutItem.type) {              
               case 'datetime':
-                this.displayFormat = this.translationService.transform('format.datetime');
+                this.displayFormat = this.translator('format.datetime');
                 break;
               case 'date':
               default:
-                this.displayFormat = this.translationService.transform('format.date');
+                this.displayFormat = this.translator('format.date');
             }
           }
         });

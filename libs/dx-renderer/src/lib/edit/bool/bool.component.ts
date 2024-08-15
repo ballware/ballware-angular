@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -23,7 +22,6 @@ export class EditLayoutBoolComponent extends WithVisible(WithRequired(WithValida
   public layoutItem: EditLayoutItem|undefined;
 
   constructor(
-    private translationService: I18NextPipe, 
     @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }

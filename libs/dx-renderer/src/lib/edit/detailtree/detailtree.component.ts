@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
-import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService } from "@ballware/meta-services";
-import { I18NextPipe, PipeOptions } from "angular-i18next";
+import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { DxDataGridComponent } from "devextreme-angular";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
 import { Column, EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/tree_list";
@@ -77,7 +76,7 @@ export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(With
     private detailEditorEvent: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
 
     constructor(
-        private translationService: I18NextPipe,
+        @Inject(TRANSLATOR) private translator: Translator,
         @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(EDIT_SERVICE) private editService: EditService) {
@@ -90,8 +89,8 @@ export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(With
           widget: 'dxButton',
           showText: 'inMenu',
           options: {
-            hint: this.translationService.transform('datacontainer.actions.showList'),
-            text: this.translationService.transform('datacontainer.actions.showList'),
+            hint: this.translator('datacontainer.actions.showList'),
+            text: this.translator('datacontainer.actions.showList'),
             icon: 'bi bi-table',
             onClick: () => {              
               this.showSource = false;
@@ -152,7 +151,7 @@ export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(With
                 this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
 
                 this.columns = createColumnConfiguration<Column>(
-                    (key: string, options?: PipeOptions) => this.translationService.transform(key, options),
+                    (key, options) => this.translator(key, options),
                     this.options.columns,                    
                     lookups,
                     item,
@@ -175,8 +174,8 @@ export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(With
           widget: 'dxButton',
           showText: 'inMenu',
           options: {
-            hint: this.translationService.transform('datacontainer.actions.showSource'),
-            text: this.translationService.transform('datacontainer.actions.showSource'),
+            hint: this.translator('datacontainer.actions.showSource'),
+            text: this.translator('datacontainer.actions.showSource'),
             icon: 'bi bi-code',
             onClick: () => {
               this.showSource = true;

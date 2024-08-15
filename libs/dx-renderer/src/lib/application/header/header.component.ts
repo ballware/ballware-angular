@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Inject, Input, Output, ViewChild } from '@angular/core';
-import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, TRANSLATOR, Translator } from '@ballware/meta-services';
 import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { ApplicationAccountMenuComponent } from '../account/menu.component';
@@ -32,7 +31,12 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
   public fullscreenDialogs$: Observable<boolean>;
 
-  constructor(@Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, private translationService: I18NextPipe, @Inject(IDENTITY_SERVICE) private identityService: IdentityService, @Inject(TENANT_SERVICE) private tenantService: TenantService, @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
+  constructor(
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
+    @Inject(TRANSLATOR) private translator: Translator, 
+    @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
+    @Inject(TENANT_SERVICE) private tenantService: TenantService, 
+    @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
     super();
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$
@@ -44,7 +48,7 @@ export class ApplicationHeaderComponent extends WithDestroy() {
     this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
     this.documentation$ = this.toolbarService.documentation$;
 
-    this.documentationPopupTitle$ = this.pageTitle$.pipe(map((pageTitle) => pageTitle && this.translationService.transform('documentation.popuptitle', { entity: pageTitle })));
+    this.documentationPopupTitle$ = this.pageTitle$.pipe(map((pageTitle) => pageTitle && this.translator('documentation.popuptitle', { entity: pageTitle })));
 
     this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenExpiration$))
       .pipe(tap(([, accessTokenExpiration]) => {

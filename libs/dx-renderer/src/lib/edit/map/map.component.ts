@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
 import { DxMapComponent } from 'devextreme-angular';
 import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -32,7 +31,7 @@ export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(W
 
   public googlekey$: Observable<string|undefined>;
 
-  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, private translationService: I18NextPipe, @Inject(EDIT_SERVICE) private editService: EditService) {
+  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, @Inject(EDIT_SERVICE) private editService: EditService) {
     super();
 
     this.googlekey$ = this.settingsService.googlekey$;

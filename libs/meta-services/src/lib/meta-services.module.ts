@@ -36,6 +36,7 @@ import { StatisticStore } from './statistic/statistic.store';
 import { RESPONSIVE_SERVICE, ResponsiveServiceImplementation } from './responsive.service';
 import { EDIT_SERVICE_FACTORY } from './edit.service';
 import { EditStore } from './edit/edit.store';
+import { TRANSLATOR, Translator } from './translation.service';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -53,6 +54,7 @@ export * from './settings.service';
 export * from './statistic.service';
 export * from './tenant.service';
 export * from './toolbar.service';
+export * from './translation.service';
 export * from './toolbaritemref';
 
 @NgModule({
@@ -74,6 +76,13 @@ export class MetaServicesModule {
     return {
       ngModule: MetaServicesModule,
       providers: [  
+        {
+          provide: TRANSLATOR,
+          useFactory: (pipe: I18NextPipe): Translator => (key, options) => pipe.transform(key, options),
+          deps: [
+            I18NextPipe
+          ]
+        },
         {
           provide: SETTINGS_SERVICE,
           useFactory: (store: Store) => new SettingsServiceProxy(store),
@@ -110,9 +119,9 @@ export class MetaServicesModule {
             store: Store, 
             notificationService: NotificationService, 
             apiServiceFactory: ApiServiceFactory, 
-            translationPipe: I18NextPipe
-          ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translationPipe),
-          deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, I18NextPipe ]
+            translator: Translator
+          ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translator),
+          deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, TRANSLATOR ]
         },
         {
           provide: LOOKUP_SERVICE_FACTORY,
@@ -128,15 +137,15 @@ export class MetaServicesModule {
             store: Store, 
             apiServiceFactory: ApiServiceFactory,
             httpClient: HttpClient, 
-            translationPipe: I18NextPipe,
+            translator: Translator,
             identityService: IdentityService,
             tenantService: TenantService            
-          ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translationPipe, apiServiceFactory.createMetaApi(), identityService, tenantService, lookupService),
+          ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translator, apiServiceFactory.createMetaApi(), identityService, tenantService, lookupService),
           deps: [ 
             Store, 
             ApiServiceFactory,
             HttpClient,
-            I18NextPipe,
+            TRANSLATOR,
             IDENTITY_SERVICE,
             TENANT_SERVICE
           ]
@@ -145,12 +154,12 @@ export class MetaServicesModule {
           provide: CRUD_SERVICE_FACTORY,
           useFactory: (
             store: Store, 
-            translationPipe: I18NextPipe,         
+            translator: Translator,         
             notificationService: NotificationService           
-          ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translationPipe, router),
+          ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translator, router),
           deps: [ 
             Store, 
-            I18NextPipe,
+            TRANSLATOR,
             NOTIFICATION_SERVICE 
           ]
         },        

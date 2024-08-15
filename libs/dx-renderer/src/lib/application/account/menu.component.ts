@@ -1,6 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -24,7 +23,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
   constructor(
     @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
-    private translationService: I18NextPipe) {
+    @Inject(TRANSLATOR) private translator: Translator) {
     super();
 
     combineLatest([this.identityService.userName$, this.identityService.allowedTenants$])
@@ -35,7 +34,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
         
         if (userName) {
           userMenuItems.push({
-            text: this.translationService.transform('session.refresh'),
+            text: this.translator('session.refresh'),
             onClick: () => {
               this.accountMenu?.instance.hide();              
               this.identityService.refreshToken();
@@ -43,7 +42,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
           });
 
           userMenuItems.push({
-            text: this.translationService.transform('session.manageaccount'),
+            text: this.translator('session.manageaccount'),
             onClick: () => {
               this.accountMenu?.instance.hide();
               this.identityService.manageProfile();
@@ -52,7 +51,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
 
           if (allowedTenants) {
             allowedTenants.forEach(t => userMenuItems.push({
-              text: this.translationService.transform('session.switchtenant', { tenant: t.Name }),
+              text: this.translator('session.switchtenant', { tenant: t.Name }),
               onClick: () => {
                 this.accountMenu?.instance.hide();
                 this.identityService.switchTenant(t.Id);
@@ -61,7 +60,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
           }
 
           userMenuItems.push({
-            text: this.translationService.transform('session.logout', { user: userName }),
+            text: this.translator('session.logout', { user: userName }),
             onClick: () => {
               this.accountMenu?.instance.hide();
               this.identityService.logout();

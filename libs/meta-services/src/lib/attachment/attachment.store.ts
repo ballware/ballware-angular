@@ -2,17 +2,17 @@ import { OnDestroy } from "@angular/core";
 import { ApiError, MetaApiService } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { I18NextPipe } from "angular-i18next";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, catchError, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { AttachmentService } from "../attachment.service";
 import { attachmentDestroyed, attachmentUpdated } from "../component";
 import { NotificationService } from "../notification.service";
 import { AttachmentState } from "./attachment.state";
+import { Translator } from "../translation.service";
 
 export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentService, OnDestroy {
     
-    constructor(private store: Store, private notificationService: NotificationService, private metaApiService: MetaApiService, private translationService: I18NextPipe) {
+    constructor(private store: Store, private notificationService: NotificationService, private metaApiService: MetaApiService, private translator: Translator) {
         super({});
 
         this.state$
@@ -74,7 +74,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
             .pipe(switchMap(([file, owner]) => (owner && file)
                 ? this.metaApiService.metaAttachmentApiFactory(owner).upload(file)
                     .pipe(tap(() => {
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('attachment.messages.added'), severity: 'info' });                        
+                        this.notificationService.triggerNotification({ message: this.translator('attachment.messages.added'), severity: 'info' });                        
                     }))
                 : of(undefined)))
             .pipe(catchError((error: ApiError) => {
@@ -102,7 +102,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
         ...state,
         removeDialog: {
             fileName,
-            title: this.translationService.transform('', { fileName }),
+            title: this.translator('', { fileName }),
             apply: (fileName) => this.drop(fileName),
             cancel: this.updater((state) => ({ ...state, removeDialog: undefined }))
         }
@@ -113,7 +113,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
             .pipe(switchMap(([fileName, owner]) => (owner && fileName)
                 ? this.metaApiService.metaAttachmentApiFactory(owner).remove(fileName)
                     .pipe(tap(() => { 
-                        this.notificationService.triggerNotification({ message: this.translationService.transform('attachment.messages.removed'), severity: 'info' });
+                        this.notificationService.triggerNotification({ message: this.translator('attachment.messages.removed'), severity: 'info' });
                         
                         this.updater((state) => ({
                             ...state,

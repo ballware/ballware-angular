@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit, TemplateRef } from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
-import { I18NextPipe, PipeOptions } from 'angular-i18next';
+import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
 import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
@@ -82,7 +81,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private dataSourceService: DataSourceService,
-    private translationService: I18NextPipe,
+    @Inject(TRANSLATOR) private translator: Translator,
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
 
     super();
@@ -127,7 +126,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     ])
       .pipe(takeUntil(this.destroy$))
       .pipe(map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
-        (key: string, options?: PipeOptions) => this.translationService.transform(key, options),
+        (key, options) => this.translator(key, options),
         gridLayout?.columns ?? [],
         lookups,
         headParams,

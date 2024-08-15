@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from "@angular/core";
 import { CrudItem, EditLayoutItem } from "@ballware/meta-model";
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
-import { I18NextPipe } from "angular-i18next";
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditItemRef, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
 import { nanoid } from "nanoid";
@@ -37,7 +36,7 @@ import { WithVisible } from "../../utils/withvisible";
     constructor(
         @Inject(ATTACHMENT_SERVICE) private attachmentService: AttachmentService, 
         @Inject(EDIT_SERVICE) private editService: EditService, 
-        private translationService: I18NextPipe) {
+        @Inject(TRANSLATOR) private translator: Translator) {
         super();
 
         this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);
@@ -53,12 +52,12 @@ import { WithVisible } from "../../utils/withvisible";
             .pipe(takeUntil(this.destroy$))
             .pipe(map((readonly) => [
                 {
-                    hint: this.translationService.transform('attachment.actions.view'),
+                    hint: this.translator('attachment.actions.view'),
                     icon: 'bi bi-eye-fill',
                     onClick: (e: any) => this.fileOpen(e.row.data),                                          
                 } as ColumnButton,
                 {
-                    hint: this.translationService.transform('attachment.actions.remove'),
+                    hint: this.translator('attachment.actions.remove'),
                     icon: 'bi bi-trash-fill',
                     onClick: (e: any) => this.fileDelete(e.row.data), 
                     visible: !readonly                     

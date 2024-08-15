@@ -1,6 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, PAGE_SERVICE, PageService, ToolbarItemRef } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, PAGE_SERVICE, PageService, ToolbarItemRef, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { ClickEvent as ButtonClickEvent, InitializedEvent as ButtonInitializedEvent } from 'devextreme/ui/button';
 import { InitializedEvent as DateBoxInitializedEvent, ValueChangedEvent as DateBoxValueChangedEvent } from 'devextreme/ui/date_box';
 import { ButtonClickEvent as DropDownButtonClickEvent, InitializedEvent as DropDownButtonInitializedEvent, ItemClickEvent as DropDownButtonItemClickEvent } from 'devextreme/ui/drop_down_button';
@@ -28,7 +27,7 @@ export class ToolbarComponent extends WithDestroy() {
   constructor(
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
     @Inject(PAGE_SERVICE) private pageService: PageService, 
-    private translationService: I18NextPipe) {
+    @Inject(TRANSLATOR) private translator: Translator) {
     super();
 
     combineLatest([this.pageService.layout$, this.lookupService.lookups$])
@@ -172,7 +171,7 @@ export class ToolbarComponent extends WithDestroy() {
                   label: toolbarItem.caption ?? '',
                   width: toolbarItem.width ?? '220px',
                   type: "datetime",
-                  displayFormat: this.translationService.transform('format.datetime'),
+                  displayFormat: this.translator('format.datetime'),
                   hint: toolbarItem.caption,
                   onInitialized: (e: DateBoxInitializedEvent) => {
                     if (toolbarItem.name) {

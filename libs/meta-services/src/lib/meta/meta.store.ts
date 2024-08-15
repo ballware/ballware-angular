@@ -4,7 +4,6 @@ import { MetaApiService } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { I18NextPipe } from "angular-i18next";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { metaDestroyed, metaUpdated } from "../component";
@@ -15,6 +14,7 @@ import { LookupRequest, LookupService } from "../lookup.service";
 import { MetaService } from "../meta.service";
 import { TenantService } from "../tenant.service";
 import { MetaState } from "./meta.state";
+import { Translator } from "../translation.service";
 
 interface TemplateItemOptions {
     scope: 'tenant' | 'meta';
@@ -22,7 +22,7 @@ interface TemplateItemOptions {
 }
 
 export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
-    constructor(private store: Store, private httpClient: HttpClient, private i18next: I18NextPipe, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
+    constructor(private store: Store, private httpClient: HttpClient, private translator: Translator, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 
         this.state$
@@ -60,7 +60,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                         ?? { 
                             id: 'add', 
                             type: 'default_add', 
-                            text: this.i18next.transform('datacontainer.actions.add', { entity: entityMetadata?.displayName }), 
+                            text: this.translator('datacontainer.actions.add', { entity: entityMetadata?.displayName }), 
                             editLayout: 'primary' 
                         },
                     viewFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_view') 
@@ -68,7 +68,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                             id: 'view', 
                             type: 'default_view', 
                             icon: 'bi bi-eye-fill',
-                            text: this.i18next.transform('datacontainer.actions.show', { entity: entityMetadata?.displayName }), 
+                            text: this.translator('datacontainer.actions.show', { entity: entityMetadata?.displayName }), 
                             editLayout: 'primary' 
                         },                        
                     editFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_edit') 
@@ -76,7 +76,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                             id: 'edit', 
                             type: 'default_edit', 
                             icon: 'bi bi-pencil-fill',
-                            text: this.i18next.transform('datacontainer.actions.edit', { entity: entityMetadata?.displayName }), 
+                            text: this.translator('datacontainer.actions.edit', { entity: entityMetadata?.displayName }), 
                             editLayout: 'primary' 
                         },
                 }))(entityMetadata);                

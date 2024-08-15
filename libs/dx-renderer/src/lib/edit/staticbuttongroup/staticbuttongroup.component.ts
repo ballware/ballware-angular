@@ -1,7 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
 import { Item } from 'devextreme/ui/button_group';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -43,7 +42,7 @@ export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible
     }
   }
 
-  constructor(private translationService: I18NextPipe, @Inject(EDIT_SERVICE) private editService: EditService) {
+  constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
     super();
   }
 

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
-import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
-import { I18NextPipe } from 'angular-i18next';
+import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import DevExpress from 'devextreme';
 import { DxDataGridComponent } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
@@ -91,7 +90,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private masterDetailService: MasterdetailService,
-    private i18next: I18NextPipe) {
+    @Inject(TRANSLATOR) private translator: Translator) {
     super();
 
     this.customizeColumns = this.customizeColumns.bind(this);
@@ -191,7 +190,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
     if (this.gridSelection) {
       this.gridSelection.option('visible', this.selectedRowKeys.length > 0);
-      this.gridSelection.option('text', this.i18next.transform('datacontainer.actions.selection', { count: this.selectedRowKeys.length }));
+      this.gridSelection.option('text', this.translator('datacontainer.actions.selection', { count: this.selectedRowKeys.length }));
     }
 
     this.onVisibleRowsChanged(this.grid?.instance.getVisibleRows().map(vr => vr.key) ?? []);
@@ -206,8 +205,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.refresh'),
-          text: this.i18next.transform('datacontainer.actions.refresh'),
+          hint: this.translator('datacontainer.actions.refresh'),
+          text: this.translator('datacontainer.actions.refresh'),
           icon: 'bi bi-arrow-repeat',
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.reloadClick.emit({ target: e.event.currentTarget });
@@ -223,8 +222,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.print'),
-          text: this.i18next.transform('datacontainer.actions.print'),
+          hint: this.translator('datacontainer.actions.print'),
+          text: this.translator('datacontainer.actions.print'),
           icon: 'bi bi-printer-fill',
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.printClick.emit({
@@ -243,8 +242,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.import'),
-          text: this.i18next.transform('datacontainer.actions.import'),
+          hint: this.translator('datacontainer.actions.import'),
+          text: this.translator('datacontainer.actions.import'),
           icon: 'bi bi-upload',
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.importClick.emit({
@@ -263,8 +262,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.export'),
-          text: this.i18next.transform('datacontainer.actions.export'),
+          hint: this.translator('datacontainer.actions.export'),
+          text: this.translator('datacontainer.actions.export'),
           icon: 'bi bi-download',
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.exportClick.emit({
@@ -304,8 +303,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.add', { entity: this.displayName }),
-          text: this.i18next.transform('datacontainer.actions.add', { entity: this.displayName }),
+          hint: this.translator('datacontainer.actions.add', { entity: this.displayName }),
+          text: this.translator('datacontainer.actions.add', { entity: this.displayName }),
           icon: 'bi bi-plus',
           onClick: (e: { event: { currentTarget: Element } }) => {
             this.addClick.emit({ target: e.event.currentTarget });
@@ -321,8 +320,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.unselectall', {}),
-          text: this.i18next.transform('datacontainer.actions.unselectall', { count: 99 }),
+          hint: this.translator('datacontainer.actions.unselectall', {}),
+          text: this.translator('datacontainer.actions.unselectall', { count: 99 }),
           icon: 'bi bi-dash-square',
           onClick: () => {
             this.onUnselectAllClick();
@@ -337,8 +336,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         showText: 'always',
         options: {
           visible: this.selectedRowKeys.length > 0,
-          hint: this.i18next.transform('datacontainer.actions.selectionhint.normal'),
-          text: this.i18next.transform('datacontainer.actions.selection', { count: this.selectedRowKeys.length }),
+          hint: this.translator('datacontainer.actions.selectionhint.normal'),
+          text: this.translator('datacontainer.actions.selection', { count: this.selectedRowKeys.length }),
           onClick: () => {
             this.onNavigateToSelection();
           },
@@ -354,8 +353,8 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         widget: 'dxButton',
         showText: 'inMenu',
         options: {
-          hint: this.i18next.transform('datacontainer.actions.selectall', {}),
-          text: this.i18next.transform('datacontainer.actions.selectall', {}),
+          hint: this.translator('datacontainer.actions.selectall', {}),
+          text: this.translator('datacontainer.actions.selectall', {}),
           icon: 'bi bi-check-square',
           onClick: () => {
             this.onSelectAllClick();
@@ -432,11 +431,11 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
       const invisibleKeys = this.selectedRowKeys.filter(sr => !visibleKeys.includes(sr));
 
       if (invisibleKeys.length && this.gridSelection) {
-        this.gridSelection.option('hint', this.i18next.transform('datacontainer.actions.selectionhint.danger'));
+        this.gridSelection.option('hint', this.translator('datacontainer.actions.selectionhint.danger'));
         this.gridSelection.option('type', 'danger');
         this.gridSelection.option('icon', 'bi bi-exclamation-triangle');
       } else {
-        this.gridSelection.option('hint', this.i18next.transform('datacontainer.actions.selectionhint.normal'));
+        this.gridSelection.option('hint', this.translator('datacontainer.actions.selectionhint.normal'));
         this.gridSelection.option('type', 'normal');
         this.gridSelection.option('icon', undefined);
       }

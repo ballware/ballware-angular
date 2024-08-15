@@ -2,12 +2,12 @@ import { inject } from "@angular/core";
 import { IdentityApiService, MetaApiService } from "@ballware/meta-api";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
-import { I18NextPipe } from "angular-i18next";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
 import { filter, switchMap, tap } from "rxjs";
 import { showNotification } from "../notification/notification.actions";
 import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
 import { selectProfileUrl } from "./identity.state";
+import { TRANSLATOR } from "../translation.service";
 
 export const initializeOAuth = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityInitialize))
@@ -66,9 +66,9 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
         }))
 , { functional: true, dispatch: false });
 
-export const notifyUserLogin = createEffect((actions$ = inject(Actions), store = inject(Store), translationPipe = inject(I18NextPipe)) => 
+export const notifyUserLogin = createEffect((actions$ = inject(Actions), store = inject(Store), translator = inject(TRANSLATOR)) => 
     actions$.pipe((ofType(identityUserLogin)))
-        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translationPipe.transform('rights.notifications.loginsuccess') }}))))
+        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.loginsuccess') }}))))
 , { functional: true, dispatch: false});
 
 export const logoutOAuth = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) => 
@@ -78,9 +78,9 @@ export const logoutOAuth = createEffect((actions$ = inject(Actions), oauthServic
         }))
 , { functional: true, dispatch: false });
 
-export const userExpired = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), translationPipe = inject(I18NextPipe)) => 
+export const userExpired = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), translator = inject(TRANSLATOR)) => 
     actions$.pipe((ofType(identityUserExpired)))
-        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translationPipe.transform('rights.notifications.sessionexpired') }}))))
+        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.sessionexpired') }}))))
         .pipe(tap(() => {
             oauthService.initLoginFlow();
         }))
@@ -108,10 +108,10 @@ export const fetchAllowedTenants = createEffect((actions$ = inject(Actions), sto
         .pipe(tap((allowedTenants) => store.dispatch(identityAllowedTenantsFetched({ allowedTenants }))))
 , { functional: true, dispatch: false });
 
-export const switchTenant = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), identityApiService = inject(IdentityApiService), translationPipe = inject(I18NextPipe)) =>
+export const switchTenant = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), identityApiService = inject(IdentityApiService), translator = inject(TRANSLATOR)) =>
     actions$.pipe((ofType(identitySwitchTenant)))
         .pipe(switchMap(({ tenant }) => identityApiService.identityUserApi.switchTenantFunc(tenant)))
-        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translationPipe.transform('rights.notifications.logoutfortenantswitch') }}))))
+        .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.logoutfortenantswitch') }}))))
         .pipe(tap(() => {
             oauthService.initLoginFlow();
         }))
