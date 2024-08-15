@@ -8,8 +8,7 @@ import { PageService } from './page.service';
 import { ResponsiveService } from './responsive.service';
 import { StatisticService } from './statistic.service';
 
-export abstract class MetaServiceFactory {
-    abstract createAttachmentService(): AttachmentService;
+export abstract class MetaServiceFactory {    
     abstract createCrudService(metaService: MetaService): CrudService;
     abstract createEditService(metaService: MetaService): EditService;
     abstract createLookupService(): LookupService;

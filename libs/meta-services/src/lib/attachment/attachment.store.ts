@@ -5,12 +5,12 @@ import { Store } from "@ngrx/store";
 import { I18NextPipe } from "angular-i18next";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, catchError, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
-import { AttachmentServiceApi } from "../attachment.service";
+import { AttachmentService } from "../attachment.service";
 import { attachmentDestroyed, attachmentUpdated } from "../component";
 import { NotificationService } from "../notification.service";
 import { AttachmentState } from "./attachment.state";
 
-export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentServiceApi, OnDestroy {
+export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentService, OnDestroy {
     
     constructor(private store: Store, private notificationService: NotificationService, private metaApiService: MetaApiService, private translationService: I18NextPipe) {
         super({});

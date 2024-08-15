@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface AttachmentRemoveDialog {
@@ -7,7 +7,7 @@ export interface AttachmentRemoveDialog {
   cancel: () => void    
 }
 
-export interface AttachmentServiceApi {
+export interface AttachmentService extends OnDestroy {
   owner$: Observable<string|undefined>;
   items$: Observable<Record<string, unknown>[]|undefined>;
 
@@ -23,22 +23,7 @@ export interface AttachmentServiceApi {
   drop(fileName: string): void;
 }
 
-@Injectable()
-export abstract class AttachmentService implements AttachmentServiceApi {
-  
-  public abstract ngOnDestroy(): void;
+export type AttachmentServiceFactory = () => AttachmentService;
 
-  public abstract owner$: Observable<string|undefined>;
-  public abstract items$: Observable<Record<string, unknown>[]|undefined>;
-
-  public abstract removeDialog$: Observable<AttachmentRemoveDialog | undefined>;
-
-  public abstract setIdentifier(identifier: string): void;
-  public abstract setOwner(identifier: string): void;
-
-  public abstract fetch(): void;
-  public abstract upload(file: File): void;
-  public abstract open(fileName: string): void;
-  public abstract remove(fileName: string): void;
-  public abstract drop(fileName: string): void;
-}
+export const ATTACHMENT_SERVICE = new InjectionToken<AttachmentService>('Attachment service');
+export const ATTACHMENT_SERVICE_FACTORY = new InjectionToken<AttachmentServiceFactory>('Attachment service factory');

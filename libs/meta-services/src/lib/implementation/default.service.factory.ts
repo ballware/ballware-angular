@@ -3,10 +3,6 @@ import { Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
-import { OAuthService } from 'angular-oauth2-oidc';
-import { AttachmentService } from '../attachment.service';
-import { AttachmentServiceProxy } from '../attachment/attachment.proxy';
-import { AttachmentStore } from '../attachment/attachment.store';
 import { CrudService } from '../crud.service';
 import { CrudServiceProxy } from '../crud/crud.proxy';
 import { CrudStore } from '../crud/crud.store';
@@ -35,10 +31,6 @@ import { ToolbarService } from '../toolbar.service';
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
         super();
-    }
-
-    override createAttachmentService(): AttachmentService {
-        return new AttachmentServiceProxy(new AttachmentStore(this.store, this.notificationService, this.apiServiceFactory.createMetaApi(), this.translationPipe));
     }
 
     override createCrudService(metaService: MetaService): CrudService {

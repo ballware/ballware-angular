@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
-import { OAuthService } from 'angular-oauth2-oidc';
 import { ComponentFeatureModule } from './component';
 import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
 import { IDENTITY_SERVICE, IdentityService } from './identity.service';
@@ -24,6 +23,8 @@ import { TenantServiceProxy } from './tenant/tenant.proxy';
 import { ToolbarEffectsModule, ToolbarFeatureModule } from './toolbar';
 import { TOOLBAR_SERVICE, ToolbarService } from './toolbar.service';
 import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
+import { ATTACHMENT_SERVICE_FACTORY } from './attachment.service';
+import { AttachmentStore } from './attachment/attachment.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -87,6 +88,16 @@ export class MetaServicesModule {
           provide: TOOLBAR_SERVICE,
           useFactory: (store: Store) => new ToolbarServiceProxy(store),
           deps: [ Store ]
+        },
+        {
+          provide: ATTACHMENT_SERVICE_FACTORY,
+          useFactory: (
+            store: Store, 
+            notificationService: NotificationService, 
+            apiServiceFactory: ApiServiceFactory, 
+            translationPipe: I18NextPipe
+          ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translationPipe),
+          deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, I18NextPipe ]
         },
         {
           provide: MetaServiceFactory,
