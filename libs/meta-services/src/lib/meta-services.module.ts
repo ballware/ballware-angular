@@ -22,7 +22,7 @@ import { TenantEffectsModule, TenantFeatureModule } from './tenant';
 import { TENANT_SERVICE, TenantService } from './tenant.service';
 import { TenantServiceProxy } from './tenant/tenant.proxy';
 import { ToolbarEffectsModule, ToolbarFeatureModule } from './toolbar';
-import { ToolbarService } from './toolbar.service';
+import { TOOLBAR_SERVICE, ToolbarService } from './toolbar.service';
 import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
 
 export * from './attachment.service';
@@ -84,7 +84,7 @@ export class MetaServicesModule {
           deps: [ Store ]
         },          
         {
-          provide: ToolbarService,
+          provide: TOOLBAR_SERVICE,
           useFactory: (store: Store) => new ToolbarServiceProxy(store),
           deps: [ Store ]
         },
@@ -96,22 +96,20 @@ export class MetaServicesModule {
             router: Router,
             apiServiceFactory: ApiServiceFactory, 
             notificationService: NotificationService,
-            oauthService: OAuthService, 
             translationPipe: I18NextPipe,
             identityService: IdentityService,
             tenantService: TenantService,
-            toolbarService: ToolbarService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, oauthService, translationPipe, notificationService, identityService, tenantService, toolbarService),
+            toolbarService: ToolbarService) => new DefaultMetaServiceFactory(store, httpClient, router, apiServiceFactory, translationPipe, notificationService, identityService, tenantService, toolbarService),
           deps: [
             Store,            
             HttpClient,
             Router,
             ApiServiceFactory,
             NOTIFICATION_SERVICE,
-            OAuthService,
             I18NextPipe,
             IDENTITY_SERVICE,
             TENANT_SERVICE,
-            ToolbarService
+            TOOLBAR_SERVICE
           ]
         }
       ]

@@ -1,15 +1,11 @@
-import { Injectable } from "@angular/core";
 import { Store } from "@ngrx/store";
 import { ToolbarService } from "../toolbar.service";
 import { toolbarHideDocumentation, toolbarSetPage, toolbarShowDocumentation } from "./toolbar.actions";
 import { selectDocumentation, selectDocumentationIdentifier, selectTitle } from "./toolbar.state";
 
-@Injectable()
-export class ToolbarServiceProxy extends ToolbarService {
+export class ToolbarServiceProxy implements ToolbarService {
 
-    constructor(private store: Store) {
-        super();
-    }
+    constructor(private store: Store) {}
     
     public get title$() {
         return this.store.select(selectTitle);
@@ -23,15 +19,15 @@ export class ToolbarServiceProxy extends ToolbarService {
         return this.store.select(selectDocumentation);
     }
 
-    public override setPage(title: string, documentationIdentifier?: string): void {
+    public setPage(title: string, documentationIdentifier?: string): void {
         this.store.dispatch(toolbarSetPage({ title, documentationIdentifier }));
     }
 
-    public override showDocumentation(): void {
+    public showDocumentation(): void {
         this.store.dispatch(toolbarShowDocumentation());
     }
 
-    public override hideDocumentation(): void {
+    public hideDocumentation(): void {
         this.store.dispatch(toolbarHideDocumentation());
     }
 }

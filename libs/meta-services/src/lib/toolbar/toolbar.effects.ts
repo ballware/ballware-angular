@@ -4,10 +4,10 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { I18NextPipe } from "angular-i18next";
 import { map, of, switchMap, withLatestFrom } from "rxjs";
 import { showNotification } from "../notification";
-import { ToolbarService } from "../toolbar.service";
+import { TOOLBAR_SERVICE, ToolbarService } from "../toolbar.service";
 import { toolbarDocumentationFetched, toolbarShowDocumentation } from "./toolbar.actions";
 
-export const fetchDocumentation = createEffect((actions$ = inject(Actions), metaApiService = inject(MetaApiService), translationPipe = inject(I18NextPipe), toolbarService = inject(ToolbarService)) => 
+export const fetchDocumentation = createEffect((actions$ = inject(Actions), metaApiService = inject(MetaApiService), translationPipe = inject(I18NextPipe), toolbarService = inject(TOOLBAR_SERVICE)) => 
     actions$.pipe(ofType(toolbarShowDocumentation))              
         .pipe(withLatestFrom(toolbarService.documentationIdentifier$))
         .pipe(switchMap(([, documentationIdentifier]) => documentationIdentifier ? metaApiService.metaDocumentationApi.loadDocumentationForEntity(documentationIdentifier) : of(undefined) ))

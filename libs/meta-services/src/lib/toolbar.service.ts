@@ -1,13 +1,15 @@
+import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
-import { WithDestroy } from "./withdestroy";
 
-export abstract class ToolbarService extends WithDestroy() {
+export interface ToolbarService {
 
-    public abstract title$: Observable<string|undefined>;    
-    public abstract documentationIdentifier$: Observable<string|undefined>;    
-    public abstract documentation$: Observable<unknown|undefined>;
+    title$: Observable<string|undefined>;    
+    documentationIdentifier$: Observable<string|undefined>;    
+    documentation$: Observable<unknown|undefined>;
 
-    public abstract setPage(title: string, documentationIdentifier?: string): void;
-    public abstract showDocumentation(): void;
-    public abstract hideDocumentation(): void;
+    setPage(title: string, documentationIdentifier?: string): void;
+    showDocumentation(): void;
+    hideDocumentation(): void;
 }
+
+export const TOOLBAR_SERVICE = new InjectionToken<ToolbarService>('Toolbar service');

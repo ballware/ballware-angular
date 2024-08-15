@@ -33,7 +33,7 @@ import { TenantService } from '../tenant.service';
 import { ToolbarService } from '../toolbar.service';
 
 export class DefaultMetaServiceFactory extends MetaServiceFactory {
-    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private oauthService: OAuthService, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
+    constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
         super();
     }
 
