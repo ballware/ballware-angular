@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CRUD_SERVICE, CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, META_SERVICE, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CRUD_SERVICE, CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
@@ -41,7 +41,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       private domSanitizer: DomSanitizer, 
       @Inject(META_SERVICE) private metaService: MetaService, 
       @Inject(CRUD_SERVICE) private crudService: CrudService, 
-      private responsiveService: ResponsiveService) {
+      @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
     super();
 
     this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);

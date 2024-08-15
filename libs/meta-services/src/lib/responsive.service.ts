@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { BehaviorSubject, distinctUntilChanged, Observable } from 'rxjs';
 
 export enum SCREEN_SIZE {
@@ -9,11 +9,12 @@ export enum SCREEN_SIZE {
   XL
 }
 
+export interface ResponsiveService {
+  get onResize$(): Observable<SCREEN_SIZE>;
+  onResize(size: SCREEN_SIZE): void;
+}
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ResponsiveService {
+export class ResponsiveServiceImplementation implements ResponsiveService {
 
   get onResize$(): Observable<SCREEN_SIZE> {
     return this.resizeSubject.asObservable().pipe(distinctUntilChanged());
@@ -25,3 +26,5 @@ export class ResponsiveService {
     setTimeout(() => this.resizeSubject.next(size));
   }
 }
+
+export const RESPONSIVE_SERVICE = new InjectionToken<ResponsiveService>('Responsive service');

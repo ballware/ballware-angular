@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, TemplateRef } from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe, PipeOptions } from 'angular-i18next';
 import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
@@ -83,7 +83,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private dataSourceService: DataSourceService,
     private translationService: I18NextPipe,
-    private responsiveService: ResponsiveService) {
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
 
     super();
 

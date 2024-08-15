@@ -1,5 +1,5 @@
-import { Component, HostBinding } from '@angular/core';
-import { ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { Component, HostBinding, Inject } from '@angular/core';
+import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -14,7 +14,7 @@ export class ApplicationComponent extends WithDestroy() {
 
   menuOpened = true;
 
-  constructor(private responsiveService: ResponsiveService) {
+  constructor(@Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
     super();
     
     this.responsiveService.onResize$

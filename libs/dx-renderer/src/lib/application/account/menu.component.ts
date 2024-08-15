@@ -1,5 +1,5 @@
 import { Component, Inject, ViewChild } from '@angular/core';
-import { IDENTITY_SERVICE, IdentityService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { DxActionSheetComponent } from 'devextreme-angular';
 import { Observable, combineLatest, map, takeUntil } from 'rxjs';
@@ -21,7 +21,10 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
 
   userMenuItems: Record<string, unknown>[] = [];
 
-  constructor(@Inject(IDENTITY_SERVICE) private identityService: IdentityService, private responsiveService: ResponsiveService, private translationService: I18NextPipe) {
+  constructor(
+    @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
+    private translationService: I18NextPipe) {
     super();
 
     combineLatest([this.identityService.userName$, this.identityService.allowedTenants$])

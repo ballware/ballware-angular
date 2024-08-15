@@ -35,6 +35,7 @@ import { CRUD_SERVICE_FACTORY } from './crud.service';
 import { CrudStore } from './crud/crud.store';
 import { STATISTIC_SERVICE_FACTORY } from './statistic.service';
 import { StatisticStore } from './statistic/statistic.store';
+import { RESPONSIVE_SERVICE, ResponsiveServiceImplementation } from './responsive.service';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -98,6 +99,11 @@ export class MetaServicesModule {
           provide: TOOLBAR_SERVICE,
           useFactory: (store: Store) => new ToolbarServiceProxy(store),
           deps: [ Store ]
+        },
+        {
+          provide: RESPONSIVE_SERVICE,
+          useFactory: () => new ResponsiveServiceImplementation(),
+          deps: []
         },
         {
           provide: ATTACHMENT_SERVICE_FACTORY,

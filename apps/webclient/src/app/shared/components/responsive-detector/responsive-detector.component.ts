@@ -1,5 +1,5 @@
-import { AfterViewInit, Component, ElementRef, HostListener } from '@angular/core';
-import { ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { AfterViewInit, Component, ElementRef, HostListener, Inject } from '@angular/core';
+import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 
 @Component({
   selector: 'ballware-responsive-detector',
@@ -26,7 +26,7 @@ export class ResponsiveDetectorComponent implements AfterViewInit {
     },
   ];
 
-  constructor(private elementRef: ElementRef, private resizeSvc: ResponsiveService) { }
+  constructor(private elementRef: ElementRef, @Inject(RESPONSIVE_SERVICE) private resizeSvc: ResponsiveService) { }
 
   @HostListener("window:resize", [])
   private onResize() {

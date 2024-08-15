@@ -10,7 +10,6 @@ import { IdentityService } from '../identity.service';
 import { MetaService } from '../meta.service';
 import { ServiceFactory } from '../meta.service.factory';
 import { NotificationService } from '../notification.service';
-import { ResponsiveService } from '../responsive.service';
 import { TenantService } from '../tenant.service';
 import { ToolbarService } from '../toolbar.service';
 
@@ -21,9 +20,5 @@ export class DefaultMetaServiceFactory extends ServiceFactory {
 
     override createEditService(metaService: MetaService): EditService {
         return new EditServiceProxy(new EditStore(this.store, metaService));
-    }
-    
-    override createResponsiveService(): ResponsiveService {
-        return new ResponsiveService();
     }    
 }
