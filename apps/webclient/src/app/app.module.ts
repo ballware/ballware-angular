@@ -3,6 +3,7 @@ import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MetaApiModule } from '@ballware/meta-api';
 import { MetaServicesModule } from '@ballware/meta-services';
+import { NgrxMetaServicesModule } from '@ballware/ngrx-meta-services';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 
@@ -46,6 +47,7 @@ declare let window :any;
       storageServiceBaseUrl: window.ENV.BALLWARE_STORAGEURL
     }),
     MetaServicesModule.forRoot(),
+    NgrxMetaServicesModule.forRoot(),
     RenderFactoryModule.forRoot({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: !isDevMode(),

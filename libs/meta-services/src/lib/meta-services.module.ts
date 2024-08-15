@@ -1,42 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { Router } from '@angular/router';
-import { ApiServiceFactory } from '@ballware/meta-api';
-import { Store } from '@ngrx/store';
-import { I18NextPipe } from 'angular-i18next';
-import { ComponentFeatureModule } from './component';
-import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
-import { IDENTITY_SERVICE, IdentityService } from './identity.service';
-import { IdentityServiceProxy } from './identity/identity.proxy';
-import { NotificationFeatureModule } from './notification';
-import { NOTIFICATION_SERVICE, NotificationService } from './notification.service';
-import { NotificationServiceProxy } from './notification/notification.proxy';
-import { SettingsFeatureModule } from './settings';
-import { SETTINGS_SERVICE } from './settings.service';
-import { SettingsServiceProxy } from './settings/settings.proxy';
-import { TenantEffectsModule, TenantFeatureModule } from './tenant';
-import { TENANT_SERVICE, TenantService } from './tenant.service';
-import { TenantServiceProxy } from './tenant/tenant.proxy';
-import { ToolbarEffectsModule, ToolbarFeatureModule } from './toolbar';
-import { TOOLBAR_SERVICE, ToolbarService } from './toolbar.service';
-import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
-import { ATTACHMENT_SERVICE_FACTORY } from './attachment.service';
-import { AttachmentStore } from './attachment/attachment.store';
-import { LOOKUP_SERVICE_FACTORY, LookupService } from './lookup.service';
-import { LookupStore } from './lookup/lookup.store';
-import { META_SERVICE_FACTORY, MetaService } from './meta.service';
-import { MetaStore } from './meta/meta.store';
-import { PAGE_SERVICE_FACTORY } from './page.service';
-import { PageStore } from './page/page.store';
-import { CRUD_SERVICE_FACTORY } from './crud.service';
-import { CrudStore } from './crud/crud.store';
-import { STATISTIC_SERVICE_FACTORY } from './statistic.service';
-import { StatisticStore } from './statistic/statistic.store';
-import { RESPONSIVE_SERVICE, ResponsiveServiceImplementation } from './responsive.service';
-import { EDIT_SERVICE_FACTORY } from './edit.service';
-import { EditStore } from './edit/edit.store';
-import { TRANSLATOR, Translator } from './translation.service';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -59,154 +22,14 @@ export * from './toolbaritemref';
 
 @NgModule({
   imports: [
-    CommonModule,    
-    SettingsFeatureModule,
-    NotificationFeatureModule,
-    IdentityFeatureModule,
-    IdentityEffectsModule,
-    TenantFeatureModule,
-    TenantEffectsModule,
-    ToolbarFeatureModule,
-    ToolbarEffectsModule,
-    ComponentFeatureModule
+    CommonModule
   ],
 })
 export class MetaServicesModule {
   static forRoot(): ModuleWithProviders<MetaServicesModule> {
     return {
       ngModule: MetaServicesModule,
-      providers: [  
-        {
-          provide: TRANSLATOR,
-          useFactory: (pipe: I18NextPipe): Translator => (key, options) => pipe.transform(key, options),
-          deps: [
-            I18NextPipe
-          ]
-        },
-        {
-          provide: SETTINGS_SERVICE,
-          useFactory: (store: Store) => new SettingsServiceProxy(store),
-          deps: [ Store ]
-        },         
-        {
-          provide: NOTIFICATION_SERVICE,
-          useFactory: (store: Store) => new NotificationServiceProxy(store),
-          deps: [ Store ]
-        },          
-        {
-          provide: IDENTITY_SERVICE,
-          useFactory: (store: Store) => new IdentityServiceProxy(store),
-          deps: [ Store ]
-        },  
-        {
-          provide: TENANT_SERVICE,
-          useFactory: (store: Store) => new TenantServiceProxy(store),
-          deps: [ Store ]
-        },          
-        {
-          provide: TOOLBAR_SERVICE,
-          useFactory: (store: Store) => new ToolbarServiceProxy(store),
-          deps: [ Store ]
-        },
-        {
-          provide: RESPONSIVE_SERVICE,
-          useFactory: () => new ResponsiveServiceImplementation(),
-          deps: []
-        },
-        {
-          provide: ATTACHMENT_SERVICE_FACTORY,
-          useFactory: (
-            store: Store, 
-            notificationService: NotificationService, 
-            apiServiceFactory: ApiServiceFactory, 
-            translator: Translator
-          ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translator),
-          deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, TRANSLATOR ]
-        },
-        {
-          provide: LOOKUP_SERVICE_FACTORY,
-          useFactory: (
-            store: Store, 
-            apiServiceFactory: ApiServiceFactory            
-          ) => () => new LookupStore(store, apiServiceFactory.createIdentityApi(), apiServiceFactory.createMetaApi()),
-          deps: [ Store, ApiServiceFactory ]
-        },
-        {
-          provide: META_SERVICE_FACTORY,
-          useFactory: (
-            store: Store, 
-            apiServiceFactory: ApiServiceFactory,
-            httpClient: HttpClient, 
-            translator: Translator,
-            identityService: IdentityService,
-            tenantService: TenantService            
-          ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translator, apiServiceFactory.createMetaApi(), identityService, tenantService, lookupService),
-          deps: [ 
-            Store, 
-            ApiServiceFactory,
-            HttpClient,
-            TRANSLATOR,
-            IDENTITY_SERVICE,
-            TENANT_SERVICE
-          ]
-        },
-        {
-          provide: CRUD_SERVICE_FACTORY,
-          useFactory: (
-            store: Store, 
-            translator: Translator,         
-            notificationService: NotificationService           
-          ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translator, router),
-          deps: [ 
-            Store, 
-            TRANSLATOR,
-            NOTIFICATION_SERVICE 
-          ]
-        },        
-        {
-          provide: EDIT_SERVICE_FACTORY,
-          useFactory: (
-            store: Store
-          ) => (metaService: MetaService) => new EditStore(store, metaService),
-          deps: [ 
-            Store
-          ]
-        },             
-        {
-          provide: STATISTIC_SERVICE_FACTORY,
-          useFactory: (
-            store: Store,
-            httpClient: HttpClient,
-            apiServiceFactory: ApiServiceFactory,
-            identityService: IdentityService
-          ) => (lookupService: LookupService) => new StatisticStore(store, httpClient, apiServiceFactory.createMetaApi(), identityService, lookupService),
-          deps: [
-            Store,
-            HttpClient,
-            ApiServiceFactory,
-            IDENTITY_SERVICE
-          ]
-        },
-        {
-          provide: PAGE_SERVICE_FACTORY,
-          useFactory: (
-            store: Store, 
-            apiServiceFactory: ApiServiceFactory,
-            httpClient: HttpClient, 
-            identityService: IdentityService,
-            tenantService: TenantService,
-            toolbarService: ToolbarService
-          ) => (router: Router, lookupService: LookupService) => new PageStore(store, httpClient, router, identityService, tenantService, toolbarService, lookupService, apiServiceFactory.createMetaApi()),
-          deps: [
-            Store, 
-            ApiServiceFactory,
-            HttpClient,
-            IDENTITY_SERVICE,
-            TENANT_SERVICE,
-            TOOLBAR_SERVICE
-          ]
-        }
-      ]
+      providers: []
     };
   }
 }

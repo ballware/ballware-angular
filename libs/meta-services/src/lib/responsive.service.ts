@@ -14,17 +14,4 @@ export interface ResponsiveService {
   onResize(size: SCREEN_SIZE): void;
 }
 
-export class ResponsiveServiceImplementation implements ResponsiveService {
-
-  get onResize$(): Observable<SCREEN_SIZE> {
-    return this.resizeSubject.asObservable().pipe(distinctUntilChanged());
-  }
-
-  private resizeSubject = new BehaviorSubject(SCREEN_SIZE.LG);
-
-  onResize(size: SCREEN_SIZE) {
-    setTimeout(() => this.resizeSubject.next(size));
-  }
-}
-
 export const RESPONSIVE_SERVICE = new InjectionToken<ResponsiveService>('Responsive service');
