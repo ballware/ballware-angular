@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit, Provider } from "@angular/core";
 import { PageLayoutItem, StatisticOptions } from "@ballware/meta-model";
-import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, ServiceFactory, StatisticService } from "@ballware/meta-services";
+import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from "@ballware/meta-services";
 import { nanoid } from "nanoid";
 import { Observable, map, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
@@ -11,9 +11,9 @@ import { WithDestroy } from "../../utils/withdestroy";
     styleUrls: ['./statistic.component.scss'],
     providers: [
       { 
-        provide: StatisticService, 
-        useFactory: (serviceFactory: ServiceFactory, lookupService: LookupService) => serviceFactory.createStatisticService(lookupService),
-        deps: [ServiceFactory, LOOKUP_SERVICE]  
+        provide: STATISTIC_SERVICE, 
+        useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+        deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]  
       } as Provider,
     ]
   })
@@ -24,7 +24,8 @@ import { WithDestroy } from "../../utils/withdestroy";
     type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
     
     constructor(
-      @Inject(PAGE_SERVICE) private pageService: PageService, private statisticService: StatisticService) {
+      @Inject(PAGE_SERVICE) private pageService: PageService, 
+      @Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
       super();
 
       this.type$ = this.statisticService.layout$.pipe(map((layout) => layout?.type));

@@ -1,6 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { Component, Inject, Input } from "@angular/core";
 import { StatisticPivotOptions } from "@ballware/meta-model";
-import { StatisticService } from "@ballware/meta-services";
+import { STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { exportPivotGrid } from 'devextreme/excel_exporter';
 import { ExportingEvent } from "devextreme/ui/pivot_grid";
 import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
@@ -29,7 +29,7 @@ import { WithDestroy } from "../../utils/withdestroy";
 
     name: string|undefined;
 
-    constructor(private statisticService: StatisticService) {
+    constructor(@Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
       super();
 
       this.name$ = this.statisticService.name$;

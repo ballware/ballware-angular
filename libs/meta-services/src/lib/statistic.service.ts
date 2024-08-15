@@ -1,9 +1,10 @@
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { CompiledStatistic, QueryParams, StatisticLayout } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
+import { LookupService } from './lookup.service';
 
-export interface StatisticServiceApi {
+export interface StatisticService extends OnDestroy {
 
   setIdentifier(identifier: string): void;
   setStatistic(identifier: string): void;
@@ -21,20 +22,7 @@ export interface StatisticServiceApi {
   argumentAxisCustomizeText$: Observable<((value: unknown) => string|undefined)|undefined>;
 }
 
-@Injectable()
-export abstract class StatisticService implements OnDestroy, StatisticServiceApi {
-  public abstract statistic$: Observable<string|undefined>;
-  public abstract customParam$: Observable<Record<string, unknown>|undefined>;
-  public abstract headParams$: Observable<QueryParams|undefined>;
-  public abstract metadata$: Observable<CompiledStatistic|undefined>;
-  public abstract name$: Observable<string|undefined>;
-  public abstract layout$: Observable<StatisticLayout | undefined>;
-  public abstract data$: Observable<Record<string, unknown>[] | undefined>;
-  public abstract argumentAxisCustomizeText$: Observable<((value: unknown) => string|undefined) | undefined>;
-  
-  public abstract ngOnDestroy(): void;
-  public abstract setIdentifier(identifier: string): void;
-  public abstract setStatistic(identifier: string): void;
-  public abstract setHeadParams(headParams: QueryParams): void;
-  public abstract setCustomParam(customParam: Record<string, unknown>|undefined): void;
-}
+export type StatisticServiceFactory = (lookupService: LookupService) => StatisticService;
+
+export const STATISTIC_SERVICE = new InjectionToken<StatisticService>('Meta service');
+export const STATISTIC_SERVICE_FACTORY = new InjectionToken<StatisticServiceFactory>('Statistic service factory');

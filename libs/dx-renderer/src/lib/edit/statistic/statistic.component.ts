@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, StatisticOptions } from '@ballware/meta-model';
-import { EditItemRef, EditService, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, ServiceFactory, StatisticService } from '@ballware/meta-services';
+import { EditItemRef, EditService, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -13,9 +13,9 @@ import { WithVisible } from '../../utils/withvisible';
   styleUrls: ['./statistic.component.scss'],
   providers: [
     { 
-      provide: StatisticService, 
-      useFactory: (serviceFactory: ServiceFactory, lookupService: LookupService) => serviceFactory.createStatisticService(lookupService),
-      deps: [ServiceFactory, LOOKUP_SERVICE]  
+      provide: STATISTIC_SERVICE, 
+      useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+      deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]  
     } as Provider,
   ]
 })
@@ -30,7 +30,7 @@ export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecy
   constructor(
     @Inject(META_SERVICE) private metaService: MetaService, 
     private editService: EditService, 
-    private statisticService: StatisticService) {
+    @Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
       
     super();    
 

@@ -1,6 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { Component, Inject, Input } from "@angular/core";
 import { StatisticChartOptions } from "@ballware/meta-model";
-import { StatisticService } from "@ballware/meta-services";
+import { STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { LegendClickEvent } from "devextreme/viz/chart";
 import moment from "moment";
 import { Observable, map } from "rxjs";
@@ -27,7 +27,7 @@ import { WithDestroy } from "../../utils/withdestroy";
     argumentAxisConstantLines$: Observable<any[]|undefined>;
     valueAxisConstantLines$: Observable<any[]|undefined>;
 
-    constructor(private statisticService: StatisticService) {
+    constructor(@Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
       super();
 
       this.name$ = this.statisticService.name$;

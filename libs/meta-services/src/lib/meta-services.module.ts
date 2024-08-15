@@ -33,6 +33,8 @@ import { PAGE_SERVICE_FACTORY } from './page.service';
 import { PageStore } from './page/page.store';
 import { CRUD_SERVICE_FACTORY } from './crud.service';
 import { CrudStore } from './crud/crud.store';
+import { STATISTIC_SERVICE_FACTORY } from './statistic.service';
+import { StatisticStore } from './statistic/statistic.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -147,6 +149,21 @@ export class MetaServicesModule {
             NOTIFICATION_SERVICE 
           ]
         },        
+        {
+          provide: STATISTIC_SERVICE_FACTORY,
+          useFactory: (
+            store: Store,
+            httpClient: HttpClient,
+            apiServiceFactory: ApiServiceFactory,
+            identityService: IdentityService
+          ) => (lookupService: LookupService) => new StatisticStore(store, httpClient, apiServiceFactory.createMetaApi(), identityService, lookupService),
+          deps: [
+            Store,
+            HttpClient,
+            ApiServiceFactory,
+            IDENTITY_SERVICE
+          ]
+        },
         {
           provide: PAGE_SERVICE_FACTORY,
           useFactory: (

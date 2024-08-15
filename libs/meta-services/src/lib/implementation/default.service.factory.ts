@@ -7,14 +7,10 @@ import { EditService } from '../edit.service';
 import { EditServiceProxy } from '../edit/edit.proxy';
 import { EditStore } from '../edit/edit.store';
 import { IdentityService } from '../identity.service';
-import { LookupService } from '../lookup.service';
 import { MetaService } from '../meta.service';
 import { ServiceFactory } from '../meta.service.factory';
 import { NotificationService } from '../notification.service';
 import { ResponsiveService } from '../responsive.service';
-import { StatisticService } from '../statistic.service';
-import { StatisticServiceProxy } from '../statistic/statistic.proxy';
-import { StatisticStore } from '../statistic/statistic.store';
 import { TenantService } from '../tenant.service';
 import { ToolbarService } from '../toolbar.service';
 
@@ -29,9 +25,5 @@ export class DefaultMetaServiceFactory extends ServiceFactory {
     
     override createResponsiveService(): ResponsiveService {
         return new ResponsiveService();
-    }
-    
-    override createStatisticService(lookupService: LookupService): StatisticService {
-        return new StatisticServiceProxy(new StatisticStore(this.store, this.httpClient, this.apiServiceFactory.createMetaApi(), this.identityService, lookupService));
-    }
+    }    
 }

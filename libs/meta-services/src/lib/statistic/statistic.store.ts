@@ -10,10 +10,10 @@ import { statisticDestroyed, statisticUpdated } from "../component";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupService } from "../lookup.service";
-import { StatisticServiceApi } from "../statistic.service";
+import { StatisticService } from "../statistic.service";
 import { StatisticState } from "./statistic.state";
 
-export class StatisticStore extends ComponentStore<StatisticState> implements StatisticServiceApi, OnDestroy {
+export class StatisticStore extends ComponentStore<StatisticState> implements StatisticService, OnDestroy {
     
     constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private lookupService: LookupService) {
         super({});
