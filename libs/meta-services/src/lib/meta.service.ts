@@ -1,9 +1,10 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
+import { LookupService } from './lookup.service';
 
-export interface MetaServiceApi {
+export interface MetaService extends OnDestroy {
   setIdentifier(identifier: string): void;
   setEntity(entity: string): void;
   setReadOnly(readOnly: boolean): void;
@@ -73,58 +74,7 @@ export interface MetaServiceApi {
   ) => void)|undefined>;
 }
 
-@Injectable()
-export abstract class MetaService implements OnDestroy, MetaServiceApi {  
-  public abstract ngOnDestroy(): void;
+export type MetaServiceFactory = (lookupService: LookupService) => MetaService;
 
-  public abstract setIdentifier(identifier: string): void;
-
-  public abstract setEntity(entity: string): void;
-  public abstract setReadOnly(readOnly: boolean): void;
-  public abstract setHeadParams(headParams: QueryParams): void;
-  public abstract setInitialCustomParam(customParam: Record<string, unknown>|undefined): void;
-
-  public abstract headParams$: Observable<QueryParams|undefined>;
-  public abstract customParam$: Observable<Record<string, unknown>|undefined>;
-
-  public abstract displayName$: Observable<string|undefined>;
-  public abstract entityMetadata$: Observable<CompiledEntityMetadata|undefined>;
-  public abstract entityDocuments$: Observable<DocumentSelectEntry[]|undefined>;
-  public abstract entityTemplates$: Observable<Template[] | undefined>;
-
-  public abstract customFunctions$: Observable<EntityCustomFunction[]|undefined>;
-  public abstract prepareCustomFunction$: Observable<((identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams) => void)|undefined>;
-  public abstract evaluateCustomFunction$: Observable<((identifier: string, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
-
-  public abstract getGridLayout$: Observable<((identifier: string) => GridLayout|undefined)|undefined>;
-  public abstract getEditLayout$: Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;
-
-  public abstract query$: Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
-  public abstract count$: Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
-  public abstract byId$: Observable<((id: string) => Observable<CrudItem>)|undefined>;
-  public abstract create$: Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
-  public abstract save$: Observable<((query: string, item: CrudItem) => Observable<void>) | undefined>;
-  public abstract saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>) | undefined>;
-  public abstract drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
-  public abstract importItems$: Observable<((query: string, file: File) => Observable<void>)|undefined>;
-  public abstract exportItems$: Observable<((query: string, items: CrudItem[]) => Observable<string>)|undefined>;
-  
-  public abstract addFunction$: Observable<EntityCustomFunction|undefined>;
-  public abstract viewFunction$: Observable<EntityCustomFunction|undefined>;
-  public abstract editFunction$: Observable<EntityCustomFunction|undefined>;
-
-  public abstract dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  public abstract printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  public abstract customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
-
-  public abstract editorPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
-  public abstract editorInitialized$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-  public abstract editorEntered$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-  public abstract editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
-  public abstract editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
-  public abstract editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
-
-  public abstract detailGridCellPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => void) | undefined>;
-  public abstract detailGridRowValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => string) | undefined>;
-  public abstract initNewDetailItem$: Observable<((dataMember: string, item: Record<string, unknown>, detailItem: Record<string, unknown>) => void) | undefined>;
-}
+export const META_SERVICE = new InjectionToken<MetaService>('Meta service');
+export const META_SERVICE_FACTORY = new InjectionToken<MetaServiceFactory>('Meta service factory');

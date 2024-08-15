@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PageService } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PageService, ServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -17,9 +17,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
-      provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-      deps: [MetaServiceFactory, LOOKUP_SERVICE]  
+      provide: META_SERVICE, 
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
     } as Provider,
     { 
       provide: ATTACHMENT_SERVICE, 
@@ -28,13 +28,13 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: CrudService, 
-      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
-      deps: [MetaServiceFactory, MetaService]  
+      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
+      deps: [ServiceFactory, META_SERVICE]  
     } as Provider,
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
-      deps: [NOTIFICATION_SERVICE, MetaService, CrudService]
+      deps: [NOTIFICATION_SERVICE, META_SERVICE, CrudService]
     }
   ]
 })
@@ -42,7 +42,12 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
 
   @Input() layoutItem?: PageLayoutItem;
 
-  constructor(private pageService: PageService, @Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService : DataSourceService) {
+  constructor(
+    private pageService: PageService, 
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+    @Inject(META_SERVICE) private metaService: MetaService, 
+    private crudService: CrudService, 
+    private datasourceService : DataSourceService) {
 
     super();
 

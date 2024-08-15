@@ -1,6 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EntityGridOptions, GridLayout, PageLayoutItem } from '@ballware/meta-model';
-import { MasterdetailService, MetaService } from '@ballware/meta-services';
+import { MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -32,7 +32,7 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
 
   public gridLayout$: Observable<GridLayout|undefined>;
 
-  constructor(private metaService: MetaService) {
+  constructor(@Inject(META_SERVICE) private metaService: MetaService) {
 
     super();
 

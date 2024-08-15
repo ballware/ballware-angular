@@ -12,9 +12,7 @@ import { EditStore } from '../edit/edit.store';
 import { IdentityService } from '../identity.service';
 import { LookupService } from '../lookup.service';
 import { MetaService } from '../meta.service';
-import { MetaServiceFactory } from '../meta.service.factory';
-import { MetaServiceProxy } from '../meta/meta.proxy';
-import { MetaStore } from '../meta/meta.store';
+import { ServiceFactory } from '../meta.service.factory';
 import { NotificationService } from '../notification.service';
 import { PageService } from '../page.service';
 import { PageServiceProxy } from '../page/page.proxy';
@@ -26,7 +24,7 @@ import { StatisticStore } from '../statistic/statistic.store';
 import { TenantService } from '../tenant.service';
 import { ToolbarService } from '../toolbar.service';
 
-export class DefaultMetaServiceFactory extends MetaServiceFactory {
+export class DefaultMetaServiceFactory extends ServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
         super();
     }
@@ -39,10 +37,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
         return new EditServiceProxy(new EditStore(this.store, metaService));
     }
     
-    override createMetaService(lookupService: LookupService): MetaService {
-        return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.translationPipe, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
-    }
-
     override createResponsiveService(): ResponsiveService {
         return new ResponsiveService();
     }

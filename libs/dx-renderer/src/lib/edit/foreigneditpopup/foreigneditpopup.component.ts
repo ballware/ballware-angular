@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CrudService, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaService, MetaServiceFactory } from "@ballware/meta-services";
+import { CrudService, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, ServiceFactory } from "@ballware/meta-services";
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 
@@ -15,14 +15,14 @@ import { WithDestroy } from "../../utils/withdestroy";
           deps: [LOOKUP_SERVICE_FACTORY]  
         } as Provider,
         { 
-          provide: MetaService, 
-          useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-          deps: [MetaServiceFactory, LOOKUP_SERVICE]  
+          provide: META_SERVICE, 
+          useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+          deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
         } as Provider,
         { 
           provide: CrudService, 
-          useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
-          deps: [MetaServiceFactory, MetaService]  
+          useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
+          deps: [ServiceFactory, META_SERVICE]  
         } as Provider,       
       ]
 })
@@ -37,7 +37,10 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
 
     public itemDialog: ItemEditDialog|undefined;
 
-    constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
+    constructor(
+        @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+        @Inject(META_SERVICE) private metaService: MetaService, 
+        private crudService: CrudService) {
         super();
         
         this.crudService.itemDialog$

@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, ServiceFactory, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -30,9 +30,9 @@ interface EntityGridItemOptions {
       deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
-      provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-      deps: [MetaServiceFactory, LOOKUP_SERVICE]  
+      provide: META_SERVICE, 
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
     } as Provider,
     { 
       provide: ATTACHMENT_SERVICE, 
@@ -41,13 +41,13 @@ interface EntityGridItemOptions {
     } as Provider,
     { 
       provide: CrudService, 
-      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
-      deps: [MetaServiceFactory, MetaService]  
+      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
+      deps: [ServiceFactory, META_SERVICE]  
     } as Provider,
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
-      deps: [NOTIFICATION_SERVICE, MetaService, CrudService]
+      deps: [NOTIFICATION_SERVICE, META_SERVICE, CrudService]
     },
     { 
       provide: MasterdetailService, useClass: MasterdetailService 
@@ -66,7 +66,12 @@ export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(With
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public height$ = new BehaviorSubject<string|undefined>('100%');
 
-  constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService: DataSourceService, private editService: EditService) {
+  constructor(
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+    @Inject(META_SERVICE) private metaService: MetaService, 
+    private crudService: CrudService, 
+    private datasourceService: DataSourceService, 
+    private editService: EditService) {
     super();
 
     combineLatest([this.metaService.headParams$])

@@ -1,6 +1,6 @@
 import { Component, HostBinding, Inject, Input, OnChanges, OnDestroy, OnInit, Provider, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaServiceFactory, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PageService, ResponsiveService, SCREEN_SIZE, ServiceFactory } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -16,8 +16,8 @@ import { WithDestroy } from '../../utils/withdestroy';
     } as Provider,
     { 
       provide: PageService, 
-      useFactory: (serviceFactory: MetaServiceFactory, router: Router, lookupService: LookupService) => serviceFactory.createPageService(router, lookupService),
-      deps: [MetaServiceFactory, Router, LOOKUP_SERVICE]  
+      useFactory: (serviceFactory: ServiceFactory, router: Router, lookupService: LookupService) => serviceFactory.createPageService(router, lookupService),
+      deps: [ServiceFactory, Router, LOOKUP_SERVICE]  
     } as Provider
   ]
 })

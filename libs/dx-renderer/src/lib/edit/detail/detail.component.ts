@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Provider } from '@angular/core';
 import { DetailLayout } from '@ballware/meta-model';
-import { EditModes, EditService, MasterdetailService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { EditModes, EditService, MasterdetailService, META_SERVICE, MetaService, ServiceFactory } from '@ballware/meta-services';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -11,8 +11,8 @@ import { WithDestroy } from '../../utils/withdestroy';
   providers: [
     {
       provide: EditService,
-      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
-      deps: [MetaServiceFactory, MetaService]
+      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
+      deps: [ServiceFactory, META_SERVICE]
     } as Provider
   ]
 })

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, Provider } from "@angular/core";
 import { PageLayoutItem, StatisticOptions } from "@ballware/meta-model";
-import { LOOKUP_SERVICE, LookupService, MetaServiceFactory, PageService, StatisticService } from "@ballware/meta-services";
+import { LOOKUP_SERVICE, LookupService, PageService, ServiceFactory, StatisticService } from "@ballware/meta-services";
 import { nanoid } from "nanoid";
 import { Observable, map, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
@@ -12,8 +12,8 @@ import { WithDestroy } from "../../utils/withdestroy";
     providers: [
       { 
         provide: StatisticService, 
-        useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createStatisticService(lookupService),
-        deps: [MetaServiceFactory, LOOKUP_SERVICE]  
+        useFactory: (serviceFactory: ServiceFactory, lookupService: LookupService) => serviceFactory.createStatisticService(lookupService),
+        deps: [ServiceFactory, LOOKUP_SERVICE]  
       } as Provider,
     ]
   })

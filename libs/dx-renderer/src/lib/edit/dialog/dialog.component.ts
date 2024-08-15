@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayout } from '@ballware/meta-model';
-import { EditModes, EditService, MetaService, MetaServiceFactory } from '@ballware/meta-services';
+import { EditModes, EditService, META_SERVICE, MetaService, ServiceFactory } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
@@ -13,8 +13,8 @@ import { WithDestroy } from '../../utils/withdestroy';
   providers: [
     { 
       provide: EditService, 
-      useFactory: (serviceFactory: MetaServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
-      deps: [MetaServiceFactory, MetaService]  
+      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createEditService(metaService),
+      deps: [ServiceFactory, META_SERVICE]  
     } as Provider
   ]
 })

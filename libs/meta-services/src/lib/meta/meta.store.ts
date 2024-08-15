@@ -12,7 +12,7 @@ import { EditModes } from "../editmodes";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
-import { MetaServiceApi } from "../meta.service";
+import { MetaService } from "../meta.service";
 import { TenantService } from "../tenant.service";
 import { MetaState } from "./meta.state";
 
@@ -21,7 +21,7 @@ interface TemplateItemOptions {
     identifier: string;
 }
 
-export class MetaStore extends ComponentStore<MetaState> implements MetaServiceApi, OnDestroy {
+export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
     constructor(private store: Store, private httpClient: HttpClient, private i18next: I18NextPipe, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
         super({});
 

@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output, Provider } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, Provider } from '@angular/core';
 import { ApiError } from '@ballware/meta-api';
-import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
 import { catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -15,9 +15,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
-      provide: MetaService, 
-      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-      deps: [MetaServiceFactory, LOOKUP_SERVICE]
+      provide: META_SERVICE, 
+      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
     } as Provider,
   ]
 })
@@ -32,7 +32,9 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
 
   public count: number|undefined = undefined;
 
-  constructor(private pageService: PageService, private metaService: MetaService) {
+  constructor(
+    private pageService: PageService, 
+    @Inject(META_SERVICE) private metaService: MetaService) {
     super();
 
     this.pageService.customParam$

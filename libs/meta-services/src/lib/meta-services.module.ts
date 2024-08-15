@@ -10,7 +10,7 @@ import { IdentityEffectsModule, IdentityFeatureModule } from './identity';
 import { IDENTITY_SERVICE, IdentityService } from './identity.service';
 import { IdentityServiceProxy } from './identity/identity.proxy';
 import { DefaultMetaServiceFactory } from './implementation/default.service.factory';
-import { MetaServiceFactory } from './meta.service.factory';
+import { ServiceFactory } from './meta.service.factory';
 import { NotificationFeatureModule } from './notification';
 import { NOTIFICATION_SERVICE, NotificationService } from './notification.service';
 import { NotificationServiceProxy } from './notification/notification.proxy';
@@ -25,8 +25,10 @@ import { TOOLBAR_SERVICE, ToolbarService } from './toolbar.service';
 import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
 import { ATTACHMENT_SERVICE_FACTORY } from './attachment.service';
 import { AttachmentStore } from './attachment/attachment.store';
-import { LOOKUP_SERVICE_FACTORY } from './lookup.service';
+import { LOOKUP_SERVICE_FACTORY, LookupService } from './lookup.service';
 import { LookupStore } from './lookup/lookup.store';
+import { META_SERVICE_FACTORY } from './meta.service';
+import { MetaStore } from './meta/meta.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -110,7 +112,26 @@ export class MetaServicesModule {
           deps: [ Store, ApiServiceFactory ]
         },
         {
-          provide: MetaServiceFactory,
+          provide: META_SERVICE_FACTORY,
+          useFactory: (
+            store: Store, 
+            apiServiceFactory: ApiServiceFactory,
+            httpClient: HttpClient, 
+            translationPipe: I18NextPipe,
+            identityService: IdentityService,
+            tenantService: TenantService            
+          ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translationPipe, apiServiceFactory.createMetaApi(), identityService, tenantService, lookupService),
+          deps: [ 
+            Store, 
+            ApiServiceFactory,
+            HttpClient,
+            I18NextPipe,
+            IDENTITY_SERVICE,
+            TENANT_SERVICE
+          ]
+        },
+        {
+          provide: ServiceFactory,
           useFactory: (
             store: Store,
             httpClient: HttpClient, 
