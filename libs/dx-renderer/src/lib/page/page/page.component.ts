@@ -1,6 +1,6 @@
 import { Component, HostBinding, Inject, Input, OnChanges, OnDestroy, OnInit, Provider, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PageService, ResponsiveService, SCREEN_SIZE, ServiceFactory } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PAGE_SERVICE, PAGE_SERVICE_FACTORY, PageService, PageServiceFactory, ResponsiveService, SCREEN_SIZE, ServiceFactory } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -15,9 +15,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
-      provide: PageService, 
-      useFactory: (serviceFactory: ServiceFactory, router: Router, lookupService: LookupService) => serviceFactory.createPageService(router, lookupService),
-      deps: [ServiceFactory, Router, LOOKUP_SERVICE]  
+      provide: PAGE_SERVICE, 
+      useFactory: (serviceFactory: PageServiceFactory, router: Router, lookupService: LookupService) => serviceFactory(router, lookupService),
+      deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]  
     } as Provider
   ]
 })
@@ -31,7 +31,10 @@ export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges
   @Input() id!: string;
   @Input() page!: string; 
 
-  constructor(private responsiveService: ResponsiveService, private pageService: PageService, @Inject(LOOKUP_SERVICE) private lookupService: LookupService) {
+  constructor(
+    private responsiveService: ResponsiveService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService, 
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService) {
     super();
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$

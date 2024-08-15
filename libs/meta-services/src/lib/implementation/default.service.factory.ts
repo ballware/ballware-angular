@@ -14,9 +14,6 @@ import { LookupService } from '../lookup.service';
 import { MetaService } from '../meta.service';
 import { ServiceFactory } from '../meta.service.factory';
 import { NotificationService } from '../notification.service';
-import { PageService } from '../page.service';
-import { PageServiceProxy } from '../page/page.proxy';
-import { PageStore } from '../page/page.store';
 import { ResponsiveService } from '../responsive.service';
 import { StatisticService } from '../statistic.service';
 import { StatisticServiceProxy } from '../statistic/statistic.proxy';
@@ -39,10 +36,6 @@ export class DefaultMetaServiceFactory extends ServiceFactory {
     
     override createResponsiveService(): ResponsiveService {
         return new ResponsiveService();
-    }
-
-    override createPageService(router: Router, lookupService: LookupService): PageService {
-        return new PageServiceProxy(new PageStore(this.store, this.httpClient, router, this.identityService, this.tenantService, this.toolbarService, lookupService, this.apiServiceFactory.createMetaApi()));
     }
     
     override createStatisticService(lookupService: LookupService): StatisticService {

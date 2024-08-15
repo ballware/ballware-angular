@@ -1,6 +1,6 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, Inject } from '@angular/core';
 import { PageLayout } from '@ballware/meta-model';
-import { PageService } from '@ballware/meta-services';
+import { PAGE_SERVICE, PageService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -14,7 +14,7 @@ export class PageLayoutComponent extends WithDestroy() {
 
   public layout?: PageLayout;
 
-  constructor(private pageService: PageService) {
+  constructor(@Inject(PAGE_SERVICE) private pageService: PageService) {
     super();
 
     this.pageService.layout$

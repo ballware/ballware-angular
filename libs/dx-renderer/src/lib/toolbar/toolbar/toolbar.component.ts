@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, PageService, ToolbarItemRef } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, PAGE_SERVICE, PageService, ToolbarItemRef } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import { ClickEvent as ButtonClickEvent, InitializedEvent as ButtonInitializedEvent } from 'devextreme/ui/button';
 import { InitializedEvent as DateBoxInitializedEvent, ValueChangedEvent as DateBoxValueChangedEvent } from 'devextreme/ui/date_box';
@@ -25,7 +25,10 @@ export class ToolbarComponent extends WithDestroy() {
     options?: Record<string, unknown>
   }> = [];
 
-  constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private pageService: PageService, private translationService: I18NextPipe) {
+  constructor(
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService, 
+    private translationService: I18NextPipe) {
     super();
 
     combineLatest([this.pageService.layout$, this.lookupService.lookups$])

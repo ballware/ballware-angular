@@ -29,6 +29,8 @@ import { LOOKUP_SERVICE_FACTORY, LookupService } from './lookup.service';
 import { LookupStore } from './lookup/lookup.store';
 import { META_SERVICE_FACTORY } from './meta.service';
 import { MetaStore } from './meta/meta.store';
+import { PAGE_SERVICE_FACTORY } from './page.service';
+import { PageStore } from './page/page.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -128,6 +130,25 @@ export class MetaServicesModule {
             I18NextPipe,
             IDENTITY_SERVICE,
             TENANT_SERVICE
+          ]
+        },
+        {
+          provide: PAGE_SERVICE_FACTORY,
+          useFactory: (
+            store: Store, 
+            apiServiceFactory: ApiServiceFactory,
+            httpClient: HttpClient, 
+            identityService: IdentityService,
+            tenantService: TenantService,
+            toolbarService: ToolbarService
+          ) => (router: Router, lookupService: LookupService) => new PageStore(store, httpClient, router, identityService, tenantService, toolbarService, lookupService, apiServiceFactory.createMetaApi()),
+          deps: [
+            Store, 
+            ApiServiceFactory,
+            HttpClient,
+            IDENTITY_SERVICE,
+            TENANT_SERVICE,
+            TOOLBAR_SERVICE
           ]
         },
         {

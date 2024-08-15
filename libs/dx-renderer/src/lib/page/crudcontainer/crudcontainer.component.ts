@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PageService, ServiceFactory } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE, PageService, ServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -43,7 +43,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
   @Input() layoutItem?: PageLayoutItem;
 
   constructor(
-    private pageService: PageService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService, 
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
     @Inject(META_SERVICE) private metaService: MetaService, 
     private crudService: CrudService, 

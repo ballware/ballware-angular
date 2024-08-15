@@ -12,13 +12,13 @@ import { pageDestroyed, pageUpdated } from "../component";
 import { IdentityService } from "../identity.service";
 import { createUtil } from "../implementation/createscriptutil";
 import { LookupRequest, LookupService } from "../lookup.service";
-import { PageServiceApi } from "../page.service";
+import { PageService } from "../page.service";
 import { TenantService } from "../tenant.service";
 import { ToolbarService } from "../toolbar.service";
 import { ToolbarItemRef } from "../toolbaritemref";
 import { PageState } from "./page.state";
 
-export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageServiceApi {
+export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageService {
     
     private scriptActions: ScriptActions;
 

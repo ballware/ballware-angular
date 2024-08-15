@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, Provider } from '@angular/core';
 import { ApiError } from '@ballware/meta-api';
-import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, PageService } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, PAGE_SERVICE, PageService } from '@ballware/meta-services';
 import { catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -33,7 +33,7 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
   public count: number|undefined = undefined;
 
   constructor(
-    private pageService: PageService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService, 
     @Inject(META_SERVICE) private metaService: MetaService) {
     super();
 

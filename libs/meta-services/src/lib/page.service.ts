@@ -1,10 +1,12 @@
 import { Observable } from 'rxjs';
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { CompiledPageData, PageLayout, QueryParams, ValueType } from '@ballware/meta-model';
 import { ToolbarItemRef } from './toolbaritemref';
+import { Router } from '@angular/router';
+import { LookupService } from './lookup.service';
 
-export interface PageServiceApi {
+export interface PageService extends OnDestroy {
   initialized$: Observable<boolean>;
   page$: Observable<CompiledPageData|undefined>;
   title$: Observable<string|undefined>;
@@ -21,23 +23,7 @@ export interface PageServiceApi {
   paramEditorEvent(editor: { name: string, event: string, param?: ValueType }): void;
 }
 
-@Injectable()
-export abstract class PageService implements OnDestroy, PageServiceApi {
-  
-  public abstract ngOnDestroy(): void;
+export type PageServiceFactory = (router: Router, lookupService: LookupService) => PageService;
 
-  public abstract initialized$: Observable<boolean>;
-  public abstract page$: Observable<CompiledPageData|undefined>;
-  public abstract title$: Observable<string|undefined>;
-  public abstract layout$: Observable<PageLayout|undefined>;
-  public abstract customParam$: Observable<Record<string, unknown>|undefined>;
-  public abstract headParams$: Observable<QueryParams|undefined>;
-
-  public abstract setPageUrl(pageUrl: string): void;
-  public abstract setPageQuery(pageQuery: string): void;
-  public abstract loadData(params: QueryParams): void;
-  public abstract paramEditorInitialized(editor: { name: string, item: ToolbarItemRef }): void;
-  public abstract paramEditorDestroyed(name: string): void;
-  public abstract paramEditorValueChanged(editor: { name: string, value: ValueType }): void;
-  public abstract paramEditorEvent(editor: { name: string, event: string, param?: ValueType }): void;
-}
+export const PAGE_SERVICE = new InjectionToken<PageService>('Meta service');
+export const PAGE_SERVICE_FACTORY = new InjectionToken<PageServiceFactory>('Page service factory');
