@@ -1,6 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, StatisticOptions } from '@ballware/meta-model';
-import { EditItemRef, EditService, LookupService, MetaService, MetaServiceFactory, StatisticService } from '@ballware/meta-services';
+import { EditItemRef, EditService, LOOKUP_SERVICE, LookupService, MetaService, MetaServiceFactory, StatisticService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -15,7 +15,7 @@ import { WithVisible } from '../../utils/withvisible';
     { 
       provide: StatisticService, 
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createStatisticService(lookupService),
-      deps: [MetaServiceFactory, LookupService]  
+      deps: [MetaServiceFactory, LOOKUP_SERVICE]  
     } as Provider,
   ]
 })

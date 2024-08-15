@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CrudService, ItemEditDialog, LookupService, MetaService, MetaServiceFactory } from "@ballware/meta-services";
+import { CrudService, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaService, MetaServiceFactory } from "@ballware/meta-services";
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 
@@ -10,14 +10,14 @@ import { WithDestroy } from "../../utils/withdestroy";
     styleUrls: ['./foreigneditpopup.component.scss'],
     providers: [    
         { 
-          provide: LookupService, 
-          useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
-          deps: [MetaServiceFactory]  
+          provide: LOOKUP_SERVICE, 
+          useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+          deps: [LOOKUP_SERVICE_FACTORY]  
         } as Provider,
         { 
           provide: MetaService, 
           useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-          deps: [MetaServiceFactory, LookupService]  
+          deps: [MetaServiceFactory, LOOKUP_SERVICE]  
         } as Provider,
         { 
           provide: CrudService, 
@@ -37,7 +37,7 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
 
     public itemDialog: ItemEditDialog|undefined;
 
-    constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
+    constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService) {
         super();
         
         this.crudService.itemDialog$

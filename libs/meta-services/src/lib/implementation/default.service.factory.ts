@@ -11,8 +11,6 @@ import { EditServiceProxy } from '../edit/edit.proxy';
 import { EditStore } from '../edit/edit.store';
 import { IdentityService } from '../identity.service';
 import { LookupService } from '../lookup.service';
-import { LookupServiceProxy } from '../lookup/lookup.proxy';
-import { LookupStore } from '../lookup/lookup.store';
 import { MetaService } from '../meta.service';
 import { MetaServiceFactory } from '../meta.service.factory';
 import { MetaServiceProxy } from '../meta/meta.proxy';
@@ -41,10 +39,6 @@ export class DefaultMetaServiceFactory extends MetaServiceFactory {
         return new EditServiceProxy(new EditStore(this.store, metaService));
     }
     
-    override createLookupService(): LookupService {
-        return new LookupServiceProxy(new LookupStore(this.store, this.apiServiceFactory.createIdentityApi(), this.apiServiceFactory.createMetaApi()));
-    }
-
     override createMetaService(lookupService: LookupService): MetaService {
         return new MetaServiceProxy(new MetaStore(this.store, this.httpClient, this.translationPipe, this.apiServiceFactory.createMetaApi(), this.identityService, this.tenantService, lookupService));
     }

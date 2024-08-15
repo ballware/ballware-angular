@@ -1,11 +1,10 @@
-import { Injectable, OnDestroy } from "@angular/core";
 import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
 import { distinctUntilChanged, of, takeUntil, withLatestFrom } from "rxjs";
 import { lookupDestroyed, lookupUpdated } from "../component";
-import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupServiceApi, LookupStoreDescriptor } from "../lookup.service";
+import { AutocompleteCreator, AutocompleteStoreDescriptor, LookupCreator, LookupDescriptor, LookupRequest, LookupService, LookupStoreDescriptor } from "../lookup.service";
 import { LookupState } from "./lookup.state";
 
 const createUserLookup = (
@@ -184,8 +183,7 @@ const createGenericLookupByIdentifier = (
   };
 
 
-@Injectable()
-export class LookupStore extends ComponentStore<LookupState> implements OnDestroy, LookupServiceApi {
+export class LookupStore extends ComponentStore<LookupState> implements LookupService {
     constructor(private store: Store, private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
         super({});
 

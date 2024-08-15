@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LookupService, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PageService } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PageService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -12,14 +12,14 @@ import { WithDestroy } from '../../utils/withdestroy';
   styleUrls: ['./crudcontainer.component.scss'],
   providers: [    
     { 
-      provide: LookupService, 
-      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
-      deps: [MetaServiceFactory]  
+      provide: LOOKUP_SERVICE, 
+      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+      deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
       provide: MetaService, 
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-      deps: [MetaServiceFactory, LookupService]  
+      deps: [MetaServiceFactory, LOOKUP_SERVICE]  
     } as Provider,
     { 
       provide: ATTACHMENT_SERVICE, 
@@ -42,7 +42,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
 
   @Input() layoutItem?: PageLayoutItem;
 
-  constructor(private pageService: PageService, private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService : DataSourceService) {
+  constructor(private pageService: PageService, @Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService : DataSourceService) {
 
     super();
 

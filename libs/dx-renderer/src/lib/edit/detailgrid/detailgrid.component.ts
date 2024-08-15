@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, ViewChild } from "@angular/core";
+import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
-import { EditItemRef, EditService, LookupService, ResponsiveService } from "@ballware/meta-services";
+import { EditItemRef, EditService, LOOKUP_SERVICE, LookupService, ResponsiveService } from "@ballware/meta-services";
 import { I18NextPipe, PipeOptions } from "angular-i18next";
 import { DxDataGridComponent } from "devextreme-angular";
 import { ValidationCallbackData } from "devextreme/common";
@@ -101,7 +101,7 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
     constructor(
         private translationService: I18NextPipe,
         private responsiveService: ResponsiveService,
-        private lookupService: LookupService,
+        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         private editService: EditService) {
       super();
 

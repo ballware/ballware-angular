@@ -25,6 +25,8 @@ import { TOOLBAR_SERVICE, ToolbarService } from './toolbar.service';
 import { ToolbarServiceProxy } from './toolbar/toolbar.proxy';
 import { ATTACHMENT_SERVICE_FACTORY } from './attachment.service';
 import { AttachmentStore } from './attachment/attachment.store';
+import { LOOKUP_SERVICE_FACTORY } from './lookup.service';
+import { LookupStore } from './lookup/lookup.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -98,6 +100,14 @@ export class MetaServicesModule {
             translationPipe: I18NextPipe
           ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translationPipe),
           deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, I18NextPipe ]
+        },
+        {
+          provide: LOOKUP_SERVICE_FACTORY,
+          useFactory: (
+            store: Store, 
+            apiServiceFactory: ApiServiceFactory            
+          ) => () => new LookupStore(store, apiServiceFactory.createIdentityApi(), apiServiceFactory.createMetaApi()),
+          deps: [ Store, ApiServiceFactory ]
         },
         {
           provide: MetaServiceFactory,

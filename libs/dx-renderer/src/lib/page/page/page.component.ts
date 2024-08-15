@@ -1,6 +1,6 @@
-import { Component, HostBinding, Input, OnChanges, OnDestroy, OnInit, Provider, SimpleChanges } from '@angular/core';
+import { Component, HostBinding, Inject, Input, OnChanges, OnDestroy, OnInit, Provider, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LookupService, MetaServiceFactory, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MetaServiceFactory, PageService, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 
@@ -10,14 +10,14 @@ import { WithDestroy } from '../../utils/withdestroy';
   styleUrls: ['./page.component.scss'],
   providers: [    
     { 
-      provide: LookupService, 
-      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
-      deps: [MetaServiceFactory]  
+      provide: LOOKUP_SERVICE, 
+      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+      deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
       provide: PageService, 
       useFactory: (serviceFactory: MetaServiceFactory, router: Router, lookupService: LookupService) => serviceFactory.createPageService(router, lookupService),
-      deps: [MetaServiceFactory, Router, LookupService]  
+      deps: [MetaServiceFactory, Router, LOOKUP_SERVICE]  
     } as Provider
   ]
 })
@@ -31,7 +31,7 @@ export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges
   @Input() id!: string;
   @Input() page!: string; 
 
-  constructor(private responsiveService: ResponsiveService, private pageService: PageService, private lookupService: LookupService) {
+  constructor(private responsiveService: ResponsiveService, private pageService: PageService, @Inject(LOOKUP_SERVICE) private lookupService: LookupService) {
     super();
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$

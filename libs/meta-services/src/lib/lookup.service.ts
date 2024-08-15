@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 /**
@@ -115,7 +115,7 @@ export interface LookupRequest {
   field?: string;
 }
 
-export interface LookupServiceApi {
+export interface LookupService extends OnDestroy {
 
   setIdentifier(identifier: string): void;
 
@@ -133,23 +133,7 @@ export interface LookupServiceApi {
   requestLookups(request :LookupRequest[]): void;
 }
 
-@Injectable()
-export abstract class LookupService implements OnDestroy, LookupServiceApi {
+export type LookupServiceFactory = () => LookupService;
 
-  public abstract ngOnDestroy(): void;
-
-  public abstract setIdentifier(identifier: string): void;
-
-  public abstract lookups$: Observable<Record<
-      string,
-      LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
-    >|undefined>;
-
-  public abstract getGenericLookupByIdentifier$: Observable<((
-      identifier: string,
-      valueExpr: string,
-      displayExpr: string
-  ) => LookupDescriptor) | undefined>;
-
-  public abstract requestLookups(request :LookupRequest[]): void;
-}
+export const LOOKUP_SERVICE = new InjectionToken<LookupService>('Lookup service');
+export const LOOKUP_SERVICE_FACTORY = new InjectionToken<LookupServiceFactory>('Lookup service factory');

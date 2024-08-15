@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentService, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LookupService, MasterdetailService, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -25,14 +25,14 @@ interface EntityGridItemOptions {
   styleUrls: ['./entitygrid.component.scss'],
   providers: [    
     { 
-      provide: LookupService, 
-      useFactory: (serviceFactory: MetaServiceFactory) => serviceFactory.createLookupService(),
-      deps: [MetaServiceFactory]  
+      provide: LOOKUP_SERVICE, 
+      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+      deps: [LOOKUP_SERVICE_FACTORY]  
     } as Provider,
     { 
       provide: MetaService, 
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory.createMetaService(lookupService),
-      deps: [MetaServiceFactory, LookupService]  
+      deps: [MetaServiceFactory, LOOKUP_SERVICE]  
     } as Provider,
     { 
       provide: ATTACHMENT_SERVICE, 
@@ -66,7 +66,7 @@ export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(With
   public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
   public height$ = new BehaviorSubject<string|undefined>('100%');
 
-  constructor(private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService: DataSourceService, private editService: EditService) {
+  constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService, private crudService: CrudService, private datasourceService: DataSourceService, private editService: EditService) {
     super();
 
     combineLatest([this.metaService.headParams$])

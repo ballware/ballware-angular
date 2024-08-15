@@ -1,6 +1,6 @@
-import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Component, Inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { GridLayoutColumn } from "@ballware/meta-model";
-import { EditModes, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, MetaService } from "@ballware/meta-services";
+import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, MetaService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
@@ -31,7 +31,7 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
 
-    constructor(private lookupService: LookupService, private metaService: MetaService) {
+    constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, private metaService: MetaService) {
         super();
     }
 
