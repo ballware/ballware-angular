@@ -3,9 +3,6 @@ import { Router } from '@angular/router';
 import { ApiServiceFactory } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
-import { CrudService } from '../crud.service';
-import { CrudServiceProxy } from '../crud/crud.proxy';
-import { CrudStore } from '../crud/crud.store';
 import { EditService } from '../edit.service';
 import { EditServiceProxy } from '../edit/edit.proxy';
 import { EditStore } from '../edit/edit.store';
@@ -24,10 +21,6 @@ import { ToolbarService } from '../toolbar.service';
 export class DefaultMetaServiceFactory extends ServiceFactory {
     constructor(private store: Store, private httpClient: HttpClient, private router: Router, private apiServiceFactory: ApiServiceFactory, private translationPipe: I18NextPipe, private notificationService: NotificationService, private identityService: IdentityService, private tenantService: TenantService, private toolbarService: ToolbarService) {
         super();
-    }
-
-    override createCrudService(metaService: MetaService): CrudService {
-        return new CrudServiceProxy(new CrudStore(this.store, metaService, this.notificationService, this.translationPipe, this.router));
     }
 
     override createEditService(metaService: MetaService): EditService {

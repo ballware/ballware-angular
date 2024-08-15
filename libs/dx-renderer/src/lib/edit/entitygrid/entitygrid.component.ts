@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, ServiceFactory, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -8,6 +8,7 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithVisible } from '../../utils/withvisible';
+import { Router } from '@angular/router';
 
 interface EntityGridItemOptions {
   uniqueKey?: string;
@@ -40,14 +41,14 @@ interface EntityGridItemOptions {
       deps: [ATTACHMENT_SERVICE_FACTORY]  
     } as Provider,
     { 
-      provide: CrudService, 
-      useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
-      deps: [ServiceFactory, META_SERVICE]  
+      provide: CRUD_SERVICE, 
+      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
     } as Provider,
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
-      deps: [NOTIFICATION_SERVICE, META_SERVICE, CrudService]
+      deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
     },
     { 
       provide: MasterdetailService, useClass: MasterdetailService 
@@ -69,7 +70,7 @@ export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(With
   constructor(
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
     @Inject(META_SERVICE) private metaService: MetaService, 
-    private crudService: CrudService, 
+    @Inject(CRUD_SERVICE) private crudService: CrudService, 
     private datasourceService: DataSourceService, 
     private editService: EditService) {
     super();

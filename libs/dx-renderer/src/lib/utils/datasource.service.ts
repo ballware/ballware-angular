@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { ApiError } from '@ballware/meta-api';
-import { CrudService, META_SERVICE, MetaService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import { CRUD_SERVICE, CrudService, META_SERVICE, MetaService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import DataSource from 'devextreme/data/data_source';
 import { BehaviorSubject, catchError, combineLatest, lastValueFrom, map, of, takeUntil, withLatestFrom } from "rxjs";
 import { createEditableGridDatasource } from './datasource';
@@ -13,7 +13,8 @@ export class DataSourceService extends WithDestroy() {
 
     constructor(
         @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService, 
-        @Inject(META_SERVICE) private metaService: MetaService, private crudService: CrudService) {
+        @Inject(META_SERVICE) private metaService: MetaService, 
+        @Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
 
         combineLatest([this.crudService.queryIdentifier$, this.metaService.query$, this.metaService.editFunction$, this.metaService.headParams$])

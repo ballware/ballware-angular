@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
-import { CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
+import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
 import { I18NextPipe } from 'angular-i18next';
 import DevExpress from 'devextreme';
 import { DxDataGridComponent } from 'devextreme-angular';
@@ -89,7 +89,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
   constructor(
     @Inject(META_SERVICE) private metaService: MetaService,
-    private crudService: CrudService,
+    @Inject(CRUD_SERVICE) private crudService: CrudService,
     private masterDetailService: MasterdetailService,
     private i18next: I18NextPipe) {
     super();

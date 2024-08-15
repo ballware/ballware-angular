@@ -1,7 +1,9 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { CrudItem, EditLayout, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
+import { MetaService } from './meta.service';
+import { Router } from '@angular/router';
 
 export type FunctionIdentifier = 'add' | 'edit' | 'view' | 'delete' | 'print' | 'options' | 'customoptions';
 
@@ -55,7 +57,7 @@ export interface DetailColumnEditDialog {
     cancel: () => void    
 }
 
-export interface CrudServiceApi {
+export interface CrudService extends OnDestroy {
 
     currentInteractionTarget$: Observable<Element|undefined>;
 
@@ -135,82 +137,7 @@ export interface CrudServiceApi {
     selectOptionsDone(): void;
 }
 
-@Injectable()
-export abstract class CrudService implements OnDestroy, CrudServiceApi {
-  
-  public abstract ngOnDestroy(): void;
+export type CrudServiceFactory = (router: Router, metaService: MetaService) => CrudService;
 
-  public abstract currentInteractionTarget$: Observable<Element|undefined>;
-
-  public abstract functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
-  public abstract functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
-
-  public abstract addMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
-  public abstract headCustomFunctions$: Observable<EntityCustomFunction[]|undefined>;
-
-  public abstract exportMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
-  public abstract importMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
-
-  public abstract itemDialog$: Observable<ItemEditDialog|undefined>;
-  public abstract removeDialog$: Observable<ItemRemoveDialog|undefined>;
-  public abstract importDialog$: Observable<ImportDialog|undefined>;
-
-  public abstract detailColumnEditDialog$: Observable<DetailColumnEditDialog|undefined>;
-
-  public abstract selectAddSheet$: Observable<{
-      actions: CrudAction[]
-  }|undefined>;
-
-  public abstract selectActionSheet$: Observable<{ 
-      item: CrudItem,       
-      actions: CrudAction[]
-  }|undefined>;
-
-  public abstract selectPrintSheet$: Observable<{ 
-      items: CrudItem[],       
-      actions: CrudAction[]
-  }|undefined>;
-
-  public abstract selectExportSheet$: Observable<{ 
-    items: CrudItem[]; 
-    actions: CrudAction[]; 
-  } | undefined>;
-  
-  public abstract selectImportSheet$: Observable<{ 
-    actions: CrudAction[]; 
-  } | undefined>;
-
-  public abstract queryIdentifier$: Observable<string|undefined>;
-  public abstract reload$: Observable<void>;
-
-  public abstract setQuery(query: string): void;
-  public abstract setIdentifier(identifier: string): void;
-
-  public abstract reload(): void;
-  public abstract create(request: { editLayout: string }): void;
-  public abstract view(request: { item: CrudItem, editLayout: string }): void;
-  public abstract edit(request: { item: CrudItem, editLayout: string }): void;
-  public abstract remove(request: { item: CrudItem }): void;
-  public abstract print(request: { documentId: string, items: CrudItem[] }): void;
-  public abstract customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
-  public abstract save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
-  public abstract saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
-  public abstract drop(request: { item: CrudItem }): void;
-  public abstract exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
-  public abstract importItems(request: { customFunction: EntityCustomFunction }): void;
-
-  public abstract detailColumnEdit(request: { mode: EditModes, item: unknown, column: GridLayoutColumn }): void;
-
-  public abstract selectAdd(request: { target: Element, defaultEditLayout: string }): void;
-  public abstract selectPrint(request: { items: CrudItem[], target: Element }): void;
-  public abstract selectExport(request: { items: CrudItem[], target: Element }): void;
-  public abstract selectImport(request: { target: Element }): void;
-  public abstract selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
-  public abstract selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;  
-
-  public abstract selectAddDone(): void;    
-  public abstract selectPrintDone(): void;
-  public abstract selectExportDone(): void;
-  public abstract selectImportDone(): void;
-  public abstract selectOptionsDone(): void;
-}
+export const CRUD_SERVICE = new InjectionToken<CrudService>('Crud service');
+export const CRUD_SERVICE_FACTORY = new InjectionToken<CrudServiceFactory>('Crud service factory');

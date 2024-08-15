@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CrudService, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, ServiceFactory } from "@ballware/meta-services";
+import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, ServiceFactory } from "@ballware/meta-services";
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'ballware-crud-foreigneditpopup',
@@ -20,9 +21,9 @@ import { WithDestroy } from "../../utils/withdestroy";
           deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
         } as Provider,
         { 
-          provide: CrudService, 
-          useFactory: (serviceFactory: ServiceFactory, metaService: MetaService) => serviceFactory.createCrudService(metaService),
-          deps: [ServiceFactory, META_SERVICE]  
+          provide: CRUD_SERVICE, 
+          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
         } as Provider,       
       ]
 })
@@ -40,7 +41,7 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
     constructor(
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
         @Inject(META_SERVICE) private metaService: MetaService, 
-        private crudService: CrudService) {
+        @Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
         
         this.crudService.itemDialog$

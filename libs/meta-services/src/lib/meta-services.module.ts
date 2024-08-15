@@ -27,10 +27,12 @@ import { ATTACHMENT_SERVICE_FACTORY } from './attachment.service';
 import { AttachmentStore } from './attachment/attachment.store';
 import { LOOKUP_SERVICE_FACTORY, LookupService } from './lookup.service';
 import { LookupStore } from './lookup/lookup.store';
-import { META_SERVICE_FACTORY } from './meta.service';
+import { META_SERVICE_FACTORY, MetaService } from './meta.service';
 import { MetaStore } from './meta/meta.store';
 import { PAGE_SERVICE_FACTORY } from './page.service';
 import { PageStore } from './page/page.store';
+import { CRUD_SERVICE_FACTORY } from './crud.service';
+import { CrudStore } from './crud/crud.store';
 
 export * from './attachment.service';
 export * from './crud.service';
@@ -132,6 +134,19 @@ export class MetaServicesModule {
             TENANT_SERVICE
           ]
         },
+        {
+          provide: CRUD_SERVICE_FACTORY,
+          useFactory: (
+            store: Store, 
+            translationPipe: I18NextPipe,         
+            notificationService: NotificationService           
+          ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translationPipe, router),
+          deps: [ 
+            Store, 
+            I18NextPipe,
+            NOTIFICATION_SERVICE 
+          ]
+        },        
         {
           provide: PAGE_SERVICE_FACTORY,
           useFactory: (

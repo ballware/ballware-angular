@@ -8,14 +8,14 @@ import { I18NextPipe } from 'angular-i18next';
 import { cloneDeep, isEqual } from 'lodash';
 import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
-import { CrudAction, CrudEditMenuItem, CrudServiceApi, DetailColumnEditDialog, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
+import { CrudAction, CrudEditMenuItem, CrudService, DetailColumnEditDialog, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog } from '../crud.service';
 import { getByPath, setByPath } from '../databinding';
 import { EditModes } from '../editmodes';
 import { MetaService } from '../meta.service';
 import { NotificationService } from '../notification.service';
 import { CrudState } from "./crud.state";
 
-export class CrudStore extends ComponentStore<CrudState> implements CrudServiceApi, OnDestroy {
+export class CrudStore extends ComponentStore<CrudState> implements CrudService, OnDestroy {
     
     constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translationService: I18NextPipe, private router: Router) {
         super({});

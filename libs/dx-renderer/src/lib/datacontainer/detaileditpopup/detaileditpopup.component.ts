@@ -1,6 +1,6 @@
-import { Component, Input } from "@angular/core";
+import { Component, Inject, Input } from "@angular/core";
 import { GridLayoutColumn } from "@ballware/meta-model";
-import { CrudService, EditModes } from "@ballware/meta-services";
+import { CRUD_SERVICE, CrudService, EditModes } from "@ballware/meta-services";
 import { WithDestroy } from "../../utils/withdestroy";
 
 @Component({
@@ -14,7 +14,7 @@ export class DetailEditPopupComponent extends WithDestroy() {
     @Input() readOnly: boolean|null = null;
     @Input() item!: Record<string, unknown>;
     
-    constructor(private crudService: CrudService) {
+    constructor(@Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
     }
     
