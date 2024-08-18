@@ -1,0 +1,15 @@
+<dx-popup 
+  [visible]="(visible$ | async) ?? false" 
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="(documentationPopupTitle$ | async) ?? ''"
+  (onHidden)="hideDocumentation()"
+  width="auto" 
+  minWidth="500px" 
+  maxHeight="90vh"
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <ng-template #content></ng-template>
+  </div> 
+</dx-popup>

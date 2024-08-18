@@ -9,12 +9,16 @@ import { WithRequired } from "../../utils/withrequired";
 import { WithValidation } from "../../utils/withvalidation";
 import { WithValue } from "../../utils/withvalue";
 import { WithVisible } from "../../utils/withvisible";
-import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.component";
+import { CodeMirrorEditorOptions } from "../components/codeeditor/options";
+import { CommonModule } from "@angular/common";
+import { CodeMirrorComponent } from "../components/codeeditor/codemirror.component";
 
 @Component({
     selector: 'ballware-edit-json',
     templateUrl: './json.component.html',
-    styleUrls: ['./json.component.scss']
+    styleUrls: ['./json.component.scss'],
+    imports: [CommonModule, CodeMirrorComponent],
+    standalone: true
 })
 export class EditLayoutJsonComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))))) implements OnInit, EditItemRef {
 

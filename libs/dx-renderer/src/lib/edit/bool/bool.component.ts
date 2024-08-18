@@ -9,11 +9,15 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxCheckBoxModule, DxValidatorModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-bool',
   templateUrl: './bool.component.html',
-  styleUrls: ['./bool.component.scss']
+  styleUrls: ['./bool.component.scss'],
+  imports: [CommonModule, DxValidatorModule, DxCheckBoxModule],
+  standalone: true
 })
 export class EditLayoutBoolComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => false as boolean|null|undefined))))) implements OnInit, EditItemRef {
 

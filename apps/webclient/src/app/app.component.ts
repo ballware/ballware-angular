@@ -1,13 +1,18 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { ApplicationComponent } from '@ballware/dx-renderer';
 import { IDENTITY_SERVICE, IdentityService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
-
+import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
+import { CommonModule } from '@angular/common';
 
 declare let window :any;
 
 @Component({
   selector: 'ballware-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrls: [],
+  imports: [CommonModule, ApplicationComponent, ResponsiveDetectorComponent],
+  providers: [],
+  standalone: true
 })
 export class AppComponent implements OnInit {
   title = 'ballware';

@@ -1,10 +1,14 @@
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
+import { EditLayoutItemComponent } from './item.component';
 
 @Component({
   selector: 'ballware-edit-container',
   templateUrl: './container.component.html',
-  styleUrls: ['./container.component.scss']
+  styleUrls: ['./container.component.scss'],
+  imports: [CommonModule, EditLayoutItemComponent],
+  standalone: true
 })
 export class EditLayoutContainerComponent implements OnChanges {
 

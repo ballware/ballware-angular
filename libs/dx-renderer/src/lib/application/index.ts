@@ -1,0 +1,1 @@
+export { ApplicationComponent } from './application/application.component';

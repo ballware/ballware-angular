@@ -10,6 +10,9 @@ import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithVisible } from "../../utils/withvisible";
+import { DxDataGridModule, DxFileUploaderModule, DxPopupModule } from "devextreme-angular";
+import { CommonModule } from "@angular/common";
+import { I18NextModule } from "angular-i18next";
 
 @Component({
     selector: 'ballware-edit-attachments',
@@ -21,7 +24,9 @@ import { WithVisible } from "../../utils/withvisible";
             useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
             deps: [ATTACHMENT_SERVICE_FACTORY]  
         } as Provider,
-    ]
+    ],
+    imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule],
+    standalone: true
   })
   export class EditLayoutAttachmentsComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
     @Input() initialLayoutItem?: EditLayoutItem;

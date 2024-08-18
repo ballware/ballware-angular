@@ -46,18 +46,4 @@
   </dx-toolbar>
 </header>
 <ballware-application-account-menu #accountMenu></ballware-application-account-menu>
-<dx-popup *ngIf="documentation$ | async" 
-  [visible]="true" 
-  [showCloseButton]="true"
-  [hideOnOutsideClick]="true"
-  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
-  [title]="(documentationPopupTitle$ | async) ?? ''"
-  (onHidden)="hideDocumentation()"
-  width="auto" 
-  minWidth="500px" 
-  maxHeight="90vh"
-  height="auto">
-  <div *dxTemplate="let data of 'content'">
-    <dx-html-editor [readOnly]="true" [value]="documentation$ | async"></dx-html-editor>
-  </div> 
-</dx-popup>
+<ballware-application-documentation></ballware-application-documentation>

@@ -6,12 +6,15 @@ import { ItemClickEvent } from 'devextreme/ui/tree_view';
 import { cloneDeep } from 'lodash';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { DxDrawerModule, DxTreeViewModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-application-navigation-drawer',
   templateUrl: './drawer.component.html',
-  styleUrls: ['./drawer.component.scss'],
-  providers: []
+  styleUrls: [],
+  imports: [CommonModule, DxDrawerModule, DxTreeViewModule],
+  standalone: true
 })
 export class ApplicationNavigationDrawerComponent extends WithDestroy() {
   @HostBinding('class') classes = 'flex-fill overflow-hidden pt-2';

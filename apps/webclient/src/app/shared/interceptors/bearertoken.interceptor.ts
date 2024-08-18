@@ -1,18 +1,14 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { OAuthResourceServerErrorHandler, OAuthStorage } from 'angular-oauth2-oidc';
-import { Observable, catchError } from 'rxjs';
+import { catchError } from 'rxjs';
 
 declare let window :any;
 
-@Injectable({
-  providedIn: 'root'
-})
-export class BearerTokenInterceptor implements HttpInterceptor {
+export function BearerTokenInterceptor(req: HttpRequest<any>, next: HttpHandlerFn) {
 
-  constructor(private authStorage: OAuthStorage, private errorHandler: OAuthResourceServerErrorHandler) {}
-
-  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const authStorage = inject(OAuthStorage);
+    const errorHandler = inject(OAuthResourceServerErrorHandler);
 
     const url = req.url.toLowerCase();
 
@@ -21,7 +17,7 @@ export class BearerTokenInterceptor implements HttpInterceptor {
       || url.startsWith(window.ENV.BALLWARE_DOCUMENTURL.toLowerCase())
       || url.startsWith(window.ENV.BALLWARE_STORAGEURL.toLowerCase())
       || url.startsWith(window.ENV.BALLWARE_MLURL.toLowerCase())) {
-        const token = this.authStorage.getItem('access_token');
+        const token = authStorage.getItem('access_token');
         const header = 'Bearer ' + token;
         const headers = req.headers
                             .set('Authorization', header);
@@ -29,6 +25,6 @@ export class BearerTokenInterceptor implements HttpInterceptor {
         req = req.clone({ headers });
     }
 
-    return next.handle(req).pipe(catchError(err => this.errorHandler.handleError(err)));
-  }
+    return next(req).pipe(catchError(err => errorHandler.handleError(err)));
 }
+

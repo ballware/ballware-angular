@@ -1,13 +1,14 @@
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
-import { DxMapComponent } from 'devextreme-angular';
+import { DxMapComponent, DxMapModule } from 'devextreme-angular';
 import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
 
 declare let google: any;
 
@@ -19,7 +20,9 @@ interface MapValue {
 @Component({
   selector: 'ballware-edit-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss']
+  styleUrls: ['./map.component.scss'],
+  imports: [CommonModule, DxMapModule],
+  standalone: true
 })
 export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined))) implements OnInit, AfterViewInit, EditItemRef {
 

@@ -11,11 +11,15 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxTagBoxModule, DxValidatorModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-multilookup',
   templateUrl: './multilookup.component.html',
-  styleUrls: ['./multilookup.component.scss']
+  styleUrls: ['./multilookup.component.scss'],
+  imports: [CommonModule, DxTagBoxModule, DxValidatorModule],
+  standalone: true
 })
 export class EditLayoutMultilookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))))) implements OnInit, EditItemRef {
 

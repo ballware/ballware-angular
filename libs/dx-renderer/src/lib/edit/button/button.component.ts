@@ -7,11 +7,15 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxButtonModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-button',
   templateUrl: './button.component.html',
-  styleUrls: ['./button.component.scss']
+  styleUrls: ['./button.component.scss'],
+  imports: [CommonModule, DxButtonModule],
+  standalone: true
 })
 export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, EditItemRef {
 

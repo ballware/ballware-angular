@@ -3,12 +3,14 @@ import { NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-servic
 import notify from 'devextreme/ui/notify';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-notification',
-  templateUrl: './notification.component.html',
-  styleUrls: ['./notification.component.scss'],
-  providers: []
+  template: '',
+  styleUrls: [],
+  imports: [CommonModule],
+  standalone: true
 })
 export class ApplicationNotificationComponent extends WithDestroy() {
     

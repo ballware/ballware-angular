@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, Provider, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditLayoutItem, StatisticOptions } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
@@ -6,6 +6,10 @@ import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { StatisticChartComponent } from '../../statistic/items/chart.component';
+import { StatisticMapComponent } from '../../statistic/items/map.component';
+import { StatisticPivotgridComponent } from '../../statistic/items/pivotgrid.component';
 
 @Component({
   selector: 'ballware-edit-statistic',
@@ -17,10 +21,12 @@ import { WithVisible } from '../../utils/withvisible';
       useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
       deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]  
     } as Provider,
-  ]
+  ],
+  imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
+  standalone: true
 })
 export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
-
+  
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;

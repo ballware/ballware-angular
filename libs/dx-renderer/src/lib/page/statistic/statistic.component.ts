@@ -4,6 +4,8 @@ import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, STATISTIC_SER
 import { nanoid } from "nanoid";
 import { Observable, map, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
+import { StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent } from "../../statistic";
+import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'ballware-page-statistic',
@@ -15,10 +17,12 @@ import { WithDestroy } from "../../utils/withdestroy";
         useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
         deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]  
       } as Provider,
-    ]
+    ],
+    imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
+    standalone: true
   })
   export class PageLayoutStatisticComponent extends WithDestroy() implements OnInit { 
-
+    
     @Input() layoutItem!: PageLayoutItem;
 
     type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
@@ -60,5 +64,5 @@ import { WithDestroy } from "../../utils/withdestroy";
     if (this.layoutItem.options?.itemoptions) {
       this.statisticService.setStatistic((this.layoutItem.options.itemoptions as StatisticOptions).statistic);
     }
-  }
+  } 
 }  

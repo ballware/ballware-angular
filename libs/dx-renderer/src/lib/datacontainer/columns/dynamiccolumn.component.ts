@@ -11,11 +11,17 @@ import { combineLatest, takeUntil } from "rxjs";
 import { getByPath, setByPath } from "../../utils/databinding";
 import { createLookupDataSource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
+import { CommonModule } from "@angular/common";
+import { DxCheckBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTagBoxModule } from "devextreme-angular";
+import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
+import { I18NextModule } from "angular-i18next";
 
 @Component({
     selector: 'ballware-edit-dynamic-column',
     templateUrl: './dynamiccolumn.component.html',
-    styleUrls: ['./dynamiccolumn.component.scss']
+    styleUrls: ['./dynamiccolumn.component.scss'],
+    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
+    standalone: true
 })
 export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy { 
     @Input() dataMember!: string;

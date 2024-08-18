@@ -10,11 +10,15 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { DxDateBoxModule, DxValidatorModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-edit-datetime',
   templateUrl: './datetime.component.html',
-  styleUrls: ['./datetime.component.scss']
+  styleUrls: ['./datetime.component.scss'],
+  imports: [CommonModule, DxDateBoxModule, DxValidatorModule],
+  standalone: true
 })
 export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => (null as unknown) as string|number|Date))))) implements OnInit, EditItemRef {
 

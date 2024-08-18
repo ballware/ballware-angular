@@ -9,11 +9,15 @@ import { WithRequired } from "../../utils/withrequired";
 import { WithValidation } from "../../utils/withvalidation";
 import { WithValue } from "../../utils/withvalue";
 import { WithVisible } from "../../utils/withvisible";
+import { CommonModule } from "@angular/common";
+import { DxHtmlEditorModule, DxValidatorModule } from "devextreme-angular";
 
 @Component({
     selector: 'ballware-edit-richtext',
     templateUrl: './richtext.component.html',
-    styleUrls: ['./richtext.component.scss']
+    styleUrls: ['./richtext.component.scss'],
+    imports: [CommonModule, DxHtmlEditorModule, DxValidatorModule],
+    standalone: true
   })
   export class EditLayoutRichtextComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))))) implements OnInit, EditItemRef {
   

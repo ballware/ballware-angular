@@ -4,6 +4,8 @@ import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditService
 import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { DxPopupModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-crud-dialog',
@@ -15,7 +17,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
       deps: [EDIT_SERVICE_FACTORY, META_SERVICE]  
     } as Provider
-  ]
+  ],
+  imports: [CommonModule, DxPopupModule],
+  standalone: true
 })
 export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDestroy {
 

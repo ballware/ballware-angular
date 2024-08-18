@@ -8,7 +8,8 @@ import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } f
 import { createColumnConfiguration } from '../../utils/columns';
 import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
-import { DatagridSummary } from '../datagrid/datagrid.component';
+import { DatagridComponent, DatagridSummary } from '../datagrid/datagrid.component';
+import { CommonModule } from '@angular/common';
 
 const createSummaryConfiguration = (gridLayout: GridLayout) => {
   return {
@@ -36,7 +37,9 @@ const createSummaryConfiguration = (gridLayout: GridLayout) => {
 @Component({
   selector: 'ballware-entitygrid',
   templateUrl: './entitygrid.component.html',
-  styleUrls: ['./entitygrid.component.scss']
+  styleUrls: ['./entitygrid.component.scss'],
+  imports: [CommonModule, DatagridComponent],
+  standalone: true
 })
 export class EntitygridComponent extends WithDestroy() implements OnInit {
 

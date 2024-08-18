@@ -9,10 +9,10 @@ import { of } from "rxjs";
 import { CommonModule } from "@angular/common";
 import { ResourceLanguage } from "i18next";
 
-import { PageModule } from './page.module';
+import { PageModule } from '.';
 
 import * as TypeMoq from 'typemoq';
-import { EditModule } from "../edit/edit.module";
+import { EditModule } from "../edit";
 
 function appInit(i18next: ITranslationService) {
   return () => i18next.init({

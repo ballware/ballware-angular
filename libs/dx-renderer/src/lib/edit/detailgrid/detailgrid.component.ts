@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { DxDataGridComponent } from "devextreme-angular";
+import { DxDataGridComponent, DxDataGridModule, DxToolbarModule, DxValidatorModule } from "devextreme-angular";
 import { ValidationCallbackData } from "devextreme/common";
 import { Column, DataChange, EditorPreparingEvent, InitNewRowEvent, RowClickEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/data_grid";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
@@ -12,6 +12,10 @@ import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithValue } from "../../utils/withvalue";
 import { WithVisible } from "../../utils/withvisible";
+import { CommonModule } from "@angular/common";
+import { DynamicColumnComponent } from "../../datacontainer";
+import { EditLayoutJsonComponent } from "../json/json.component";
+import { I18NextModule } from "angular-i18next";
 
 interface EditComponentWithOptions {
   /**
@@ -42,7 +46,9 @@ export interface DetailGridItemOptions {
 @Component({
     selector: 'ballware-edit-detailgrid',
     templateUrl: './detailgrid.component.html',
-    styleUrls: ['./detailgrid.component.scss']
+    styleUrls: ['./detailgrid.component.scss'],
+    imports: [CommonModule, I18NextModule, DxDataGridModule, DxValidatorModule, DxToolbarModule, DynamicColumnComponent, EditLayoutJsonComponent],
+    standalone: true
 })
 export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit, EditItemRef {
 

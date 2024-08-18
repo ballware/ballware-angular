@@ -1,11 +1,11 @@
-import { StoreModule } from '@ngrx/store';
+import { provideState } from '@ngrx/store';
 import { tenantReducer } from './tenant.reducer';
 import { tenantFeatureKey } from './tenant.state';
-import { EffectsModule } from '@ngrx/effects';
+import { provideEffects } from '@ngrx/effects';
 import { fetchTenant } from './tenant.effects';
 
 export * from './tenant.actions';
 export * from './tenant.state';
 
-export const TenantFeatureModule = StoreModule.forFeature(tenantFeatureKey, tenantReducer);
-export const TenantEffectsModule = EffectsModule.forFeature({ fetchTenant });
+export const provideTenantFeature = () => provideState(tenantFeatureKey, tenantReducer);
+export const provideTenantEffects = () => provideEffects({ fetchTenant });

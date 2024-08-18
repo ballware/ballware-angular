@@ -5,7 +5,7 @@
     width="100%"
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
-    [columns]="columns"
+    [columns]="columns ?? []"
     [dataSource]="value"
     (onToolbarPreparing)="onToolbarPreparing($event)"
     (onEditorPreparing)="onEditorPreparing($event)"
@@ -35,6 +35,6 @@
 <dx-validator [adapter]="validationAdapterConfig">
     <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
 </dx-validator>
-<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
+<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems ?? []">    
 </dx-toolbar>
 <ballware-edit-json *ngIf="showSource" [initialLayoutItem]="layoutItem" ></ballware-edit-json>

@@ -5,12 +5,16 @@ import { LegendClickEvent } from "devextreme/viz/chart";
 import moment from "moment";
 import { Observable, map } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
+import { DxChartModule } from "devextreme-angular";
+import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'ballware-statistic-chart',
     templateUrl: './chart.component.html',
     styleUrls: ['./chart.component.scss'],
-    providers: []
+    providers: [],
+    imports: [CommonModule, DxChartModule],
+    standalone: true
   })
   export class StatisticChartComponent extends WithDestroy() {
 

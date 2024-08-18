@@ -4,12 +4,15 @@ import { SETTINGS_SERVICE, SettingsService, STATISTIC_SERVICE, StatisticService 
 import { Observable, combineLatest, map } from "rxjs";
 import { getByPath } from "../../utils/databinding";
 import { WithDestroy } from "../../utils/withdestroy";
+import { CommonModule } from "@angular/common";
+import { DxMapModule } from "devextreme-angular";
 
 @Component({
     selector: 'ballware-statistic-map',
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
-    providers: []
+    imports: [CommonModule, DxMapModule],
+    standalone: true
   })
   export class StatisticMapComponent extends WithDestroy() {
 

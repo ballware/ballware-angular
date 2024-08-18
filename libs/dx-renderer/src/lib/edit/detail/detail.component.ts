@@ -1,8 +1,10 @@
-import { Component, Inject, Input, OnInit, Provider } from '@angular/core';
+import { Component, forwardRef, Inject, Input, OnInit, Provider } from '@angular/core';
 import { DetailLayout } from '@ballware/meta-model';
 import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { EditLayoutContainerComponent } from '../layout/container.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-edit-detail',
@@ -14,7 +16,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
       deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
     } as Provider
-  ]
+  ],
+  imports: [CommonModule, forwardRef(() => EditLayoutContainerComponent)],
+  standalone: true
 })
 export class EditDetailComponent extends WithDestroy() implements OnInit {
 

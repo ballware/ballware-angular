@@ -1,18 +1,20 @@
 import { Component, Inject, ViewChild } from '@angular/core';
 import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
-import { DxActionSheetComponent } from 'devextreme-angular';
+import { DxContextMenuComponent, DxContextMenuModule } from 'devextreme-angular';
 import { Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-application-account-menu',
   templateUrl: './menu.component.html',
-  styleUrls: ['./menu.component.scss'],
-  providers: []
+  styleUrls: [],
+  imports: [CommonModule, DxContextMenuModule],
+  standalone: true
 })
 export class ApplicationAccountMenuComponent extends WithDestroy() {
 
-  @ViewChild('accountMenu', { static: false }) accountMenu?: DxActionSheetComponent;
+  @ViewChild('accountMenu', { static: false }) accountMenu?: DxContextMenuComponent;
 
   currentUser$: Observable<Record<string, unknown>|undefined>;
   username$: Observable<string|undefined>;

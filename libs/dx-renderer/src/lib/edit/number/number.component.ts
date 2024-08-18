@@ -9,6 +9,8 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { DxNumberBoxModule, DxValidatorModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 export interface NumberItemOptions {  
   min?: number;
@@ -18,7 +20,9 @@ export interface NumberItemOptions {
 @Component({
   selector: 'ballware-edit-number',
   templateUrl: './number.component.html',
-  styleUrls: ['./number.component.scss']
+  styleUrls: ['./number.component.scss'],
+  imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
+  standalone: true
 })
 export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))))) implements OnInit, EditItemRef {
 

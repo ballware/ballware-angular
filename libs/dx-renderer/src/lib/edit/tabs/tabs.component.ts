@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
@@ -6,11 +6,16 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxTabPanelModule } from 'devextreme-angular';
+import { EditLayoutContainerComponent } from '../layout/container.component';
 
 @Component({
   selector: 'ballware-edit-tabs',
   templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss']
+  styleUrls: ['./tabs.component.scss'],
+  imports: [CommonModule, DxTabPanelModule, forwardRef(() => EditLayoutContainerComponent)],
+  standalone: true
 })
 export class EditLayoutTabsComponent extends WithVisible(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0)) implements OnInit, EditItemRef {
 

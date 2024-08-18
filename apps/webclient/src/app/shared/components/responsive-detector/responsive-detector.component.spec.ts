@@ -14,7 +14,7 @@ describe('ResponsiveDetectorComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ResponsiveDetectorComponent ],
+      imports: [ ResponsiveDetectorComponent ],
       providers: [
         {
           provide: RESPONSIVE_SERVICE,

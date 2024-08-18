@@ -9,11 +9,15 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxTextBoxModule, DxValidatorModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-text',
   templateUrl: './text.component.html',
-  styleUrls: ['./text.component.scss']
+  styleUrls: ['./text.component.scss'],
+  imports: [CommonModule, DxTextBoxModule, DxValidatorModule],
+  standalone: true
 })
 export class EditLayoutTextComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))))) implements OnInit, EditItemRef {
 

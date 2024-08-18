@@ -3,14 +3,17 @@ import { PageLayoutItem } from '@ballware/meta-model';
 import { PageLayoutCrudcontainerComponent } from '../crudcontainer/crudcontainer.component';
 import { PageLayoutEntitygridComponent } from '../entitygrid/entitygrid.component';
 import { PageLayoutGridComponent } from '../grid/grid.component';
-import { PageLayoutMapComponent } from '../map/map.component';
 import { PageLayoutStatisticComponent } from '../statistic/statistic.component';
 import { PageLayoutTabsComponent } from '../tabs/tabs.component';
+import { PageLayoutMapComponent } from '../map/map.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-page-item',
   templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss']
+  styleUrls: ['./item.component.scss'],
+  imports: [CommonModule],
+  standalone: true
 })
 export class PageLayoutItemComponent implements AfterViewInit {
 
@@ -49,12 +52,11 @@ export class PageLayoutItemComponent implements AfterViewInit {
           }
           break;
         case 'map': {
-            //const { PageLayoutMapComponent } = await import('../map/map.component');
             const componentRef = this.itemHost.createComponent(PageLayoutMapComponent);
 
-            componentRef.instance.layoutItem = this.layoutItem;
+            componentRef.setInput('layoutItem', this.layoutItem);            
             componentRef.changeDetectorRef.detectChanges();
-          }
+          }       
           break;          
         case 'statistic': {
             //const { PageLayoutStatisticComponent } = await import('../statistic/statistic.component');

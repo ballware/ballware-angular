@@ -1,10 +1,13 @@
+import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, Inject } from '@angular/core';
 import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 
 @Component({
   selector: 'ballware-responsive-detector',
   templateUrl: './responsive-detector.component.html',
-  styleUrls: ['./responsive-detector.component.scss']
+  styleUrls: [],
+  imports: [CommonModule],
+  standalone: true
 })
 export class ResponsiveDetectorComponent implements AfterViewInit {
   prefix = 'is-';

@@ -8,11 +8,15 @@ import { InitializedEvent as TagBoxInitializedEvent, ValueChangedEvent as TagBox
 import { combineLatest, takeUntil } from 'rxjs';
 import { createLookupDataSource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
+import { CommonModule } from '@angular/common';
+import { DxToolbarModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-toolbar',
   templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss']
+  styleUrls: ['./toolbar.component.scss'],
+  imports: [CommonModule, DxToolbarModule],
+  standalone: true
 })
 export class ToolbarComponent extends WithDestroy() {
 

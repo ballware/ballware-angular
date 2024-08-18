@@ -6,7 +6,7 @@
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
     [allowColumnResizing]="true"
-    [columns]="columns"
+    [columns]="columns ?? []"
     [dataSource]="value"
     [dataStructure]="'tree'"
     [itemsExpr]="'items'"
@@ -26,6 +26,6 @@
         <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
 </dx-tree-list>
-<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
+<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems ?? []">    
 </dx-toolbar>
 <ballware-edit-json *ngIf="showSource" [initialLayoutItem]="layoutItem" ></ballware-edit-json>

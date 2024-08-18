@@ -6065,30 +6065,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngrx/component-store@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@ngrx/component-store@npm:17.0.1"
+"@ngrx/component-store@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@ngrx/component-store@npm:17.2.0"
   dependencies:
     "@ngrx/operators": "npm:17.0.0-beta.0"
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/core": ^17.0.0
     rxjs: ^6.5.3 || ^7.5.0
-  checksum: fe0cb9b29191b80f7acb326a4301d28af9ff9569eca558fd6b078e2e0c4f99f20e71baa4b7929bcf1b172d8184db3638c44b947d0b546919b451dac10ac03503
+  checksum: 7b55f7bd865eac155eaffd91a294ff46a107ce9f58f78c79b6dacfb19dda2a371375885015fa5e1f336e953e59ba769dd448d72070bd309dc90423613ee98da2
   languageName: node
   linkType: hard
 
-"@ngrx/effects@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@ngrx/effects@npm:17.0.1"
+"@ngrx/effects@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@ngrx/effects@npm:17.2.0"
   dependencies:
     "@ngrx/operators": "npm:17.0.0-beta.0"
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/core": ^17.0.0
-    "@ngrx/store": 17.0.1
+    "@ngrx/store": 17.2.0
     rxjs: ^6.5.3 || ^7.5.0
-  checksum: 3f237d1591e0663d665cb0d1fd3acf96be5c9f98db2700a999df3ef627d4f330074941e1335dc858bb5a62d553dc1e56b909df65d22fd2ca84ad951b5a768ab3
+  checksum: 5ff625e54479d04572f2da89f94b440607e0753dcf7f6cd5c8a8c09ec1d8a8edfe000da14f90f0f55ac74f7a4aad5a81f13a0dac5a3b87f166eac5e4cdffd8fb
   languageName: node
   linkType: hard
 
@@ -6103,42 +6103,42 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ngrx/router-store@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@ngrx/router-store@npm:17.0.1"
+"@ngrx/router-store@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@ngrx/router-store@npm:17.2.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/common": ^17.0.0
     "@angular/core": ^17.0.0
     "@angular/router": ^17.0.0
-    "@ngrx/store": 17.0.1
+    "@ngrx/store": 17.2.0
     rxjs: ^6.5.3 || ^7.5.0
-  checksum: 877676680fd5a0760ee0c0c378b5042aa815a2637f83eab5ac70fd6c0978bbfa0ded3e1ff646a1eec2ab897d53c3179b6b13ad8f0102baa0157f7b3e0df32cc0
+  checksum: b57f6da481c69adc9585ae8600bd83f1acaba2b3428f4f2a12b0f42be1fcd9997bb3b72cc908a1964f99bb14e9aef6a3192a89937afb99959b5324b28116114e
   languageName: node
   linkType: hard
 
-"@ngrx/store-devtools@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@ngrx/store-devtools@npm:17.0.1"
+"@ngrx/store-devtools@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@ngrx/store-devtools@npm:17.2.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
-    "@ngrx/store": 17.0.1
+    "@ngrx/store": 17.2.0
     rxjs: ^6.5.3 || ^7.5.0
-  checksum: 24945d1992e6ddd312ff813e69412706e024dafecc50ba75df699d4bea70dd08b4df85314750660d7b24651aec952442f99d8cb4e7ab27252d9cace9c8fd6681
+  checksum: 76cc3671b6ea2ce9005d1f8666870e00184525815389d94ec6ec51051f359136e20f1a54b84c0f849c2a2016c6d6a7079fab47695fd41ac38c05ea80356dbd17
   languageName: node
   linkType: hard
 
-"@ngrx/store@npm:17.0.1":
-  version: 17.0.1
-  resolution: "@ngrx/store@npm:17.0.1"
+"@ngrx/store@npm:17.2.0":
+  version: 17.2.0
+  resolution: "@ngrx/store@npm:17.2.0"
   dependencies:
     tslib: "npm:^2.0.0"
   peerDependencies:
     "@angular/core": ^17.0.0
     rxjs: ^6.5.3 || ^7.5.0
-  checksum: 59ff28dc25224a2b78eb59238e34a5da07e7c9572bedc62ab5166820113cf1d30f5ec7cdeda04e952c7247b7ccc5f9e04f0f5b6af2f5a49f1c2aef3e61677955
+  checksum: 6c25e3f849123ea4947d5d6ec3b7ea795f57f60affaa8c26dd879135b0275ac515fc4ab9defa19b912fa44f1831dc56de965a4d3cf8d6685cdbb4a0195453c60
   languageName: node
   linkType: hard
 
@@ -11900,11 +11900,11 @@ __metadata:
     "@codemirror/state": "npm:^6.4.0"
     "@codemirror/view": "npm:^6.23.0"
     "@cypress/webpack-dev-server": "npm:3.9.0"
-    "@ngrx/component-store": "npm:17.0.1"
-    "@ngrx/effects": "npm:17.0.1"
-    "@ngrx/router-store": "npm:17.0.1"
-    "@ngrx/store": "npm:17.0.1"
-    "@ngrx/store-devtools": "npm:17.0.1"
+    "@ngrx/component-store": "npm:17.2.0"
+    "@ngrx/effects": "npm:17.2.0"
+    "@ngrx/router-store": "npm:17.2.0"
+    "@ngrx/store": "npm:17.2.0"
+    "@ngrx/store-devtools": "npm:17.2.0"
     "@nx-tools/container-metadata": "npm:^5.2.0"
     "@nx-tools/nx-container": "npm:^5.2.0"
     "@nx/angular": "npm:19.5.6"

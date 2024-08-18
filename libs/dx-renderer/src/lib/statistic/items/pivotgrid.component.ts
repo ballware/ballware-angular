@@ -9,12 +9,16 @@ import saveAs from 'file-saver';
 import moment from "moment";
 import { Observable, combineLatest, map, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
+import { DxPivotGridModule } from "devextreme-angular";
+import { CommonModule } from "@angular/common";
 
 @Component({
     selector: 'ballware-statistic-pivotgrid',
     templateUrl: './pivotgrid.component.html',
     styleUrls: ['./pivotgrid.component.scss'],
-    providers: []
+    providers: [],
+    imports: [CommonModule, DxPivotGridModule],
+    standalone: true
   })
   export class StatisticPivotgridComponent extends WithDestroy() {
 

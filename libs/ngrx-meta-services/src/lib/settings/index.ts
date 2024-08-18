@@ -1,5 +1,5 @@
-import { StoreModule } from '@ngrx/store';
+import { provideState } from '@ngrx/store';
 import { settingsReducer } from './settings.reducer';
 import { settingsFeatureKey } from './settings.state';
 
-export const SettingsFeatureModule = StoreModule.forFeature(settingsFeatureKey, settingsReducer);
+export const provideSettingsFeature = () => provideState(settingsFeatureKey, settingsReducer);

@@ -3,6 +3,8 @@ import { ApiError } from '@ballware/meta-api';
 import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, PAGE_SERVICE, PageService } from '@ballware/meta-services';
 import { catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { DxLoadIndicatorModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-page-tabs-counter',
@@ -19,7 +21,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
       deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
     } as Provider,
-  ]
+  ],
+  imports: [CommonModule, DxLoadIndicatorModule],
+  standalone: true
 })
 export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnInit {
 

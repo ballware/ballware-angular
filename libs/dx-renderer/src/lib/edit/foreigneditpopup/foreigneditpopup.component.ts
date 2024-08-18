@@ -4,6 +4,9 @@ import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, It
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { Router } from "@angular/router";
+import { EditLayoutComponent } from "../layout/layout.component";
+import { CommonModule } from "@angular/common";
+import { CrudDialogComponent } from "../dialog/dialog.component";
 
 @Component({
     selector: 'ballware-crud-foreigneditpopup',
@@ -25,7 +28,9 @@ import { Router } from "@angular/router";
           useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
           deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
         } as Provider,       
-      ]
+      ],
+      imports: [CommonModule, CrudDialogComponent, EditLayoutComponent],
+      standalone: true
 })
 export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, OnDestroy {
 

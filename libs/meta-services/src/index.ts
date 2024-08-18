@@ -1,1 +1,1 @@
-export * from './lib/meta-services.module';
+export * from './lib';

@@ -1,15 +1,22 @@
 import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { CRUD_SERVICE, CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
-import { DxActionSheetComponent } from 'devextreme-angular';
+import { DxActionSheetComponent, DxActionSheetModule, DxFileUploaderModule, DxPopupModule } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { CommonModule } from '@angular/common';
+import { I18NextModule } from 'angular-i18next';
+import { ForeignEditPopupComponent } from '../foreigneditpopup/foreigneditpopup.component';
+import { CrudDialogComponent } from '../dialog/dialog.component';
+import { EditLayoutComponent } from '../layout/layout.component';
 
 @Component({
   selector: 'ballware-crud-actions',
   templateUrl: './actions.component.html',
-  styleUrls: ['./actions.component.scss']
+  styleUrls: ['./actions.component.scss'],
+  imports: [CommonModule, I18NextModule, DxPopupModule, DxFileUploaderModule, DxActionSheetModule, ForeignEditPopupComponent, CrudDialogComponent, EditLayoutComponent],
+  standalone: true
 })
 export class CrudActionsComponent extends WithDestroy() implements OnInit {
 

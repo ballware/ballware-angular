@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, forwardRef, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
@@ -9,6 +9,10 @@ import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithVisible } from '../../utils/withvisible';
 import { Router } from '@angular/router';
+import { EntitygridComponent } from '../../datacontainer';
+import { CrudActionsComponent } from '../actions/actions.component';
+import { CommonModule } from '@angular/common';
+import { EditDetailComponent } from '../detail/detail.component';
 
 interface EntityGridItemOptions {
   uniqueKey?: string;
@@ -53,7 +57,9 @@ interface EntityGridItemOptions {
     { 
       provide: MasterdetailService, useClass: MasterdetailService 
     }
-  ]
+  ],
+  imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
+  standalone: true
 })
 export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
 

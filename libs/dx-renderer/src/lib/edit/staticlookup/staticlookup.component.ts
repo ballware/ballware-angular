@@ -11,11 +11,15 @@ import { WithRequired } from '../../utils/withrequired';
 import { WithValidation } from '../../utils/withvalidation';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxSelectBoxModule, DxValidatorModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-staticlookup',
   templateUrl: './staticlookup.component.html',
-  styleUrls: ['./staticlookup.component.scss']
+  styleUrls: ['./staticlookup.component.scss'],
+  imports: [CommonModule, DxSelectBoxModule, DxValidatorModule],
+  standalone: true
 })
 export class EditLayoutStaticlookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))))) implements OnInit, EditItemRef {
 

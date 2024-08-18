@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -8,7 +9,9 @@ import { Observable, combineLatest, map, of, switchMap } from 'rxjs';
 @Component({
   selector: 'ballware-print',
   templateUrl: './print.component.html',
-  styleUrls: ['./print.component.scss']
+  styleUrls: [],
+  imports: [CommonModule],
+  standalone: true
 })
 export class PrintComponent {
 

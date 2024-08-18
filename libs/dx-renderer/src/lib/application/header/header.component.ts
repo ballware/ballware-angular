@@ -3,12 +3,16 @@ import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveServic
 import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { ApplicationAccountMenuComponent } from '../account/menu.component';
+import { ApplicationDocumentationComponent } from "../documentation/documentation.component";
+import { DxButtonModule, DxToolbarModule } from 'devextreme-angular';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-application-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  providers: []
+  imports: [CommonModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule],
+  standalone: true
 })
 export class ApplicationHeaderComponent extends WithDestroy() {
   @ViewChild('accountMenu', { static: false }) accountMenu?: ApplicationAccountMenuComponent;
@@ -21,8 +25,6 @@ export class ApplicationHeaderComponent extends WithDestroy() {
   public pageTitle$: Observable<string|undefined>;
 
   public documentationIdentifier$: Observable<string|undefined>;
-  public documentation$: Observable<unknown|undefined>;
-  public documentationPopupTitle$: Observable<string|undefined>;
 
   public accountMenuVisible = false;
   public accountMenuTarget: Element|undefined = undefined;
@@ -33,7 +35,6 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
   constructor(
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
-    @Inject(TRANSLATOR) private translator: Translator, 
     @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
     @Inject(TENANT_SERVICE) private tenantService: TenantService, 
     @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
@@ -45,10 +46,8 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
     this.tenantTitle$ = this.tenantService.title$;
     this.pageTitle$ = this.toolbarService.title$;
-    this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
-    this.documentation$ = this.toolbarService.documentation$;
 
-    this.documentationPopupTitle$ = this.pageTitle$.pipe(map((pageTitle) => pageTitle && this.translator('documentation.popuptitle', { entity: pageTitle })));
+    this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
 
     this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenExpiration$))
       .pipe(tap(([, accessTokenExpiration]) => {
@@ -71,10 +70,6 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
   showDocumentation(): void {
     this.toolbarService.showDocumentation();
-  }
-
-  hideDocumentation(): void {
-    this.toolbarService.hideDocumentation();
   }
 }
 

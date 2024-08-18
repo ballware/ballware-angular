@@ -3,6 +3,9 @@ import { Router } from '@angular/router';
 import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PAGE_SERVICE, PAGE_SERVICE_FACTORY, PageService, PageServiceFactory, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { ToolbarComponent } from '../../toolbar';
+import { PageLayoutComponent } from '../layout/layout.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-page',
@@ -19,7 +22,9 @@ import { WithDestroy } from '../../utils/withdestroy';
       useFactory: (serviceFactory: PageServiceFactory, router: Router, lookupService: LookupService) => serviceFactory(router, lookupService),
       deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]  
     } as Provider
-  ]
+  ],
+  imports: [CommonModule, ToolbarComponent, PageLayoutComponent],
+  standalone: true
 })
 export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges {  
   @HostBinding('class') classes = 'h-100 p-2';

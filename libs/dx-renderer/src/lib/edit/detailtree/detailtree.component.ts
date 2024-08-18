@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
 import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { DxDataGridComponent } from "devextreme-angular";
+import { DxDataGridComponent, DxToolbarModule, DxTreeListModule } from "devextreme-angular";
 import { dxToolbarItem } from "devextreme/ui/toolbar";
 import { Column, EditorPreparingEvent, InitNewRowEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/tree_list";
 import { combineLatest, takeUntil } from "rxjs";
@@ -11,6 +11,9 @@ import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
 import { WithReadonly } from "../../utils/withreadonly";
 import { WithValue } from "../../utils/withvalue";
 import { WithVisible } from "../../utils/withvisible";
+import { CommonModule } from "@angular/common";
+import { DynamicColumnComponent } from "../../datacontainer";
+import { EditLayoutJsonComponent } from "../json/json.component";
 
 interface EditComponentWithOptions {
   /**
@@ -41,7 +44,9 @@ export interface DetailTreeItemOptions {
 @Component({
     selector: 'ballware-edit-detailtree',
     templateUrl: './detailtree.component.html',
-    styleUrls: ['./detailtree.component.scss']
+    styleUrls: ['./detailtree.component.scss'],
+    imports: [CommonModule, DxToolbarModule, DxTreeListModule, DynamicColumnComponent, EditLayoutJsonComponent],
+    standalone: true
 })
 export class EditLayoutDetailTreeComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit, EditItemRef {
 

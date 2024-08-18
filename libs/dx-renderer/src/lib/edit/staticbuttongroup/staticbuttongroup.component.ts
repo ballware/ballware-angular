@@ -9,6 +9,8 @@ import { WithLookup } from '../../utils/withlookup';
 import { WithReadonly } from '../../utils/withreadonly';
 import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
+import { CommonModule } from '@angular/common';
+import { DxButtonGroupModule } from 'devextreme-angular';
 
 interface KeyedButtonGroupItem extends Item {
   key: string;
@@ -17,7 +19,9 @@ interface KeyedButtonGroupItem extends Item {
 @Component({
   selector: 'ballware-edit-staticbuttongroup',
   templateUrl: './staticbuttongroup.component.html',
-  styleUrls: ['./staticbuttongroup.component.scss']
+  styleUrls: ['./staticbuttongroup.component.scss'],
+  imports: [CommonModule, DxButtonGroupModule],
+  standalone: true
 })
 export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit, EditItemRef {
 

@@ -1,17 +1,17 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
 import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
-import DevExpress from 'devextreme';
-import { DxDataGridComponent } from 'devextreme-angular';
+import { DxDataGridComponent, DxDataGridModule } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import dxButton from 'devextreme/ui/button';
 import { Column, EditingStartEvent, EditorPreparingEvent, ExportingEvent, RowDblClickEvent, RowExpandingEvent, SelectionChangedEvent, ToolbarItem, ToolbarPreparingEvent } from 'devextreme/ui/data_grid';
-import { dxToolbarItem } from 'devextreme/ui/toolbar';
+import { Item } from 'devextreme/ui/toolbar';
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { CommonModule } from '@angular/common';
 
 interface EditComponentWithOptions {
   /**
@@ -40,7 +40,9 @@ export interface DatagridSummary {
 @Component({
   selector: 'ballware-datagrid',
   templateUrl: './datagrid.component.html',
-  styleUrls: ['./datagrid.component.scss']
+  styleUrls: ['./datagrid.component.scss'],
+  imports: [CommonModule, DxDataGridModule],
+  standalone: true
 })
 export class DatagridComponent extends WithDestroy() implements OnInit {
 
@@ -51,7 +53,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Input() height!: string;
   @Input() mode!: 'large' | 'medium' | 'small';
   @Input() layout: GridLayout|undefined;
-  @Input() columns: Array<DevExpress.ui.dxDataGridColumn>|undefined;
+  @Input() columns: Array<Column>|undefined;
   @Input() summary: DatagridSummary|undefined;
   @Input() dataSource!: DataSource;
   @Input() exportFileName!: string;
@@ -212,7 +214,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
             this.reloadClick.emit({ target: e.event.currentTarget });
           },
         },
-      } as dxToolbarItem);
+      } as Item);
     }
 
     if (this.showPrint && e.toolbarOptions?.items) {
@@ -293,7 +295,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
             });
           },
         },
-      } as dxToolbarItem);
+      } as Item);
     });
 
     if (this.showAdd) {

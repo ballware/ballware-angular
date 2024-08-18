@@ -1,1 +1,1 @@
-export * from './lib/dx-renderer.module';
+export * from './lib';

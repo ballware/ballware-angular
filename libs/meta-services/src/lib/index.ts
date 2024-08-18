@@ -1,6 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { ModuleWithProviders, NgModule } from '@angular/core';
-
 export * from './attachment.service';
 export * from './crud.service';
 export * from './edit.service';
@@ -19,17 +16,3 @@ export * from './tenant.service';
 export * from './toolbar.service';
 export * from './translation.service';
 export * from './toolbaritemref';
-
-@NgModule({
-  imports: [
-    CommonModule
-  ],
-})
-export class MetaServicesModule {
-  static forRoot(): ModuleWithProviders<MetaServicesModule> {
-    return {
-      ngModule: MetaServicesModule,
-      providers: []
-    };
-  }
-}

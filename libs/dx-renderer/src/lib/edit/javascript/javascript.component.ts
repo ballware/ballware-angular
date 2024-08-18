@@ -9,12 +9,16 @@ import { WithRequired } from "../../utils/withrequired";
 import { WithValidation } from "../../utils/withvalidation";
 import { WithValue } from "../../utils/withvalue";
 import { WithVisible } from "../../utils/withvisible";
-import { CodeMirrorEditorOptions } from "../components/codeeditor/codemirror.component";
+import { CodeMirrorEditorOptions } from "../components/codeeditor/options";
+import { CommonModule } from "@angular/common";
+import { CodeMirrorComponent } from "../components/codeeditor/codemirror.component";
 
 @Component({
     selector: 'ballware-edit-javascript',
     templateUrl: './javascript.component.html',
-    styleUrls: ['./javascript.component.scss']
+    styleUrls: ['./javascript.component.scss'],
+    imports: [CommonModule, CodeMirrorComponent],
+    standalone: true
 })
 export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))))) implements OnInit, EditItemRef {
 

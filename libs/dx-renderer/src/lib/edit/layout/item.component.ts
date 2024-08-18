@@ -1,8 +1,6 @@
 import { AfterViewInit, Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EditLayoutAttachmentsComponent } from '../attachments/attachments.component';
-import { EditLayoutBoolComponent } from '../bool/bool.component';
-import { EditLayoutButtonComponent } from '../button/button.component';
 import { EditLayoutDatetimeComponent } from '../datetime/datetime.component';
 import { EditLayoutDetailGridComponent } from '../detailgrid/detailgrid.component';
 import { EditLayoutDetailTreeComponent } from '../detailtree/detailtree.component';
@@ -11,11 +9,9 @@ import { EditLayoutGroupComponent } from '../group/group.component';
 import { EditLayoutJavascriptComponent } from '../javascript/javascript.component';
 import { EditLayoutJsonComponent } from '../json/json.component';
 import { EditLayoutLookupComponent } from '../lookup/lookup.component';
-import { EditLayoutMapComponent } from '../map/map.component';
 import { EditLayoutMultilookupComponent } from '../multilookup/multilookup.component';
 import { EditLayoutMultivalueComponent } from '../multivalue/multivalue.component';
 import { EditLayoutNumberComponent } from '../number/number.component';
-import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
 import { EditLayoutSqlComponent } from '../sql/sql.component';
 import { EditLayoutStaticButtonGroupComponent } from '../staticbuttongroup/staticbuttongroup.component';
 import { EditLayoutStaticlookupComponent } from '../staticlookup/staticlookup.component';
@@ -24,11 +20,18 @@ import { EditLayoutStatisticComponent } from '../statistic/statistic.component';
 import { EditLayoutTabsComponent } from '../tabs/tabs.component';
 import { EditLayoutTextComponent } from '../text/text.component';
 import { EditLayoutTextareaComponent } from '../textarea/textarea.component';
+import { EditLayoutButtonComponent } from '../button/button.component';
+import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
+import { EditLayoutBoolComponent } from '../bool/bool.component';
+import { EditLayoutMapComponent } from '../map/map.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'ballware-edit-item',
   templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss']
+  styleUrls: ['./item.component.scss'],
+  imports: [CommonModule],
+  standalone: true
 })
 export class EditLayoutItemComponent implements AfterViewInit {
 
@@ -44,7 +47,7 @@ export class EditLayoutItemComponent implements AfterViewInit {
             const componentRef = this.itemHost.createComponent(EditLayoutButtonComponent);
 
             componentRef.setInput('initialLayoutItem', this.layoutItem);            
-            componentRef.changeDetectorRef.detectChanges();
+            componentRef.changeDetectorRef.detectChanges();            
           }
           break;
         case 'staticbuttongroup': {
@@ -71,12 +74,12 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
-        case 'richtext': {
+        case 'richtext':  {
             const componentRef = this.itemHost.createComponent(EditLayoutRichtextComponent);
 
             componentRef.setInput('initialLayoutItem', this.layoutItem);            
             componentRef.changeDetectorRef.detectChanges();
-          }
+          }                        
           break;          
         case 'number': {
             //const { EditLayoutNumberComponent } = await import('../number/number.component');
@@ -87,12 +90,11 @@ export class EditLayoutItemComponent implements AfterViewInit {
           }
           break;
         case 'bool': {
-            //const { EditLayoutBoolComponent } = await import('../bool/bool.component');
             const componentRef = this.itemHost.createComponent(EditLayoutBoolComponent);
 
             componentRef.setInput('initialLayoutItem', this.layoutItem);            
             componentRef.changeDetectorRef.detectChanges();
-          }
+          }                        
           break;
         case 'date':
         case 'datetime': {
@@ -159,13 +161,12 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
-        case 'map': {
-            //const { EditLayoutMapComponent } = await import('../map/map.component');
+        case 'map':  {
             const componentRef = this.itemHost.createComponent(EditLayoutMapComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
             componentRef.changeDetectorRef.detectChanges();
-          }
+          }                        
           break;
         case 'entitygrid': {
             //const { EditLayoutEntitygridComponent } = await import('../entitygrid/entitygrid.component');

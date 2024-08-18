@@ -1,4 +1,4 @@
-import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, forwardRef, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE, PageService } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
@@ -6,6 +6,9 @@ import { takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { PageLayoutItemComponent } from '../layout/item.component';
+import { CrudActionsComponent } from '../../edit';
 
 @Component({
   selector: 'ballware-page-crudcontainer',
@@ -37,7 +40,9 @@ import { Router } from '@angular/router';
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
       deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
     }
-  ]
+  ],
+  imports: [CommonModule, forwardRef(() => PageLayoutItemComponent), forwardRef(() => CrudActionsComponent)],
+  standalone: true
 })
 export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit, OnDestroy {
 

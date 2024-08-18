@@ -1,7 +1,7 @@
 <div class="dx-fieldset">
   <div class="dx-fieldset-header">
-    {{layoutItem?.options?.caption}}
+    {{layoutItem.options?.caption}}
   </div>
-  <ballware-edit-container *ngIf="layoutItem" [colCount]="layoutItem.colCount ?? 1" [items]="layoutItem.items ?? []">
+  <ballware-edit-container [colCount]="layoutItem.colCount ?? 1" [items]="layoutItem.items ?? []">
   </ballware-edit-container>
 </div>

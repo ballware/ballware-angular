@@ -1,10 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageLayoutItem, TabsOptions } from '@ballware/meta-model';
 import { isEqual } from 'lodash';
 import * as qs from 'qs';
 import { BehaviorSubject, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
+import { DxTabPanelModule } from 'devextreme-angular';
+import { PageLayoutTabsCounterComponent } from './counter.component';
+import { CommonModule } from '@angular/common';
+import { PageLayoutItemComponent } from '../layout/item.component';
 
 interface TabsParam {
   current?: string;
@@ -13,7 +17,9 @@ interface TabsParam {
 @Component({
   selector: 'ballware-page-tabs',
   templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss']
+  styleUrls: ['./tabs.component.scss'],
+  imports: [CommonModule, DxTabPanelModule, forwardRef(() => PageLayoutItemComponent), PageLayoutTabsCounterComponent],
+  standalone: true
 })
 export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
 
