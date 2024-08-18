@@ -22,18 +22,22 @@ describe('ResponsiveDetectorComponent', () => {
         } as Provider
       ]
     })
-    .compileComponents();
+    .compileComponents();    
+  });
 
+  it('should create and notify screen changes', () => {
+    
     fixture = TestBed.createComponent(ResponsiveDetectorComponent);
     component = fixture.componentInstance;
+
+    expect(component).toBeTruthy();
+
     fixture.detectChanges();
+
+    global.dispatchEvent(new Event("resize"));
 
     svcMock.verify(instance => {
       instance.onResize(SCREEN_SIZE.XS)
-    }, Times.Once());
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    }, Times.Exactly(2));
   });
 });

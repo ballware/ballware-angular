@@ -20,6 +20,20 @@
             "name": "Launch Chrome Debugger",
             "pattern": "listening on localhost:3000"
         }
-    }
+    }, {
+        "name": "Jest current file",
+        "type": "node",
+        "request": "launch",
+        "program": "${workspaceFolder}/node_modules/@angular/cli/bin/ng",
+        "args": [
+          "test",
+          "--codeCoverage=false",
+          "--runInBand",
+          "--testPathPattern=${fileBasenameNoExtension}"
+        ],
+        "cwd": "${workspaceFolder}",
+        "console": "internalConsole",
+        "internalConsoleOptions": "neverOpen"
+      },
     ]
 }
