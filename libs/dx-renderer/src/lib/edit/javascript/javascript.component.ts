@@ -64,10 +64,10 @@ export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(With
         case 'readonly':
           return this.readonly$.getValue();
         case 'visible':
-          return this.visible$.getValue();                  
+          return this.visible$.getValue();        
+        default:
+          throw new Error(`Unsupported option <${option}>`);                                  
       }
-  
-      return undefined;
     }
   
     public setOption(option: string, value: unknown) {
@@ -84,6 +84,8 @@ export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(With
         case 'visible':
           this.setVisible(value as boolean);
           break;          
+        default:
+          throw new Error(`Unsupported option <${option}>`);                        
       }
     }
   }

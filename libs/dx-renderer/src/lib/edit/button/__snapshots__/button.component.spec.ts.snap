@@ -1,0 +1,30 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutButtonComponent should create 1`] = `
+<ballware-edit-button
+  dataMember={[Function String]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent={[Function Function]}
+  editorEvent$={[Function Subject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-button
+    class="dx-widget dx-button dx-button-mode-contained dx-button-normal mt-2"
+    role="button"
+    tabindex="0"
+  >
+    <div
+      class="dx-button-content"
+    />
+  </dx-button>
+</ballware-edit-button>
+`;

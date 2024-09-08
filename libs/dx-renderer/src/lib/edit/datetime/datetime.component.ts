@@ -74,10 +74,10 @@ export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithVa
       case 'readonly':
         return this.readonly$.getValue();
       case 'visible':
-        return this.visible$.getValue();        
+        return this.visible$.getValue();    
+      default:
+        throw new Error(`Unsupported option <${option}>`);              
     }
-
-    return undefined;
   }
 
   public setOption(option: string, value: unknown) {
@@ -93,7 +93,9 @@ export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithVa
         break;
       case 'visible':
         this.setVisible(value as boolean);
-        break;        
+        break;      
+      default:
+        throw new Error(`Unsupported option <${option}>`);            
     }
   }
 }

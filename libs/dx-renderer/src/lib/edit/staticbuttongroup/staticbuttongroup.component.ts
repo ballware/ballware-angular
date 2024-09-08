@@ -61,7 +61,7 @@ export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible
             this.initValue(layoutItem, this.editService);
             this.initReadonly(layoutItem, this.editService);
             this.initVisible(layoutItem);
-            this.initStaticLookup(layoutItem, this.editService);
+            this.initStaticLookup(layoutItem, this.editService).subscribe();
 
             this.dataSource?.on('changed', () => {
               this.items = this.dataSource?.items().map(item => ({
@@ -85,16 +85,35 @@ export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible
 
   public getOption(option: string): any {
     switch (option) {
+      case 'value':
+        return this.value;
+      case 'readonly':
+        return this.readonly$.getValue();
       case 'visible':
-        return this.visible$.getValue();        
+        return this.visible$.getValue();     
+      case 'items':
+        return this.dataSource?.items();         
+      default:
+        throw new Error(`Unsupported option <${option}>`);                       
     }
   }
 
   public setOption(option: string, value: unknown) {
     switch (option) {
+      case 'value':
+        this.setValueWithoutNotification(value as string);
+        break;
+      case 'readonly':
+        this.setReadonly(value as boolean)
+        break;
       case 'visible':
         this.setVisible(value as boolean);
+        break;        
+      case 'items':
+        this.setLookupItems(value as []);
         break;
+      default:
+        throw new Error(`Unsupported option <${option}>`);           
     }
   }
 }

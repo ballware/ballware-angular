@@ -1,29 +1,31 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { when } from 'jest-when';
 
-import { EditLayoutDatetimeComponent } from './datetime.component';
+import { EditLayoutStaticmultilookupComponent } from './staticmultilookup.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, TRANSLATOR } from '@ballware/meta-services';
+import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
+import { Mock } from 'moq.ts';
 
-describe('EditLayoutDatetimeComponent', () => {
-  let component: EditLayoutDatetimeComponent;
-  let fixture: ComponentFixture<EditLayoutDatetimeComponent>;
+describe('EditLayoutStaticmultilookupComponent', () => {
+  let component: EditLayoutStaticmultilookupComponent;
+  let fixture: ComponentFixture<EditLayoutStaticmultilookupComponent>;
 
-  const mockedTranslator = jest.fn();
+  const mockedNotificationService = new Mock<NotificationService>();
+  const mockedLookupService = new Mock<LookupService>();
   const mockedEditService = mockedEditServiceContext();
-
-  when(mockedTranslator).calledWith('format.date').mockReturnValue('MM/dd/yyyy');
-  when(mockedTranslator).calledWith('format.datetime').mockReturnValue('MM/dd/yyyy HH:mm:ss');
         
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ EditLayoutDatetimeComponent ],
+      imports: [ EditLayoutStaticmultilookupComponent ],
       providers: [        
         {
-          provide: TRANSLATOR,
-          useValue: mockedTranslator
+          provide: NOTIFICATION_SERVICE,
+          useFactory: () => mockedNotificationService.object()
+        },
+        {
+          provide: LOOKUP_SERVICE,
+          useFactory: () => mockedLookupService.object()
         },
         {
           provide: EDIT_SERVICE,
@@ -34,13 +36,13 @@ describe('EditLayoutDatetimeComponent', () => {
     .compileComponents();
   });
 
-  it('should create date', () => {
-    fixture = TestBed.createComponent(EditLayoutDatetimeComponent);
+  it('should create', () => {
+    fixture = TestBed.createComponent(EditLayoutStaticmultilookupComponent);
 
     const layoutItem = {
-      type: 'date',
       options: {
           dataMember: 'mockedmember',
+          lookup: 'mockedlookup'
       }
     } as EditLayoutItem;
     
@@ -49,34 +51,12 @@ describe('EditLayoutDatetimeComponent', () => {
 
     component.initialLayoutItem = layoutItem;
     fixture.detectChanges();
-
-    expect(fixture).toMatchSnapshot();
   });
 
-  it('should create datetime', () => {
-    fixture = TestBed.createComponent(EditLayoutDatetimeComponent);
+  it('should apply options', async () => {
+    fixture = TestBed.createComponent(EditLayoutStaticmultilookupComponent);
 
     const layoutItem = {
-      type: 'datetime',
-      options: {
-          dataMember: 'mockedmember',
-      }
-    } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
-    expect(component).toBeTruthy();
-
-    component.initialLayoutItem = layoutItem;
-    fixture.detectChanges();
-
-    expect(fixture).toMatchSnapshot();
-  });
-
-  it('should apply options', () => {
-    fixture = TestBed.createComponent(EditLayoutDatetimeComponent);
-
-    const layoutItem = {
-      type: 'datetime',
       options: {
           dataMember: 'mockedmember',
           required: false,
@@ -91,13 +71,13 @@ describe('EditLayoutDatetimeComponent', () => {
     component.initialLayoutItem = layoutItem;
     fixture.detectChanges();
 
-    expect(component.getOption('value')).toBe(null);
+    expect(component.getOption('value')).toStrictEqual([]);
     expect(component.getOption('required')).toBe(false);
     expect(component.getOption('readonly')).toBe(false);
     expect(component.getOption('visible')).toBe(false);
 
-    component.setOption('value', Date.parse('2024-01-01T13:00:00'));
-    expect(component.getOption('value')).toBe(Date.parse('2024-01-01T13:00:00'));
+    component.setOption('value', 'some text');
+    expect(component.getOption('value')).toBe('some text');
 
     component.setOption('required', true);
     expect(component.getOption('required')).toBe(true);
@@ -107,6 +87,14 @@ describe('EditLayoutDatetimeComponent', () => {
 
     component.setOption('visible', true);
     expect(component.getOption('visible')).toBe(true);
+
+    const itemsFixture = [{ Id: '1', Name: 'Item 1' }, { Id: '2', Name: 'Item 2' }];
+
+    component.setOption('items', itemsFixture);
+
+    await new Promise(process.nextTick);
+
+    expect(component.getOption('items')).toStrictEqual(itemsFixture);
 
     expect(() => component.getOption('undefined')).toThrowError('Unsupported option <undefined>');
     expect(() => component.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');

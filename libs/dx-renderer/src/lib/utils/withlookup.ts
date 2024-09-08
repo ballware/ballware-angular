@@ -3,7 +3,7 @@ import { EditLayoutItem } from "@ballware/meta-model";
 import { AutocompleteStoreDescriptor, EditService, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NotificationService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { compileGetter } from 'devextreme/utils';
-import { catchError, combineLatest, of, takeUntil } from "rxjs";
+import { catchError, combineLatest, from, map, of, switchMap, takeUntil } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "./datasource";
 import { HasDestroy } from "./hasdestroy";
 import { HasLookup } from "./haslookup";
@@ -38,11 +38,15 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
         return !!this.hasLookupItemHintValue;
       }
 
-      initLookup(layoutItem: EditLayoutItem, editService: EditService, lookupService: LookupService, notificationService: NotificationService): void {
+      public setLookupItems(items: Array<any>) {
+        return createArrayDatasource(items).then(dataSource => this.dataSource = dataSource);
+      }
 
-        combineLatest([editService.getValue$, lookupService.lookups$])
+      initLookup(layoutItem: EditLayoutItem, editService: EditService, lookupService: LookupService, notificationService: NotificationService) {
+
+        return combineLatest([editService.getValue$, lookupService.lookups$])
               .pipe(takeUntil(this.destroy$))
-              .subscribe(([getValue, lookups]) => {
+              .pipe(map((([getValue, lookups]) => {
                 if (getValue && lookups) {
                   const lookup = layoutItem?.options?.lookup;
                   const lookupParam = layoutItem?.options?.lookupParam;
@@ -101,15 +105,16 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
           
                   this.lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;
                 }                
-              });
+              })));
       }
 
       initStaticLookup(layoutItem: EditLayoutItem, editService: EditService) {
-        combineLatest([editService.getValue$])
+        return combineLatest([editService.getValue$])              
               .pipe(takeUntil(this.destroy$))
-              .subscribe(([getValue]) => {
-                if (getValue) {
-                  this.dataSource = createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []));
+              .pipe(switchMap(([getValue]) => getValue ? from(createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []))) : of(undefined)))
+              .pipe(map((dataSource) => {
+                if (dataSource) {
+                  this.dataSource = dataSource;
 
                   this.hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
 
@@ -125,7 +130,7 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
           
                   this.lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;                  
                 }
-              });
+              }));
       }
     }
 }

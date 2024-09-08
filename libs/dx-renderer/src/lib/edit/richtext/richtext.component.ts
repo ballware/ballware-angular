@@ -59,9 +59,9 @@ import { DxHtmlEditorModule, DxValidatorModule } from "devextreme-angular";
           return this.readonly$.getValue();
         case 'visible':
           return this.visible$.getValue();                  
+        default:
+          throw new Error(`Unsupported option <${option}>`);           
       }
-  
-      return undefined;
     }
   
     public setOption(option: string, value: unknown) {
@@ -77,7 +77,9 @@ import { DxHtmlEditorModule, DxValidatorModule } from "devextreme-angular";
           break;
         case 'visible':
           this.setVisible(value as boolean);
-          break;          
+          break;  
+        default:
+          throw new Error(`Unsupported option <${option}>`);                   
       }
     }
   }

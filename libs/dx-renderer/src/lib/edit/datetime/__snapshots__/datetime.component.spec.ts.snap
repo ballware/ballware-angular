@@ -1,0 +1,175 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutDatetimeComponent should create date 1`] = `
+<ballware-edit-datetime
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  displayFormat={[Function String]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  translator={[Function Function]}
+  type={[Function String]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-date-box
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-datebox dx-textbox dx-texteditor dx-show-clear-button dx-dropdowneditor-button-visible dx-editor-outlined dx-texteditor-empty dx-widget dx-auto-width dx-dropdowneditor dx-datebox-date dx-datebox-calendar"
+  >
+    <div
+      class="dx-dropdowneditor-input-wrapper"
+    >
+      <input
+        name="mockedmember"
+        type="hidden"
+        value=""
+      />
+      <div
+        class="dx-texteditor-container"
+      >
+        <div
+          class="dx-texteditor-input-container"
+        >
+          <input
+            aria-autocomplete="none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            autocomplete="off"
+            class="dx-texteditor-input"
+            role="combobox"
+            tabindex="0"
+            type="text"
+          />
+          <div
+            class="dx-placeholder"
+            data-dx_placeholder=""
+          />
+        </div>
+        <div
+          class="dx-texteditor-buttons-container"
+        >
+          <span
+            class="dx-clear-button-area"
+          >
+            <span
+              class="dx-icon dx-icon-clear"
+            />
+          </span>
+          <div
+            aria-label="Select"
+            class="dx-widget dx-button-normal dx-dropdowneditor-button"
+            role="button"
+          >
+            <div
+              class="dx-button-content"
+            >
+              <div
+                class="dx-dropdowneditor-icon"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-date-box>
+</ballware-edit-datetime>
+`;
+
+exports[`EditLayoutDatetimeComponent should create datetime 1`] = `
+<ballware-edit-datetime
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  displayFormat={[Function String]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  translator={[Function Function]}
+  type={[Function String]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-date-box
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-datebox dx-textbox dx-texteditor dx-show-clear-button dx-dropdowneditor-button-visible dx-editor-outlined dx-texteditor-empty dx-widget dx-auto-width dx-dropdowneditor dx-datebox-datetime dx-datebox-calendar"
+  >
+    <div
+      class="dx-dropdowneditor-input-wrapper"
+    >
+      <input
+        name="mockedmember"
+        type="hidden"
+        value=""
+      />
+      <div
+        class="dx-texteditor-container"
+      >
+        <div
+          class="dx-texteditor-input-container"
+        >
+          <input
+            aria-autocomplete="none"
+            aria-expanded="false"
+            aria-haspopup="true"
+            autocomplete="off"
+            class="dx-texteditor-input"
+            role="combobox"
+            tabindex="0"
+            type="text"
+          />
+          <div
+            class="dx-placeholder"
+            data-dx_placeholder=""
+          />
+        </div>
+        <div
+          class="dx-texteditor-buttons-container"
+        >
+          <span
+            class="dx-clear-button-area"
+          >
+            <span
+              class="dx-icon dx-icon-clear"
+            />
+          </span>
+          <div
+            aria-label="Select"
+            class="dx-widget dx-button-normal dx-dropdowneditor-button"
+            role="button"
+          >
+            <div
+              class="dx-button-content"
+            >
+              <div
+                class="dx-dropdowneditor-icon"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-date-box>
+</ballware-edit-datetime>
+`;

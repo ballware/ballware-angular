@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutTextareaComponent should create 1`] = `
+<ballware-edit-textarea
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-text-area
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
+  >
+    <div
+      class="dx-texteditor-container"
+    >
+      <div
+        class="dx-texteditor-input-container"
+      >
+        <textarea
+          aria-multiline="true"
+          autocomplete="off"
+          class="dx-texteditor-input"
+          name="mockedmember"
+          role="textbox"
+          tabindex="0"
+        />
+        <div
+          class="dx-placeholder"
+          data-dx_placeholder=""
+        />
+      </div>
+      <div
+        class="dx-texteditor-buttons-container"
+      >
+        <div />
+      </div>
+    </div>
+  </dx-text-area>
+</ballware-edit-textarea>
+`;

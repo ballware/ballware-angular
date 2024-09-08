@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutJsonComponent should create 1`] = `
+<ballware-edit-javascript
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  height="undefined"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  options="undefined"
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><ballware-codemirror
+    mode="sqlserver"
+    width="100%"
+  >
+    <div
+      style="width: 100%; height: 300px;"
+    />
+  </ballware-codemirror>
+</ballware-edit-javascript>
+`;

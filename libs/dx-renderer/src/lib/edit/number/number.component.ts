@@ -51,6 +51,10 @@ export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithVali
 
             this.layoutItem = layoutItem;
             this.itemOptions = layoutItem.options?.itemoptions as NumberItemOptions;
+
+            if (!this.itemOptions) {
+              this.itemOptions = {};
+            }
           }
         });
     }
@@ -70,9 +74,9 @@ export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithVali
         return this.itemOptions?.min;
       case 'max':
         return this.itemOptions?.max;
+      default:
+        throw new Error(`Unsupported option <${option}>`);                 
     }
-
-    return undefined;
   }
 
   public setOption(option: string, value: unknown) {
@@ -90,19 +94,17 @@ export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithVali
         this.setVisible(value as boolean);
         break;        
       case 'min':
-        if (!this.itemOptions) {
-          this.itemOptions = {};
-        }
-
-        this.itemOptions.min = value as number;
+        if (this.itemOptions) {
+          this.itemOptions.min = value as number;
+        }        
         break;
       case 'max':
-        if (!this.itemOptions) {
-          this.itemOptions = {};
-        }
-
-        this.itemOptions.max = value as number;
+        if (this.itemOptions) {
+          this.itemOptions.max = value as number;
+        }        
         break;
+      default:
+        throw new Error(`Unsupported option <${option}>`);                 
     }
   }
 }

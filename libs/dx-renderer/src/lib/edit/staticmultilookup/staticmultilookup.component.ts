@@ -2,7 +2,6 @@ import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
-import { createArrayDatasource } from '../../utils/datasource';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithLookup } from '../../utils/withlookup';
@@ -44,7 +43,7 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithVisible
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
             this.initVisible(layoutItem);
-            this.initStaticLookup(layoutItem, this.editService);
+            this.initStaticLookup(layoutItem, this.editService).subscribe();
 
             this.layoutItem = layoutItem;
           }
@@ -61,10 +60,12 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithVisible
       case 'readonly':
         return this.readonly$.getValue();
       case 'visible':
-        return this.visible$.getValue();                
+        return this.visible$.getValue();      
+      case 'items':
+        return this.dataSource?.items();         
+      default:
+        throw new Error(`Unsupported option <${option}>`);                          
     }
-
-    return undefined;
   }
 
   public setOption(option: string, value: unknown) {
@@ -82,8 +83,10 @@ export class EditLayoutStaticmultilookupComponent extends WithLookup(WithVisible
         this.setVisible(value as boolean);
         break;        
       case 'items':
-        this.dataSource = createArrayDatasource(value as []);
+        this.setLookupItems(value as []);
         break;
+      default:
+        throw new Error(`Unsupported option <${option}>`);                                  
     }
   }
 }

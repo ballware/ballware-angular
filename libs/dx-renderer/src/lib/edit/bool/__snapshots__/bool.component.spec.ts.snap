@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutBoolComponent should create 1`] = `
+<ballware-edit-bool
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-check-box
+    aria-checked="false"
+    aria-invalid="false"
+    aria-readonly="false"
+    class="dx-widget dx-checkbox pt-1 dx-validator dx-visibility-change-handler"
+    role="checkbox"
+    tabindex="0"
+  >
+    <input
+      name="mockedmember"
+      type="hidden"
+      value="false"
+    />
+    <div
+      class="dx-checkbox-container"
+    >
+      <span
+        class="dx-checkbox-icon"
+      />
+    </div>
+  </dx-check-box>
+</ballware-edit-bool>
+`;

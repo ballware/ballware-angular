@@ -1,8 +1,7 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
-import { combineLatest, takeUntil } from 'rxjs';
-import { createArrayDatasource } from '../../utils/datasource';
+import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
 import { WithReadonly } from '../../utils/withreadonly';
@@ -12,6 +11,7 @@ import { WithValue } from '../../utils/withvalue';
 import { WithVisible } from '../../utils/withvisible';
 import { CommonModule } from '@angular/common';
 import { DxTagBoxModule, DxValidatorModule } from 'devextreme-angular';
+import { WithLookup } from '../../utils/withlookup';
 
 @Component({
   selector: 'ballware-edit-multivalue',
@@ -20,13 +20,11 @@ import { DxTagBoxModule, DxValidatorModule } from 'devextreme-angular';
   imports: [CommonModule, DxTagBoxModule, DxValidatorModule],
   standalone: true
 })
-export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[]))))) implements OnInit, EditItemRef {
+export class EditLayoutMultivalueComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => [] as any[])))))) implements OnInit, EditItemRef {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
-
-  public dataSource: any;
 
   constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
     super();
@@ -45,16 +43,9 @@ export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(With
             this.initValidation(layoutItem, this.editService);
             this.initRequired(layoutItem, this.editService);
             this.initVisible(layoutItem);
+            this.initStaticLookup(layoutItem, this.editService).subscribe();
 
             this.layoutItem = layoutItem;
-
-            combineLatest([this.editService.getValue$])
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(([getValue]) => {
-                if (getValue) {
-                  this.dataSource = createArrayDatasource(this.layoutItem?.items ?? []);
-                }
-              });
           }
         });
     }
@@ -69,10 +60,12 @@ export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(With
       case 'readonly':
         return this.readonly$.getValue();
       case 'visible':
-        return this.visible$.getValue();                
+        return this.visible$.getValue();     
+      case 'items':
+        return this.dataSource?.items();         
+      default:
+        throw new Error(`Unsupported option <${option}>`);                       
     }
-
-    return undefined;
   }
 
   public setOption(option: string, value: unknown) {
@@ -90,8 +83,10 @@ export class EditLayoutMultivalueComponent extends WithVisible(WithRequired(With
         this.setVisible(value as boolean);
         break;        
       case 'items':
-        this.dataSource = createArrayDatasource(value as []);
+        this.setLookupItems(value as []);
         break;
+      default:
+        throw new Error(`Unsupported option <${option}>`);           
     }
   }
 }

@@ -72,17 +72,19 @@ export function createEditableGridDatasource(
   return dataSource;
 }
 
-export function createArrayDatasource(
+export async function createArrayDatasource(
   data: any[],
   keyProperty = 'Id'
-): DataSource {
-  const dataSource = new DataSource({
+): Promise<DataSource> {
+  const dataSource = new DataSource({    
     store: {
       type: 'array',
       key: keyProperty,
       data: data,
     },
   });
+
+  await dataSource.load();
 
   return dataSource;
 }

@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutTextComponent should create mail 1`] = `
+<ballware-edit-text
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-text-box
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-show-clear-button dx-editor-outlined dx-texteditor-empty dx-widget"
+  >
+    <div
+      class="dx-texteditor-container"
+    >
+      <div
+        class="dx-texteditor-input-container"
+      >
+        <input
+          autocomplete="off"
+          class="dx-texteditor-input"
+          name="mockedmember"
+          role="textbox"
+          tabindex="0"
+          type="text"
+        />
+        <div
+          class="dx-placeholder"
+          data-dx_placeholder=""
+        />
+      </div>
+      <div
+        class="dx-texteditor-buttons-container"
+      >
+        <span
+          class="dx-clear-button-area"
+        >
+          <span
+            class="dx-icon dx-icon-clear"
+          />
+        </span>
+      </div>
+    </div>
+  </dx-text-box>
+</ballware-edit-text>
+`;
+
+exports[`EditLayoutTextComponent should create text 1`] = `
+<ballware-edit-text
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-text-box
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-show-clear-button dx-editor-outlined dx-texteditor-empty dx-widget"
+  >
+    <div
+      class="dx-texteditor-container"
+    >
+      <div
+        class="dx-texteditor-input-container"
+      >
+        <input
+          autocomplete="off"
+          class="dx-texteditor-input"
+          name="mockedmember"
+          role="textbox"
+          tabindex="0"
+          type="text"
+        />
+        <div
+          class="dx-placeholder"
+          data-dx_placeholder=""
+        />
+      </div>
+      <div
+        class="dx-texteditor-buttons-container"
+      >
+        <span
+          class="dx-clear-button-area"
+        >
+          <span
+            class="dx-icon dx-icon-clear"
+          />
+        </span>
+      </div>
+    </div>
+  </dx-text-box>
+</ballware-edit-text>
+`;

@@ -4,7 +4,7 @@ import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog,
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
 import { nanoid } from "nanoid";
-import { Observable, map, takeUntil } from "rxjs";
+import { Observable, from, map, of, switchMap, takeUntil } from "rxjs";
 import { createArrayDatasource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
@@ -51,7 +51,7 @@ import { I18NextModule } from "angular-i18next";
 
         this.dataSource$ = this.attachmentService.items$            
             .pipe(takeUntil(this.destroy$))            
-            .pipe(map((fetchedItems) => fetchedItems ? createArrayDatasource(fetchedItems, 'Name') : undefined));
+            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems, 'Name')) : of(undefined)));
 
         this.optionButtons$ = this.readonly$
             .pipe(takeUntil(this.destroy$))

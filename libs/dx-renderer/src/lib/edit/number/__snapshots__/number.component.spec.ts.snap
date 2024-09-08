@@ -1,0 +1,91 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutNumberComponent should create 1`] = `
+<ballware-edit-number
+  currentValue$={[Function BehaviorSubject]}
+  destroy$={[Function Subject]}
+  editService={[Function ]}
+  editorEntered$={[Function Subject]}
+  editorEvent$={[Function Subject]}
+  emailValidation$={[Function BehaviorSubject]}
+  globalReadonly="false"
+  initialLayoutItem={[Function Object]}
+  itemOptions={[Function Object]}
+  layoutItem={[Function Object]}
+  notifyValueChange$={[Function Subject]}
+  onEntered={[Function Function]}
+  onEvent={[Function Function]}
+  preparedLayoutItem$={[Function BehaviorSubject]}
+  readonly$={[Function BehaviorSubject]}
+  refreshValueTrigger$={[Function Subject]}
+  required$={[Function BehaviorSubject]}
+  requiredValidation$={[Function BehaviorSubject]}
+  validationRules$={[Function Observable]}
+  visible$={[Function BehaviorSubject]}
+>
+  <dx-number-box
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-numberbox dx-texteditor dx-show-clear-button dx-numberbox-spin dx-editor-outlined dx-widget"
+  >
+    <input
+      name="mockedmember"
+      type="hidden"
+      value="0"
+    />
+    <div
+      class="dx-texteditor-container"
+    >
+      <div
+        class="dx-texteditor-input-container"
+      >
+        <input
+          aria-valuemax="100"
+          aria-valuemin="0"
+          aria-valuenow="0"
+          autocomplete="off"
+          class="dx-texteditor-input"
+          inputmode="decimal"
+          max="100"
+          min="0"
+          role="spinbutton"
+          step="1"
+          tabindex="0"
+          type="text"
+        />
+        <div
+          class="dx-placeholder dx-state-invisible"
+          data-dx_placeholder=""
+        />
+      </div>
+      <div
+        class="dx-texteditor-buttons-container"
+      >
+        <span
+          class="dx-clear-button-area"
+        >
+          <span
+            class="dx-icon dx-icon-clear"
+          />
+        </span>
+        <div
+          class="dx-numberbox-spin-container"
+        >
+          <div
+            class="dx-widget dx-numberbox-spin-button dx-numberbox-spin-up"
+          >
+            <div
+              class="dx-numberbox-spin-up-icon"
+            />
+          </div>
+          <div
+            class="dx-widget dx-numberbox-spin-button dx-numberbox-spin-down"
+          >
+            <div
+              class="dx-numberbox-spin-down-icon"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-number-box>
+</ballware-edit-number>
+`;
