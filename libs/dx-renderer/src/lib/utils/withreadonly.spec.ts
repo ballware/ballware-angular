@@ -42,21 +42,6 @@ class EditReadonlyTestComponent extends WithReadonly(WithEditItemLifecycle(WithD
         });
     }
   }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'readonly':
-        return this.readonly$.getValue();
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'readonly':
-        this.setReadonly(value as boolean);
-        break;
-    }
-  }
 }
 
 describe('WithReadonly', () => {

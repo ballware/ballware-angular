@@ -55,20 +55,6 @@ class EditLookupTestComponent extends WithLookup(WithEditItemLifecycle(WithDestr
         });
     }
   }
-
-  public getOption(option: string): any {
-    switch (option) {
-      default:
-        throw new Error(`Unsupported option <${option}>`);   
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      default:
-        throw new Error(`Unsupported option <${option}>`);   
-    }
-  }
 }
 
 @Component({
@@ -110,20 +96,6 @@ class EditStaticLookupTestComponent extends WithLookup(WithEditItemLifecycle(Wit
             this.layoutItem = layoutItem;
           }
         });
-    }
-  }
-
-  public getOption(option: string): any {
-    switch (option) {
-      default:
-        throw new Error(`Unsupported option <${option}>`);   
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      default:
-        throw new Error(`Unsupported option <${option}>`);   
     }
   }
 }

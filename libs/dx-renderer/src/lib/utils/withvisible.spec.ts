@@ -42,24 +42,6 @@ class EditVisibleTestComponent extends WithVisible(WithEditItemLifecycle(WithDes
         });
     }
   }
-
-  public getOption(option: string): any {
-
-    switch (option) {
-      case 'visible': 
-        return this.visible$.getValue();
-    }
-
-    return undefined;
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;
-    }
-  }
 }
 
 describe('WithVisible', () => {

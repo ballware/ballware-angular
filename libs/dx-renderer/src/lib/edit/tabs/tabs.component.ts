@@ -1,6 +1,6 @@
 import { Component, forwardRef, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -17,7 +17,7 @@ import { EditLayoutContainerComponent } from '../layout/container.component';
   imports: [CommonModule, DxTabPanelModule, forwardRef(() => EditLayoutContainerComponent)],
   standalone: true
 })
-export class EditLayoutTabsComponent extends WithVisible(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0)) implements OnInit, EditItemRef {
+export class EditLayoutTabsComponent extends WithVisible(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0)) implements OnInit {
 
   private _height: string|undefined;
   private _width: string|undefined;
@@ -53,28 +53,6 @@ export class EditLayoutTabsComponent extends WithVisible(WithValue(WithEditItemL
             this.layoutItem = layoutItem;
           }
         });
-    }
-  }
-
-  getOption(option: string) {
-    switch (option) {
-      case 'visible':
-        return this.visible$.getValue();              
-      case 'value':
-        return this.value;
-    }
-
-    return undefined;
-  }  
-
-  setOption(option: string, value: unknown): void {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as number);
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
     }
   }
 }

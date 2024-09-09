@@ -3,10 +3,11 @@ import { EditService } from "@ballware/meta-services";
 import { BehaviorSubject, Subject, combineLatest, takeUntil, withLatestFrom } from "rxjs";
 import { HasDestroy } from "./hasdestroy";
 import { HasValue } from "./hasvalue";
+import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
 type Constructor<T> = new(...args: any[]) => T;
 
-export function WithValue<T extends Constructor<HasDestroy>, TValue>(Base: T = (class {} as any), defaultValue: () => TValue) {
+export function WithValue<T extends Constructor<HasDestroy & HasEditItemLifecycle>, TValue>(Base: T = (class {} as any), defaultValue: () => TValue) {
     return class extends Base implements HasValue<TValue> {
       public currentValue$ = new BehaviorSubject<TValue|undefined>(undefined);
       public notifyValueChange$ = new Subject<void>();
@@ -15,6 +16,8 @@ export function WithValue<T extends Constructor<HasDestroy>, TValue>(Base: T = (
      
 
       initValue(layoutItem: EditLayoutItem, editService: EditService): void {
+
+        this.registerOption('value', () => this.value, (value) => this.setValueWithoutNotification(value as TValue));
 
         this.refreshValueTrigger$
           .pipe(takeUntil(this.destroy$))

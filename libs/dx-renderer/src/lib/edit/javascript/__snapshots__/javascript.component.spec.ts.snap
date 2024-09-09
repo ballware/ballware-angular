@@ -2,12 +2,14 @@
 
 exports[`EditLayoutJavascriptComponent should create 1`] = `
 <ballware-edit-javascript
+  _optionRegistry={[Function Array]}
   currentValue$={[Function BehaviorSubject]}
   destroy$={[Function Subject]}
   editService={[Function ]}
   editorEntered$={[Function Subject]}
   editorEvent$={[Function Subject]}
   emailValidation$={[Function BehaviorSubject]}
+  getOption={[Function Function]}
   globalReadonly="false"
   height="undefined"
   initialLayoutItem={[Function Object]}
@@ -19,8 +21,10 @@ exports[`EditLayoutJavascriptComponent should create 1`] = `
   preparedLayoutItem$={[Function BehaviorSubject]}
   readonly$={[Function BehaviorSubject]}
   refreshValueTrigger$={[Function Subject]}
+  registerOption={[Function Function]}
   required$={[Function BehaviorSubject]}
   requiredValidation$={[Function BehaviorSubject]}
+  setOption={[Function Function]}
   validationRules$={[Function Observable]}
   visible$={[Function BehaviorSubject]}
 >

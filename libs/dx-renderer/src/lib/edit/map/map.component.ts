@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
 import { Observable, combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -24,7 +24,7 @@ interface MapValue {
   imports: [CommonModule, DxMapModule],
   standalone: true
 })
-export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined))) implements OnInit, AfterViewInit, EditItemRef {
+export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined))) implements OnInit, AfterViewInit {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -96,32 +96,5 @@ export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(W
           });
         }
       });
-  }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'value':
-        return this.value;
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();                
-    }
-
-    return undefined;
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as MapValue);
-        break;
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
-    }
   }
 }

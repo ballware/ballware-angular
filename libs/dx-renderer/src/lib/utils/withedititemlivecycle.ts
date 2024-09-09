@@ -7,7 +7,7 @@ import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
 type Constructor<T> = new(...args: any[]) => T;
 
-export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T = (class {} as any)) {
+export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T = (class {} as any))  {
     return class extends Base implements HasEditItemLifecycle {
 
       public preparedLayoutItem$ = new BehaviorSubject<EditLayoutItem|undefined>(undefined);
@@ -15,8 +15,46 @@ export function WithEditItemLifecycle<T extends Constructor<HasDestroy>>(Base: T
       public editorEntered$ = new Subject<void>();
       public editorEvent$ = new Subject<{ event: string }>();
 
+      readonly _optionRegistry = new Array<{ option: string, getter: () => unknown, setter: (value: unknown) => void }>();
+
+      readonly registerOption = (option: string, getter: () => unknown, setter: (value: unknown) => void) => {
+
+        const registeredOption = this._optionRegistry.find(o => o.option === option);
+
+        if (registeredOption) {
+          registeredOption.getter = getter;
+          registeredOption.setter = setter;
+        } else {
+          this._optionRegistry.push({ option, getter, setter });
+        }
+      }
+
       readonly onEntered = () => this.editorEntered$.next();
       readonly onEvent = (event: string) => this.editorEvent$.next({ event });
+
+      readonly getOption = (option: string): unknown => {
+
+        const registeredOption = this._optionRegistry.find(o => o.option === option);
+
+        if (registeredOption) {
+          return registeredOption.getter();
+        }
+
+        throw new Error(`Unsupported option <${option}>`);                
+      }
+    
+      readonly setOption = (option: string, value: unknown) => {
+
+        const registeredOption = this._optionRegistry.find(o => o.option === option);
+
+        if (registeredOption) {
+          registeredOption.setter(value);
+
+          return;
+        }
+
+        throw new Error(`Unsupported option <${option}>`);
+      }
 
       initLifecycle(layoutItem: EditLayoutItem, editService: EditService, ref: EditItemRef): void {
         combineLatest([editService.editorPreparing$])

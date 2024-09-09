@@ -1,6 +1,6 @@
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, Provider, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, StatisticOptions } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { Observable, map, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -25,7 +25,7 @@ import { StatisticPivotgridComponent } from '../../statistic/items/pivotgrid.com
   imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
   standalone: true
 })
-export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy, EditItemRef {
+export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecycle(WithDestroy())) implements OnInit, OnDestroy {
   
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -86,20 +86,4 @@ export class EditLayoutStatisticComponent extends WithVisible(WithEditItemLifecy
 
     this.statisticService.ngOnDestroy();
   }
-  
-  public getOption(option: string): any {
-    switch (option) {
-      case 'visible':
-        return this.visible$.getValue();        
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;
-    }
-  }
-
 }

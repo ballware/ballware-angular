@@ -46,14 +46,6 @@ class EditValidationTestComponent extends WithRequired(WithValidation(WithValue(
         });
     }
   }
-
-  public getOption(_option: string): any {
-    return undefined;
-  }
-
-  public setOption(_option: string, _value: unknown) {
-    throw Error('Not implemented');
-  }
 }
 
 describe('WithValidation', () => {

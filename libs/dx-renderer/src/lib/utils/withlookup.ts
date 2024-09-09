@@ -7,10 +7,11 @@ import { catchError, combineLatest, from, map, of, switchMap, takeUntil } from "
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "./datasource";
 import { HasDestroy } from "./hasdestroy";
 import { HasLookup } from "./haslookup";
+import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
 type Constructor<T> = new(...args: any[]) => T;
 
-export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {} as any)) {
+export function WithLookup<T extends Constructor<HasDestroy & HasEditItemLifecycle>>(Base: T = (class {} as any)) {
     return class extends Base implements HasLookup {
       
       public lookup: LookupDescriptor|undefined;
@@ -43,6 +44,8 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
       }
 
       initLookup(layoutItem: EditLayoutItem, editService: EditService, lookupService: LookupService, notificationService: NotificationService) {
+
+        this.registerOption('items', () => this.dataSource?.items(), (value) => this.setLookupItems(value  as []));
 
         return combineLatest([editService.getValue$, lookupService.lookups$])
               .pipe(takeUntil(this.destroy$))
@@ -109,6 +112,9 @@ export function WithLookup<T extends Constructor<HasDestroy>>(Base: T = (class {
       }
 
       initStaticLookup(layoutItem: EditLayoutItem, editService: EditService) {
+        
+        this.registerOption('items', () => this.dataSource?.items(), (value) => this.setLookupItems(value  as []));
+
         return combineLatest([editService.getValue$])              
               .pipe(takeUntil(this.destroy$))
               .pipe(switchMap(([getValue]) => getValue ? from(createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []))) : of(undefined)))

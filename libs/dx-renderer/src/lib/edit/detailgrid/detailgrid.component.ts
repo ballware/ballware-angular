@@ -50,7 +50,7 @@ export interface DetailGridItemOptions {
     imports: [CommonModule, I18NextModule, DxDataGridModule, DxValidatorModule, DxToolbarModule, DynamicColumnComponent, EditLayoutJsonComponent],
     standalone: true
 })
-export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit, EditItemRef {
+export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit {
 
     @ViewChild('grid', { static: false }) grid?: DxDataGridComponent;
 
@@ -325,33 +325,5 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
       }
 
       return !this.grid?.instance.hasEditData();
-    }
-  
-    public getOption(option: string): any {
-      switch (option) {
-        case 'value':
-          return this.value;
-        case 'readonly':
-          return this.readonly$.getValue();
-        case 'visible':
-          return this.visible$.getValue();                  
-      }
-  
-      return undefined;
-    }
-  
-    public setOption(option: string, value: unknown) {
-      switch (option) {
-        case 'value':
-          this.setValueWithoutNotification(value as []);
-          break;
-        case 'readonly':
-          this.setReadonly(value as boolean)
-          break;
-        case 'visible':
-          this.setVisible(value as boolean);
-          break;          
-      }
-    }
-
+    }  
 }

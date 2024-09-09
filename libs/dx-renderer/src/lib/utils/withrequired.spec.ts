@@ -44,21 +44,6 @@ class EditRequiredTestComponent extends WithRequired(WithValidation(WithEditItem
         });
     }
   }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'required':
-        return this.required$.getValue();
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'required':
-        this.setRequired(value as boolean);
-        break;
-    }
-  }
 }
 
 describe('WithRequired', () => {

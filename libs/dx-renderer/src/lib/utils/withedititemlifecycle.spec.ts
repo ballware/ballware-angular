@@ -42,14 +42,6 @@ class EditLifecycleTestComponent extends WithEditItemLifecycle(WithDestroy()) im
         });
     }
   }
-
-  public getOption(_option: string): any {
-    return undefined;
-  }
-
-  public setOption(_option: string, _value: unknown) {
-    throw Error('Not implemented');
-  }
 }
 
 describe('WithEditItemLifecycle', () => {

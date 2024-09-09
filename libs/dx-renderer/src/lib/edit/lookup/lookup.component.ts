@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -20,7 +20,7 @@ import { DxSelectBoxModule, DxValidatorModule } from 'devextreme-angular';
   imports: [CommonModule, DxSelectBoxModule, DxValidatorModule],
   standalone: true
 })
-export class EditLayoutLookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))))) implements OnInit, EditItemRef {
+export class EditLayoutLookupComponent extends WithLookup(WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))))) implements OnInit {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -48,45 +48,6 @@ export class EditLayoutLookupComponent extends WithLookup(WithVisible(WithRequir
             this.layoutItem = layoutItem;
           }
         });
-    }
-  }
-  
-  public getOption(option: string): any {
-    switch (option) {
-      case 'value':
-        return this.value;
-      case 'required':
-        return this.required$.getValue();
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();
-      case 'items':
-        return this.dataSource?.items();
-      default:
-        throw new Error(`Unsupported option <${option}>`);          
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as string);
-        break;
-      case 'required':
-        this.setRequired(value as boolean);
-        break;
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.visible$.next(value as boolean);
-        break;
-      case 'items':
-        this.setLookupItems(value as []);
-        break;
-      default:
-        throw new Error(`Unsupported option <${option}>`);          
     }
   }
 }

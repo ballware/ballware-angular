@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
@@ -24,12 +24,12 @@ export interface NumberItemOptions {
   imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
   standalone: true
 })
-export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))))) implements OnInit, EditItemRef {
+export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))))) implements OnInit {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
   public layoutItem: EditLayoutItem|undefined;
-  public itemOptions: NumberItemOptions|undefined;
+  public itemOptions: NumberItemOptions = {};
 
   constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
     super();
@@ -38,6 +38,9 @@ export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithVali
   ngOnInit(): void {
     if (this.initialLayoutItem) {
       this.initLifecycle(this.initialLayoutItem, this.editService, this);
+
+      this.registerOption('min', () => this.itemOptions?.min, (value) => this.itemOptions.min = value as number);
+      this.registerOption('max', () => this.itemOptions?.max, (value) => this.itemOptions.max = value as number);
 
       this.preparedLayoutItem$
         .pipe(takeUntil(this.destroy$))
@@ -57,54 +60,6 @@ export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithVali
             }
           }
         });
-    }
-  }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'value':
-        return this.value;
-      case 'required':
-        return this.required$.getValue();
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();                
-      case 'min':
-        return this.itemOptions?.min;
-      case 'max':
-        return this.itemOptions?.max;
-      default:
-        throw new Error(`Unsupported option <${option}>`);                 
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as number);
-        break;
-      case 'required':
-        this.setRequired(value as boolean);
-        break;
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
-      case 'min':
-        if (this.itemOptions) {
-          this.itemOptions.min = value as number;
-        }        
-        break;
-      case 'max':
-        if (this.itemOptions) {
-          this.itemOptions.max = value as number;
-        }        
-        break;
-      default:
-        throw new Error(`Unsupported option <${option}>`);                 
     }
   }
 }

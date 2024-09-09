@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 import { Item } from 'devextreme/ui/button_group';
 import { takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -23,7 +23,7 @@ interface KeyedButtonGroupItem extends Item {
   imports: [CommonModule, DxButtonGroupModule],
   standalone: true
 })
-export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit, EditItemRef {
+export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -80,40 +80,6 @@ export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible
             this.dataSource?.load();
           }
         });
-    }
-  }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'value':
-        return this.value;
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();     
-      case 'items':
-        return this.dataSource?.items();         
-      default:
-        throw new Error(`Unsupported option <${option}>`);                       
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'value':
-        this.setValueWithoutNotification(value as string);
-        break;
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
-      case 'items':
-        this.setLookupItems(value as []);
-        break;
-      default:
-        throw new Error(`Unsupported option <${option}>`);           
     }
   }
 }

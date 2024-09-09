@@ -7,8 +7,8 @@
   [readOnly]="(readonly$ | async) ?? false"
   [showClearButton]="true"
   [showSpinButtons]="true"
-  [min]="itemOptions?.min"
-  [max]="itemOptions?.max"
+  [min]="itemOptions.min"
+  [max]="itemOptions.max"
   (onFocusIn)="onEntered()">
   <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
 </dx-number-box>

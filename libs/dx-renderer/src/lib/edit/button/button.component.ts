@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditItemRef, EditService } from '@ballware/meta-services';
+import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 import { ClickEvent } from 'devextreme/ui/button';
 import { combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
@@ -17,7 +17,7 @@ import { DxButtonModule } from 'devextreme-angular';
   imports: [CommonModule, DxButtonModule],
   standalone: true
 })
-export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, EditItemRef {
+export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -60,30 +60,6 @@ export class EditLayoutButtonComponent extends WithVisible(WithReadonly(WithEdit
   onClick(e: ClickEvent) {
     if (this.editorEvent && this.dataMember) {
       this.editorEvent(this.dataMember, 'click');
-    }
-  }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();      
-      default:
-        throw new Error(`Unsupported option <${option}>`);           
-    }
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
-      default:
-        throw new Error(`Unsupported option <${option}>`);         
     }
   }
 }

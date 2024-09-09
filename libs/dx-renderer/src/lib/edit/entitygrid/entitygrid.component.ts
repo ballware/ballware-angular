@@ -1,6 +1,6 @@
 import { Component, forwardRef, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem, GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditItemRef, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
@@ -61,7 +61,7 @@ interface EntityGridItemOptions {
   imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
   standalone: true
 })
-export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
+export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy {
 
   @Input() initialLayoutItem?: EditLayoutItem;
 
@@ -146,27 +146,4 @@ export class EditLayoutEntitygridComponent extends WithVisible(WithReadonly(With
       this.metaService.ngOnDestroy();
       this.lookupService.ngOnDestroy();
   }
-
-  public getOption(option: string): any {
-    switch (option) {
-      case 'readonly':
-        return this.readonly$.getValue();
-      case 'visible':
-        return this.visible$.getValue();                
-    }
-
-    return undefined;
-  }
-
-  public setOption(option: string, value: unknown) {
-    switch (option) {
-      case 'readonly':
-        this.setReadonly(value as boolean)
-        break;
-      case 'visible':
-        this.setVisible(value as boolean);
-        break;        
-    }
-  }
-
 }

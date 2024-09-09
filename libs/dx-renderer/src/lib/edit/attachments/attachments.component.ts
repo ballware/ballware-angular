@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from "@angular/core";
 import { CrudItem, EditLayoutItem } from "@ballware/meta-model";
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditItemRef, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
 import { nanoid } from "nanoid";
@@ -28,7 +28,7 @@ import { I18NextModule } from "angular-i18next";
     imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule],
     standalone: true
   })
-  export class EditLayoutAttachmentsComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy, EditItemRef {
+  export class EditLayoutAttachmentsComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy {
     @Input() initialLayoutItem?: EditLayoutItem;
 
     public layoutItem: EditLayoutItem|undefined;
@@ -134,22 +134,6 @@ import { I18NextModule } from "angular-i18next";
     
     public onRemoveDialogCancel() {
         this.removeDialog?.cancel();
-    }
-
-    setOption(option: string, value: unknown): void {
-        switch (option) {
-            case 'visible':
-                this.setVisible(value as boolean);
-        }
-    }
-
-    getOption(option: string): any {
-        switch (option) {
-            case 'visible':
-                return this.visible$.getValue();
-        }
-
-        return undefined;
     }
 }
 

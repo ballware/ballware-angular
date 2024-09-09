@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnInit } from "@angular/core";
 import { EditLayoutItem } from "@ballware/meta-model";
-import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditService } from "@ballware/meta-services";
 import { takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
@@ -20,7 +20,7 @@ import { CodeMirrorComponent } from "../components/codeeditor/codemirror.compone
     imports: [CommonModule, CodeMirrorComponent],
     standalone: true
 })
-export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))))) implements OnInit, EditItemRef {
+export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => "" as unknown))))) implements OnInit {
 
     @Input() initialLayoutItem?: EditLayoutItem;
   
@@ -53,39 +53,5 @@ export class EditLayoutJavascriptComponent extends WithVisible(WithRequired(With
             }
           });
       }
-    }
-  
-    public getOption(option: string): any {
-      switch (option) {
-        case 'value':
-          return this.value;
-        case 'required':
-          return this.required$.getValue();
-        case 'readonly':
-          return this.readonly$.getValue();
-        case 'visible':
-          return this.visible$.getValue();        
-        default:
-          throw new Error(`Unsupported option <${option}>`);                                  
-      }
-    }
-  
-    public setOption(option: string, value: unknown) {
-      switch (option) {
-        case 'value':
-          this.setValueWithoutNotification(value as string);
-          break;
-        case 'required':
-          this.setRequired(value as boolean);
-          break;
-        case 'readonly':
-          this.setReadonly(value as boolean)
-          break;
-        case 'visible':
-          this.setVisible(value as boolean);
-          break;          
-        default:
-          throw new Error(`Unsupported option <${option}>`);                        
-      }
-    }
+    }  
   }

@@ -13,5 +13,5 @@
      * Get option value of edit item component
      * @param option Identifier of option
      */
-    getOption(option: string):any;
+    getOption(option: string): unknown;
   }

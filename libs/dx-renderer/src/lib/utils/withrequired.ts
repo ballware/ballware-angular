@@ -4,10 +4,11 @@ import { BehaviorSubject, takeUntil } from "rxjs";
 import { HasDestroy } from "./hasdestroy";
 import { HasRequired } from "./hasrequired";
 import { HasValidation } from "./hasvalidation";
+import { HasEditItemLifecycle } from "./hasedititemlifecycle";
 
 type Constructor<T> = new(...args: any[]) => T;
 
-export function WithRequired<T extends Constructor<HasValidation & HasDestroy>>(Base: T = (class {} as any)) {
+export function WithRequired<T extends Constructor<HasValidation & HasDestroy & HasEditItemLifecycle>>(Base: T = (class {} as any)) {
     return class extends Base implements HasRequired {
       public required$ = new BehaviorSubject<boolean>(false);
 
@@ -16,6 +17,9 @@ export function WithRequired<T extends Constructor<HasValidation & HasDestroy>>(
       }
 
       initRequired(layoutItem: EditLayoutItem, editService: EditService): void {
+
+        this.registerOption('required', () => this.required$.getValue(), (value) => this.setRequired(value as boolean));
+
         this.required$.next(layoutItem.options?.required ?? false);
 
         this.required$
