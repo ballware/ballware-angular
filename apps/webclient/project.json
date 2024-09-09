@@ -88,29 +88,29 @@
       "executor": "@angular-builders/custom-webpack:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "webclient:build:production"
+          "buildTarget": "webclient:build:production"
         },
         "development": {
-          "browserTarget": "webclient:build:development"
+          "buildTarget": "webclient:build:development"
         },
         "onprem": {
-          "browserTarget": "webclient:build:onprem"
+          "buildTarget": "webclient:build:onprem"
         }
       },
       "defaultConfiguration": "development",
       "options": {
-        "browserTarget": "webclient:build",
+        "buildTarget": "webclient:build",
         "host": "localhost",
         "port": 3000,
         "ssl": true,
-        "sslKey": "apps/webclient/localhost-key.pem",
-        "sslCert": "apps/webclient/localhost.pem"
+        "sslKey": "localhost-key.pem",
+        "sslCert": "localhost.pem"
       }
     },
     "extract-i18n": {
       "executor": "@angular-builders/custom-webpack:extract-i18n",
       "options": {
-        "browserTarget": "webclient:build"
+        "buildTarget": "webclient:build"
       }
     },
     "lint": {
