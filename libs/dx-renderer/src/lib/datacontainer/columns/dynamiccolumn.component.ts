@@ -6,9 +6,8 @@ import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
 import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/number_box";
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
-import { cloneDeep } from "lodash";
+import { cloneDeep, get, set } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
-import { getByPath, setByPath } from "@ballware/renderer-commons";
 import { createLookupDataSource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
@@ -58,15 +57,15 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
     }
 
     onValueChanged(e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) {                
-        setByPath(this.item, this.dataMember, e.value);
-        this.value = getByPath(this.item, this.dataMember);
+        set(this.item, this.dataMember, e.value);
+        this.value = get(this.item, this.dataMember);
     }
 
 
     ngOnInit(): void {
 
         if (this.item && this.dataMember) {
-            this.value = getByPath(this.item, this.dataMember);
+            this.value = get(this.item, this.dataMember);
         }
         
         combineLatest([this.lookupService.lookups$, this.lookupService.getGenericLookupByIdentifier$, this.metaService.detailGridCellPreparing$])
@@ -82,8 +81,8 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
 
                     if (this.preparedColumn.type === 'staticmultilookup') {
                         this.lookupDatasource = this.preparedColumn.items ?? 
-                            (this.preparedColumn.itemsMember ? getByPath(this.item, this.preparedColumn.itemsMember) 
-                                : (this.preparedColumn.lookupMember ? getByPath(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
+                            (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember) 
+                                : (this.preparedColumn.lookupMember ? get(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
                         
                         this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
                         this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
@@ -94,7 +93,7 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
                             const foundLookup = lookups[this.preparedColumn.lookup];
 
                             if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
-                                lookup = (foundLookup as LookupCreator)(getByPath(this.lookupParams, this.preparedColumn.lookupParam) as string);
+                                lookup = (foundLookup as LookupCreator)(get(this.lookupParams, this.preparedColumn.lookupParam) as string);
                             } else if (foundLookup as LookupDescriptor) {
                                 lookup = foundLookup as LookupDescriptor;
                             }

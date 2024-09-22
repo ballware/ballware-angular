@@ -3,7 +3,7 @@ import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model
 import { CRUD_SERVICE, CrudService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
 import { BehaviorSubject, Observable, combineLatest, takeUntil } from 'rxjs';
-import { getByPath } from '@ballware/renderer-commons';
+import { get } from 'lodash';
 import { DataSourceService } from '../../utils/datasource.service';
 import { WithDestroy } from '../../utils/withdestroy';
 import { CommonModule } from '@angular/common';
@@ -53,7 +53,7 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
           dataSource.on('changed', () => {
 
             this.markers$.next(dataSource.items()?.map(item => ({
-              location: getByPath(item, locationMember),
+              location: get(item, locationMember),
               onClick: () => this.onMarkerClicked(item)
             })));            
           });

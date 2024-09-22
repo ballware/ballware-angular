@@ -4,11 +4,10 @@ import { ApiError } from '@ballware/meta-api';
 import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
-import { cloneDeep, isEqual } from 'lodash';
+import { cloneDeep, isEqual, get, set } from 'lodash';
 import { Observable, Subject, catchError, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudService, DetailColumnEditDialog, EditModes, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, NotificationService, Translator } from '@ballware/meta-services';
-import { getByPath, setByPath } from '../databinding';
 import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudService, OnDestroy {
@@ -539,7 +538,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 editLayout: editLayout,
                 apply: (item) => { 
                     if (request.column.dataMember) {
-                        setByPath(request.item as Record<string, unknown>, request.column.dataMember, getByPath(item, request.column.dataMember));
+                        set(request.item as Record<string, unknown>, request.column.dataMember, get(item, request.column.dataMember));
                     }                    
 
                     this.updater((state) => ({

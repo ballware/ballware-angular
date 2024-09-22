@@ -2,7 +2,7 @@ import { Component, Inject, Input } from "@angular/core";
 import { StatisticMapOptions } from "@ballware/meta-model";
 import { SETTINGS_SERVICE, SettingsService, STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { Observable, combineLatest, map } from "rxjs";
-import { getByPath } from "@ballware/renderer-commons";
+import { get } from "lodash";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
 import { DxMapModule } from "devextreme-angular";
@@ -38,8 +38,8 @@ import { DxMapModule } from "devextreme-angular";
       this.markers$ = combineLatest([this.options$, this.statisticService.data$])
         .pipe(map(([options, data]) => (options && data) 
           ? data.map(item => ({
-            location: getByPath(item, options.locationField),
-            tooltip: getByPath(item, options.tooltipField)
+            location: get(item, options.locationField),
+            tooltip: get(item, options.tooltipField)
             }))
           : undefined
         ));

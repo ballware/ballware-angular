@@ -4,7 +4,7 @@ import { dxEvent } from "devextreme/events";
 import { Column as DataGridColumn } from "devextreme/ui/data_grid";
 import { Column as TreeListColumn } from "devextreme/ui/tree_list";
 import { cloneDeep } from "lodash";
-import { getByPath } from "@ballware/renderer-commons";
+import { get } from "lodash";
 import { createLookupDataSource } from "./datasource";
 
 export type OptionButtons =
@@ -96,7 +96,7 @@ export type OptionButtons =
       case 'pickvalue': {
         const lookup = (lookups && c.lookup && c.lookupParam
           ? (lookups[c.lookup] as LookupCreator)(
-              getByPath(lookupParams, c.lookupParam) as string
+              get(lookupParams, c.lookupParam) as string
             )
           : lookups && c.lookup
           ? lookups[c.lookup]

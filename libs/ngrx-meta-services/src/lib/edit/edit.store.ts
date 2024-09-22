@@ -2,10 +2,9 @@ import { OnDestroy } from "@angular/core";
 import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { cloneDeep, isEqual } from "lodash";
+import { cloneDeep, isEqual, get, set } from "lodash";
 import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
-import { getByPath, setByPath } from "../databinding";
 import { EditService, EditItemRef, EditModes, MetaService } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
 
@@ -71,10 +70,10 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     }));
    
     readonly getValue$ = combineLatest([this.item$])
-        .pipe(map(([item]) => item ? (request: { dataMember: string }) => getByPath(item, request.dataMember) : undefined));
+        .pipe(map(([item]) => item ? (request: { dataMember: string }) => get(item, request.dataMember) : undefined));
 
     readonly setValue$ = combineLatest([this.item$])
-        .pipe(map(([item]) => item ? (request: { dataMember: string, value: unknown } ) => setByPath(item, request.dataMember, request.value) : undefined));
+        .pipe(map(([item]) => item ? (request: { dataMember: string, value: unknown } ) => set(item, request.dataMember, request.value) : undefined));
 
     readonly editorPreparing$ = combineLatest([this.mode$, this.item$, this.metaService.editorPreparing$])            
         .pipe(map(([mode, item, editorPreparing]) => (mode && item && editorPreparing)
@@ -199,7 +198,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         .pipe(map(([mode, item, setValue, editorValueChanged]) => 
             (mode && item && editorValueChanged && setValue) 
             ? ({ dataMember, detailItem, identifier, value, notify }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => {
-                setByPath(detailItem, identifier, value);
+                set(detailItem, identifier, value);
 
                 if (notify) {
                     editorValueChanged(mode, item, {
