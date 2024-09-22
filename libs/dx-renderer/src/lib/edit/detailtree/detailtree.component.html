@@ -1,7 +1,7 @@
 <div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
-<dx-tree-list *ngIf="!showSource && columns" #grid
+<dx-tree-list *ngIf="!editing.showSource && columns" #grid
     [visible]="((visible.visible$ | async) ?? false)"
-    [height]="height" 
+    [height]="editing.height" 
     width="100%"
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
@@ -10,14 +10,16 @@
     [dataSource]="value.value"
     [dataStructure]="'tree'"
     [itemsExpr]="'items'"
-    (onToolbarPreparing)="onToolbarPreparing($event)"
-    (onEditorPreparing)="onEditorPreparing($event)"
-    (onInitNewRow)="onInitNewRow($event)"
-    (onRowValidating)="onRowValidating($event)">
-    <dxo-editing mode="cell" [useIcons]="true" 
-        [allowAdding]="allowAdd" 
-        [allowUpdating]="allowUpdate" 
-        [allowDeleting]="allowDelete">
+    (onToolbarPreparing)="editing.onToolbarPreparing($event)"
+    (onEditorPreparing)="editing.onEditorPreparing($event)"
+    (onInitNewRow)="editing.onInitNewRow($event)"
+    (onRowValidating)="editing.onRowValidating($event)">
+    <dxo-editing mode="row" [useIcons]="true" 
+        [allowAdding]="editing.allowAdd" 
+        [allowUpdating]="editing.allowUpdate" 
+        [allowDeleting]="editing.allowDelete"
+        [(editRowKey)]="editing.gridEditRowKey"
+        [(changes)]="editing.gridEditChanges">
     </dxo-editing>
     <div *dxTemplate="let cell of 'dynamic'">
         <ballware-edit-dynamic-column [editing]="false" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
@@ -26,6 +28,9 @@
         <ballware-edit-dynamic-column [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
     </div>    
 </dx-tree-list>
-<dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
+<dx-validator [adapter]="editing.validationAdapterConfig">
+    <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
+</dx-validator>
+<dx-toolbar class="w-100" *ngIf="editing.showSource && editing.sourceToolbarItems" [items]="editing.sourceToolbarItems">    
 </dx-toolbar>
-<ballware-edit-json *ngIf="showSource" [initialLayoutItem]="livecycle.layoutItem" ></ballware-edit-json>
+<ballware-edit-json *ngIf="editing.showSource" [initialLayoutItem]="livecycle.layoutItem" ></ballware-edit-json>
