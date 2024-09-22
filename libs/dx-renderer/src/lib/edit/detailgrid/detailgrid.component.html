@@ -1,12 +1,12 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <dx-data-grid *ngIf="!showSource && columns" #grid
-    [visible]="(visible$ | async) ?? false"
+    [visible]="(visible.visible$ | async) ?? false"
     [height]="height" 
     width="100%"
     [repaintChangesOnly]="true"
     [columnAutoWidth]="true"    
     [columns]="columns"
-    [dataSource]="value"
+    [dataSource]="value.value"
     (onToolbarPreparing)="onToolbarPreparing($event)"
     (onEditorPreparing)="onEditorPreparing($event)"
     (onRowClick)="onRowClick($event)"
@@ -37,4 +37,4 @@
 </dx-validator>
 <dx-toolbar class="w-100" *ngIf="showSource && sourceToolbarItems" [items]="sourceToolbarItems">    
 </dx-toolbar>
-<ballware-edit-json *ngIf="showSource" [initialLayoutItem]="layoutItem" ></ballware-edit-json>
+<ballware-edit-json *ngIf="showSource" [initialLayoutItem]="livecycle.layoutItem" ></ballware-edit-json>

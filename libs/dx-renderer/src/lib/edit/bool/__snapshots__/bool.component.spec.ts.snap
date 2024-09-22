@@ -2,29 +2,12 @@
 
 exports[`EditLayoutBoolComponent should create 1`] = `
 <ballware-edit-bool
-  _optionRegistry={[Function Array]}
-  currentValue$={[Function BehaviorSubject]}
-  destroy$={[Function Subject]}
-  editService={[Function ]}
-  editorEntered$={[Function Subject]}
-  editorEvent$={[Function Subject]}
-  emailValidation$={[Function BehaviorSubject]}
-  getOption={[Function Function]}
-  globalReadonly="false"
-  initialLayoutItem={[Function Object]}
-  layoutItem={[Function Object]}
-  notifyValueChange$={[Function Subject]}
-  onEntered={[Function Function]}
-  onEvent={[Function Function]}
-  preparedLayoutItem$={[Function BehaviorSubject]}
-  readonly$={[Function BehaviorSubject]}
-  refreshValueTrigger$={[Function Subject]}
-  registerOption={[Function Function]}
-  required$={[Function BehaviorSubject]}
-  requiredValidation$={[Function BehaviorSubject]}
-  setOption={[Function Function]}
-  validationRules$={[Function Observable]}
-  visible$={[Function BehaviorSubject]}
+  destroy={[Function Destroy]}
+  livecycle={[Function EditItemLivecycle]}
+  readonly={[Function Readonly]}
+  validation={[Function Validation]}
+  value={[Function BoolValue]}
+  visible={[Function Visible]}
 >
   <div
     class="dx-texteditor-label mt-2"

@@ -1,66 +1,40 @@
-import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
+import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
+import { SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
 import { Observable, combineLatest, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
 import { CommonModule } from '@angular/common';
+import { Destroy, EditItemLivecycle, NullableLatLngValue, Readonly, Visible } from '@ballware/renderer-commons';
 
 declare let google: any;
-
-interface MapValue {
-  lat: number;
-  lng: number;
-}
 
 @Component({
   selector: 'ballware-edit-map',
   templateUrl: './map.component.html',
-  styleUrls: ['./map.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxMapModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableLatLngValue, Readonly, Visible],
   standalone: true
 })
-export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => undefined as MapValue|undefined))) implements OnInit, AfterViewInit {
-
-  @Input() initialLayoutItem?: EditLayoutItem;
+export class EditLayoutMapComponent implements AfterViewInit {
 
   @ViewChild('map', { static: false }) map?: DxMapComponent;
 
-  public layoutItem: EditLayoutItem|undefined;
-
   public googlekey$: Observable<string|undefined>;
 
-  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, @Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-
+  constructor(
+    @Inject(SETTINGS_SERVICE) private settingsService: SettingsService,
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: NullableLatLngValue
+  ) {    
     this.googlekey$ = this.settingsService.googlekey$;
   }
 
-  ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
-
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initVisible(layoutItem);
-
-            this.layoutItem = layoutItem;
-          }
-        });
-    }
-  }
-
   ngAfterViewInit(): void {
-    combineLatest([this.readonly$, this.currentValue$])
-      .pipe(takeUntil(this.destroy$))
+    combineLatest([this.readonly.readonly$, this.value.currentValue$])
+      .pipe(takeUntil(this.destroy.destroy$))
       .subscribe(([readonly, value]) => {
         const existingMarkers = this.map?.instance.option(
           'markers'
@@ -86,7 +60,7 @@ export class EditLayoutMapComponent extends WithVisible(WithReadonly(WithValue(W
                 (e: {
                   latLng: { lng: () => number; lat: () => number };
                 }) => {
-                  this.value = {
+                  this.value.value = {
                     lat: e.latLng.lat(),
                     lng: e.latLng.lng()
                   };

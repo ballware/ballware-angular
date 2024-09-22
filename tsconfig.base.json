@@ -22,7 +22,8 @@
       "@ballware/meta-model": ["libs/meta-model/src/index.ts"],
       "@ballware/meta-scripting": ["libs/meta-scripting/src/index.ts"],
       "@ballware/meta-services": ["libs/meta-services/src/index.ts"],
-      "@ballware/ngrx-meta-services": ["libs/ngrx-meta-services/src/index.ts"]
+      "@ballware/ngrx-meta-services": ["libs/ngrx-meta-services/src/index.ts"],
+      "@ballware/renderer-commons": ["libs/renderer-commons/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

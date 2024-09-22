@@ -1,11 +1,11 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
-<dx-html-editor text-area *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
-  [visible]="(visible$ | async) ?? false"
-  [name]="layoutItem.options.dataMember"
-  [height]="layoutItem.options.height ?? '300px'"
-  [(value)]="value"
-  [readOnly]="(readonly$ | async) ?? false"
-  (onFocusIn)="onEntered()">
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
+<dx-html-editor text-area *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+  [visible]="(visible.visible$ | async) ?? false"
+  [name]="livecycle.layoutItem.options.dataMember"
+  [height]="livecycle.layoutItem.options.height ?? '300px'"
+  [(value)]="value.value"
+  [readOnly]="(readonly.readonly$ | async) ?? false"
+  (onFocusIn)="livecycle.onEntered()">
   <dxo-toolbar [multiline]="true">
     <dxi-item name="undo" />
     <dxi-item name="redo" />
@@ -52,5 +52,5 @@
   <dxo-media-resizing
     [enabled]="true">
   </dxo-media-resizing>
-  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
 </dx-html-editor>

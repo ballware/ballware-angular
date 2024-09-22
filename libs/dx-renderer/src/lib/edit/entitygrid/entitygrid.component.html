@@ -1,6 +1,6 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <ballware-entitygrid *ngIf="(gridLayout$ | async)"
-  [visible]="((visible$ | async) ?? false)"
+  [visible]="((visible.visible$ | async) ?? false)"
   [gridLayout]="(gridLayout$ | async) ?? undefined"
   [storageIdentifier]="(storageIdentifier$ | async) ?? undefined"
   [height]="(height$ | async)!"

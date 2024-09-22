@@ -1,67 +1,50 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService, Translator, TRANSLATOR } from '@ballware/meta-services';
+import { Component, Inject, OnInit } from '@angular/core';
+import { Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DateType } from 'devextreme/ui/date_box';
 import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithRequired } from '../../utils/withrequired';
-import { WithValidation } from '../../utils/withvalidation';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
 import { DxDateBoxModule, DxValidatorModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { Destroy, EditItemLivecycle, NullableDateValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { Validation, Required } from '../../directives';
 
 @Component({
   selector: 'ballware-edit-datetime',
   templateUrl: './datetime.component.html',
-  styleUrls: ['./datetime.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxDateBoxModule, DxValidatorModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableDateValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
-export class EditLayoutDatetimeComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => (null as unknown) as string|number|Date))))) implements OnInit {
-
-  @Input() initialLayoutItem?: EditLayoutItem;
-
-  public layoutItem: EditLayoutItem|undefined;
+export class EditLayoutDatetimeComponent implements OnInit {
 
   public type!: DateType;
   public displayFormat!: string;
 
   constructor(
     @Inject(TRANSLATOR) private translator: Translator, 
-    @Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-  }
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: NullableDateValue,
+    public validation: Validation
+  ) {}
 
   ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
 
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initValidation(layoutItem, this.editService);
-            this.initRequired(layoutItem, this.editService);
-            this.initVisible(layoutItem);
+    this.livecycle.preparedLayoutItem$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((layoutItem) => {        
+        this.type = layoutItem?.type as DateType;
 
-            this.layoutItem = layoutItem;
-            this.type = layoutItem.type as DateType;
-
-            switch (layoutItem.type) {              
-              case 'datetime':
-                this.displayFormat = this.translator('format.datetime');
-                break;
-              case 'date':
-              default:
-                this.displayFormat = this.translator('format.date');
-            }
-          }
-        });
-    }
+        switch (layoutItem?.type) {              
+          case 'datetime':
+            this.displayFormat = this.translator('format.datetime');
+            break;
+          case 'date':
+          default:
+            this.displayFormat = this.translator('format.date');
+        }
+      });  
   }
 }

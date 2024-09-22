@@ -11,7 +11,7 @@ import { CommonModule } from "@angular/common";
 @Component({
     selector: 'ballware-statistic-chart',
     templateUrl: './chart.component.html',
-    styleUrls: ['./chart.component.scss'],
+    styleUrls: [],
     providers: [],
     imports: [CommonModule, DxChartModule],
     standalone: true

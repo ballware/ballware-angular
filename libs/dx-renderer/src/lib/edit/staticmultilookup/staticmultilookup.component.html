@@ -1,25 +1,25 @@
-<dx-tag-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+<dx-tag-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
   class="mt-2"
-  [visible]="((visible$ | async) ?? false)"
-  [label]="layoutItem.options.caption ?? ''"
-  [name]="layoutItem.options.dataMember"
-  [(value)]="value"
-  [readOnly]="(readonly$ | async) ?? false"
-  [dataSource]="dataSource"
-  [displayExpr]="layoutItem.options.displayExpr ?? 'Text'"
-  [valueExpr]="layoutItem.options.valueExpr ?? 'Value'"
+  [visible]="((visible.visible$ | async) ?? false)"
+  [label]="livecycle.layoutItem.options.caption ?? ''"
+  [name]="livecycle.layoutItem.options.dataMember"
+  [(value)]="value.value"
+  [readOnly]="(readonly.readonly$ | async) ?? false"
+  [dataSource]="lookup.dataSource$ | async"
+  [displayExpr]="livecycle.layoutItem.options.displayExpr ?? 'Text'"
+  [valueExpr]="livecycle.layoutItem.options.valueExpr ?? 'Value'"
   [searchEnabled]=true
   [showClearButton]=true
   [showSelectionControls]=true
   [showDropDownButton]=true
   [multiline]=false
   [maxDisplayedTags]=3
-  [acceptCustomValue]="layoutItem.options.acceptCustomValue ?? false"
-  (onFocusIn)="onEntered()">
+  [acceptCustomValue]="livecycle.layoutItem.options.acceptCustomValue ?? false"
+  (onFocusIn)="livecycle.onEntered()">
   <div *dxTemplate="let item of 'item'">
-    {{getLookupItemDisplayValue(item)}}
-    <br *ngIf="hasLookupItemHint"/>
-    <small *ngIf="hasLookupItemHint">{{getLookupItemHintValue(item)}}</small>
+    {{lookup.getLookupItemDisplayValue(item)}}
+    <br *ngIf="lookup.hasLookupItemHint"/>
+    <small *ngIf="lookup.hasLookupItemHint">{{lookup.getLookupItemHintValue(item)}}</small>
   </div>
-  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
 </dx-tag-box>

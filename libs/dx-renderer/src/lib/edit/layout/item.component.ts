@@ -172,42 +172,42 @@ export class EditLayoutItemComponent implements AfterViewInit {
             //const { EditLayoutEntitygridComponent } = await import('../entitygrid/entitygrid.component');
             const componentRef = this.itemHost.createComponent(EditLayoutEntitygridComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'detailgrid': {
             const componentRef = this.itemHost.createComponent(EditLayoutDetailGridComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'detailtree': {
             const componentRef = this.itemHost.createComponent(EditLayoutDetailTreeComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;          
         case 'json': {
             const componentRef = this.itemHost.createComponent(EditLayoutJsonComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;
         case 'javascript': {
             const componentRef = this.itemHost.createComponent(EditLayoutJavascriptComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;          
         case 'sql': {
             const componentRef = this.itemHost.createComponent(EditLayoutSqlComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           }
           break;          
@@ -215,14 +215,14 @@ export class EditLayoutItemComponent implements AfterViewInit {
         case 'attachments': {
             const componentRef = this.itemHost.createComponent(EditLayoutAttachmentsComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           } 
           break;  
         case 'statistic': {
             const componentRef = this.itemHost.createComponent(EditLayoutStatisticComponent);
 
-            componentRef.instance.initialLayoutItem = this.layoutItem;  
+            componentRef.setInput('initialLayoutItem', this.layoutItem); 
             componentRef.changeDetectorRef.detectChanges();
           } 
           break;            

@@ -15,7 +15,7 @@ import { CommonModule } from "@angular/common";
 @Component({
     selector: 'ballware-statistic-pivotgrid',
     templateUrl: './pivotgrid.component.html',
-    styleUrls: ['./pivotgrid.component.scss'],
+    styleUrls: [],
     providers: [],
     imports: [CommonModule, DxPivotGridModule],
     standalone: true

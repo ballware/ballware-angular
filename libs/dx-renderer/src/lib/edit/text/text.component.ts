@@ -1,55 +1,38 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
+import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithRequired } from '../../utils/withrequired';
-import { WithValidation } from '../../utils/withvalidation';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
+import { Destroy, EditItemLivecycle, Readonly, StringValue, Visible } from '@ballware/renderer-commons';
+import { Required, Validation } from '../../directives';
 import { CommonModule } from '@angular/common';
 import { DxTextBoxModule, DxValidatorModule } from 'devextreme-angular';
 
 @Component({
   selector: 'ballware-edit-text',
   templateUrl: './text.component.html',
-  styleUrls: ['./text.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxTextBoxModule, DxValidatorModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
-export class EditLayoutTextComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => ""))))) implements OnInit {
-
-  @Input() initialLayoutItem?: EditLayoutItem;
-
-  public layoutItem: EditLayoutItem|undefined;
-
-  constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-  }
+export class EditLayoutTextComponent implements OnInit {
+  
+  constructor(
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: StringValue,
+    public validation: Validation) {}
 
   ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
-
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initValidation(layoutItem, this.editService);
-            this.initRequired(layoutItem, this.editService);
-            this.initVisible(layoutItem);
-
-            if (layoutItem.type === 'mail') {
-              this.validateEmail(true);
-            }
-
-            this.layoutItem = layoutItem;
+        
+    this.livecycle.preparedLayoutItem$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((layoutItem) => {
+        if (layoutItem) {
+          if (layoutItem.type === 'mail') {
+            this.validation.validateEmail(true);
           }
-        });
-    }
+        }
+      });    
   }
 }

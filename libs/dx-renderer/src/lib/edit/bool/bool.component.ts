@@ -1,52 +1,24 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
-import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithRequired } from '../../utils/withrequired';
-import { WithValidation } from '../../utils/withvalidation';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DxCheckBoxModule, DxValidatorModule } from 'devextreme-angular';
+import { BoolValue, Destroy, EditItemLivecycle, Readonly, Visible } from '@ballware/renderer-commons';
+import { Required, Validation } from '../../directives';
 
 @Component({
   selector: 'ballware-edit-bool',
   templateUrl: './bool.component.html',
-  styleUrls: ['./bool.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxValidatorModule, DxCheckBoxModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, BoolValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
-export class EditLayoutBoolComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => false as boolean|null|undefined))))) implements OnInit {
-
-  @Input() initialLayoutItem?: EditLayoutItem;
-
-  public layoutItem: EditLayoutItem|undefined;
-
+export class EditLayoutBoolComponent {
   constructor(
-    @Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-  }
-
-  ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
-
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initValidation(layoutItem, this.editService);
-            this.initRequired(layoutItem, this.editService);
-            this.initVisible(layoutItem);
-
-            this.layoutItem = layoutItem;
-          }
-        });
-    }
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: BoolValue,
+    public validation: Validation) {   
   }
 }

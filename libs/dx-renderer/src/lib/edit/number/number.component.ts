@@ -1,16 +1,9 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
+import { Component, OnInit } from '@angular/core';
 import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithRequired } from '../../utils/withrequired';
-import { WithValidation } from '../../utils/withvalidation';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
 import { DxNumberBoxModule, DxValidatorModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { Destroy, EditItemLivecycle, NumberValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { Validation, Required } from '../../directives';
 
 export interface NumberItemOptions {  
   min?: number;
@@ -20,46 +13,33 @@ export interface NumberItemOptions {
 @Component({
   selector: 'ballware-edit-number',
   templateUrl: './number.component.html',
-  styleUrls: ['./number.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
-export class EditLayoutNumberComponent extends WithVisible(WithRequired(WithValidation(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => 0.0))))) implements OnInit {
+export class EditLayoutNumberComponent implements OnInit {
 
-  @Input() initialLayoutItem?: EditLayoutItem;
+  public options: NumberItemOptions = {};
 
-  public layoutItem: EditLayoutItem|undefined;
-  public itemOptions: NumberItemOptions = {};
-
-  constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-  }
+  constructor(
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: NumberValue,
+    public validation: Validation
+  ) {}
 
   ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
 
-      this.registerOption('min', () => this.itemOptions?.min, (value) => this.itemOptions.min = value as number);
-      this.registerOption('max', () => this.itemOptions?.max, (value) => this.itemOptions.max = value as number);
+    this.livecycle.preparedLayoutItem$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((layoutItem) => {        
+        this.options = layoutItem?.options?.itemoptions as NumberItemOptions ?? {};
 
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initValidation(layoutItem, this.editService);
-            this.initRequired(layoutItem, this.editService);
-            this.initVisible(layoutItem);
-
-            this.layoutItem = layoutItem;
-            this.itemOptions = layoutItem.options?.itemoptions as NumberItemOptions;
-
-            if (!this.itemOptions) {
-              this.itemOptions = {};
-            }
-          }
-        });
-    }
-  }
+        this.livecycle.registerOption('min', () => this.options?.min, (value) => this.options.min = value as number);
+        this.livecycle.registerOption('max', () => this.options?.max, (value) => this.options.max = value as number);
+      });  
+  }  
 }

@@ -2,7 +2,7 @@ import { Component, Inject, Input } from "@angular/core";
 import { StatisticMapOptions } from "@ballware/meta-model";
 import { SETTINGS_SERVICE, SettingsService, STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { Observable, combineLatest, map } from "rxjs";
-import { getByPath } from "../../utils/databinding";
+import { getByPath } from "@ballware/renderer-commons";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
 import { DxMapModule } from "devextreme-angular";
@@ -10,7 +10,7 @@ import { DxMapModule } from "devextreme-angular";
 @Component({
     selector: 'ballware-statistic-map',
     templateUrl: './map.component.html',
-    styleUrls: ['./map.component.scss'],
+    styleUrls: [],
     imports: [CommonModule, DxMapModule],
     standalone: true
   })

@@ -1,11 +1,11 @@
-<dx-text-box *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"
+<dx-text-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
   class="mt-2"
-  [visible]="((visible$ | async) ?? false)"
-  [label]="layoutItem.options.caption ?? ''"
-  [name]="layoutItem.options.dataMember"
-  [(value)]="value"
-  [readOnly]="(readonly$ | async) ?? false"
+  [visible]="((visible.visible$ | async) ?? false)"
+  [label]="livecycle.layoutItem.options.caption ?? ''"
+  [name]="livecycle.layoutItem.options.dataMember"
+  [(value)]="value.value"
+  [readOnly]="(readonly.readonly$ | async) ?? false"
   [showClearButton]="true"
-  (onFocusIn)="onEntered()">
-  <dx-validator [validationRules]="(validationRules$ | async) ?? []"></dx-validator>  
+  (onFocusIn)="livecycle.onEntered()">
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
 </dx-text-box>

@@ -1,21 +1,17 @@
-import { Component, Inject, Input, OnInit, ViewChild } from "@angular/core";
-import { CrudItem, EditLayoutItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
-import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, RESPONSIVE_SERVICE, ResponsiveService, Translator, TRANSLATOR } from "@ballware/meta-services";
+import { Component, Inject, OnInit, ViewChild } from "@angular/core";
+import { CrudItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
+import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { DxDataGridComponent, DxDataGridModule, DxToolbarModule, DxValidatorModule } from "devextreme-angular";
 import { ValidationCallbackData } from "devextreme/common";
 import { Column, DataChange, EditorPreparingEvent, InitNewRowEvent, RowClickEvent, RowValidatingEvent, ToolbarPreparingEvent } from "devextreme/ui/data_grid";
-import { dxToolbarItem } from "devextreme/ui/toolbar";
+import { Item as ToolbarItem } from "devextreme/ui/toolbar";
 import { combineLatest, takeUntil } from "rxjs";
 import { createColumnConfiguration } from "../../utils/columns";
-import { WithDestroy } from "../../utils/withdestroy";
-import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
-import { WithReadonly } from "../../utils/withreadonly";
-import { WithValue } from "../../utils/withvalue";
-import { WithVisible } from "../../utils/withvisible";
 import { CommonModule } from "@angular/common";
 import { DynamicColumnComponent } from "../../datacontainer";
 import { EditLayoutJsonComponent } from "../json/json.component";
 import { I18NextModule } from "angular-i18next";
+import { Destroy, EditItemLivecycle, Readonly, UnknownArrayValue, Visible } from "@ballware/renderer-commons";
 
 interface EditComponentWithOptions {
   /**
@@ -46,17 +42,15 @@ export interface DetailGridItemOptions {
 @Component({
     selector: 'ballware-edit-detailgrid',
     templateUrl: './detailgrid.component.html',
-    styleUrls: ['./detailgrid.component.scss'],
+    styleUrls: [],
     imports: [CommonModule, I18NextModule, DxDataGridModule, DxValidatorModule, DxToolbarModule, DynamicColumnComponent, EditLayoutJsonComponent],
+    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible],
     standalone: true
 })
-export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => []))) implements OnInit {
+export class EditLayoutDetailGridComponent implements OnInit {
 
     @ViewChild('grid', { static: false }) grid?: DxDataGridComponent;
 
-    @Input() initialLayoutItem?: EditLayoutItem;
-  
-    public layoutItem: EditLayoutItem|undefined;
     public options: DetailGridItemOptions|undefined;
     public height: string|undefined;
 
@@ -71,7 +65,7 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
     public allowShowSource = false;
     public showSource = false;
 
-    public sourceToolbarItems: dxToolbarItem[]|undefined;
+    public sourceToolbarItems: ToolbarItem[]|undefined;
 
     public validationAdapterConfig = {      
       getValue: () => ({
@@ -105,10 +99,14 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
 
     constructor(
         @Inject(TRANSLATOR) private translator: Translator,
-        @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(EDIT_SERVICE) private editService: EditService) {
-      super();
+        @Inject(EDIT_SERVICE) private editService: EditService,
+        public destroy: Destroy,
+        public livecycle: EditItemLivecycle,
+        public readonly: Readonly,
+        public value: UnknownArrayValue,
+        public visible: Visible
+      ) {      
 
       this.onGridValidateNotEditing = this.onGridValidateNotEditing.bind(this);
 
@@ -124,77 +122,61 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
             icon: 'bi bi-table',
             onClick: () => {              
               this.showSource = false;
-              this.refreshValue();
+              this.value.refreshValue();
             },
           },
-        } as dxToolbarItem
+        } as ToolbarItem
       ]
     }
   
-    ngOnInit(): void {
-      if (this.initialLayoutItem) {
-        this.initLifecycle(this.initialLayoutItem, this.editService, this);
-  
-        this.preparedLayoutItem$
-          .pipe(takeUntil(this.destroy$))
-          .subscribe((layoutItem) => {
-            if (layoutItem) {
-              this.initValue(layoutItem, this.editService);
-              this.initReadonly(layoutItem, this.editService);
-              this.initVisible(layoutItem);
-            }            
-          });
+    ngOnInit(): void {      
+      combineLatest([this.livecycle.preparedLayoutItem$, this.readonly.readonly$, this.editService.mode$, this.editService.item$, 
+        this.lookupService.lookups$, 
+        this.editService.detailGridCellPreparing$, 
+        this.editService.detailGridRowValidating$, 
+        this.editService.initNewDetailItem$, 
+        this.editService.detailEditorInitialized$, 
+        this.editService.detailEditorValidating$, 
+        this.editService.detailEditorEntered$, 
+        this.editService.detailEditorEvent$, 
+        this.editService.detailEditorValueChanged$])
+        .pipe(takeUntil(this.destroy.destroy$))
+        .subscribe(([layoutItem, readonly, mode, item, lookups, 
+          detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
+          if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups 
+              && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem 
+              && detailEditorInitialized && detailEditorValidating && detailEditorEntered && detailEditorEvent && detailEditorValueChanged) {
+              this.dataMember = layoutItem.options?.dataMember;
+              this.height = layoutItem.options?.height;
+              this.options = layoutItem.options?.itemoptions as DetailGridItemOptions;
+              this.lookupParams = item;
 
-        combineLatest([this.preparedLayoutItem$, this.readonly$, this.editService.mode$, this.editService.item$, 
-          this.lookupService.lookups$, 
-          this.editService.detailGridCellPreparing$, 
-          this.editService.detailGridRowValidating$, 
-          this.editService.initNewDetailItem$, 
-          this.editService.detailEditorInitialized$, 
-          this.editService.detailEditorValidating$, 
-          this.editService.detailEditorEntered$, 
-          this.editService.detailEditorEvent$, 
-          this.editService.detailEditorValueChanged$])
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(([layoutItem, readonly, mode, item, lookups, 
-            detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
-            if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups 
-                && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem 
-                && detailEditorInitialized && detailEditorValidating && detailEditorEntered && detailEditorEvent && detailEditorValueChanged) {
-                this.dataMember = layoutItem.options?.dataMember;
-                this.height = layoutItem.options?.height;
-                this.options = layoutItem.options?.itemoptions as DetailGridItemOptions;
-                this.lookupParams = item;
+              this.allowAdd = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).add) ?? false;
+              this.allowUpdate = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).update) ?? false;
+              this.allowDelete = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).delete) ?? false;
+              this.allowShowSource = (layoutItem.options?.itemoptions as DetailGridItemOptions).showSource ?? false;
 
-                this.allowAdd = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).add) ?? false;
-                this.allowUpdate = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).update) ?? false;
-                this.allowDelete = (!readonly && (layoutItem.options?.itemoptions as DetailGridItemOptions).delete) ?? false;
-                this.allowShowSource = (layoutItem.options?.itemoptions as DetailGridItemOptions).showSource ?? false;
+              this.detailGridCellPreparing = (dataMember, detailItem, identifier, column) => detailGridCellPreparing({ dataMember, detailItem, identifier, options: column });
+              this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
+              this.initNewDetailItem = (dataMember, detailItem) => initNewDetailItem({ dataMember, detailItem });
+              
+              this.detailEditorInitialized = (dataMember, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItem, identifier, component });
+              this.detailEditorValidating = (dataMember, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItem, identifier, ruleIdentifier, value });
+              this.detailEditorEntered = (dataMember, detailItem, identifier) => detailEditorEntered({ dataMember, detailItem, identifier });
+              this.detailEditorValueChanged = (dataMember, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItem, identifier, value, notify });
+              this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
 
-                this.detailGridCellPreparing = (dataMember, detailItem, identifier, column) => detailGridCellPreparing({ dataMember, detailItem, identifier, options: column });
-                this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
-                this.initNewDetailItem = (dataMember, detailItem) => initNewDetailItem({ dataMember, detailItem });
-                
-                this.detailEditorInitialized = (dataMember, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItem, identifier, component });
-                this.detailEditorValidating = (dataMember, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItem, identifier, ruleIdentifier, value });
-                this.detailEditorEntered = (dataMember, detailItem, identifier) => detailEditorEntered({ dataMember, detailItem, identifier });
-                this.detailEditorValueChanged = (dataMember, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItem, identifier, value, notify });
-                this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
-
-                this.columns = createColumnConfiguration<Column>(
-                    (key, options) => this.translator(key, options),
-                    this.options.columns,                    
-                    lookups,
-                    item,
-                    'detail',
-                    undefined,
-                    undefined
-                );
-    
-                this.layoutItem = layoutItem;
-            }
-          });
-      }
+              this.columns = createColumnConfiguration<Column>(
+                  (key, options) => this.translator(key, options),
+                  this.options.columns,                    
+                  lookups,
+                  item,
+                  'detail',
+                  undefined,
+                  undefined
+              );
+          }
+        });      
     }
 
     public onToolbarPreparing(e: ToolbarPreparingEvent) {
@@ -212,7 +194,7 @@ export class EditLayoutDetailGridComponent extends WithVisible(WithReadonly(With
               this.showSource = true;
             },
           },
-        } as dxToolbarItem)
+        } as ToolbarItem)
       }
     }
 

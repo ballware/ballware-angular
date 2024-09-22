@@ -1,10 +1,10 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <ballware-codemirror 
     mode="sqlserver"
-    [visible]="((visible$ | async) ?? false)"
-    [readOnly]="readonly$ | async"
+    [visible]="((visible.visible$ | async) ?? false)"
+    [readOnly]="readonly.readonly$ | async"
     width="100%"
     [height]="height ?? '300px'"
     [options]="options"
-    [(value)]="value">
+    [(value)]="value.value">
 </ballware-codemirror>    

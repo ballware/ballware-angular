@@ -1,9 +1,9 @@
-<dx-button *ngIf="layoutItem && layoutItem.options && layoutItem.options.dataMember"  
+<dx-button *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"  
   class="mt-2"
-  [visible]="(visible$ | async) ?? false"
-  [text]="layoutItem.options.hint ?? ''"
-  [disabled]="(readonly$ | async) ?? false"
-  [height]="layoutItem.options.height"
-  [width]="layoutItem.options.width"
-  (onClick)="onClick($event)">
+  [visible]="(visible.visible$ | async) ?? false"
+  [text]="livecycle.layoutItem.options.hint ?? ''"
+  [disabled]="(readonly.readonly$ | async) ?? false"
+  [height]="livecycle.layoutItem.options.height"
+  [width]="livecycle.layoutItem.options.width"
+  (onClick)="livecycle.onEvent('click')">
 </dx-button>

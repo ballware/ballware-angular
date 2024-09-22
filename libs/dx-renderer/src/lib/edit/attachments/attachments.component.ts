@@ -1,23 +1,20 @@
-import { Component, Inject, Input, OnDestroy, OnInit, Provider } from "@angular/core";
-import { CrudItem, EditLayoutItem } from "@ballware/meta-model";
+import { Component, Inject, OnDestroy, OnInit, Provider } from "@angular/core";
+import { CrudItem, } from "@ballware/meta-model";
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
 import { nanoid } from "nanoid";
 import { Observable, from, map, of, switchMap, takeUntil } from "rxjs";
 import { createArrayDatasource } from "../../utils/datasource";
-import { WithDestroy } from "../../utils/withdestroy";
-import { WithEditItemLifecycle } from "../../utils/withedititemlivecycle";
-import { WithReadonly } from "../../utils/withreadonly";
-import { WithVisible } from "../../utils/withvisible";
 import { DxDataGridModule, DxFileUploaderModule, DxPopupModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
 import { I18NextModule } from "angular-i18next";
+import { Destroy, EditItemLivecycle, Readonly, Visible } from "@ballware/renderer-commons";
 
 @Component({
     selector: 'ballware-edit-attachments',
     templateUrl: './attachments.component.html',
-    styleUrls: ['./attachments.component.scss'],
+    styleUrls: [],
     providers: [
         { 
             provide: ATTACHMENT_SERVICE, 
@@ -26,13 +23,11 @@ import { I18NextModule } from "angular-i18next";
         } as Provider,
     ],
     imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule],
+    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
     standalone: true
   })
-  export class EditLayoutAttachmentsComponent extends WithVisible(WithReadonly(WithEditItemLifecycle(WithDestroy()))) implements OnInit, OnDestroy {
-    @Input() initialLayoutItem?: EditLayoutItem;
-
-    public layoutItem: EditLayoutItem|undefined;
-
+  export class EditLayoutAttachmentsComponent implements OnInit, OnDestroy {
+  
     public removeDialog: AttachmentRemoveDialog|undefined;
 
     public dataSource$: Observable<DataSource|undefined>;
@@ -41,20 +36,23 @@ import { I18NextModule } from "angular-i18next";
     constructor(
         @Inject(ATTACHMENT_SERVICE) private attachmentService: AttachmentService, 
         @Inject(EDIT_SERVICE) private editService: EditService, 
-        @Inject(TRANSLATOR) private translator: Translator) {
-        super();
-
+        @Inject(TRANSLATOR) private translator: Translator,
+        public destroy: Destroy,
+        public livecycle: EditItemLivecycle,
+        public readonly: Readonly,
+        public visible: Visible,
+    ) {
         this.onRemoveDialogApply = this.onRemoveDialogApply.bind(this);
         this.onRemoveDialogCancel = this.onRemoveDialogCancel.bind(this);
 
         this.fileUpload = this.fileUpload.bind(this);
 
         this.dataSource$ = this.attachmentService.items$            
-            .pipe(takeUntil(this.destroy$))            
+            .pipe(takeUntil(this.destroy.destroy$))            
             .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems, 'Name')) : of(undefined)));
 
-        this.optionButtons$ = this.readonly$
-            .pipe(takeUntil(this.destroy$))
+        this.optionButtons$ = this.readonly.readonly$
+            .pipe(takeUntil(this.destroy.destroy$))
             .pipe(map((readonly) => [
                 {
                     hint: this.translator('attachment.actions.view'),
@@ -77,25 +75,9 @@ import { I18NextModule } from "angular-i18next";
         if (identifier) {
             this.attachmentService.setIdentifier(identifier);
         }
-
-
-        if (this.initialLayoutItem) {
-            this.initLifecycle(this.initialLayoutItem, this.editService, this);
-      
-            this.preparedLayoutItem$
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((layoutItem) => {
-                if (layoutItem) {
-                  this.initReadonly(layoutItem, this.editService);
-                  this.initVisible(layoutItem);
-      
-                  this.layoutItem = layoutItem;            
-                }
-              });
-        }
-
+    
         this.editService.item$
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this.destroy.destroy$))
             .subscribe((item) => {
                 if (item) {
                     this.attachmentService.setOwner((item as CrudItem).Id);
@@ -104,15 +86,13 @@ import { I18NextModule } from "angular-i18next";
             });
 
         this.attachmentService.removeDialog$
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this.destroy.destroy$))
             .subscribe((removeDialog) => {
                 this.removeDialog = removeDialog;
             })
     }
 
-    override ngOnDestroy(): void {
-        super.ngOnDestroy();
-
+    ngOnDestroy(): void {    
         this.attachmentService.ngOnDestroy();
     }
 

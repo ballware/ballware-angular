@@ -2,24 +2,10 @@
 
 exports[`EditLayoutButtonComponent should create 1`] = `
 <ballware-edit-button
-  _optionRegistry={[Function Array]}
-  dataMember={[Function String]}
-  destroy$={[Function Subject]}
-  editService={[Function ]}
-  editorEntered$={[Function Subject]}
-  editorEvent={[Function Function]}
-  editorEvent$={[Function Subject]}
-  getOption={[Function Function]}
-  globalReadonly="false"
-  initialLayoutItem={[Function Object]}
-  layoutItem={[Function Object]}
-  onEntered={[Function Function]}
-  onEvent={[Function Function]}
-  preparedLayoutItem$={[Function BehaviorSubject]}
-  readonly$={[Function BehaviorSubject]}
-  registerOption={[Function Function]}
-  setOption={[Function Function]}
-  visible$={[Function BehaviorSubject]}
+  destroy={[Function Destroy]}
+  livecycle={[Function EditItemLivecycle]}
+  readonly={[Function Readonly]}
+  visible={[Function Visible]}
 >
   <dx-button
     class="dx-widget dx-button dx-button-mode-contained dx-button-normal mt-2"

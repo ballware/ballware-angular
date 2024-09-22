@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutMapComponent should create 1`] = `
+<ballware-edit-map
+  destroy={[Function Destroy]}
+  googlekey$={[Function BehaviorSubject]}
+  livecycle={[Function EditItemLivecycle]}
+  map={[Function _DxMapComponent]}
+  readonly={[Function Readonly]}
+  settingsService={[Function Object]}
+  value={[Function NullableLatLngValue]}
+  visible={[Function Visible]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-map
+    class="dx-map dx-widget dx-visibility-change-handler"
+    style="width: 100%; height: 100%;"
+  >
+    <div
+      class="dx-map-container"
+    />
+  </dx-map>
+</ballware-edit-map>
+`;

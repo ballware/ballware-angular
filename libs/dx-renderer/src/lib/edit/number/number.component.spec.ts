@@ -42,7 +42,7 @@ describe('EditLayoutNumberComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
     expect(fixture).toMatchSnapshot();
@@ -63,33 +63,33 @@ describe('EditLayoutNumberComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
-    expect(component.getOption('value')).toBe(0);
-    expect(component.getOption('required')).toBe(false);
-    expect(component.getOption('readonly')).toBe(false);
-    expect(component.getOption('visible')).toBe(false);
+    expect(component.livecycle.getOption('value')).toBe(0);
+    expect(component.livecycle.getOption('required')).toBe(false);
+    expect(component.livecycle.getOption('readonly')).toBe(false);
+    expect(component.livecycle.getOption('visible')).toBe(false);
 
-    component.setOption('value', 42);
-    expect(component.getOption('value')).toBe(42);
+    component.livecycle.setOption('value', 42);
+    expect(component.livecycle.getOption('value')).toBe(42);
 
-    component.setOption('required', true);
-    expect(component.getOption('required')).toBe(true);
+    component.livecycle.setOption('required', true);
+    expect(component.livecycle.getOption('required')).toBe(true);
 
-    component.setOption('readonly', true);
-    expect(component.getOption('readonly')).toBe(true);
+    component.livecycle.setOption('readonly', true);
+    expect(component.livecycle.getOption('readonly')).toBe(true);
 
-    component.setOption('visible', true);
-    expect(component.getOption('visible')).toBe(true);
+    component.livecycle.setOption('visible', true);
+    expect(component.livecycle.getOption('visible')).toBe(true);
 
-    component.setOption('min', 2);
-    expect(component.getOption('min')).toBe(2);
+    component.livecycle.setOption('min', 2);
+    expect(component.livecycle.getOption('min')).toBe(2);
 
-    component.setOption('max', 98);
-    expect(component.getOption('max')).toBe(98);
+    component.livecycle.setOption('max', 98);
+    expect(component.livecycle.getOption('max')).toBe(98);
 
-    expect(() => component.getOption('undefined')).toThrowError('Unsupported option <undefined>');
-    expect(() => component.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
 });

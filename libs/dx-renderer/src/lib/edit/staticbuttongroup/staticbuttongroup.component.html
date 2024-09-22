@@ -1,6 +1,6 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <dx-button-group 
-    [visible]="((visible$ | async) ?? false)"
+    [visible]="((visible.visible$ | async) ?? false)"
     [items]="items ?? []" 
     selectionMode="single" 
     keyExpr="key" 

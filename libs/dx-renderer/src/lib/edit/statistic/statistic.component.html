@@ -1,3 +1,3 @@
-<ballware-statistic-chart *ngIf="'chart' === (type$ | async)" [visible]="((visible$ | async) ?? false)"></ballware-statistic-chart>
-<ballware-statistic-map *ngIf="'map' === (type$ | async)" [visible]="((visible$ | async) ?? false)"></ballware-statistic-map>
-<ballware-statistic-pivotgrid *ngIf="'pivot' === (type$ | async)" [visible]="((visible$ | async) ?? false)"></ballware-statistic-pivotgrid>
+<ballware-statistic-chart *ngIf="'chart' === (type$ | async)" [visible]="((visible.visible$ | async) ?? false)"></ballware-statistic-chart>
+<ballware-statistic-map *ngIf="'map' === (type$ | async)" [visible]="((visible.visible$ | async) ?? false)"></ballware-statistic-map>
+<ballware-statistic-pivotgrid *ngIf="'pivot' === (type$ | async)" [visible]="((visible.visible$ | async) ?? false)"></ballware-statistic-pivotgrid>

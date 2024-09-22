@@ -49,7 +49,7 @@ describe('EditLayoutStaticmultilookupComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
   });
 
@@ -68,35 +68,35 @@ describe('EditLayoutStaticmultilookupComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
-    expect(component.getOption('value')).toStrictEqual([]);
-    expect(component.getOption('required')).toBe(false);
-    expect(component.getOption('readonly')).toBe(false);
-    expect(component.getOption('visible')).toBe(false);
+    expect(component.livecycle.getOption('value')).toStrictEqual([]);
+    expect(component.livecycle.getOption('required')).toBe(false);
+    expect(component.livecycle.getOption('readonly')).toBe(false);
+    expect(component.livecycle.getOption('visible')).toBe(false);
 
-    component.setOption('value', 'some text');
-    expect(component.getOption('value')).toBe('some text');
+    component.livecycle.setOption('value', 'some text');
+    expect(component.livecycle.getOption('value')).toBe('some text');
 
-    component.setOption('required', true);
-    expect(component.getOption('required')).toBe(true);
+    component.livecycle.setOption('required', true);
+    expect(component.livecycle.getOption('required')).toBe(true);
 
-    component.setOption('readonly', true);
-    expect(component.getOption('readonly')).toBe(true);
+    component.livecycle.setOption('readonly', true);
+    expect(component.livecycle.getOption('readonly')).toBe(true);
 
-    component.setOption('visible', true);
-    expect(component.getOption('visible')).toBe(true);
+    component.livecycle.setOption('visible', true);
+    expect(component.livecycle.getOption('visible')).toBe(true);
 
     const itemsFixture = [{ Id: '1', Name: 'Item 1' }, { Id: '2', Name: 'Item 2' }];
 
-    component.setOption('items', itemsFixture);
+    component.livecycle.setOption('items', itemsFixture);
 
     await new Promise(process.nextTick);
 
-    expect(component.getOption('items')).toStrictEqual(itemsFixture);
+    expect(component.livecycle.getOption('items')).toStrictEqual(itemsFixture);
 
-    expect(() => component.getOption('undefined')).toThrowError('Unsupported option <undefined>');
-    expect(() => component.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
 });

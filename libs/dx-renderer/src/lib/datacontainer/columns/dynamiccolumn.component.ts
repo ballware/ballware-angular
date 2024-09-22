@@ -8,7 +8,7 @@ import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/numb
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
-import { getByPath, setByPath } from "../../utils/databinding";
+import { getByPath, setByPath } from "@ballware/renderer-commons";
 import { createLookupDataSource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
@@ -19,7 +19,7 @@ import { I18NextModule } from "angular-i18next";
 @Component({
     selector: 'ballware-edit-dynamic-column',
     templateUrl: './dynamiccolumn.component.html',
-    styleUrls: ['./dynamiccolumn.component.scss'],
+    styleUrls: [],
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
     standalone: true
 })

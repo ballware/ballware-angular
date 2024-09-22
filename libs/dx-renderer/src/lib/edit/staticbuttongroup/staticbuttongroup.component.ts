@@ -1,16 +1,10 @@
-import { Component, Inject, Input, OnInit } from '@angular/core';
-import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
+import { Component, OnInit } from '@angular/core';
 import { Item } from 'devextreme/ui/button_group';
 import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
-import { WithEditItemLifecycle } from '../../utils/withedititemlivecycle';
-import { WithLookup } from '../../utils/withlookup';
-import { WithReadonly } from '../../utils/withreadonly';
-import { WithValue } from '../../utils/withvalue';
-import { WithVisible } from '../../utils/withvisible';
 import { CommonModule } from '@angular/common';
 import { DxButtonGroupModule } from 'devextreme-angular';
+import { Destroy, EditItemLivecycle, NullableStringValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { Validation, Required, Lookup } from '../../directives';
 
 interface KeyedButtonGroupItem extends Item {
   key: string;
@@ -19,16 +13,13 @@ interface KeyedButtonGroupItem extends Item {
 @Component({
   selector: 'ballware-edit-staticbuttongroup',
   templateUrl: './staticbuttongroup.component.html',
-  styleUrls: ['./staticbuttongroup.component.scss'],
+  styleUrls: [],
   imports: [CommonModule, DxButtonGroupModule],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup],
   standalone: true
 })
-export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible(WithReadonly(WithValue(WithEditItemLifecycle(WithDestroy()), () => null as string|null)))) implements OnInit {
-
-  @Input() initialLayoutItem?: EditLayoutItem;
-
-  public layoutItem: EditLayoutItem|undefined;
-
+export class EditLayoutStaticButtonGroupComponent implements OnInit {
+  
   public items: KeyedButtonGroupItem[]|undefined;
 
   private _selectedItemKeys: string[] = [];
@@ -42,44 +33,39 @@ export class EditLayoutStaticButtonGroupComponent extends WithLookup(WithVisible
     this._selectedItemKeys = value;
 
     if (value?.length) {
-      this.value = value[0];
+      this.value.value = value[0];
     }
   }
 
-  constructor(@Inject(EDIT_SERVICE) private editService: EditService) {
-    super();
-  }
+  constructor(
+    public destroy: Destroy,
+    public livecycle: EditItemLivecycle,
+    public visible: Visible,
+    public readonly: Readonly,
+    public value: NullableStringValue,
+    public validation: Validation,
+    public lookup: Lookup
+  ) {}
 
   ngOnInit(): void {
-    if (this.initialLayoutItem) {
-      this.initLifecycle(this.initialLayoutItem, this.editService, this);
-
-      this.preparedLayoutItem$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((layoutItem) => {
-          if (layoutItem) {
-            this.initValue(layoutItem, this.editService);
-            this.initReadonly(layoutItem, this.editService);
-            this.initVisible(layoutItem);
-            this.initStaticLookup(layoutItem, this.editService).subscribe();
-
-            this.dataSource?.on('changed', () => {
-              this.items = this.dataSource?.items().map(item => ({
-                key: this.getLookupItemKeyValue(item),
-                text: this.getLookupItemDisplayValue(item),
-                hint: this.hasLookupItemHintValue ? this.getLookupItemHintValue(item) : undefined                                
-              } as KeyedButtonGroupItem)) ?? [];
-
-              if (!this.selectedItemKeys.length && this.items.length) {
-                this.selectedItemKeys = [this.items[0].key];
-              }
-            });
-
-            this.layoutItem = layoutItem;
-
-            this.dataSource?.load();
+    this.lookup.dataSource$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((dataSource) => {
+        dataSource?.on('changed', () => {
+          this.items = dataSource?.items().map(item => ({
+            key: this.lookup.getLookupItemKeyValue(item),
+            text: this.lookup.getLookupItemDisplayValue(item),
+            hint: this.lookup.hasLookupItemHint ? this.lookup.getLookupItemHintValue(item) : undefined                                
+          } as KeyedButtonGroupItem)) ?? [];
+    
+          if (!this.selectedItemKeys.length && this.items.length) {
+            this.selectedItemKeys = [this.items[0].key];
           }
         });
-    }
+    
+        dataSource?.load();
+      });
+    
+
   }
 }

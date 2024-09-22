@@ -1,7 +1,7 @@
-<div [class]="!((visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{layoutItem?.options?.caption ?? ''}}</div>
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <dx-map #map
-  [visible]="(visible$ | async) ?? false"
-  [height]="layoutItem?.options?.height ?? '100%'"
+  [visible]="(visible.visible$ | async) ?? false"
+  [height]="livecycle.layoutItem?.options?.height ?? '100%'"
   [width]="'100%'"
   [apiKey]="{ google: (googlekey$ | async) ?? 'unlicensed' }"
   [provider]="'google'"

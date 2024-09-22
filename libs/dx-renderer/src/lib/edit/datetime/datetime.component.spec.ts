@@ -47,7 +47,7 @@ describe('EditLayoutDatetimeComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
     expect(fixture).toMatchSnapshot();
@@ -66,7 +66,7 @@ describe('EditLayoutDatetimeComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
     expect(fixture).toMatchSnapshot();
@@ -88,27 +88,27 @@ describe('EditLayoutDatetimeComponent', () => {
     component = fixture.componentInstance;   
     expect(component).toBeTruthy();
 
-    component.initialLayoutItem = layoutItem;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
-    expect(component.getOption('value')).toBe(null);
-    expect(component.getOption('required')).toBe(false);
-    expect(component.getOption('readonly')).toBe(false);
-    expect(component.getOption('visible')).toBe(false);
+    expect(component.livecycle.getOption('value')).toBe(null);
+    expect(component.livecycle.getOption('required')).toBe(false);
+    expect(component.livecycle.getOption('readonly')).toBe(false);
+    expect(component.livecycle.getOption('visible')).toBe(false);
 
-    component.setOption('value', Date.parse('2024-01-01T13:00:00'));
-    expect(component.getOption('value')).toBe(Date.parse('2024-01-01T13:00:00'));
+    component.livecycle.setOption('value', Date.parse('2024-01-01T13:00:00'));
+    expect(component.livecycle.getOption('value')).toBe(Date.parse('2024-01-01T13:00:00'));
 
-    component.setOption('required', true);
-    expect(component.getOption('required')).toBe(true);
+    component.livecycle.setOption('required', true);
+    expect(component.livecycle.getOption('required')).toBe(true);
 
-    component.setOption('readonly', true);
-    expect(component.getOption('readonly')).toBe(true);
+    component.livecycle.setOption('readonly', true);
+    expect(component.livecycle.getOption('readonly')).toBe(true);
 
-    component.setOption('visible', true);
-    expect(component.getOption('visible')).toBe(true);
+    component.livecycle.setOption('visible', true);
+    expect(component.livecycle.getOption('visible')).toBe(true);
 
-    expect(() => component.getOption('undefined')).toThrowError('Unsupported option <undefined>');
-    expect(() => component.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
+    expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
 });
