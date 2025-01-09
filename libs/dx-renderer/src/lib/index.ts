@@ -7,9 +7,10 @@ import deMessages from 'devextreme/localization/messages/de.json';
 import moment from 'moment';
 
 import globalConfig from 'devextreme/core/config';
-import { provideRouter, Routes } from '@angular/router';
+import { provideRouter, Routes, withComponentInputBinding } from '@angular/router';
 import { PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
+import { PrintComponent } from './application';
 
 export { ApplicationComponent } from './application';
 
@@ -41,6 +42,10 @@ export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig):
 
 const routes: Routes = [
   {
+    path: 'print',
+    component: PrintComponent
+  },
+  {
       path: 'page/:id',
       component: PageComponent
   },
@@ -53,6 +58,6 @@ const routes: Routes = [
 export function provideDxRenderFactoryRoutes(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
-    provideRouter(routes)]
+    provideRouter(routes, withComponentInputBinding())]
   ); 
 }

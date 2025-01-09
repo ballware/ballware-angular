@@ -1,7 +1,8 @@
 import { Component, Inject, OnInit } from '@angular/core';
+import { ResponsiveDetectorComponent } from '@ballware/renderer-commons';
 import { ApplicationComponent } from '@ballware/dx-renderer';
 import { IDENTITY_SERVICE, IdentityService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
-import { ResponsiveDetectorComponent } from './shared/components/responsive-detector/responsive-detector.component';
+
 import { CommonModule } from '@angular/common';
 
 declare let window :any;

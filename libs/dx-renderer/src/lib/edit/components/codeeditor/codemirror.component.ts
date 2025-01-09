@@ -1,5 +1,5 @@
-import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef } from "@angular/core";
+import { CommonModule, isPlatformBrowser } from "@angular/common";
+import { AfterViewInit, Component, EventEmitter, Inject, Input, Output, PLATFORM_ID, ViewChild, ViewContainerRef } from "@angular/core";
 import { ValueType } from "@ballware/meta-model";
 
 
@@ -27,13 +27,17 @@ export class CodeMirrorComponent implements AfterViewInit {
 
     jsonStructuredMode = false;
 
+    constructor(@Inject(PLATFORM_ID) private readonly _platformId: Object) {}
+
     ngAfterViewInit(): void {
-        import('./codemirror').then(({ initialize }) => {
-            if (this.editorHost?.element) {
-                initialize(this.editorHost.element.nativeElement, this.mode, this.value, this.readOnly ?? false, this.options, (value) => {
-                    this.valueChange.emit(value);
-                });
-            }
-        });        
+        if (isPlatformBrowser(this._platformId)) {
+            import('./codemirror').then(({ initialize }) => {
+                if (this.editorHost?.element) {
+                    initialize(this.editorHost.element.nativeElement, this.mode, this.value, this.readOnly ?? false, this.options, (value) => {
+                        this.valueChange.emit(value);
+                    });
+                }
+            });        
+        }        
     }
 }
