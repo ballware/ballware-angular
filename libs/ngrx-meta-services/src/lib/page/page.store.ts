@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
-import { MetaApiService } from "@ballware/meta-api";
+import { MetaPageApi } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -28,7 +28,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         private tenantService: TenantService,
         private toolbarService: ToolbarService,
         private lookupService: LookupService,      
-        private metaApiService: MetaApiService) {
+        private metaPageApi: MetaPageApi) {
 
         super({ initialized: false, headParams: {} });
 
@@ -69,7 +69,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 }))();
             }))
             .pipe(switchMap((pageId) => (pageId)
-                ? this.metaApiService.metaPageApi.pageDataForIdentifier(pageId)
+                ? this.metaPageApi.pageDataForIdentifier(pageId)
                 : of(undefined)
             ))
             .pipe(tap((page) => {

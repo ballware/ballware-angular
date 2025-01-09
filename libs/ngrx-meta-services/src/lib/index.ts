@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiServiceFactory } from '@ballware/meta-api';
+import { GENERIC_ENTITY_API_FACTORY, GenericEntityApiFactory, IDENTITY_ROLE_API, IDENTITY_USER_API, IdentityRoleApi, IdentityUserApi, META_ATTACHMENT_API_FACTORY, META_ENTITY_API, META_LOOKUP_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, MetaAttachmentApiFactory, MetaEntityApi, MetaLookupApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { provideComponentFeature } from './component';
@@ -79,32 +79,38 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         useFactory: (
           store: Store, 
           notificationService: NotificationService, 
-          apiServiceFactory: ApiServiceFactory, 
+          attachmentApiFactory: MetaAttachmentApiFactory, 
           translator: Translator
-        ) => () => new AttachmentStore(store, notificationService, apiServiceFactory.createMetaApi(), translator),
-        deps: [ Store, NOTIFICATION_SERVICE, ApiServiceFactory, TRANSLATOR ]
+        ) => () => new AttachmentStore(store, notificationService, attachmentApiFactory, translator),
+        deps: [ Store, NOTIFICATION_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
       },
       {
         provide: LOOKUP_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
-          apiServiceFactory: ApiServiceFactory            
-        ) => () => new LookupStore(store, apiServiceFactory.createIdentityApi(), apiServiceFactory.createMetaApi()),
-        deps: [ Store, ApiServiceFactory ]
+          userApi: IdentityUserApi,
+          roleApi: IdentityRoleApi,
+          lookupApi: MetaLookupApi,
+          pickvalueApi: MetaPickvalueApi,
+          processingstateApi: MetaProcessingstateApi
+        ) => () => new LookupStore(store, userApi, roleApi, lookupApi, pickvalueApi, processingstateApi),
+        deps: [ Store, IDENTITY_USER_API, IDENTITY_ROLE_API, META_LOOKUP_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API ]
       },
       {
         provide: META_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
-          apiServiceFactory: ApiServiceFactory,
+          metaEntityApi: MetaEntityApi,
+          genericEntityApiFactory: GenericEntityApiFactory,
           httpClient: HttpClient, 
           translator: Translator,
           identityService: IdentityService,
           tenantService: TenantService            
-        ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translator, apiServiceFactory.createMetaApi(), identityService, tenantService, lookupService),
+        ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translator, metaEntityApi, genericEntityApiFactory, identityService, tenantService, lookupService),
         deps: [ 
           Store, 
-          ApiServiceFactory,
+          META_ENTITY_API,
+          GENERIC_ENTITY_API_FACTORY,
           HttpClient,
           TRANSLATOR,
           IDENTITY_SERVICE,
@@ -138,13 +144,13 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         useFactory: (
           store: Store,
           httpClient: HttpClient,
-          apiServiceFactory: ApiServiceFactory,
+          metaStatisticApi: MetaStatisticApi,
           identityService: IdentityService
-        ) => (lookupService: LookupService) => new StatisticStore(store, httpClient, apiServiceFactory.createMetaApi(), identityService, lookupService),
+        ) => (lookupService: LookupService) => new StatisticStore(store, httpClient, metaStatisticApi, identityService, lookupService),
         deps: [
           Store,
           HttpClient,
-          ApiServiceFactory,
+          META_STATISTIC_API,
           IDENTITY_SERVICE
         ]
       },
@@ -152,15 +158,15 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: PAGE_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
-          apiServiceFactory: ApiServiceFactory,
+          metaPageApi: MetaPageApi,
           httpClient: HttpClient, 
           identityService: IdentityService,
           tenantService: TenantService,
           toolbarService: ToolbarService
-        ) => (router: Router, lookupService: LookupService) => new PageStore(store, httpClient, router, identityService, tenantService, toolbarService, lookupService, apiServiceFactory.createMetaApi()),
+        ) => (router: Router, lookupService: LookupService) => new PageStore(store, httpClient, router, identityService, tenantService, toolbarService, lookupService, metaPageApi),
         deps: [
           Store, 
-          ApiServiceFactory,
+          META_PAGE_API,
           HttpClient,
           IDENTITY_SERVICE,
           TENANT_SERVICE,

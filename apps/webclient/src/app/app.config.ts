@@ -1,4 +1,4 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 
 import { provideNgrxMetaServices } from '@ballware/ngrx-meta-services';
 import { provideStore } from '@ngrx/store';
@@ -7,7 +7,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { MetaApiModule } from '@ballware/meta-api';
+import { provideIdentityKeycloakRestApi, provideMetaBackendRestApi, provideGenericBackendRestApi } from '@ballware/rest-meta-api';
 import { provideDxRenderFactoryComponents, provideDxRenderFactoryRoutes } from '@ballware/dx-renderer';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -40,13 +40,8 @@ export const appConfig: ApplicationConfig = {
         provideNgrxMetaServices(),
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
         provideDxRenderFactoryRoutes(),
-        importProvidersFrom(          
-            MetaApiModule.forRoot({
-                identityServiceBaseUrl: window.ENV.BALLWARE_IDENTITYURL,
-                metaServiceBaseUrl: window.ENV.BALLWARE_METAURL,
-                documentServiceBaseUrl: window.ENV.BALLWARE_DOCUMENTURL,
-                storageServiceBaseUrl: window.ENV.BALLWARE_STORAGEURL
-            }),
-        )
+        provideIdentityKeycloakRestApi(window.ENV.BALLWARE_IDENTITYURL), 
+        provideMetaBackendRestApi(window.ENV.BALLWARE_METAURL, window.ENV.BALLWARE_DOCUMENTURL, window.ENV.BALLWARE_STORAGEURL), 
+        provideGenericBackendRestApi(window.ENV.BALLWARE_METAURL)        
     ]
 };

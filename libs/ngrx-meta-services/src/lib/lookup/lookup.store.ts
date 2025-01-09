@@ -1,4 +1,4 @@
-import { IdentityApiService, IdentityRoleApi, IdentityUserApi, MetaApiService, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
+import { IdentityRoleApi, IdentityUserApi, MetaLookupApi, MetaPickvalueApi, MetaProcessingstateApi } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
@@ -184,7 +184,12 @@ const createGenericLookupByIdentifier = (
 
 
 export class LookupStore extends ComponentStore<LookupState> implements LookupService {
-    constructor(private store: Store, private identityApiService: IdentityApiService, private metaApiService: MetaApiService) {
+    constructor(private store: Store, 
+      private userApi: IdentityUserApi, 
+      private roleApi: IdentityRoleApi, 
+      private lookupApi: MetaLookupApi, 
+      private pickvalueApi: MetaPickvalueApi,
+      private processingstateApi: MetaProcessingstateApi) {
         super({});
 
         this.state$
@@ -221,7 +226,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             lookups
         }));    
 
-    readonly getGenericLookupByIdentifier$ = of((identifier: string, valueExpr: string, displayExpr: string) => createGenericLookupByIdentifier(this.metaApiService.metaLookupApi, identifier, valueExpr, displayExpr));
+    readonly getGenericLookupByIdentifier$ = of((identifier: string, valueExpr: string, displayExpr: string) => createGenericLookupByIdentifier(this.lookupApi, identifier, valueExpr, displayExpr));
 
     readonly requestLookups = (requests :LookupRequest[]) => {
       if (requests) {
@@ -233,15 +238,15 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             | Array<unknown>
         >;
 
-        newLookups['userLookup'] = createUserLookup(this.identityApiService.identityUserApi, 'id', 'name');
-        newLookups['roleLookup'] = createRoleLookup(this.identityApiService.identityRoleApi, 'id', 'name');
+        newLookups['userLookup'] = createUserLookup(this.userApi, 'id', 'name');
+        newLookups['roleLookup'] = createRoleLookup(this.roleApi, 'id', 'name');
 
         requests?.forEach(l => {
             switch (l.type) {
             case 'lookup':
                 if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
                 newLookups[l.identifier] = createGenericLookup(
-                    this.metaApiService.metaLookupApi,
+                    this.lookupApi,
                     l.lookupId,
                     l.valueMember,
                     l.displayMember
@@ -255,7 +260,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             case 'lookupwithparam':
                 if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
                   newLookups[l.identifier] = createGenericLookupWithParam(                    
-                      this.metaApiService.metaLookupApi,
+                      this.lookupApi,
                       l.lookupId,
                       l.valueMember,
                       l.displayMember
@@ -268,7 +273,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 break;
             case 'pickvalue':
                 newLookups[l.identifier] = createGenericPickvalueLookup(                
-                  this.metaApiService.metaPickvalueApi,
+                  this.pickvalueApi,
                   l.entity as string,
                   l.field as string,
                   l.valueMember,
@@ -278,7 +283,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             case 'autocomplete':
                 if (l.lookupId) {
                   newLookups[l.identifier] = createGenericAutocomplete(
-                      this.metaApiService.metaLookupApi,
+                      this.lookupApi,
                       l.lookupId
                   );
                 } else {
@@ -290,7 +295,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             case 'autocompletewithparam':
                 if (l.lookupId) {
                   newLookups[l.identifier] = createGenericAutocompleteWithParam(
-                    this.metaApiService.metaLookupApi,
+                    this.lookupApi,
                     l.lookupId
                   );
                 } else {
@@ -301,7 +306,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 break;
             case 'state':
                 newLookups[l.identifier] = createGenericStateLookup(
-                  this.metaApiService.metaProcessingstateApi,
+                  this.processingstateApi,
                   l.entity as string,
                   l.valueMember,
                   l.displayMember
@@ -309,7 +314,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 break;
             case 'stateallowed':
                 newLookups[l.identifier] = createGenericAllowedStateLookup(
-                  this.metaApiService.metaProcessingstateApi,
+                  this.processingstateApi,
                   l.entity as string,
                   l.valueMember,
                   l.displayMember

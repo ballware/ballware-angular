@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
+import { InjectionToken } from '@angular/core';
+import { Observable } from 'rxjs';
 
 /**
  * Select list entry of available document list for printing
@@ -41,48 +41,4 @@ export interface MetaDocumentApi {
   viewerUrl: (token: string, documentId: string, ids: string[]) => Observable<string>;
 }
 
-const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
-  entity: string
-): Observable<Array<DocumentSelectEntry>> => {
-  const url = `${metaServiceBaseUrl}api/document/selectlistdocumentsforentity/${entity}`;
-
-  return http
-    .get<Array<DocumentSelectEntry>>(url);
-};
-
-const viewerUrl = (documentServiceBaseUrl: string) => (
-  token: string,
-  documentId: string,
-  ids: string[]
-): Observable<string> => {
-
-  const url = new URL(`${documentServiceBaseUrl}/viewer`);
-
-  url.searchParams.append('token', token);
-  url.searchParams.append('?docId', documentId);
-
-  ids.forEach(id => url.searchParams.append('id', id));
-  
-  const result = url.toString();
-
-  return of(result);
-};
-
-/**
- * Create adapter for document data operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
- * @returns Adapter object providing data operations
- */
-export function createMetaBackendDocumentApi(
-  httpClient: HttpClient, 
-  metaServiceBaseUrl: string,
-  documentServiceBaseUrl: string
-): MetaDocumentApi {
-  return {
-    selectListPrintDocumentsForEntity: selectListPrintDocumentsForEntity(
-      httpClient,
-      metaServiceBaseUrl
-    ),
-    viewerUrl: viewerUrl(documentServiceBaseUrl),
-  } as MetaDocumentApi;
-}
+export const META_DOCUMENT_API = new InjectionToken<MetaDocumentApi>('Meta document api');

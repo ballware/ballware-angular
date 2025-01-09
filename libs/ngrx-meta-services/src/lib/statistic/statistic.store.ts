@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
-import { MetaApiService } from "@ballware/meta-api";
+import { MetaStatisticApi } from "@ballware/meta-api";
 import { CompiledStatistic, QueryParams, StatisticLayout } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -13,7 +13,7 @@ import { StatisticState } from "./statistic.state";
 
 export class StatisticStore extends ComponentStore<StatisticState> implements StatisticService, OnDestroy {
     
-    constructor(private store: Store, private httpClient: HttpClient, private metaApiService: MetaApiService, private identityService: IdentityService, private lookupService: LookupService) {
+    constructor(private store: Store, private httpClient: HttpClient, private metaStatisticApi: MetaStatisticApi, private identityService: IdentityService, private lookupService: LookupService) {
         super({});
 
         this.state$
@@ -38,7 +38,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
 
         this.effect(_ => this.statistic$            
             .pipe(switchMap((statistic) => (statistic) 
-                ? this.metaApiService.metaStatisticApi.metadataForStatistic(statistic)
+                ? this.metaStatisticApi.metadataForStatistic(statistic)
                 : of(undefined)))
             .pipe(tap((statisticMetadata) => {                
                 this.updater((state, statisticMetadata: CompiledStatistic|undefined) => ({
@@ -51,7 +51,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
         this.effect(_ => combineLatest([this.metadata$, this.customParam$, this.headParams$, this.identityService.accessToken$, this.lookupService.lookups$])
             .pipe(switchMap(([metadata, customParam, headParams, accessToken, lookups]) => 
                 combineLatest([of(metadata), of(customParam), of(accessToken), of(headParams), of(lookups), (metadata && customParam && headParams && accessToken && lookups) 
-                    ? this.metaApiService.metaStatisticApi.dataForStatistic(metadata.identifier, headParams)
+                    ? this.metaStatisticApi.dataForStatistic(metadata.identifier, headParams)
                     : of(undefined)])                                                
             ))
             .pipe(tap(([metadata, customParam, accessToken, headParams, lookups, data]) => {

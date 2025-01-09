@@ -1,5 +1,5 @@
 import { inject } from "@angular/core";
-import { IdentityApiService, MetaApiService } from "@ballware/meta-api";
+import { IDENTITY_USER_API, META_TENANT_API } from "@ballware/meta-api";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
@@ -102,15 +102,15 @@ export const refreshToken = createEffect((actions$ = inject(Actions), oauthServi
         .pipe(tap(() => oauthService.refreshToken()))
 , { functional: true, dispatch: false });
 
-export const fetchAllowedTenants = createEffect((actions$ = inject(Actions), store = inject(Store), metaApiService = inject(MetaApiService)) =>
+export const fetchAllowedTenants = createEffect((actions$ = inject(Actions), store = inject(Store), metaTenantApi = inject(META_TENANT_API)) =>
     actions$.pipe((ofType(identityUserLogin)))
-        .pipe(switchMap(() => metaApiService.metaTenantApi.allowed()))
+        .pipe(switchMap(() => metaTenantApi.allowed()))
         .pipe(tap((allowedTenants) => store.dispatch(identityAllowedTenantsFetched({ allowedTenants }))))
 , { functional: true, dispatch: false });
 
-export const switchTenant = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), identityApiService = inject(IdentityApiService), translator = inject(TRANSLATOR)) =>
+export const switchTenant = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), identityUserApi = inject(IDENTITY_USER_API), translator = inject(TRANSLATOR)) =>
     actions$.pipe((ofType(identitySwitchTenant)))
-        .pipe(switchMap(({ tenant }) => identityApiService.identityUserApi.switchTenantFunc(tenant)))
+        .pipe(switchMap(({ tenant }) => identityUserApi.switchTenantFunc(tenant)))
         .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.logoutfortenantswitch') }}))))
         .pipe(tap(() => {
             oauthService.initLoginFlow();

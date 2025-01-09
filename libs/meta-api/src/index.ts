@@ -1,1 +1,1 @@
-export * from './lib/meta-api.module';
+export * from './lib';

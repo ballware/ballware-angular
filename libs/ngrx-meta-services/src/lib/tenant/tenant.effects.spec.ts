@@ -2,21 +2,21 @@ import { TestBed, fakeAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 
 import { Provider } from '@angular/core';
-import { MetaApiService } from '@ballware/meta-api';
 import { CompiledTenant } from '@ballware/meta-model';
 import { identityUserLogin } from '../identity/identity.actions';
 import { fetchTenant } from './tenant.effects';
+import { META_TENANT_API, MetaTenantApi } from '@ballware/meta-api';
 
 describe('TenantEffects', () => {
     
-    const metaApiServiceMock = {} as MetaApiService;
+    let metaTenantApiMock = {} as MetaTenantApi;
 
     beforeEach(() => {
         TestBed.configureTestingModule({            
             providers: [
                 { 
-                    provide: MetaApiService,
-                    useValue: metaApiServiceMock
+                    provide: META_TENANT_API,
+                    useFactory: () => metaTenantApiMock
                 } as Provider
             ]
         })
@@ -41,7 +41,7 @@ describe('TenantEffects', () => {
 
         const actions$ = of(identityUserLogin(mockedUser));
 
-        metaApiServiceMock.metaTenantApi =  {
+        metaTenantApiMock =  {
             metadataForTenant: jest.fn().mockReturnValue(of(mockedTenant)),
             allowed: jest.fn().mockReturnValue(true)
         };
@@ -57,7 +57,7 @@ describe('TenantEffects', () => {
                 callbackSpy();                
             });
 
-            expect(metaApiServiceMock.metaTenantApi.metadataForTenant).toHaveBeenCalledTimes(1);
+            expect(metaTenantApiMock.metadataForTenant).toHaveBeenCalledTimes(1);
             expect(callbackSpy).toHaveBeenCalledTimes(1);
         });
     }));

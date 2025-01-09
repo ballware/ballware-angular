@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
-import { MetaApiService } from "@ballware/meta-api";
+import { GenericEntityApiFactory, MetaEntityApi } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -17,7 +17,14 @@ interface TemplateItemOptions {
 }
 
 export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
-    constructor(private store: Store, private httpClient: HttpClient, private translator: Translator, private metaApiService: MetaApiService, private identityService: IdentityService, private tenantService: TenantService, private lookupService: LookupService) {
+    constructor(private store: Store, 
+        private httpClient: HttpClient, 
+        private translator: Translator, 
+        private metaEntityApi: MetaEntityApi, 
+        private genericEntityApiFactory: GenericEntityApiFactory,
+        private identityService: IdentityService, 
+        private tenantService: TenantService, 
+        private lookupService: LookupService) {
         super({});
 
         this.state$
@@ -42,7 +49,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
         this.effect(_ => this.entity$            
             .pipe(switchMap((entity) => (entity) 
-                ? this.metaApiService.metaEntityApi.metadataForEntity(entity)
+                ? this.metaEntityApi.metadataForEntity(entity)
                 : of(undefined)))
             .pipe(tap((entityMetadata) => {                
                 this.updater((state, entityMetadata: CompiledEntityMetadata|undefined) => ({
@@ -155,7 +162,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
         this.effect(_ => this.entity$            
             .pipe(switchMap((entity) => (entity) 
-                ? this.metaApiService.metaEntityApi.documentsForEntity(entity)
+                ? this.metaEntityApi.documentsForEntity(entity)
                 : of(undefined)))
             .pipe(tap((entityDocuments) => {                
                 if (entityDocuments) {
@@ -380,57 +387,57 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly count$ = this.entityMetadata$
         .pipe(map((entityMetadata) => (entityMetadata)
-            ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl).count(query, params)                
+            ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl).count(query, params)                
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
 
     readonly query$ = combineLatest([this.customParam$, this.entityMetadata$, this.identityService.accessToken$])
         .pipe(map(([customParam, entityMetadata, accessToken]) => (customParam && entityMetadata && accessToken)
-            ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+            ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl)
                 .query(query, params)
                 .pipe(map((items) => entityMetadata.itemMappingScript ? items?.map(item => entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, accessToken))) : items))
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
 
     readonly byId$ = combineLatest([this.customParam$, this.entityMetadata$, this.identityService.accessToken$])
         .pipe(map(([customParam, entityMetadata, accessToken]) => (customParam && entityMetadata && accessToken)
-        ? (id) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (id) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .byId('primary', id)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, accessToken)) : item))
         : undefined)) as Observable<((id: string) => Observable<CrudItem>)|undefined>;
 
     readonly create$ = combineLatest([this.customParam$, this.entityMetadata$, this.identityService.accessToken$])
         .pipe(map(([customParam, entityMetadata, accessToken]) => (customParam && entityMetadata && accessToken)
-        ? (query, params) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .new(query, params)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, accessToken)) : item))
         : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
 
     readonly save$ = combineLatest([this.customParam$, this.entityMetadata$, this.identityService.accessToken$])
         .pipe(map(([customParam, entityMetadata, accessToken]) => (customParam && entityMetadata && accessToken)
-        ? (query, item) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (query, item) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .save(query, entityMetadata.itemReverseMappingScript ? entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient, accessToken)) : item)
         : undefined)) as Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
 
     readonly saveBatch$ = combineLatest([this.customParam$, this.entityMetadata$, this.identityService.accessToken$])
         .pipe(map(([customParam, entityMetadata, accessToken]) => (customParam && entityMetadata && accessToken)
-        ? (query, items) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (query, items) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient, accessToken))) : items)
         : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;     
         
     readonly drop$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-        ? (item) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (item) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .drop(item.Id)
         : undefined)) as Observable<((item: CrudItem) => Observable<void>) | undefined>;
 
     readonly exportItems$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-        ? (query, items) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (query, items) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .exportItems(query, items.map(item => item.Id))
         : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<string>) | undefined>;
 
     readonly importItems$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-        ? (query, file) => this.metaApiService.metaGenericEntityApiFactory(entityMetadata.baseUrl)
+        ? (query, file) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .importItems(query, file)
         : undefined)) as Observable<((query: string, file: File) => Observable<void>) | undefined>;
 

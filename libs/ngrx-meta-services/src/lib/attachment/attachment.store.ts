@@ -1,5 +1,5 @@
 import { OnDestroy } from "@angular/core";
-import { ApiError, MetaApiService } from "@ballware/meta-api";
+import { ApiError, MetaAttachmentApiFactory } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
@@ -10,7 +10,7 @@ import { AttachmentState } from "./attachment.state";
 
 export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentService, OnDestroy {
     
-    constructor(private store: Store, private notificationService: NotificationService, private metaApiService: MetaApiService, private translator: Translator) {
+    constructor(private store: Store, private notificationService: NotificationService, private attachmentApiFactory: MetaAttachmentApiFactory, private translator: Translator) {
         super({});
 
         this.state$
@@ -52,7 +52,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     readonly fetch = this.effect<void>((trigger$) => 
         trigger$.pipe(withLatestFrom(this.owner$))        
             .pipe(switchMap(([, owner]) => owner
-                ? this.metaApiService.metaAttachmentApiFactory(owner).query()
+                ? this.attachmentApiFactory(owner).query()
                 : of(undefined)))
             .pipe(catchError((error: ApiError) => {
                     this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -70,7 +70,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     readonly upload = this.effect((file$: Observable<File>) => 
         file$.pipe(withLatestFrom(this.owner$))
             .pipe(switchMap(([file, owner]) => (owner && file)
-                ? this.metaApiService.metaAttachmentApiFactory(owner).upload(file)
+                ? this.attachmentApiFactory(owner).upload(file)
                     .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('attachment.messages.added'), severity: 'info' });                        
                     }))
@@ -86,7 +86,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     readonly open = this.effect((fileName$: Observable<string>) => 
         fileName$.pipe(withLatestFrom(this.owner$))
             .pipe(switchMap(([fileName, owner]) => (owner && fileName)
-                ? this.metaApiService.metaAttachmentApiFactory(owner).open(fileName)
+                ? this.attachmentApiFactory(owner).open(fileName)
                 : of(undefined)))
             .pipe(catchError((error: ApiError) => {
                 this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -109,7 +109,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     readonly drop = this.effect((fileName$: Observable<string>) => 
         fileName$.pipe(withLatestFrom(this.owner$))
             .pipe(switchMap(([fileName, owner]) => (owner && fileName)
-                ? this.metaApiService.metaAttachmentApiFactory(owner).remove(fileName)
+                ? this.attachmentApiFactory(owner).remove(fileName)
                     .pipe(tap(() => { 
                         this.notificationService.triggerNotification({ message: this.translator('attachment.messages.removed'), severity: 'info' });
                         
