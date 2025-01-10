@@ -25,18 +25,13 @@ import { EditStore } from './edit/edit.store';
 import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { ResponsiveServiceImplementation } from './responsive.service';
 
-export function provideNgrxMetaServices(): EnvironmentProviders {
+export * from './identity';
+
+export function provideNgrxBaseServices(): EnvironmentProviders {
   return makeEnvironmentProviders(    
     [  
       provideSettingsFeature(),
       provideNotificationFeature(),
-      provideIdentityFeature(),
-      provideIdentityEffects(),
-      provideTenantFeature(),
-      provideTenantEffects(),
-      provideToolbarFeature(),
-      provideToolbarEffects(),
-      provideComponentFeature(),
       {
         provide: TRANSLATOR,
         useFactory: (pipe: I18NextPipe): Translator => (key, options) => pipe.transform(key, options),
@@ -53,12 +48,36 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: NOTIFICATION_SERVICE,
         useFactory: (store: Store) => new NotificationServiceProxy(store),
         deps: [ Store ]
-      },          
+      },
+      {
+        provide: RESPONSIVE_SERVICE,
+        useFactory: () => new ResponsiveServiceImplementation(),
+        deps: []
+      },
+    ]);
+}
+
+export function provideNgrxOauthIdentityService(): EnvironmentProviders {
+  return makeEnvironmentProviders(    
+    [  
+      provideIdentityFeature(),
+      provideIdentityEffects(),
       {
         provide: IDENTITY_SERVICE,
         useFactory: (store: Store) => new IdentityServiceProxy(store),
         deps: [ Store ]
       },  
+    ]);
+}
+
+export function provideNgrxMetaServices(): EnvironmentProviders {
+  return makeEnvironmentProviders(    
+    [  
+      provideTenantFeature(),
+      provideTenantEffects(),
+      provideToolbarFeature(),
+      provideToolbarEffects(),
+      provideComponentFeature(),                            
       {
         provide: TENANT_SERVICE,
         useFactory: (store: Store) => new TenantServiceProxy(store),
@@ -68,11 +87,6 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: TOOLBAR_SERVICE,
         useFactory: (store: Store) => new ToolbarServiceProxy(store),
         deps: [ Store ]
-      },
-      {
-        provide: RESPONSIVE_SERVICE,
-        useFactory: () => new ResponsiveServiceImplementation(),
-        deps: []
       },
       {
         provide: ATTACHMENT_SERVICE_FACTORY,

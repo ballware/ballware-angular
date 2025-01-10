@@ -4,5 +4,7 @@ import { fetchAllowedTenants, initializeOAuth, logoutOAuth, manageProfile, notif
 import { identityReducer } from './identity.reducer';
 import { identityFeatureKey } from './identity.state';
 
+export * from './identity.actions';
+
 export const provideIdentityFeature = () => provideState(identityFeatureKey, identityReducer);
 export const provideIdentityEffects = () => provideEffects({ initializeOAuth, logoutOAuth, refreshToken, userExpired, manageProfile, notifyUserLogin, fetchAllowedTenants, switchTenant });

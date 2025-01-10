@@ -1,6 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 
-import { provideNgrxMetaServices } from '@ballware/ngrx-meta-services';
+import { provideNgrxBaseServices, provideNgrxMetaServices, provideNgrxOauthIdentityService } from '@ballware/ngrx-meta-services';
 import { provideStore } from '@ngrx/store';
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideEffects } from '@ngrx/effects';
@@ -37,6 +37,8 @@ export const appConfig: ApplicationConfig = {
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000'
         }),
+        provideNgrxBaseServices(),
+        provideNgrxOauthIdentityService(),
         provideNgrxMetaServices(),
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
         provideDxRenderFactoryRoutes(),
