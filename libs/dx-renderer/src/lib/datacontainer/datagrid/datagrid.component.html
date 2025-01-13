@@ -35,3 +35,19 @@
         <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>                    
     </div>
 </dx-data-grid>
+<dx-popup 
+  [visible]="showSearchByScanner" 
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="'datacontainer.actions.searchbarcode' | i18next"
+  (onHidden)="onScannerHidden()"
+  width="auto" 
+  minWidth="500px" 
+  maxHeight="90vh"
+  height="auto">
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onSearchByScannerCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <ballware-barcodescanner (valueChange)="onScannerValueChanged($event)"></ballware-barcodescanner>
+  </div> 
+</dx-popup>

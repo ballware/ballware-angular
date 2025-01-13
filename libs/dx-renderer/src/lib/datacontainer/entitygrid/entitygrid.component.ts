@@ -70,6 +70,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   public showPrint$: Observable<boolean>;
   public showImport$: Observable<boolean>;
   public showExport$: Observable<boolean>;
+  public showSearchScanner$: Observable<boolean>;
 
   private selectAddRequest$ = new Subject<{ target: Element }>();
 
@@ -113,6 +114,10 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
 
     this.showImport$ = this.crudService.importMenuItems$
       .pipe(map((importMenuItems) => (importMenuItems ?? []).length > 0));
+
+    this.showSearchScanner$ = this._gridLayout$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(map((gridLayout) => gridLayout?.allowSearchByBarcode ?? false));
 
     this.editLayoutIdentifier$ = this._gridLayout$
       .pipe(takeUntil(this.destroy$))

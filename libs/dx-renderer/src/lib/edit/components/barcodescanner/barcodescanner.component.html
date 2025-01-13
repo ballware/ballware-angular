@@ -1,0 +1,33 @@
+<dx-toolbar>
+    <dxi-item location="before">
+        <div *dxTemplate>
+            <dx-select-box 
+                displayExpr="label"
+                width="auto"
+                [label]="'editing.items.barcodescanner.labels.camera' | i18next" 
+                [items]="devices" 
+                [(value)]="activeDevice">
+            </dx-select-box>
+        </div>
+    </dxi-item>
+    <dxi-item location="after">
+        <div *dxTemplate>
+            <dx-button
+                icon="bi bi-lightning"
+                [text]="'editing.items.barcodescanner.labels.torch' | i18next" 
+                [disabled]="!torchCompatible"
+                (onClick)="onTorchClicked()">
+            </dx-button>
+        </div>
+    </dxi-item>
+</dx-toolbar>
+<zxing-scanner [formats]="allowedFormats"
+    [(device)]="activeDevice"
+    [torch]="torchEnabled"
+    (torchCompatible)="onTorchCompatible($event)"
+    (camerasFound)="onCamerasFound($event)"
+    (camerasNotFound)="onCamerasNotFound()"
+    (scanError)="onScanError($event)"
+    (scanComplete)="onScanComplete($event)"
+>
+</zxing-scanner>

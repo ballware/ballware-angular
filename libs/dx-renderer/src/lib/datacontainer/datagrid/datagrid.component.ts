@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
-import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
-import { DxDataGridComponent, DxDataGridModule } from 'devextreme-angular';
+import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
+import { DxDataGridComponent, DxDataGridModule, DxPopupModule } from 'devextreme-angular';
 import DataSource from 'devextreme/data/data_source';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import dxButton from 'devextreme/ui/button';
@@ -9,9 +9,12 @@ import { Column, EditingStartEvent, EditorPreparingEvent, ExportingEvent, RowDbl
 import { Item } from 'devextreme/ui/toolbar';
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
-import { combineLatest, takeUntil } from 'rxjs';
+import { combineLatest, map, Observable, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { CommonModule } from '@angular/common';
+
+import { I18NextModule } from 'angular-i18next';
+import { BarcodeScannerComponent } from '../../edit';
 
 interface EditComponentWithOptions {
   /**
@@ -41,7 +44,7 @@ export interface DatagridSummary {
   selector: 'ballware-datagrid',
   templateUrl: './datagrid.component.html',
   styleUrls: ['./datagrid.component.scss'],
-  imports: [CommonModule, DxDataGridModule],
+  imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent],
   standalone: true
 })
 export class DatagridComponent extends WithDestroy() implements OnInit {
@@ -62,6 +65,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   @Input() showPrint!: boolean;
   @Input() showExport!: boolean;
   @Input() showImport!: boolean;
+  @Input() searchByScanner!: boolean;
   @Input() customFunctions!: Array<EntityCustomFunction>;
   @Input() masterDetailTemplate!: TemplateRef<any>;
 
@@ -87,15 +91,24 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   public selectedRowData: CrudItem[] = [];
 
   public initialized = false;
+  public showSearchByScanner = false;
 
+  public fullscreenDialogs$: Observable<boolean>;
+  
   constructor(
+    @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService,
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private masterDetailService: MasterdetailService,
     @Inject(TRANSLATOR) private translator: Translator) {
     super();
 
+    this.fullscreenDialogs$ = this.responsiveService.onResize$
+          .pipe(takeUntil(this.destroy$))
+          .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+
     this.customizeColumns = this.customizeColumns.bind(this);
+    this.onSearchByScannerCancel = this.onSearchByScannerCancel.bind(this);
   }
 
   ngOnInit(): void {
@@ -199,6 +212,23 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   }
 
   public toolbarPreparing(e: ToolbarPreparingEvent) {
+
+    if (this.searchByScanner && e.toolbarOptions?.items) { 
+      e.toolbarOptions.items.unshift({
+        locateInMenu: 'auto',
+        location: 'after',
+        widget: 'dxButton',
+        showText: 'inMenu',
+        options: {
+          hint: this.translator('datacontainer.actions.searchbarcode'),
+          text: this.translator('datacontainer.actions.searchbarcode'),
+          icon: 'bi bi-qr-code-scan',
+          onClick: (e: { event: { currentTarget: Element } }) => {
+            this.showSearchByScanner = true;
+          },
+        },
+      } as Item);
+    }
 
     if (this.showReload && e.toolbarOptions?.items) {
       e.toolbarOptions.items.unshift({
@@ -442,5 +472,18 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
         this.gridSelection.option('icon', undefined);
       }
     }
+  }
+
+  public onScannerValueChanged(value: ValueType) {
+    this.grid?.instance.searchByText(value as string);
+    this.showSearchByScanner = false;
+  }
+
+  public onScannerHidden() {
+    this.showSearchByScanner = false;
+  }
+
+  public onSearchByScannerCancel() {
+    this.showSearchByScanner = false;
   }
 }

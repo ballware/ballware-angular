@@ -654,6 +654,11 @@ export interface GridLayout {
   allowEditing?: boolean;
 
   /**
+   * Enable search by qr/barcode functionality in table
+   */
+  allowSearchByBarcode?: boolean;
+
+  /**
    * List of column definitions
    */
   columns: Array<GridLayoutColumn>;

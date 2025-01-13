@@ -195,6 +195,16 @@ export interface StatisticOptions {
 }
 
 /**
+ * Options for layout item type 'text'
+ */
+export interface TextOptions {
+  /**
+   * Allow barcode/qr code scan 
+   */
+  allowScanner?: boolean;
+}
+
+/**
  * Basic options for layout item element
  */
 export interface PageLayoutItemOptions {
@@ -211,7 +221,8 @@ export interface PageLayoutItemOptions {
   /**
    * Item type specific options
    */
-  itemoptions?:
+  itemoptions?: 
+    | TextOptions
     | TabsOptions
     | TabItemOptions
     | CrudContainerOptions

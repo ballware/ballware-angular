@@ -26,3 +26,5 @@ export { EditLayoutTextareaComponent } from './textarea/textarea.component';
 export { EditLayoutJsonComponent } from './json/json.component';
 export { EditLayoutJavascriptComponent } from './javascript/javascript.component';
 export { EditLayoutSqlComponent } from './sql/sql.component';
+
+export { BarcodeScannerComponent } from './components/barcodescanner/barcodescanner.component';

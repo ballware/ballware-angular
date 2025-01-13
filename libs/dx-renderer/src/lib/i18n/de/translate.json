@@ -54,6 +54,7 @@
         "import": "Importieren",
         "showSource": "Als Quellcode zeigen",
         "showList": "Als Liste zeigen",
+        "searchbarcode": "Nach Barcode/QR-Code suchen",
         "selectall": "Alle auswählen",
         "unselectall": "Auswahl aufheben",
         "selection": "Auswahl: {{count}}",
@@ -77,7 +78,8 @@
         "apply": "Speichern",
         "cancel": "Abbruch",
         "remove": "Entfernen",
-        "close": "Schliessen"
+        "close": "Schliessen",
+        "enterbarcode": "Barcode/QR-Code einlesen"
       },
       "notifications": {
         "saved": "Erfolgreich gespeichert",
@@ -88,6 +90,14 @@
       "import": {
         "popuptitle": "Datei importieren",
         "popupmessage": "Datei mit Daten für den Import hochladen"
+      },
+      "items": {
+        "barcodescanner": {
+          "labels": {
+            "camera": "Kamera",
+            "torch": "Licht"
+          }
+        }
       }
     },
     "documentation": {

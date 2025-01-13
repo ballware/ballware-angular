@@ -2,15 +2,21 @@
 
 exports[`EditLayoutTextComponent should create mail 1`] = `
 <ballware-edit-text
+  allowScanner={[Function Boolean]}
   destroy={[Function Destroy]}
+  fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
+  onScannerCancel={[Function Function]}
+  onScannerClicked={[Function Function]}
   readonly={[Function Readonly]}
+  responsiveService={[Function ]}
+  showScanner="false"
   validation={[Function Validation]}
   value={[Function StringValue]}
   visible={[Function Visible]}
 >
   <dx-text-box
-    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-show-clear-button dx-editor-outlined dx-texteditor-empty dx-widget"
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
   >
     <div
       class="dx-texteditor-container"
@@ -34,30 +40,60 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
       <div
         class="dx-texteditor-buttons-container"
       >
-        <span
-          class="dx-clear-button-area"
+        <div
+          aria-label="bi bi-qr-code-scan"
+          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+          role="button"
+          tabindex="0"
         >
-          <span
-            class="dx-icon dx-icon-clear"
-          />
-        </span>
+          <div
+            class="dx-button-content"
+          >
+            <i
+              class="dx-icon bi bi-qr-code-scan"
+            />
+          </div>
+        </div>
       </div>
     </div>
-  </dx-text-box>
+  </dx-text-box><dx-popup
+    class="dx-overlay dx-popup dx-widget dx-state-invisible dx-visibility-change-handler"
+    height="auto"
+    maxheight="90vh"
+    minwidth="500px"
+    width="auto"
+  >
+    <div
+      class="dx-overlay-content dx-popup-fullscreen-width dx-popup-normal"
+      role="dialog"
+      style="min-width: 500px; max-height: 90vh; width: auto; height: auto;"
+      tabindex="0"
+    >
+      <div
+        class="dx-popup-content dx-popup-content-scrollable"
+      />
+    </div>
+  </dx-popup>
 </ballware-edit-text>
 `;
 
 exports[`EditLayoutTextComponent should create text 1`] = `
 <ballware-edit-text
+  allowScanner={[Function Boolean]}
   destroy={[Function Destroy]}
+  fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
+  onScannerCancel={[Function Function]}
+  onScannerClicked={[Function Function]}
   readonly={[Function Readonly]}
+  responsiveService={[Function ]}
+  showScanner="false"
   validation={[Function Validation]}
   value={[Function StringValue]}
   visible={[Function Visible]}
 >
   <dx-text-box
-    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-show-clear-button dx-editor-outlined dx-texteditor-empty dx-widget"
+    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
   >
     <div
       class="dx-texteditor-container"
@@ -81,15 +117,39 @@ exports[`EditLayoutTextComponent should create text 1`] = `
       <div
         class="dx-texteditor-buttons-container"
       >
-        <span
-          class="dx-clear-button-area"
+        <div
+          aria-label="bi bi-qr-code-scan"
+          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+          role="button"
+          tabindex="0"
         >
-          <span
-            class="dx-icon dx-icon-clear"
-          />
-        </span>
+          <div
+            class="dx-button-content"
+          >
+            <i
+              class="dx-icon bi bi-qr-code-scan"
+            />
+          </div>
+        </div>
       </div>
     </div>
-  </dx-text-box>
+  </dx-text-box><dx-popup
+    class="dx-overlay dx-popup dx-widget dx-state-invisible dx-visibility-change-handler"
+    height="auto"
+    maxheight="90vh"
+    minwidth="500px"
+    width="auto"
+  >
+    <div
+      class="dx-overlay-content dx-popup-fullscreen-width dx-popup-normal"
+      role="dialog"
+      style="min-width: 500px; max-height: 90vh; width: auto; height: auto;"
+      tabindex="0"
+    >
+      <div
+        class="dx-popup-content dx-popup-content-scrollable"
+      />
+    </div>
+  </dx-popup>
 </ballware-edit-text>
 `;

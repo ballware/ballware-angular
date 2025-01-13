@@ -53,6 +53,7 @@
         "import": "Import",
         "showSource": "Show source",
         "showList": "Show list",
+        "searchbarcode": "Search for barcode/qr-code",
         "selectall": "Select all",
         "unselectall": "Unselect all",
         "selection": "Selection: {{count}}",
@@ -76,7 +77,8 @@
         "apply": "Apply changes",
         "cancel": "Cancel",
         "remove": "Remove",
-        "close": "Close"
+        "close": "Close",
+        "enterbarcode": "Scan barcode/qr-code"
       },
       "notifications": {
         "saved": "Successfully saved",
@@ -87,6 +89,14 @@
       "import": {
         "popuptitle": "Import file",
         "popupmessage": "Upload file containing data for import"
+      },
+      "items": {
+        "barcodescanner": {
+          "labels": {
+            "camera": "Kamera",
+            "torch": "Light"
+          }
+        }
       }
     },
     "documentation": {
