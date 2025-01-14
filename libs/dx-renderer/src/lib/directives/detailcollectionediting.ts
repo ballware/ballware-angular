@@ -33,6 +33,7 @@ export interface DetailCollectionEditingOptions {
     add?: boolean;
     update?: boolean;
     delete?: boolean;
+    editMode?: 'row' | 'instant';
     columns: Array<GridLayoutColumn>;
     showSource?: boolean;
 }
@@ -49,6 +50,7 @@ export class DetailCollectionEditing implements OnInit {
 
     public columns: ColumnType[]|undefined;
 
+    public editMode: 'row' | 'instant' = 'row';
     public allowAdd = false;
     public allowUpdate = false;
     public allowDelete = false;
@@ -129,6 +131,7 @@ export class DetailCollectionEditing implements OnInit {
                     this.options = layoutItem.options?.itemoptions as DetailCollectionEditingOptions;
                     this.lookupParams = item;
     
+                    this.editMode = (!readonly) ? this.options?.editMode ?? 'row' : 'row';
                     this.allowAdd = (!readonly && this.options?.add) ?? false;
                     this.allowUpdate = (!readonly && this.options?.update) ?? false;
                     this.allowDelete = (!readonly && this.options?.delete) ?? false;
@@ -150,6 +153,7 @@ export class DetailCollectionEditing implements OnInit {
                         lookups,
                         item,
                         'detail',
+                        this.options.editMode ?? 'row',
                         undefined,
                         undefined
                     );

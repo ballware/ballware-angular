@@ -14,9 +14,9 @@
     (onEditorPreparing)="editing.onEditorPreparing($event)"
     (onInitNewRow)="editing.onInitNewRow($event)"
     (onRowValidating)="editing.onRowValidating($event)">
-    <dxo-editing mode="row" [useIcons]="true" 
+    <dxo-editing [mode]="editing.editMode === 'row' ? 'row' : 'cell'" [useIcons]="true" 
         [allowAdding]="editing.allowAdd" 
-        [allowUpdating]="editing.allowUpdate" 
+        [allowUpdating]="editing.editMode === 'row' && editing.allowUpdate" 
         [allowDeleting]="editing.allowDelete"
         [(editRowKey)]="editing.gridEditRowKey"
         [(changes)]="editing.gridEditChanges">

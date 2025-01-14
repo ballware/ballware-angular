@@ -19,6 +19,7 @@ export type OptionButtons =
   function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
     t: (id: string, param?: Record<string, unknown>) => string,
     c: GridLayoutColumn,
+    editMode: 'row' | 'instant',
     lookups:
       | Record<
           string,
@@ -27,7 +28,13 @@ export type OptionButtons =
       | undefined,
     lookupParams: Record<string, unknown>
   ) {
-    switch (c.type) {
+    let type = c.type;
+
+    if (editMode === 'instant' && c.editable && type != 'staticmultilookup' && type !== 'dynamic' && type !== 'popup') {
+      type = 'dynamic';
+    }
+
+    switch (type) {
       case 'text':
         return {
           dataField: c.dataMember,
@@ -151,11 +158,11 @@ export type OptionButtons =
           width: c.width,
           fixed: c.fixedPosition ? true : false,
           fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
+          allowEditing: (editMode === 'row' && c.editable) ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
-          cellTemplate: 'static',
+          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
           editCellTemplate: 'staticedit',
         } as ColumnType;
       }
@@ -166,11 +173,11 @@ export type OptionButtons =
           width: c.width,
           fixed: c.fixedPosition ? true : false,
           fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
+          allowEditing: (editMode === 'row' && c.editable) ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
-          cellTemplate: 'dynamic',
+          cellTemplate: editMode === 'instant' && c.editable ? 'dynamicedit' : 'dynamic',
           editCellTemplate: 'dynamicedit',
         } as ColumnType;
       }
@@ -216,6 +223,7 @@ export function createColumnConfiguration<
     | undefined,
   lookupParams: Record<string, unknown>,
   mode: 'small' | 'medium' | 'large' | 'detail',
+  editMode: 'row' | 'instant',
   onButtonClick?: (
     button: OptionButtons,
     data: CrudItem,
@@ -226,7 +234,7 @@ export function createColumnConfiguration<
   const gridColumns =
     cloneDeep(columns ?? [])
       .sort((a, b) => ((a.position ?? 0) < (b.position ?? 0) ? -1 : (a.position ?? 0) > (b.position ?? 0) ? 1 : 0))
-      .map(c => createColumn<ColumnType>(t, c, lookups, lookupParams)) ?? [];
+      .map(c => createColumn<ColumnType>(t, c, editMode, lookups, lookupParams)) ?? [];
 
   switch (mode) {
     case 'small':

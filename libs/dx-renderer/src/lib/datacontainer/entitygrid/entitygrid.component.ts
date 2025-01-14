@@ -137,8 +137,9 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
         (key, options) => this.translator(key, options),
         gridLayout?.columns ?? [],
         lookups,
-        headParams,
+        headParams,        
         (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')),
+        'row',
         (button, data, target) => buttonClicked(button, editLayoutIdentifier, data, target),
         buttonAllowed) : undefined));
 
