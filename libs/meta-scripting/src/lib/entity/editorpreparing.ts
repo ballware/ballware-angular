@@ -1,7 +1,9 @@
 import { EditorPreparingFunc } from "@ballware/meta-model";
 
-export const compileEditorPreparing = (customScript: string|undefined): EditorPreparingFunc => {
+export const compileEditorPreparing = (customScript: string|undefined, commonUtils?: string|undefined): EditorPreparingFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledEditorPreparingArgs = [
             'mode',
             'item',
@@ -13,7 +15,7 @@ export const compileEditorPreparing = (customScript: string|undefined): EditorPr
 
         const compiledEditorPreparingFn = Function.apply(
             Function,
-            compiledEditorPreparingArgs.concat(customScript)
+            compiledEditorPreparingArgs.concat(prefixedCode)
         );
 
         return (mode, item, layoutItem, identifier, lookups, util) =>

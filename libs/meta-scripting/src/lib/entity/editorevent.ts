@@ -1,7 +1,9 @@
 import { EditorEventFunc } from "@ballware/meta-model";
 
-export const compileEditorEvent = (customScript: string|undefined): EditorEventFunc => {
+export const compileEditorEvent = (customScript: string|undefined, commonUtils?: string|undefined): EditorEventFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'item',
             'editUtil',
@@ -13,7 +15,7 @@ export const compileEditorEvent = (customScript: string|undefined): EditorEventF
         
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (item, editUtil, identifier, event, lookups, util) =>

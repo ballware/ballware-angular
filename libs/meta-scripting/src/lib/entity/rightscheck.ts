@@ -1,8 +1,10 @@
 import { EntityRightsCheckFunc } from "@ballware/meta-model";
 
-export const compileRightsCheckFunc = (customScript: string|undefined): EntityRightsCheckFunc => {
+export const compileRightsCheckFunc = (customScript: string|undefined, commonUtils?: string|undefined): EntityRightsCheckFunc => {
 
     if (customScript) {
+      const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
       const compiledRightsCheckArgs = [
         'userinfo',
         'application',
@@ -14,7 +16,7 @@ export const compileRightsCheckFunc = (customScript: string|undefined): EntityRi
       ];
       const compiledRightsCheckFn = Function.apply(
         Function,
-        compiledRightsCheckArgs.concat(customScript)
+        compiledRightsCheckArgs.concat(prefixedCode)
       );
   
       return (userinfo, application, entity, readOnly, right, param, result) =>

@@ -1,7 +1,9 @@
 import { PrepareEditLayoutFunc } from "@ballware/meta-model";
 
-export const compilePrepareEditLayout = (customScript: string|undefined): PrepareEditLayoutFunc => {
+export const compilePrepareEditLayout = (customScript: string|undefined, commonUtils?: string|undefined): PrepareEditLayoutFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'mode',
             'lookups',
@@ -12,7 +14,7 @@ export const compilePrepareEditLayout = (customScript: string|undefined): Prepar
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
     
         return (mode, lookups, customParam, util, editLayout) =>

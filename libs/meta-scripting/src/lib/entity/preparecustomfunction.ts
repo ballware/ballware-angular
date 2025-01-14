@@ -1,7 +1,9 @@
 import { PrepareCustomFunctionFunc } from "@ballware/meta-model";
 
-export const compilePrepareCustomFunction = (customScript: string|undefined): PrepareCustomFunctionFunc => {
+export const compilePrepareCustomFunction = (customScript: string|undefined, commonUtils?: string|undefined): PrepareCustomFunctionFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'identifier',
             'lookups',
@@ -14,7 +16,7 @@ export const compilePrepareCustomFunction = (customScript: string|undefined): Pr
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
     
         return (

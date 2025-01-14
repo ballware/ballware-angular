@@ -1,7 +1,9 @@
 import { EditorValidatingFunc } from "@ballware/meta-model";
 
-export const compileEditorValidating = (customScript: string|undefined): EditorValidatingFunc => {
+export const compileEditorValidating = (customScript: string|undefined, commonUtils?: string|undefined): EditorValidatingFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'item',
             'editUtil',
@@ -14,7 +16,7 @@ export const compileEditorValidating = (customScript: string|undefined): EditorV
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (item, editUtil, identifier, value, validation, lookups, util) =>

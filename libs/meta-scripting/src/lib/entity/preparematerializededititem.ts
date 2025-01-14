@@ -1,7 +1,9 @@
 import { PrepareMaterializedEditItemFunc } from "@ballware/meta-model";
 
-export const compilePrepareMaterializedEditItem = (customScript: string|undefined): PrepareMaterializedEditItemFunc => {
+export const compilePrepareMaterializedEditItem = (customScript: string|undefined, commonUtils?: string|undefined): PrepareMaterializedEditItemFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'mode',
             'lookups',
@@ -15,7 +17,7 @@ export const compilePrepareMaterializedEditItem = (customScript: string|undefine
         
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (mode, lookups, customParam, util, editLayout, scope, identifier, materializedItem) =>

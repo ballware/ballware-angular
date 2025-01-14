@@ -25,6 +25,7 @@ interface EntityMetadata {
 }
 
 interface EntityCustomScripts {
+  commonUtils?: string;
   extendedRightsCheck?: string;
   rightsParamForHead?: string;
   rightsParamForItem?: string;
@@ -55,9 +56,13 @@ const compileEntityMetadata = (
     baseUrl: metaData.BaseUrl,
     stateColumn: metaData.StateColumn,
   } as CompiledEntityMetadata;
+  
+  const customScripts = metaData.CustomScripts ? parse(
+    metaData.CustomScripts
+  ) as EntityCustomScripts : {} as EntityCustomScripts;
 
-  compiledMetaData.itemMappingScript = compileItemMapping(metaData.ItemMappingScript);
-  compiledMetaData.itemReverseMappingScript = compileItemMapping(metaData.ItemReverseMappingScript);
+  compiledMetaData.itemMappingScript = compileItemMapping(metaData.ItemMappingScript, customScripts.commonUtils);
+  compiledMetaData.itemReverseMappingScript = compileItemMapping(metaData.ItemReverseMappingScript, customScripts.commonUtils);
 
   if (metaData.GridLayout) {
     compiledMetaData.gridLayouts = parse(metaData.GridLayout) as Array<
@@ -90,29 +95,25 @@ const compileEntityMetadata = (
     compiledMetaData.customFunctions = parse(metaData.CustomFunctions);
   }
 
-  const customScripts = metaData.CustomScripts ? parse(
-    metaData.CustomScripts
-  ) as EntityCustomScripts : {} as EntityCustomScripts;
-
   compiledMetaData.compiledCustomScripts = {
-    rightsCheck: compileRightsCheckFunc(customScripts.extendedRightsCheck),
-    rightsParamForHead: compileRightsParamForHead(customScripts.rightsParamForHead),
-    rightsParamForItem: compileRightsParamForItem(customScripts.rightsParamForItem),
+    rightsCheck: compileRightsCheckFunc(customScripts.extendedRightsCheck, customScripts.commonUtils),
+    rightsParamForHead: compileRightsParamForHead(customScripts.rightsParamForHead, customScripts.commonUtils),
+    rightsParamForItem: compileRightsParamForItem(customScripts.rightsParamForItem, customScripts.commonUtils),
     prepareCustomParam: compilePrepareCustomParam(customScripts.prepareCustomParam),
-    prepareGridLayout: compilePrepareGridLayout(customScripts.prepareGridLayout),
-    prepareEditLayout: compilePrepareEditLayout(customScripts.prepareEditLayout),
-    prepareMaterializedEditItem: compilePrepareMaterializedEditItem(customScripts.prepareMaterializedEditItem),
-    editorPreparing: compileEditorPreparing(customScripts.editorPreparing),
-    editorInitialized: compileEditorInitialized(customScripts.editorInitialized),
-    editorValueChanged: compileEditorValueChanged(customScripts.editorValueChanged),
-    editorEntered: compileEditorEntered(customScripts.editorEntered),
-    editorEvent: compileEditorEvent(customScripts.editorEvent),
-    editorValidating: compileEditorValidating(customScripts.editorValidating),
-    detailGridCellPreparing: compileDetailGridCellPreparing(customScripts.detailGridCellPreparing),
-    detailGridRowValidating: compileDetailGridRowValidating(customScripts.detailGridRowValidating),
-    initNewDetailItem: compileInitNewDetailItem(customScripts.initNewDetailItem),
-    prepareCustomFunction: compilePrepareCustomFunction(customScripts.prepareCustomFunction),
-    evaluateCustomFunction: compileEvaluateCustomFunction(customScripts.evaluateCustomFunction)
+    prepareGridLayout: compilePrepareGridLayout(customScripts.prepareGridLayout, customScripts.commonUtils),
+    prepareEditLayout: compilePrepareEditLayout(customScripts.prepareEditLayout, customScripts.commonUtils),
+    prepareMaterializedEditItem: compilePrepareMaterializedEditItem(customScripts.prepareMaterializedEditItem, customScripts.commonUtils),
+    editorPreparing: compileEditorPreparing(customScripts.editorPreparing, customScripts.commonUtils),
+    editorInitialized: compileEditorInitialized(customScripts.editorInitialized, customScripts.commonUtils),
+    editorValueChanged: compileEditorValueChanged(customScripts.editorValueChanged, customScripts.commonUtils),
+    editorEntered: compileEditorEntered(customScripts.editorEntered, customScripts.commonUtils),
+    editorEvent: compileEditorEvent(customScripts.editorEvent, customScripts.commonUtils),
+    editorValidating: compileEditorValidating(customScripts.editorValidating, customScripts.commonUtils),
+    detailGridCellPreparing: compileDetailGridCellPreparing(customScripts.detailGridCellPreparing, customScripts.commonUtils),
+    detailGridRowValidating: compileDetailGridRowValidating(customScripts.detailGridRowValidating, customScripts.commonUtils),
+    initNewDetailItem: compileInitNewDetailItem(customScripts.initNewDetailItem, customScripts.commonUtils),
+    prepareCustomFunction: compilePrepareCustomFunction(customScripts.prepareCustomFunction, customScripts.commonUtils),
+    evaluateCustomFunction: compileEvaluateCustomFunction(customScripts.evaluateCustomFunction, customScripts.commonUtils)
   };
 
   return compiledMetaData;

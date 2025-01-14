@@ -1,7 +1,9 @@
 import { DetailGridCellPreparingFunc } from "@ballware/meta-model";
 
-export const compileDetailGridCellPreparing = (customScript: string|undefined): DetailGridCellPreparingFunc => {
+export const compileDetailGridCellPreparing = (customScript: string|undefined, commonUtils?: string|undefined): DetailGridCellPreparingFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'mode',
             'item',
@@ -13,7 +15,7 @@ export const compileDetailGridCellPreparing = (customScript: string|undefined): 
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (mode, item, detailItem, identifier, options, util) =>

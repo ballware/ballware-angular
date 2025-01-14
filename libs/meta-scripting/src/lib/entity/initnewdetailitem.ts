@@ -1,12 +1,14 @@
 import { InitNewDetailItemFunc } from "@ballware/meta-model";
 
-export const compileInitNewDetailItem = (customScript: string|undefined): InitNewDetailItemFunc => {
+export const compileInitNewDetailItem = (customScript: string|undefined, commonUtils?: string|undefined): InitNewDetailItemFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = ['dataMember', 'item', 'detailItem', 'util'];
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
   
         return (dataMember, item, detailItem, util) =>

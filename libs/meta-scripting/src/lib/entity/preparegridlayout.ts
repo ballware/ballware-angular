@@ -1,11 +1,13 @@
 import { PrepareGridLayoutFunc } from "@ballware/meta-model";
 
-export const compilePrepareGridLayout = (customScript: string|undefined): PrepareGridLayoutFunc => {
+export const compilePrepareGridLayout = (customScript: string|undefined, commonUtils?: string|undefined): PrepareGridLayoutFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = ['lookups', 'customParam', 'util', 'gridLayout'];
         const compiledFn = Function.apply(
           Function,
-          compiledArgs.concat(customScript)
+          compiledArgs.concat(prefixedCode)
         );
   
         return (lookups, customParam, util, gridLayout) =>

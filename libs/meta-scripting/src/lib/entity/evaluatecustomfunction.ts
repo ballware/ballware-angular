@@ -1,7 +1,9 @@
 import { EvaluateCustomFunctionFunc } from "@ballware/meta-model";
 
-export const compileEvaluateCustomFunction = (customScript: string|undefined): EvaluateCustomFunctionFunc => {
+export const compileEvaluateCustomFunction = (customScript: string|undefined, commonUtils?: string|undefined): EvaluateCustomFunctionFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = [
             'identifier',
             'lookups',
@@ -13,7 +15,7 @@ export const compileEvaluateCustomFunction = (customScript: string|undefined): E
         
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
     
         return (identifier, lookups, util, param, executeCallback, messageCallback) => compiledFn.apply(compiledFn, [

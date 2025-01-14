@@ -1,13 +1,15 @@
 import { cloneDeep } from 'lodash';
 import { ItemMappingFunc } from "@ballware/meta-model";
 
-export const compileItemMapping = (customScript: string|undefined): ItemMappingFunc => {
+export const compileItemMapping = (customScript: string|undefined, commonUtils?: string|undefined): ItemMappingFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = ['item', 'customParam', 'util'];
         
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (item, customParam, util) =>

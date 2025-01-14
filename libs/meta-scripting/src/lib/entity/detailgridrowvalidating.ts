@@ -1,12 +1,14 @@
 import { DetailGridRowValidatingFunc } from "@ballware/meta-model";
 
-export const compileDetailGridRowValidating = (customScript: string|undefined): DetailGridRowValidatingFunc => {
+export const compileDetailGridRowValidating = (customScript: string|undefined, commonUtils?: string|undefined): DetailGridRowValidatingFunc => {
     if (customScript) {
+        const prefixedCode = commonUtils ? commonUtils + '\n' + customScript : customScript;
+
         const compiledArgs = ['mode', 'item', 'detailItem', 'identifier', 'util'];
 
         const compiledFn = Function.apply(
             Function,
-            compiledArgs.concat(customScript)
+            compiledArgs.concat(prefixedCode)
         );
 
         return (mode, item, detailItem, identifier, util) =>
