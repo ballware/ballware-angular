@@ -51,7 +51,7 @@ export class EditLayoutTextComponent implements OnInit {
             this.validation.validateEmail(true);
           }
 
-          this.allowScanner =  (layoutItem.options?.itemoptions as TextOptions)?.allowScanner ?? true;
+          this.allowScanner =  (layoutItem.options?.itemoptions as TextOptions)?.allowScanner ?? false;
         }
       });    
   }
