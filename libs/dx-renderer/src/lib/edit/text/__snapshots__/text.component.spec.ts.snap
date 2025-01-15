@@ -2,7 +2,7 @@
 
 exports[`EditLayoutTextComponent should create mail 1`] = `
 <ballware-edit-text
-  allowScanner={[Function Boolean]}
+  allowScanner="false"
   destroy={[Function Destroy]}
   fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
@@ -41,8 +41,9 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
         class="dx-texteditor-buttons-container"
       >
         <div
+          aria-hidden="true"
           aria-label="bi bi-qr-code-scan"
-          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon dx-state-invisible"
           role="button"
           tabindex="0"
         >
@@ -79,7 +80,7 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
 
 exports[`EditLayoutTextComponent should create text 1`] = `
 <ballware-edit-text
-  allowScanner={[Function Boolean]}
+  allowScanner="false"
   destroy={[Function Destroy]}
   fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
@@ -118,8 +119,9 @@ exports[`EditLayoutTextComponent should create text 1`] = `
         class="dx-texteditor-buttons-container"
       >
         <div
+          aria-hidden="true"
           aria-label="bi bi-qr-code-scan"
-          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+          class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon dx-state-invisible"
           role="button"
           tabindex="0"
         >

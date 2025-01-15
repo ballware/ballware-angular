@@ -9,13 +9,11 @@
   (onFocusIn)="livecycle.onEntered()">
   <dxi-button 
     name="scanner" 
-    location="after" 
-    
-    [visible]="allowScanner" 
-    [disabled]="(readonly.readonly$ | async) ?? false"
+    location="after"     
     [options]="{ 
       icon: 'bi bi-qr-code-scan', 
-      onClick: onScannerClicked 
+      onClick: onScannerClicked,
+      visible: allowScanner
     }">
   </dxi-button>
   <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
