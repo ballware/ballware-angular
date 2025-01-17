@@ -26,13 +26,16 @@ describe('ResponsiveDetectorComponent', () => {
   });
 
   it('should create and notify screen changes', () => {
-    
+    jest.useFakeTimers();
+
     fixture = TestBed.createComponent(ResponsiveDetectorComponent);
     component = fixture.componentInstance;
 
     expect(component).toBeTruthy();
 
     fixture.detectChanges();
+
+    jest.runAllTimers();
 
     global.dispatchEvent(new Event("resize"));
 
