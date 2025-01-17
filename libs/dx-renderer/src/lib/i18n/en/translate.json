@@ -94,7 +94,8 @@
         "barcodescanner": {
           "labels": {
             "camera": "Kamera",
-            "torch": "Light"
+            "torch": "Light",
+            "autofocus": "Autofocus"
           }
         }
       }

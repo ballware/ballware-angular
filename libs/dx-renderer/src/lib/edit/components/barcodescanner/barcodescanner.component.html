@@ -13,6 +13,15 @@
     <dxi-item location="after">
         <div *dxTemplate>
             <dx-button
+                icon="bi bi-binoculars"
+                [text]="'editing.items.barcodescanner.labels.autofocus' | i18next" 
+                (onClick)="onAutofocusClicked()">
+            </dx-button>
+        </div>
+    </dxi-item>
+    <dxi-item location="after">
+        <div *dxTemplate>
+            <dx-button
                 icon="bi bi-lightning"
                 [text]="'editing.items.barcodescanner.labels.torch' | i18next" 
                 [disabled]="!torchCompatible"
@@ -21,12 +30,18 @@
         </div>
     </dxi-item>
 </dx-toolbar>
-<zxing-scanner [formats]="allowedFormats"
+<zxing-scanner #scanner [formats]="allowedFormats"
+    [enable]="enabled"
     [(device)]="activeDevice"
+    [autostart]="true"
+    [autofocusEnabled]="autofocusEnabled"
     [torch]="torchEnabled"
+    [tryHarder]="false"
+    [timeBetweenScans]="100"
     (torchCompatible)="onTorchCompatible($event)"
     (camerasFound)="onCamerasFound($event)"
     (camerasNotFound)="onCamerasNotFound()"
+    (deviceChange)="onDeviceChange($event)"
     (scanError)="onScanError($event)"
     (scanComplete)="onScanComplete($event)"
 >
