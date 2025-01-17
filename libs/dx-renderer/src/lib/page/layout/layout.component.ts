@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
   standalone: true
 })
 export class PageLayoutComponent extends WithDestroy() {
-  @HostBinding('class') classes = 'flex-fill overflow-hidden row row-cols-xs-1 row-cols-lg-12';
+  @HostBinding('class') classes = 'flex-fill overflow-hidden row-cols-xs-1 row-cols-lg-12';
 
   public layout?: PageLayout;
 
