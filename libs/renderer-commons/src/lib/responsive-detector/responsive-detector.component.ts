@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, HostListener, Inject } from '@angular/core';
 import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { defer } from 'lodash';
 
 @Component({
   selector: 'ballware-responsive-detector',
@@ -37,7 +38,7 @@ export class ResponsiveDetectorComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.detectScreenSize();
+    defer(() => this.detectScreenSize());
   }
 
   private detectScreenSize() {
