@@ -14,7 +14,9 @@
       "changepassword": "Passwort ändern",
       "logout": "{{user}} abmelden",
       "manageaccount": "Benutzerprofil bearbeiten",
-      "switchtenant": "In Umgebung {{tenant}} wechseln"
+      "switchtenant": "In Umgebung {{tenant}} wechseln",
+      "useridle": "Benutzer inaktiv",
+      "autologout": "Automatische Abmeldung in {{expiration}}"
     },
     "attachment": {
       "titles": {
@@ -125,7 +127,8 @@
         "forgotpasswordsuccess": "Vorgang erfolgreich, Mail mit weiteren Anweisungen wurde versendet",
         "resetpasswordsuccess": "Passwort erfolgreich zurückgesetzt",
         "changepasswordsuccess": "Passwort erfolgreich geändert",
-        "logoutfortenantswitch": "Benutzer wird ab- und wieder angemeldet für Umgebungswechsel"
+        "logoutfortenantswitch": "Benutzer wird ab- und wieder angemeldet für Umgebungswechsel",
+        "sessionexpired": "Sitzung abgelaufen"
       }
     }
   }

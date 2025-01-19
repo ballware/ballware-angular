@@ -15,6 +15,8 @@ export interface IdentityState {
     accessToken?: string,
     accessTokenExpiration?: Date,
 
+    sessionExpiration?: Date,
+
     currentUser?: Record<string, unknown>,
     tenant?: string,
     userName?: string
@@ -39,3 +41,5 @@ export const selectUserName = createSelector(selectIdentityFeature, (state: Iden
 export const selectAccessToken = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessToken);
 export const selectCurrentUser = createSelector(selectIdentityFeature, (state: IdentityState) => state.currentUser);
 export const selectAccessTokenExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessTokenExpiration);
+
+export const selectSessionExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.sessionExpiration);

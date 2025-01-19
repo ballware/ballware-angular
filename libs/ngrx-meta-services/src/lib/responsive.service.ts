@@ -1,7 +1,7 @@
 import { ResponsiveService, SCREEN_SIZE } from "@ballware/meta-services";
 import { BehaviorSubject, distinctUntilChanged, Observable } from "rxjs";
 
-export class ResponsiveServiceImplementation implements ResponsiveService {
+export class DefaultResponsiveService implements ResponsiveService {
 
   get onResize$(): Observable<SCREEN_SIZE> {
     return this.resizeSubject.asObservable().pipe(distinctUntilChanged());

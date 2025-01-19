@@ -4,14 +4,15 @@ import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom } 
 import { WithDestroy } from '../../utils/withdestroy';
 import { ApplicationAccountMenuComponent } from '../account/menu.component';
 import { ApplicationDocumentationComponent } from "../documentation/documentation.component";
-import { DxButtonModule, DxToolbarModule } from 'devextreme-angular';
+import { DxButtonModule, DxPopupModule, DxToolbarModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { I18NextModule } from 'angular-i18next';
 
 @Component({
   selector: 'ballware-application-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
-  imports: [CommonModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule],
+  imports: [CommonModule, I18NextModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule],
   standalone: true
 })
 export class ApplicationHeaderComponent extends WithDestroy() {
@@ -29,6 +30,9 @@ export class ApplicationHeaderComponent extends WithDestroy() {
   public accountMenuVisible = false;
   public accountMenuTarget: Element|undefined = undefined;
 
+  public tokenExpiration$: Observable<string|undefined>;
+
+  public sessionExpirationVisible$: Observable<boolean>;
   public sessionExpiration$: Observable<string|undefined>;
 
   public fullscreenDialogs$: Observable<boolean>;
@@ -49,14 +53,28 @@ export class ApplicationHeaderComponent extends WithDestroy() {
 
     this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
 
-    this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenExpiration$))
-      .pipe(tap(([, accessTokenExpiration]) => {
-        if (accessTokenExpiration && (accessTokenExpiration < new Date())) {
+    this.sessionExpirationVisible$ = this.identityService.sessionExpiration$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(map((sessionExpiration) => !!sessionExpiration));
+
+    this.tokenExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenExpiration$))
+      .pipe(tap(([, sessionExpiration]) => {
+        if (sessionExpiration && (sessionExpiration < new Date())) {
             this.identityService.expired();
         }
       }))       
-      .pipe(takeWhile(([, accessTokenExpiration ]) => accessTokenExpiration ? (new Date() < accessTokenExpiration) : true))      
-      .pipe(map(([, accessTokenExpiration]) => accessTokenExpiration ? accessTokenExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
+      .pipe(takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true))      
+      .pipe(map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
+      .pipe(map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
+
+    this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.sessionExpiration$))
+      .pipe(tap(([, sessionExpiration]) => {
+        if (sessionExpiration && (sessionExpiration < new Date())) {
+            this.identityService.expired();
+        }
+      }))       
+      .pipe(takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true))      
+      .pipe(map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
       .pipe(map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
   }
 

@@ -7,6 +7,7 @@ export interface IdentityService {
 
     authenticated$: Observable<boolean|undefined>;
     accessTokenExpiration$: Observable<Date|undefined>;
+    sessionExpiration$: Observable<Date|undefined>;
 
     currentUser$: Observable<Record<string, unknown>|undefined>;
     userTenant$: Observable<string|undefined>;

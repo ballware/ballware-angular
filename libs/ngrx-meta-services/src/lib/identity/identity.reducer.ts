@@ -1,6 +1,7 @@
 import { createReducer, on } from "@ngrx/store";
-import { identityAllowedTenantsFetched, identityInitialize, identityUserLogin, identityUserLogout } from "./identity.actions";
+import { identityAllowedTenantsFetched, identityInitialize, identityUserBusy, identityUserIdle, identityUserLogin, identityUserLogout } from "./identity.actions";
 import { IdentityState } from "./identity.state";
+import * as moment from "moment";
 
 const initialState = {
 
@@ -37,6 +38,14 @@ export const identityReducer = createReducer(
         tenant: undefined,
         userName: undefined,
         allowedTenants: undefined
+    })),
+    on(identityUserIdle, (state) => ({
+        ...state,
+        sessionExpiration: moment(new Date()).add(2, 'm').toDate()
+    })),
+    on(identityUserBusy, (state) => ({
+        ...state,
+        sessionExpiration: undefined
     })),
     on(identityAllowedTenantsFetched, (state, { allowedTenants }) => ({
         ...state,

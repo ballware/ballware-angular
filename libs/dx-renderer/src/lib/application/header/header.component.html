@@ -39,7 +39,7 @@
       locateInMenu="never"
       >
       <div *dxTemplate>
-        <dx-button id="ballware-account-button" class="menubutton" icon="bi bi-person-circle" stylingMode="text" [text]="(sessionExpiration$ | async) ?? ''" (onClick)="toggleAccountMenu($event)">
+        <dx-button id="ballware-account-button" class="menubutton" icon="bi bi-person-circle" stylingMode="text" [text]="(tokenExpiration$ | async) ?? ''" (onClick)="toggleAccountMenu($event)">
         </dx-button>
       </div>
     </dxi-item>
@@ -47,3 +47,14 @@
 </header>
 <ballware-application-account-menu #accountMenu></ballware-application-account-menu>
 <ballware-application-documentation></ballware-application-documentation>
+<dx-popup *ngIf="sessionExpirationVisible$ | async" 
+  [visible]="true" 
+  [title]="'session.useridle' | i18next"
+  [animation]="{ hide: undefined, show: undefined }"  
+  width="auto" 
+  minWidth="300px" 
+  height="auto">
+  <div *dxTemplate="let data of 'content'">
+    <p>{{'session.autologout' | i18next: { expiration: sessionExpiration$ | async } }}</p>
+  </div>
+</dx-popup>

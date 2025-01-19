@@ -13,7 +13,9 @@
       "refresh": "Refresh session",
       "changepassword": "Change password",
       "logout": "Logout {{user}}",
-      "manageaccount": "Edit account"
+      "manageaccount": "Edit account",
+      "useridle": "User idle",
+      "autologout": "Automatic logout in {{expiration}}"
     },
     "attachment": {
       "titles": {
@@ -123,7 +125,8 @@
         "registeredsuccess": "Registration successful",
         "forgotpasswordsuccess": "Wait for mail with further instructions",
         "resetpasswordsuccess": "Password reset successful",
-        "changepasswordsuccess": "Password successfully changed"
+        "changepasswordsuccess": "Password successfully changed",
+        "sessionexpired": "Session expired"
       }
     }
   }

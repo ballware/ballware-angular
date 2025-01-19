@@ -25,6 +25,9 @@ export const identityUserLoggedOut = createAction('[Identity] user logged out');
 
 export const identityUserExpired = createAction('[Identity] user expired');
 
+export const identityUserIdle = createAction('[Identity] user idle');
+export const identityUserBusy = createAction('[Identity] user busy');
+
 export const identityManageProfile = createAction('[Identity] manage profile');
 
 export const identityRefreshToken = createAction('[Identity] refresh token');

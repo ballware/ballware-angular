@@ -5,9 +5,9 @@ import { Store } from "@ngrx/store";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
 import { filter, switchMap, tap } from "rxjs";
 import { showNotification } from "../notification/notification.actions";
-import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
+import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserBusy, identityUserExpired, identityUserIdle, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
 import { selectProfileUrl } from "./identity.state";
-import { TRANSLATOR } from "@ballware/meta-services";
+import { IDLE_SERVICE, TRANSLATOR } from "@ballware/meta-services";
 
 export const initializeOAuth = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityInitialize))
@@ -82,10 +82,21 @@ export const userExpired = createEffect((actions$ = inject(Actions), oauthServic
     actions$.pipe((ofType(identityUserExpired)))
         .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.sessionexpired') }}))))
         .pipe(tap(() => {
-            oauthService.initLoginFlow();
+            oauthService.logOut();
         }))
 , { functional: true, dispatch: false});
 
+export const userIdle = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) => 
+    idleService.idle$
+        .pipe(filter((idle => idle)))
+        .pipe(tap(() => store.dispatch(identityUserIdle())))
+, { functional: true, dispatch: false});        
+
+export const userBusy = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) => 
+    idleService.idle$
+        .pipe(filter((idle => !idle)))
+        .pipe(tap(() => store.dispatch(identityUserBusy())))
+, { functional: true, dispatch: false});  
 
 export const manageProfile = createEffect((actions$ = inject(Actions), store = inject(Store)) => 
     actions$.pipe(ofType(identityManageProfile))
