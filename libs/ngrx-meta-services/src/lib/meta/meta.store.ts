@@ -178,9 +178,9 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             .pipe(tap(([entityMetadata, lookups, initialCustomParam, accessToken]) => {
                 if (lookups && entityMetadata && initialCustomParam && accessToken) {
                     if (entityMetadata.compiledCustomScripts?.prepareCustomParam) {
-                    entityMetadata.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), (customParam) => {
-                        this.setCustomParam(customParam);
-                    });
+                        entityMetadata.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), initialCustomParam, (customParam) => {
+                            this.setCustomParam(customParam);
+                        });
                     } else {
                         this.setCustomParam(initialCustomParam);
                     }

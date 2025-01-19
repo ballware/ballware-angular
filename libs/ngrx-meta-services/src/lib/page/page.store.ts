@@ -163,7 +163,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$])                
                 .pipe(tap(([page, lookups, accessToken]) => {
                     if (page && lookups && accessToken) {
-                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), (p) => this.updater((state) => ({
+                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), {}, (p) => this.updater((state) => ({
                                 ...state,
                                 customParam: p
                         }))());

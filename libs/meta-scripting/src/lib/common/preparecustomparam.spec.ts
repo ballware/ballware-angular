@@ -16,7 +16,7 @@ describe("compilePrepareCustomParam", () => {
 
         const subject = compilePrepareCustomParam(undefined);
 
-        subject(mockedLookups, mockedScriptUtil, callback);
+        subject(mockedLookups, mockedScriptUtil, {}, callback);
 
         expect(callback).toHaveBeenCalledTimes(1);
         expect(callback).toHaveBeenCalledWith({});
@@ -34,7 +34,7 @@ describe("compilePrepareCustomParam", () => {
 
         const subject = compilePrepareCustomParam("callback({ expected: true });");
 
-        subject(mockedLookups, mockedScriptUtil, callback);
+        subject(mockedLookups, mockedScriptUtil, {}, callback);
 
         expect(callback).toHaveBeenCalledTimes(1);
         expect(callback).toHaveBeenCalledWith({ expected: true });
@@ -57,6 +57,6 @@ describe("compilePrepareCustomParam", () => {
 
         const subject = compilePrepareCustomParam("throw Error('Expected error');");
 
-        expect(() => subject(mockedLookups, mockedScriptUtil, callback)).toThrowError('Expected error');
+        expect(() => subject(mockedLookups, mockedScriptUtil, {}, callback)).toThrowError('Expected error');
     })
 })
