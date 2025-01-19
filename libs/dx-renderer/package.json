@@ -1,6 +1,6 @@
 {
   "name": "@ballware/dx-renderer",
-  "version": "8.10.6",
+  "version": "8.11.0",
   "peerDependencies": {
     "@angular/common": "^16.1.0",
     "@angular/core": "^16.1.0"
