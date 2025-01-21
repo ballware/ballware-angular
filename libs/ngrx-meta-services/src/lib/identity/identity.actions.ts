@@ -6,7 +6,8 @@ export const identityInitialize = createAction('[Identity] initialize', props<{
     scopes?: string,
     tenantClaim?: string,
     usernameClaim?: string,
-    profileUrl?: string
+    profileUrl?: string,
+    accessTokenAutoRefresh?: boolean
 }>());
 
 export const identityUserLogin = createAction('[Identity] user login', props<{
@@ -31,6 +32,12 @@ export const identityUserBusy = createAction('[Identity] user busy');
 export const identityManageProfile = createAction('[Identity] manage profile');
 
 export const identityRefreshToken = createAction('[Identity] refresh token');
+
+export const identityTokenRefreshed = createAction('[Identity] token refreshed', props<{
+    refreshToken: string,
+    accessToken: string,
+    accessTokenExpiration: Date,
+}>());
 
 export const identityAllowedTenantsFetched = createAction('[Identity] allowed tenants fetched', props<{
     allowedTenants: Array<{ Id: string, Name: string }>

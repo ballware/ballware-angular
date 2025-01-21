@@ -7,6 +7,7 @@ import { ScriptUtil } from '@ballware/meta-model';
 import { HttpClient } from '@angular/common/http';
 import { LookupCreator, LookupDescriptor, LookupStoreDescriptor } from '@ballware/meta-services';
 import { geocodeAddress, geocodeLocation } from './geocoder';
+import { lastValueFrom, Observable } from 'rxjs';
 
 /*
 export const nameof = <T>(name: keyof T): keyof T => name;
@@ -85,10 +86,10 @@ function localDateToDate(date: Date): Date | null {
  * @param token Token used for authenticated webservice requests
  * @returns Generated util object
  */
-export const createUtil = (http: HttpClient, token: string): ScriptUtil => {
+export const createUtil = (http: HttpClient, token$: Observable<string|undefined>): ScriptUtil => {
   return {
     http: () => http,
-    token: () => token,
+    token: () => lastValueFrom(token$),
     uuid: () => uuid(),
     parse: json => parse(json),
     stringify: json => stringify(json),

@@ -160,10 +160,10 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         );
 
         this.effect(_ => 
-            combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$])                
-                .pipe(tap(([page, lookups, accessToken]) => {
-                    if (page && lookups && accessToken) {
-                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, accessToken), {}, (p) => this.updater((state) => ({
+            combineLatest([this.page$, this.lookupService.lookups$])                
+                .pipe(tap(([page, lookups]) => {
+                    if (page && lookups) {
+                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, this.identityService.accessToken$), {}, (p) => this.updater((state) => ({
                                 ...state,
                                 customParam: p
                         }))());
@@ -245,17 +245,17 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     );
 
     readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, params$])
+        combineLatest([this.page$, this.lookupService.lookups$, params$])
             .pipe(withLatestFrom(this.headParams$))
-            .pipe(tap(([[page, lookups, accessToken, { name, item }], pageParam]) => {
-                if (page && lookups && pageParam && accessToken) {
+            .pipe(tap(([[page, lookups, { name, item }], pageParam]) => {
+                if (page && lookups && pageParam) {
                     this.toolbarItems[name] = item;
 
-                    page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
+                    page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);
                     
                     if (!Object.keys(this.toolbarItems).some(item => !this.toolbarItems[item])) {
                         if (page) {
-                            page.compiledCustomScripts.paramsInitialized(false, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);
+                            page.compiledCustomScripts.paramsInitialized(false, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);
                         }
                     }
                 }
@@ -270,20 +270,20 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
     );
 
     paramEditorValueChanged = this.effect((params$: Observable<{ name: string, value: ValueType }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, this.headParams$, params$])
-            .pipe(tap(([page, lookups, accessToken, pageParam, { name, value }]) => {
-                if (page && lookups && accessToken && pageParam) {
-                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam);  
+        combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
+            .pipe(tap(([page, lookups, pageParam, { name, value }]) => {
+                if (page && lookups && pageParam) {
+                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);  
                 }
             }))
     );
 
     paramEditorEvent = this.effect((params$: Observable<{ name: string, event: string, param?: ValueType }>) => 
-        combineLatest([this.page$, this.lookupService.lookups$, this.identityService.accessToken$, params$])
+        combineLatest([this.page$, this.lookupService.lookups$, params$])
             .pipe(withLatestFrom(this.headParams$))
-            .pipe(tap(([[page, lookups, accessToken, { name, event, param }], pageParam]) => {
-                if (page && lookups && accessToken && pageParam && name && event) {
-                  page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, accessToken), this.scriptActions, pageParam, param);
+            .pipe(tap(([[page, lookups, { name, event, param }], pageParam]) => {
+                if (page && lookups && pageParam && name && event) {
+                  page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam, param);
                 }
             }))
     );

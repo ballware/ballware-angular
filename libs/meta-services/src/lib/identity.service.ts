@@ -7,6 +7,8 @@ export interface IdentityService {
 
     authenticated$: Observable<boolean|undefined>;
     accessTokenExpiration$: Observable<Date|undefined>;
+    accessTokenAutoRefresh$: Observable<boolean|undefined>;
+
     sessionExpiration$: Observable<Date|undefined>;
 
     currentUser$: Observable<Record<string, unknown>|undefined>;
@@ -16,7 +18,7 @@ export interface IdentityService {
 
     allowedTenants$: Observable<Array<{ Id: string, Name: string }>|undefined>;
 
-    initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string): void;
+    initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean): void;
 
     refreshToken(): void;
     manageProfile(): void;

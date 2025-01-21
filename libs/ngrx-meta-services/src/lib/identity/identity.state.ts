@@ -14,6 +14,7 @@ export interface IdentityState {
     refreshToken?: string,
     accessToken?: string,
     accessTokenExpiration?: Date,
+    accessTokenAutoRefresh?: boolean,
 
     sessionExpiration?: Date,
 
@@ -41,5 +42,6 @@ export const selectUserName = createSelector(selectIdentityFeature, (state: Iden
 export const selectAccessToken = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessToken);
 export const selectCurrentUser = createSelector(selectIdentityFeature, (state: IdentityState) => state.currentUser);
 export const selectAccessTokenExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessTokenExpiration);
+export const selectAccessTokenAutoRefresh = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessTokenAutoRefresh);
 
 export const selectSessionExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.sessionExpiration);

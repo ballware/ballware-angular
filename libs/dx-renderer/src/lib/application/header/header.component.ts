@@ -57,14 +57,14 @@ export class ApplicationHeaderComponent extends WithDestroy() {
       .pipe(takeUntil(this.destroy$))
       .pipe(map((sessionExpiration) => !!sessionExpiration));
 
-    this.tokenExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenExpiration$))
-      .pipe(tap(([, sessionExpiration]) => {
-        if (sessionExpiration && (sessionExpiration < new Date())) {
+    this.tokenExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.accessTokenAutoRefresh$, this.identityService.accessTokenExpiration$))
+      .pipe(tap(([, autoRefresh, sessionExpiration]) => {
+        if (!autoRefresh && sessionExpiration && (sessionExpiration < new Date())) {
             this.identityService.expired();
         }
       }))       
-      .pipe(takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true))      
-      .pipe(map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
+      .pipe(takeWhile(([, autoRefresh, sessionExpiration ]) => (!autoRefresh && sessionExpiration) ? (new Date() < sessionExpiration) : true))      
+      .pipe(map(([, autoRefresh, sessionExpiration]) => (!autoRefresh && sessionExpiration) ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
       .pipe(map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
 
     this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.sessionExpiration$))

@@ -1,5 +1,5 @@
 import { createReducer, on } from "@ngrx/store";
-import { identityAllowedTenantsFetched, identityInitialize, identityUserBusy, identityUserIdle, identityUserLogin, identityUserLogout } from "./identity.actions";
+import { identityAllowedTenantsFetched, identityInitialize, identityTokenRefreshed, identityUserBusy, identityUserIdle, identityUserLogin, identityUserLogout } from "./identity.actions";
 import { IdentityState } from "./identity.state";
 import * as moment from "moment";
 
@@ -9,14 +9,15 @@ const initialState = {
 
 export const identityReducer = createReducer(
     initialState, 
-    on(identityInitialize, (state, { issuer, client, scopes, tenantClaim, usernameClaim, profileUrl }) => ({ 
+    on(identityInitialize, (state, { issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh }) => ({ 
         ...state,
         issuer, 
         client, 
         scopes, 
         tenantClaim, 
         usernameClaim, 
-        profileUrl
+        profileUrl,
+        accessTokenAutoRefresh
     })),
     on(identityUserLogin, (state, { refreshToken, accessToken, accessTokenExpiration, currentUser, tenant, userName }) => ({
         ...state,
@@ -38,6 +39,12 @@ export const identityReducer = createReducer(
         tenant: undefined,
         userName: undefined,
         allowedTenants: undefined
+    })),
+    on(identityTokenRefreshed, (state, { refreshToken, accessToken, accessTokenExpiration }) => ({
+        ...state,
+        refreshToken,
+        accessToken, 
+        accessTokenExpiration,
     })),
     on(identityUserIdle, (state) => ({
         ...state,

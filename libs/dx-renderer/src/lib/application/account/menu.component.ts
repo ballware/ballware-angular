@@ -28,20 +28,22 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
     @Inject(TRANSLATOR) private translator: Translator) {
     super();
 
-    combineLatest([this.identityService.userName$, this.identityService.allowedTenants$])
+    combineLatest([this.identityService.accessTokenAutoRefresh$, this.identityService.userName$, this.identityService.allowedTenants$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([userName, allowedTenants]) => {
+      .subscribe(([autoRefresh, userName, allowedTenants]) => {
 
         const userMenuItems: Record<string, unknown>[] = [];
         
         if (userName) {
-          userMenuItems.push({
-            text: this.translator('session.refresh'),
-            onClick: () => {
-              this.accountMenu?.instance.hide();              
-              this.identityService.refreshToken();
-            }
-          });
+          if (!autoRefresh) {
+            userMenuItems.push({
+              text: this.translator('session.refresh'),
+              onClick: () => {
+                this.accountMenu?.instance.hide();              
+                this.identityService.refreshToken();
+              }
+            });
+          }
 
           userMenuItems.push({
             text: this.translator('session.manageaccount'),

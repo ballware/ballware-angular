@@ -34,7 +34,8 @@ export class AppComponent implements OnInit {
       window.ENV.BALLWARE_IDENTITYSCOPES,
       window.ENV.BALLWARE_TENANTCLAIM,
       window.ENV.BALLWARE_USERNAMECLAIM,
-      window.ENV.BALLWARE_ACCOUNTURL
+      window.ENV.BALLWARE_ACCOUNTURL,
+      window.ENV.BALLWARE_IDENTITYAUTOREFRESH === '1'
     );
   }
 }

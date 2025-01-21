@@ -5,13 +5,13 @@ import { Store } from "@ngrx/store";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
 import { filter, switchMap, tap } from "rxjs";
 import { showNotification } from "../notification/notification.actions";
-import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserBusy, identityUserExpired, identityUserIdle, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
-import { selectProfileUrl } from "./identity.state";
+import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityTokenRefreshed, identityUserBusy, identityUserExpired, identityUserIdle, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
+import { selectCurrentUser, selectProfileUrl } from "./identity.state";
 import { IDLE_SERVICE, TRANSLATOR } from "@ballware/meta-services";
 
 export const initializeOAuth = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) => 
     actions$.pipe(ofType(identityInitialize))
-        .pipe(tap(({ issuer, client, scopes, tenantClaim, usernameClaim }) => {
+        .pipe(tap(({ issuer, client, scopes, tenantClaim, usernameClaim, accessTokenAutoRefresh }) => {
             if (issuer && client && scopes && tenantClaim && usernameClaim) { 
                 oauthService.events
                     .pipe(filter((e) => e.type === 'logout'))
@@ -20,7 +20,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                     });
 
                 oauthService.events
-                    .pipe(filter((e) => e.type === 'token_received'))
+                    .pipe(filter((e) => e.type === 'user_profile_loaded'))
                     .subscribe((_) => {
                         oauthService.loadUserProfile().then(_ => {
                             const identityClaims = oauthService.getIdentityClaims() as Record<string, unknown>;
@@ -36,6 +36,16 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                         });
                     });
 
+                oauthService.events
+                    .pipe(filter((e) => e.type === 'token_received'))
+                    .subscribe((_) => {
+                        store.dispatch(identityTokenRefreshed({
+                            refreshToken: oauthService.getRefreshToken(),
+                            accessToken: oauthService.getAccessToken(),
+                            accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration())
+                        }));
+                    });
+
                 const oauthConfig: AuthConfig = {
                     issuer: issuer,
                     redirectUri: window.location.origin + '/signin-oidc',
@@ -48,6 +58,11 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                 };
 
                 oauthService.configure(oauthConfig);
+
+                if (accessTokenAutoRefresh) {
+                    oauthService.setupAutomaticSilentRefresh();
+                }
+                
                 oauthService.loadDiscoveryDocumentAndLogin().then(result => {
                     if (result) {
                         const identityClaims = oauthService.getIdentityClaims() as Record<string, unknown>;

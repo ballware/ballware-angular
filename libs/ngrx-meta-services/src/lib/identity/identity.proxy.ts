@@ -1,7 +1,7 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
 import { identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
-import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant } from "./identity.state";
+import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh } from "./identity.state";
 
 export class IdentityServiceProxy implements IdentityService {
 
@@ -12,6 +12,10 @@ export class IdentityServiceProxy implements IdentityService {
 
     public get accessTokenExpiration$() {
         return this.store.select(selectAccessTokenExpiration);
+    }
+
+    public get accessTokenAutoRefresh$() {
+        return this.store.select(selectAccessTokenAutoRefresh);
     }
 
     public get sessionExpiration$() {
@@ -38,9 +42,9 @@ export class IdentityServiceProxy implements IdentityService {
         return this.store.select(selectAllowedTenants);
     }
 
-    public initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string) {
+    public initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean) {
         this.store.dispatch(identityInitialize({
-            issuer, client, scopes, tenantClaim, usernameClaim, profileUrl
+            issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh
         }));
     }
 

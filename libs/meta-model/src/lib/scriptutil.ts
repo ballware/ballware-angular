@@ -10,7 +10,7 @@
   /**
    * Get current user access token
    */
-  token: () => string;
+  token: () => Promise<string|undefined>;
 
   /**
    * Parse JSON to object
