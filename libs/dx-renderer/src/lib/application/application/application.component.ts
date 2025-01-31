@@ -7,14 +7,14 @@ import { ApplicationNotificationComponent } from '../notification/notification.c
 import { ApplicationNavigationDrawerComponent } from '../navigation/drawer.component';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { IdleDetector, ResponsiveDetectorComponent } from '@ballware/renderer-commons';
+import { IdleDetector, InteractionDetector, ResponsiveDetectorComponent } from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-application',
   templateUrl: './application.component.html',
   styleUrls: ['./application.component.scss'],
   imports: [CommonModule, RouterOutlet, ResponsiveDetectorComponent, ApplicationHeaderComponent, ApplicationNotificationComponent, ApplicationNavigationDrawerComponent],
-  hostDirectives: [IdleDetector],
+  hostDirectives: [IdleDetector, InteractionDetector],
   standalone: true
 })
 export class ApplicationComponent extends WithDestroy() {

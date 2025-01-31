@@ -22,9 +22,10 @@ import { PageStore } from './page/page.store';
 import { CrudStore } from './crud/crud.store';
 import { StatisticStore } from './statistic/statistic.store';
 import { EditStore } from './edit/edit.store';
-import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, IDLE_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, IDLE_SERVICE, INTERACTION_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DefaultResponsiveService } from './responsive.service';
 import { DefaultIdleService } from './idle.service';
+import { DefaultInteractionService } from './interaction.service';
 
 export function provideNgrxMetaServices(): EnvironmentProviders {
   return makeEnvironmentProviders(    
@@ -78,6 +79,11 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: IDLE_SERVICE,
         useFactory: () => new DefaultIdleService(),
+        deps: []
+      },
+      {
+        provide: INTERACTION_SERVICE,
+        useFactory: () => new DefaultInteractionService(),
         deps: []
       },
       {

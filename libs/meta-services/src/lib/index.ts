@@ -17,3 +17,4 @@ export * from './toolbar.service';
 export * from './translation.service';
 export * from './toolbaritemref';
 export * from './idle.service';
+export * from './interaction.service';
