@@ -6,6 +6,8 @@ export const compileEvaluateCustomFunction = (customScript: string|undefined, co
 
         const compiledArgs = [
             'identifier',
+            'continueAfterSave',
+            'editUtil',
             'lookups',
             'util',
             'param',
@@ -18,8 +20,10 @@ export const compileEvaluateCustomFunction = (customScript: string|undefined, co
             compiledArgs.concat(prefixedCode)
         );
     
-        return (identifier, lookups, util, param, executeCallback, messageCallback) => compiledFn.apply(compiledFn, [
+        return (identifier, continueAfterSave, editUtil, lookups, util, param, executeCallback, messageCallback) => compiledFn.apply(compiledFn, [
                     identifier,
+                    continueAfterSave,
+                    editUtil,
                     lookups,
                     util,
                     param,
@@ -28,5 +32,5 @@ export const compileEvaluateCustomFunction = (customScript: string|undefined, co
                 ]);
     }
 
-    return (_identifier, _lookups, _util, param, executeCallback, _messageCallback) => executeCallback(param);
+    return (_identifier, _continueAfterSave, _editUtil, _lookups, _util, param, executeCallback, _messageCallback) => executeCallback(param);
 }

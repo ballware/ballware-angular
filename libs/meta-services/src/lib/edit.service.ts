@@ -1,5 +1,5 @@
 import { InjectionToken, OnDestroy } from '@angular/core';
-import { EditLayout, EditLayoutItem, GridLayoutColumn, ValueType } from '@ballware/meta-model';
+import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
@@ -40,7 +40,8 @@ export interface EditService extends OnDestroy {
     setEditLayout(editLayout: EditLayout): void;
   
     setValidator(validator: (() => boolean)|undefined): void;  
-    
+  
+    editUtil(): EditUtil;    
 }
 
 export type EditServiceFactory = (metaService: MetaService) => EditService;

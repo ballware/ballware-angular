@@ -77,7 +77,8 @@
     "editing": {
       "actions": {
         "open": "Öffnen",
-        "apply": "Speichern",
+        "applyclose": "Speichern & schließen",
+        "applycontinue": "Speichern & fortsetzen",
         "cancel": "Abbruch",
         "remove": "Entfernen",
         "close": "Schliessen",

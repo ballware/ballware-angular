@@ -11,7 +11,8 @@
   [animation]="{ hide: undefined, show: undefined }"
   [title]="title ?? ''"
   (onHidden)="onHidden()">
-  <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: applyText, onClick: onApply }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: applyAndCloseText, onClick: onApplyAndClose }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW && supportContinueAfterSave" widget="dxButton" [options]="{ text: applyAndContinueText, onClick: onApplyAndContinue }" toolbar="bottom" location="after"></dxi-toolbar-item>
   <dxi-toolbar-item *ngIf="mode !== EditModes.VIEW" widget="dxButton" [options]="{ text: cancelText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
   <dxi-toolbar-item *ngIf="mode === EditModes.VIEW" widget="dxButton" [options]="{ text: closeText, onClick: onHidden }" toolbar="bottom" location="after"></dxi-toolbar-item>
   <div *dxTemplate="let data of 'content'">    

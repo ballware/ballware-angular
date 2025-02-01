@@ -22,7 +22,7 @@ export interface MetaService extends OnDestroy {
 
   customFunctions$: Observable<EntityCustomFunction[]|undefined>;
   prepareCustomFunction$: Observable<((identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams) => void)|undefined>;
-  evaluateCustomFunction$: Observable<((identifier: string, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
+  evaluateCustomFunction$: Observable<((identifier: string,  continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
 
   getGridLayout$: Observable<((identifier: string) => GridLayout|undefined)|undefined>;
   getEditLayout$: Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;

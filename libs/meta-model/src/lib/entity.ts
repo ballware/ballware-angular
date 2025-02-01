@@ -315,6 +315,8 @@ export type PrepareCustomFunctionFunc = (
  * Evaluation custom function result after execution
  *
  * @param identifier Identifier of custom function
+ * @param continueAfterSave Operation will continue after saveCallback
+ * @param editUtil Adapter for accessing editor components by data member
  * @param lookups Lookup definitions prepared for business object
  * @param util Utility for performing misc operations
  * @param saveCallback Execute save or batch save operation with prepared objects
@@ -322,6 +324,8 @@ export type PrepareCustomFunctionFunc = (
  */
 export type EvaluateCustomFunctionFunc = (
   identifier: string,
+  continueAfterSave: boolean,
+  editUtil: EditUtil,
   lookups: Record<string, unknown>,
   util: ScriptUtil,
   param: Record<string, unknown>,
@@ -389,6 +393,11 @@ export interface EntityCustomFunction {
    * Set if function supports batch operations of multiple business object instances
    */
   multi?: boolean;
+
+  /**
+   * Set if function supports save and continue operation
+   */
+  supportContinue?: boolean;
 
   /**
    * Set if function uses a propritary editor.

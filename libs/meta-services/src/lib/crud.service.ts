@@ -1,5 +1,5 @@
 import { InjectionToken, OnDestroy } from '@angular/core';
-import { CrudItem, EditLayout, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
+import { CrudItem, EditLayout, EditUtil, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
 import { MetaService } from './meta.service';
@@ -19,11 +19,12 @@ export interface ItemEditDialog {
     mode: EditModes, 
     item: unknown, 
     title: string, 
+    supportContinueAfterSave: boolean,
     editLayout?: EditLayout, 
     externalEditor?: boolean,
     foreignEntity?: string,
-    customFunction?: EntityCustomFunction,
-    apply: (item: Record<string, unknown>) => void, 
+    customFunction?: EntityCustomFunction,    
+    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void, 
     cancel: () => void    
 }
 
@@ -53,7 +54,7 @@ export interface DetailColumnEditDialog {
     dataMember: string,
     title: string, 
     editLayout: EditLayout, 
-    apply: (item: Record<string, unknown>) => void, 
+    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void, 
     cancel: () => void    
 }
 
@@ -118,8 +119,8 @@ export interface CrudService extends OnDestroy {
 
     detailColumnEdit(request: { mode: EditModes, item: unknown, column: GridLayoutColumn }): void;
 
-    save(request: { customFunction: EntityCustomFunction, item: CrudItem }): void;
-    saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
+    save(request: { customFunction: EntityCustomFunction, item: CrudItem, continueAfterSave: boolean }): void;
+    saveBatch(request: { customFunction: EntityCustomFunction, items: CrudItem[], continueAfterSave: boolean }): void;
 
     drop(request: { item: CrudItem }): void;
 

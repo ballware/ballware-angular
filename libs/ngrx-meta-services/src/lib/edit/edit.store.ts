@@ -5,7 +5,7 @@ import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual, get, set } from "lodash";
 import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
-import { EditService, EditItemRef, EditModes, MetaService } from "@ballware/meta-services";
+import { EditService, EditItemRef, EditModes, MetaService, ItemEditDialog } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
 
 export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
@@ -68,6 +68,13 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         ...state,
         validator
     }));
+
+    readonly editUtil = () => {
+        return ({
+            getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value })
+        } as EditUtil);
+    }
    
     readonly getValue$ = combineLatest([this.item$])
         .pipe(map(([item]) => item ? (request: { dataMember: string }) => get(item, request.dataMember) : undefined));

@@ -460,10 +460,12 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly evaluateCustomFunction$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (identifier, param, save, message) => {
+            ? (identifier, continueAfterSave, editUtil, param, save, message) => {
                 if (entityMetadata.compiledCustomScripts?.evaluateCustomFunction) {
                 entityMetadata.compiledCustomScripts.evaluateCustomFunction(
                     identifier,
+                    continueAfterSave,
+                    editUtil,
                     lookups,
                     createUtil(this.httpClient, this.identityService.accessToken$),
                     param,
@@ -474,7 +476,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                 save(param);
                 }
             }
-            : undefined)) as Observable<((identifier: string, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
+            : undefined)) as Observable<((identifier: string, continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
 
     readonly editorPreparing$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])            
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)

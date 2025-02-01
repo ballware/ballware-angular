@@ -28,7 +28,7 @@ export class DataSourceService extends WithDestroy() {
                     }))
                 ), (item) => {
                     if (editFunction) {
-                      this.crudService.save({ customFunction: editFunction, item });
+                      this.crudService.save({ customFunction: editFunction, item, continueAfterSave: false });
                     }        
 
                     return Promise.resolve(item);

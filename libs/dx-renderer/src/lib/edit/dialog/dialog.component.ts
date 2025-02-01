@@ -1,5 +1,5 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
-import { EditLayout } from '@ballware/meta-model';
+import { EditLayout, EditUtil } from '@ballware/meta-model';
 import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
@@ -28,12 +28,14 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   @Input() item?: unknown;
   @Input() editLayout!: EditLayout;
   @Input() fullscreen!: boolean;
-  @Input() apply?: (item: Record<string, unknown>) => void;
+  @Input() supportContinueAfterSave!: boolean;
+  @Input() apply?: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
   @Input() cancel?: () => void;
 
   public EditModes = EditModes;
 
-  private apply$ = new Subject<void>();
+  private readonly applyAndContinue$ = new Subject<void>();
+  private readonly applyAndClose$ = new Subject<void>();
 
   constructor(
     @Inject(TRANSLATOR) private translator: Translator,
@@ -42,16 +44,26 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
     super();
 
     this.onHidden = this.onHidden.bind(this);
-    this.onApply = this.onApply.bind(this);
+    this.onApplyAndContinue = this.onApplyAndContinue.bind(this);
+    this.onApplyAndClose = this.onApplyAndClose.bind(this);
 
-    this.apply$
+    this.applyAndContinue$
       .pipe(takeUntil(this.destroy$))
       .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
       .subscribe(([, validator, item]) => {
         if (item && (!validator || validator())) {
-          this.apply && this.apply(item as Record<string, unknown>);
+          this.apply && this.apply(this.editService.editUtil(), item as Record<string, unknown>, true);
         }
       });
+
+    this.applyAndClose$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
+      .subscribe(([, validator, item]) => {
+        if (item && (!validator || validator())) {
+          this.apply && this.apply(this.editService.editUtil(), item, false);
+        }
+      });      
   }
 
   ngOnInit(): void {
@@ -69,8 +81,12 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
     this.editService.ngOnDestroy();
   }
 
-  public get applyText(): string {
-    return this.translator('editing.actions.apply');
+  public get applyAndCloseText(): string {
+    return this.translator('editing.actions.applyclose');
+  }
+
+  public get applyAndContinueText(): string {
+    return this.translator('editing.actions.applycontinue');
   }
 
   public get cancelText(): string {
@@ -85,8 +101,12 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
     this.cancel && this.cancel();
   }
 
-  public onApply() {
-    this.apply$.next();
+  public onApplyAndClose() {
+    this.applyAndClose$.next();
+  }
+
+  public onApplyAndContinue() {
+    this.applyAndContinue$.next();
   }
 
 }

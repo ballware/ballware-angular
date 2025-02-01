@@ -1,4 +1,4 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [supportContinueAfterSave]="itemDialog.supportContinueAfterSave" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"

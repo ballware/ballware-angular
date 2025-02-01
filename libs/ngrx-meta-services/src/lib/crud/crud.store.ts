@@ -225,9 +225,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         mode: EditModes.CREATE,
                         item: item,
                         title: this.translator('datacontainer.titles.add', { entity: displayName }),
+                        supportContinueAfterSave: false,
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
-                        apply: (editedItem) => { 
-                            this.save({ item: editedItem as CrudItem });
+                        apply: (editUtil, editedItem, continueAfterSave) => { 
+                            this.save({ item: editedItem as CrudItem, continueAfterSave });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -253,6 +254,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         mode: EditModes.VIEW,
                         item: item,
                         title: this.translator('datacontainer.titles.view', { entity: displayName }),
+                        supportContinueAfterSave: false,
                         editLayout: getEditLayout(viewRequest.editLayout, EditModes.VIEW),
                         apply: () => { 
                             this.updater((state) => ({
@@ -284,9 +286,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         mode: EditModes.EDIT,
                         item: item,
                         title: this.translator('datacontainer.titles.edit', { entity: displayName }),
+                        supportContinueAfterSave: false,
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
-                        apply: (editedItem) => { 
-                            this.save({ item: editedItem as CrudItem });
+                        apply: (editUtil, editedItem, continueAfterSave) => { 
+                            this.save({ item: editedItem as CrudItem, continueAfterSave });
                         },
                         cancel: () => { 
                             this.updater((state) => ({
@@ -348,15 +351,18 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     mode: EditModes.EDIT,
                     item: items,
                     title: customFunction.text,
+                    supportContinueAfterSave: customFunction.supportContinue,
                     editLayout: undefined,
                     externalEditor: false,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction,
-                    apply: () => {                         
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))(); 
+                    apply: (editUtil, editedItem, continueAfterSave) => {       
+                        if (!continueAfterSave) {
+                            this.updater((state) => ({
+                                ...state,
+                                itemDialog: undefined
+                            }))(); 
+                        }          
                     },
                     cancel: () => { 
                         this.updater((state) => ({
@@ -373,27 +379,30 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     mode: EditModes.EDIT,
                     item: params,
                     title: customFunction.text,
+                    supportContinueAfterSave: customFunction.supportContinue,
                     editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
                     externalEditor: customFunction.externalEditor,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction,
-                    apply: (editedItem) => { 
+                    apply: (editUtil, editedItem, continueAfterSave) => { 
                         if (!customFunction.externalEditor && !customFunction.entity) {
-                            evaluateCustomFunction(customFunction.id, editedItem, 
+                            evaluateCustomFunction(customFunction.id, continueAfterSave, editUtil, editedItem, 
                                 (evaluatedResult) => {
                                     if (Array.isArray(evaluatedResult)) {
-                                        this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem> });
+                                        this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem>, continueAfterSave });
                                     } else {
-                                        this.save({ customFunction, item: evaluatedResult as CrudItem });
+                                        this.save({ customFunction, item: evaluatedResult as CrudItem, continueAfterSave });
                                     }                                
                                 },
                                 (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'warning' })
                             );
                         } else  {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))(); 
+                            if (!continueAfterSave) {
+                                this.updater((state) => ({
+                                    ...state,
+                                    itemDialog: undefined
+                                }))(); 
+                            }                            
                         }          
                     },
                     cancel: () => { 
@@ -405,19 +414,21 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 } as ItemEditDialog);
             }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));           
             
-    readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem }>) => 
+    readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem, continueAfterSave: boolean }>) => 
         saveRequest$.pipe(withLatestFrom(this.metaService.save$))
             .pipe(switchMap(([saveRequest, save]) => (saveRequest && save)
                 ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
                     .pipe(tap(() => { 
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
                         
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))(); 
-
-                        this.reload();
+                        if (!saveRequest.continueAfterSave) {
+                            this.updater((state) => ({
+                                ...state,
+                                itemDialog: undefined
+                            }))(); 
+    
+                            this.reload();
+                        }                        
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -427,19 +438,21 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 : of(undefined)
             )));
 
-    readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
+    readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[], continueAfterSave: boolean }>) => 
         saveRequest$.pipe(withLatestFrom(this.metaService.saveBatch$))
             .pipe(switchMap(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
                 ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
                     .pipe(tap(() => { 
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
                         
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))(); 
-
-                        this.reload();
+                        if (!saveRequest.continueAfterSave) {
+                            this.updater((state) => ({
+                                ...state,
+                                itemDialog: undefined
+                            }))(); 
+    
+                            this.reload();
+                        }                        
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -536,7 +549,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 title: request.column.caption,
                 dataMember: request.column.dataMember,                
                 editLayout: editLayout,
-                apply: (item) => { 
+                apply: (editUtil, item) => { 
                     if (request.column.dataMember) {
                         set(request.item as Record<string, unknown>, request.column.dataMember, get(item, request.column.dataMember));
                     }                    
