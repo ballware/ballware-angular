@@ -38,6 +38,8 @@ export interface EditService extends OnDestroy {
     setMode(mode: EditModes): void;  
     setItem(item: Record<string, unknown>): void;  
     setEditLayout(editLayout: EditLayout): void;
+    setApply(applyMethod: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void): void;
+    setCancel(cancelMethod: () => void): void;
   
     setValidator(validator: (() => boolean)|undefined): void;  
   

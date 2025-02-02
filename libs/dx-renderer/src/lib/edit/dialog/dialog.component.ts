@@ -72,6 +72,14 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
         this.editService.setMode(this.mode);
         this.editService.setItem(this.item as Record<string, unknown>);
         this.editService.setEditLayout(this.editLayout);
+
+        if (this.apply) {
+          this.editService.setApply(this.apply)
+        }
+
+        if (this.cancel) {
+          this.editService.setCancel(this.cancel);
+        }        
       }
   }
 

@@ -26,6 +26,20 @@ import { Template } from "./template";
    * @param value New value of option
    */
   setEditorOption: (dataMember: string, option: string, value: unknown) => void;
+
+  /**
+   * Execute save operation for current edit session
+   * 
+   * @param editUtil Instance of edit util
+   * @param item Item to be saved
+   * @param continueAfterSave Continue editing after save   
+   */
+  apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
+
+  /**
+   * Cancel edit operation for current edit session
+   */
+  cancel: () => void;
 }
 
 /**
