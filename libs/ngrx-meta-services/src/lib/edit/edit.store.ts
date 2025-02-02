@@ -5,7 +5,7 @@ import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual, get, set } from "lodash";
 import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
 import { editDestroyed, editUpdated } from "../component";
-import { EditService, EditItemRef, EditModes, MetaService } from "@ballware/meta-services";
+import { EditService, EditItemRef, EditModes, MetaService, InteractionService } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
 
 export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
@@ -14,10 +14,19 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     private applyMethod?: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
     private cancelMethod?: () => void;
 
-    constructor(private store: Store, private metaService: MetaService) {
+    constructor(private store: Store, private interactionService: InteractionService, private metaService: MetaService) {
         super({
             validator: undefined
         });
+
+        this.interactionService.keyboardLine$
+            .pipe(takeUntil(this.destroy$))
+            .pipe(withLatestFrom(this.mode$, this.item$, this.metaService.interactionKeyboardLine$))
+            .subscribe(([keyboardLine, mode, item, interactionKeyboardLine]) => {
+                if (keyboardLine && mode && item && interactionKeyboardLine) {
+                    interactionKeyboardLine(mode, item, this.editUtil(), keyboardLine);
+                }
+            });
 
         this.state$
             .pipe(takeUntil(this.destroy$))

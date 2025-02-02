@@ -10,6 +10,7 @@ export * from './editorvaluechanged';
 export * from './editorentered';
 export * from './editorevent';
 export * from './editorvalidating';
+export * from './interactionkeyboardline';
 export * from './detailgridcellpreparing';
 export * from './detailgridrowvalidating';
 export * from './initnewdetailitem';

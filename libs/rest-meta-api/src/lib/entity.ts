@@ -4,7 +4,7 @@ import { map, Observable } from 'rxjs';
 import { parse } from 'json5/lib';
 
 import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout, Template } from '@ballware/meta-model';
-import { compileDetailGridCellPreparing, compileDetailGridRowValidating, compileEditorEntered, compileEditorEvent, compileEditorInitialized, compileEditorPreparing, compileEditorValidating, compileEditorValueChanged, compileEvaluateCustomFunction, compileInitNewDetailItem, compileItemMapping, compilePrepareCustomFunction, compilePrepareCustomParam, compilePrepareEditLayout, compilePrepareGridLayout, compilePrepareMaterializedEditItem, compileRightsCheckFunc, compileRightsParamForHead, compileRightsParamForItem } from '@ballware/meta-scripting';
+import { compileDetailGridCellPreparing, compileDetailGridRowValidating, compileEditorEntered, compileEditorEvent, compileEditorInitialized, compileEditorPreparing, compileEditorValidating, compileEditorValueChanged, compileEvaluateCustomFunction, compileInitNewDetailItem, compileInteractionKeyboardLine, compileItemMapping, compilePrepareCustomFunction, compilePrepareCustomParam, compilePrepareEditLayout, compilePrepareGridLayout, compilePrepareMaterializedEditItem, compileRightsCheckFunc, compileRightsParamForHead, compileRightsParamForItem } from '@ballware/meta-scripting';
 import { MetaEntityApi } from '@ballware/meta-api';
 
 interface EntityMetadata {
@@ -39,6 +39,7 @@ interface EntityCustomScripts {
   editorEntered?: string;
   editorEvent?: string;
   editorValidating?: string;
+  interactionKeyboardLine?: string;
   detailGridCellPreparing?: string;
   detailGridRowValidating?: string;
   initNewDetailItem?: string;
@@ -109,6 +110,7 @@ const compileEntityMetadata = (
     editorEntered: compileEditorEntered(customScripts.editorEntered, customScripts.commonUtils),
     editorEvent: compileEditorEvent(customScripts.editorEvent, customScripts.commonUtils),
     editorValidating: compileEditorValidating(customScripts.editorValidating, customScripts.commonUtils),
+    interactionKeyboardLine: compileInteractionKeyboardLine(customScripts.interactionKeyboardLine, customScripts.commonUtils),
     detailGridCellPreparing: compileDetailGridCellPreparing(customScripts.detailGridCellPreparing, customScripts.commonUtils),
     detailGridRowValidating: compileDetailGridRowValidating(customScripts.detailGridRowValidating, customScripts.commonUtils),
     initNewDetailItem: compileInitNewDetailItem(customScripts.initNewDetailItem, customScripts.commonUtils),

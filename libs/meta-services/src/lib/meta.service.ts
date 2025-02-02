@@ -52,6 +52,13 @@ export interface MetaService extends OnDestroy {
   editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
   editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>; 
   
+  interactionKeyboardLine$: Observable<((  
+    mode: EditModes, 
+    item: Record<string, unknown>,
+    editUtil: EditUtil,
+    value: string
+  ) => void)|undefined>; 
+
   detailGridCellPreparing$: Observable<((
       mode: EditModes,
       item: Record<string, unknown>,

@@ -508,6 +508,11 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             ? (_mode, item, editUtil, identifier, event) => entityMetadata.compiledCustomScripts?.editorEvent && entityMetadata.compiledCustomScripts.editorEvent(item, editUtil, identifier, event, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
 
+    readonly interactionKeyboardLine$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
+        .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
+            ? (_mode, item, editUtil, value) => entityMetadata.compiledCustomScripts?.interactionKeyboardLine && entityMetadata.compiledCustomScripts.interactionKeyboardLine(item, editUtil, value, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, value: string) => void)|undefined>;            
+
     readonly detailGridCellPreparing$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
             ? (mode, item, detailItem, identifier, options) => entityMetadata.compiledCustomScripts?.detailGridCellPreparing && entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, options, createUtil(this.httpClient, this.identityService.accessToken$))

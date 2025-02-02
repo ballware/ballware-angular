@@ -253,6 +253,23 @@ export type EditorValidatingFunc = (
 ) => boolean;
 
 /**
+ * Custom functionality on keyboard line input (via scanner, e.g.)
+ *  
+ * @param item Instance of business object for editing
+ * @param editUtil Adapter for accessing editor components by data member
+ * @param value Value entered via keyboard
+ * @param lookups Lookup definitions prepared for business object
+ * @param util Utility for performing misc operations
+ */
+export type InteractionKeyboardLineFunc = (
+  item: Record<string, unknown>,
+  editUtil: EditUtil,
+  value: string,
+  lookups: Record<string, unknown>,
+  util: ScriptUtil
+) => void;
+
+/**
  * Manipulate cell options on detail member grid before rendering
  *
  * @param mode Edit mode (add, edit, view)
@@ -815,6 +832,11 @@ export interface CompiledEntityCustomScripts {
    * Custom functionality on editor validation (if custom validation rules are set)
    */
   editorValidating: EditorValidatingFunc;
+
+  /**
+   * Custom functionality to prozess keyboard line input (e.g. by scanner)
+   */
+  interactionKeyboardLine: InteractionKeyboardLineFunc;
 
   /**
    * Manipulate cell options on detail member grid before rendering
