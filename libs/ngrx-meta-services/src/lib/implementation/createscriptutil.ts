@@ -7,22 +7,9 @@ import { ScriptUtil } from '@ballware/meta-model';
 import { HttpClient } from '@angular/common/http';
 import { LookupCreator, LookupDescriptor, LookupStoreDescriptor } from '@ballware/meta-services';
 import { geocodeAddress, geocodeLocation } from './geocoder';
-import { firstValueFrom, lastValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { speak } from './speech';
 
-/*
-export const nameof = <T>(name: keyof T): keyof T => name;
-export const nameofFactory = <T>() => (name: keyof T): keyof T => name;
-export function arrayToMap<T>(array: Array<T>, key: (obj: T) => string): { [key: string]: T } {
-    const result: { [key: string]: T } = {};
-    array?.forEach((v) => (result[key(v)] = v));
-    return result;
-}
-export function mapToArray<T>(map: { [key: string]: T }): Array<T> {
-    const result: Array<T> = [];
-    Object.keys(map ?? {}).forEach((k) => result.push(map[k]));
-    return result;
-}
-*/
 
 function beginOfYear(): Date {
   const m = moment()
@@ -145,5 +132,6 @@ export const createUtil = (http: HttpClient, token$: Observable<string|undefined
     geocodeLocation: (location, callback) => {
       geocodeLocation(location, callback);
     },
+    speak: (text: string) => speak(text)
   } as ScriptUtil;
 };
