@@ -73,10 +73,11 @@ function localDateToDate(date: Date): Date | null {
  * @param token Token used for authenticated webservice requests
  * @returns Generated util object
  */
-export const createUtil = (http: HttpClient, token$: Observable<string|undefined>): ScriptUtil => {
+export const createUtil = (http: HttpClient, token$: Observable<string|undefined>, currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
   return {
     http: () => http,
     token: () => firstValueFrom(token$),
+    user: () => firstValueFrom(currentUser$),
     uuid: () => uuid(),
     parse: json => parse(json),
     stringify: json => stringify(json),

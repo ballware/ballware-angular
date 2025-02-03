@@ -1,14 +1,12 @@
-import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
 import { GenericEntityApiFactory, MetaEntityApi } from "@ballware/meta-api";
-import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ValueType } from "@ballware/meta-model";
+import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { metaDestroyed, metaUpdated } from "../component";
 import { EditModes, IdentityService, LookupRequest, LookupService, MetaService, TenantService, Translator } from "@ballware/meta-services";
-import { createUtil } from "../implementation/createscriptutil";
 import { MetaState } from "./meta.state";
 
 interface TemplateItemOptions {
@@ -18,7 +16,7 @@ interface TemplateItemOptions {
 
 export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
     constructor(private store: Store, 
-        private httpClient: HttpClient, 
+        private readonly scriptUtil: ScriptUtil,
         private translator: Translator, 
         private metaEntityApi: MetaEntityApi, 
         private genericEntityApiFactory: GenericEntityApiFactory,
@@ -178,7 +176,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             .pipe(tap(([entityMetadata, lookups, initialCustomParam]) => {
                 if (lookups && entityMetadata && initialCustomParam) {
                     if (entityMetadata.compiledCustomScripts?.prepareCustomParam) {
-                        entityMetadata.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, this.identityService.accessToken$), initialCustomParam, (customParam) => {
+                        entityMetadata.compiledCustomScripts.prepareCustomParam(lookups, this.scriptUtil, initialCustomParam, (customParam) => {
                             this.setCustomParam(customParam);
                         });
                     } else {
@@ -254,7 +252,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
           if (gridLayout && entityMetadata.compiledCustomScripts?.prepareGridLayout) {
             const preparedGridLayout = cloneDeep(gridLayout);
   
-            entityMetadata.compiledCustomScripts?.prepareGridLayout(lookups, customParam, createUtil(this.httpClient, this.identityService.accessToken$), preparedGridLayout);
+            entityMetadata.compiledCustomScripts?.prepareGridLayout(lookups, customParam, this.scriptUtil, preparedGridLayout);
   
             return preparedGridLayout;
           }
@@ -302,7 +300,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                                 item.items = template.items;
 
                                 if (entityMetadata.compiledCustomScripts?.prepareMaterializedEditItem) {
-                                    entityMetadata.compiledCustomScripts?.prepareMaterializedEditItem(mode, lookups, customParam, createUtil(this.httpClient, this.identityService.accessToken$), editLayout, scope, identifier, item);
+                                    entityMetadata.compiledCustomScripts?.prepareMaterializedEditItem(mode, lookups, customParam, this.scriptUtil, editLayout, scope, identifier, item);
                                 }
                             }
                         } else {
@@ -317,7 +315,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
                 if (entityMetadata.compiledCustomScripts?.prepareEditLayout) {
                     
-                    entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, createUtil(this.httpClient, this.identityService.accessToken$), preparedEditLayout);
+                    entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, this.scriptUtil, preparedEditLayout);
                 }
 
                 return preparedEditLayout;
@@ -392,33 +390,33 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
             ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl)
                 .query(query, params)
-                .pipe(map((items) => entityMetadata.itemMappingScript ? items?.map(item => entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, this.identityService.accessToken$))) : items))
+                .pipe(map((items) => entityMetadata.itemMappingScript ? items?.map(item => entityMetadata.itemMappingScript(item, customParam, this.scriptUtil)) : items))
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
 
     readonly byId$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (id) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .byId('primary', id)
-            .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, this.identityService.accessToken$)) : item))
+            .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, this.scriptUtil) : item))
         : undefined)) as Observable<((id: string) => Observable<CrudItem>)|undefined>;
 
     readonly create$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .new(query, params)
-            .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, createUtil(this.httpClient, this.identityService.accessToken$)) : item))
+            .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, this.scriptUtil) : item))
         : undefined)) as Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
 
     readonly save$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (query, item) => this.genericEntityApiFactory(entityMetadata.baseUrl)
-            .save(query, entityMetadata.itemReverseMappingScript ? entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient, this.identityService.accessToken$)) : item)
+            .save(query, entityMetadata.itemReverseMappingScript ? entityMetadata.itemReverseMappingScript(item, customParam, this.scriptUtil) : item)
         : undefined)) as Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
 
     readonly saveBatch$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (query, items) => this.genericEntityApiFactory(entityMetadata.baseUrl)
-            .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, createUtil(this.httpClient, this.identityService.accessToken$))) : items)
+            .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, this.scriptUtil)) : items)
         : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;     
         
     readonly drop$ = combineLatest([this.entityMetadata$])
@@ -446,7 +444,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                     entityMetadata.compiledCustomScripts.prepareCustomFunction(
                         identifier,
                         lookups,
-                        createUtil(this.httpClient, this.identityService.accessToken$),
+                        this.scriptUtil,
                         execute,
                         message,
                         params,
@@ -467,7 +465,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                     continueAfterSave,
                     editUtil,
                     lookups,
-                    createUtil(this.httpClient, this.identityService.accessToken$),
+                    this.scriptUtil,
                     param,
                     save,
                     message
@@ -480,52 +478,52 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly editorPreparing$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])            
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (mode, item, layoutItem, identifier) => layoutItem.options && entityMetadata.compiledCustomScripts?.editorPreparing && entityMetadata.compiledCustomScripts?.editorPreparing(mode, item, layoutItem.options, identifier, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (mode, item, layoutItem, identifier) => layoutItem.options && entityMetadata.compiledCustomScripts?.editorPreparing && entityMetadata.compiledCustomScripts?.editorPreparing(mode, item, layoutItem.options, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
       
     readonly editorInitialized$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorInitialized && entityMetadata.compiledCustomScripts.editorInitialized(mode, item, editUtil, identifier, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorInitialized && entityMetadata.compiledCustomScripts.editorInitialized(mode, item, editUtil, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
       
     readonly editorEntered$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorEntered && entityMetadata.compiledCustomScripts.editorEntered(mode, item, editUtil, identifier, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorEntered && entityMetadata.compiledCustomScripts.editorEntered(mode, item, editUtil, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
       
     readonly editorValueChanged$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (_mode, item, editUtil, identifier, value) => entityMetadata.compiledCustomScripts?.editorValueChanged && entityMetadata.compiledCustomScripts.editorValueChanged(item, editUtil, identifier, value, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (_mode, item, editUtil, identifier, value) => entityMetadata.compiledCustomScripts?.editorValueChanged && entityMetadata.compiledCustomScripts.editorValueChanged(item, editUtil, identifier, value, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
       
     readonly editorValidating$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (_mode, item, editUtil, identifier, value, validation) => entityMetadata.compiledCustomScripts?.editorValidating ? entityMetadata.compiledCustomScripts.editorValidating(item, editUtil, identifier, value, validation, lookups, createUtil(this.httpClient, this.identityService.accessToken$)) : true
+            ? (_mode, item, editUtil, identifier, value, validation) => entityMetadata.compiledCustomScripts?.editorValidating ? entityMetadata.compiledCustomScripts.editorValidating(item, editUtil, identifier, value, validation, lookups, this.scriptUtil) : true
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
       
     readonly editorEvent$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (_mode, item, editUtil, identifier, event) => entityMetadata.compiledCustomScripts?.editorEvent && entityMetadata.compiledCustomScripts.editorEvent(item, editUtil, identifier, event, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (_mode, item, editUtil, identifier, event) => entityMetadata.compiledCustomScripts?.editorEvent && entityMetadata.compiledCustomScripts.editorEvent(item, editUtil, identifier, event, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
 
     readonly interactionKeyboardLine$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (_mode, item, editUtil, value) => entityMetadata.compiledCustomScripts?.interactionKeyboardLine && entityMetadata.compiledCustomScripts.interactionKeyboardLine(item, editUtil, value, lookups, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (_mode, item, editUtil, value) => entityMetadata.compiledCustomScripts?.interactionKeyboardLine && entityMetadata.compiledCustomScripts.interactionKeyboardLine(item, editUtil, value, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, value: string) => void)|undefined>;            
 
     readonly detailGridCellPreparing$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-            ? (mode, item, detailItem, identifier, options) => entityMetadata.compiledCustomScripts?.detailGridCellPreparing && entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, options, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (mode, item, detailItem, identifier, options) => entityMetadata.compiledCustomScripts?.detailGridCellPreparing && entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, options, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => void) | undefined>;
 
     readonly detailGridRowValidating$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-            ? (mode, item, detailItem, identifier) => entityMetadata.compiledCustomScripts?.detailGridRowValidating ? entityMetadata.compiledCustomScripts.detailGridRowValidating(mode, item as CrudItem, detailItem, identifier, createUtil(this.httpClient, this.identityService.accessToken$)) : undefined
+            ? (mode, item, detailItem, identifier) => entityMetadata.compiledCustomScripts?.detailGridRowValidating ? entityMetadata.compiledCustomScripts.detailGridRowValidating(mode, item as CrudItem, detailItem, identifier, this.scriptUtil) : undefined
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => string) | undefined>;
     
     readonly initNewDetailItem$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-            ? (dataMember, item, detailItem) => entityMetadata.compiledCustomScripts?.initNewDetailItem && entityMetadata.compiledCustomScripts.initNewDetailItem(dataMember, item as CrudItem, detailItem, createUtil(this.httpClient, this.identityService.accessToken$))
+            ? (dataMember, item, detailItem) => entityMetadata.compiledCustomScripts?.initNewDetailItem && entityMetadata.compiledCustomScripts.initNewDetailItem(dataMember, item as CrudItem, detailItem, this.scriptUtil)
             : undefined)) as Observable<((dataMember: string, item: Record<string, unknown>, detailItem: Record<string, unknown>) => void) | undefined>;
   
 }

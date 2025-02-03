@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { MetaPageApi } from "@ballware/meta-api";
-import { EditUtil, QueryParams, ScriptActions, ValueType } from "@ballware/meta-model";
+import { EditUtil, QueryParams, ScriptActions, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEmpty, isEqual } from "lodash";
@@ -10,7 +10,6 @@ import * as qs from "qs";
 import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
 import { IdentityService, LookupRequest, LookupService, PageService, TenantService, ToolbarService, ToolbarItemRef } from "@ballware/meta-services";
-import { createUtil } from "../implementation/createscriptutil";
 import { PageState } from "./page.state";
 
 export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageService {
@@ -22,9 +21,8 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
 
     constructor(
         private store: Store,
-        private httpClient: HttpClient,
+        private readonly scriptUtil: ScriptUtil,
         private router: Router,
-        private identityService: IdentityService,
         private tenantService: TenantService,
         private toolbarService: ToolbarService,
         private lookupService: LookupService,      
@@ -163,7 +161,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             combineLatest([this.page$, this.lookupService.lookups$])                
                 .pipe(tap(([page, lookups]) => {
                     if (page && lookups) {
-                        page.compiledCustomScripts.prepareCustomParam(lookups, createUtil(this.httpClient, this.identityService.accessToken$), {}, (p) => this.updater((state) => ({
+                        page.compiledCustomScripts.prepareCustomParam(lookups, this.scriptUtil, {}, (p) => this.updater((state) => ({
                                 ...state,
                                 customParam: p
                         }))());
@@ -251,11 +249,11 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 if (page && lookups && pageParam) {
                     this.toolbarItems[name] = item;
 
-                    page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);
+                    page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam);
                     
                     if (!Object.keys(this.toolbarItems).some(item => !this.toolbarItems[item])) {
                         if (page) {
-                            page.compiledCustomScripts.paramsInitialized(false, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);
+                            page.compiledCustomScripts.paramsInitialized(false, lookups, this.scriptUtil, this.scriptActions, pageParam);
                         }
                     }
                 }
@@ -273,7 +271,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
             .pipe(tap(([page, lookups, pageParam, { name, value }]) => {
                 if (page && lookups && pageParam) {
-                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam);  
+                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam);  
                 }
             }))
     );
@@ -283,7 +281,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             .pipe(withLatestFrom(this.headParams$))
             .pipe(tap(([[page, lookups, { name, event, param }], pageParam]) => {
                 if (page && lookups && pageParam && name && event) {
-                  page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, createUtil(this.httpClient, this.identityService.accessToken$), this.scriptActions, pageParam, param);
+                  page.compiledCustomScripts.paramEditorEvent(name, event, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam, param);
                 }
             }))
     );

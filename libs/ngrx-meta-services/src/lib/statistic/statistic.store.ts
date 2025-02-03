@@ -1,19 +1,20 @@
-import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
 import { MetaStatisticApi } from "@ballware/meta-api";
-import { CompiledStatistic, QueryParams, StatisticLayout } from "@ballware/meta-model";
+import { CompiledStatistic, QueryParams, ScriptUtil, StatisticLayout } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
 import { combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { statisticDestroyed, statisticUpdated } from "../component";
-import { IdentityService, LookupService, StatisticService } from "@ballware/meta-services";
-import { createUtil } from "../implementation/createscriptutil";
+import { LookupService, StatisticService } from "@ballware/meta-services";
 import { StatisticState } from "./statistic.state";
 
 export class StatisticStore extends ComponentStore<StatisticState> implements StatisticService, OnDestroy {
     
-    constructor(private store: Store, private httpClient: HttpClient, private metaStatisticApi: MetaStatisticApi, private identityService: IdentityService, private lookupService: LookupService) {
+    constructor(private store: Store, 
+        private readonly scriptUtil: ScriptUtil,
+        private metaStatisticApi: MetaStatisticApi, 
+        private lookupService: LookupService) {
         super({});
 
         this.state$
@@ -64,7 +65,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
                         data: updates.data
                     }));
 
-                    metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, createUtil(this.httpClient, this.identityService.accessToken$), (layout, data) => updater({ name: layout?.title ?? metadata.name, layout, data }));
+                    metadata.mappingScript(data, cloneDeep(metadata.layout), customParam, headParams, lookups, this.scriptUtil, (layout, data) => updater({ name: layout?.title ?? metadata.name, layout, data }));
                 }
             }))
         );
@@ -80,7 +81,7 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
     
     readonly argumentAxisCustomizeText$ = combineLatest([this.metadata$, this.layout$, this.customParam$, this.headParams$])
         .pipe(map(([metadata, layout, customParam, headParams]) => (metadata && layout && customParam && headParams) 
-            ? (value: unknown) => metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, createUtil(this.httpClient, this.identityService.accessToken$))    
+            ? (value: unknown) => metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, this.scriptUtil)    
             : undefined));
 
     readonly setStatistic = this.updater((state, statistic: string) => ({

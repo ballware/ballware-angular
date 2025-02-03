@@ -13,6 +13,11 @@
   token: () => Promise<string|undefined>;
 
   /**
+   * Get current user claims
+   */
+  user: () => Promise<Record<string, unknown>|undefined>;
+
+  /**
    * Parse JSON to object
    *
    * @param json String with serialized JSON

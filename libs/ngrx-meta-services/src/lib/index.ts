@@ -22,10 +22,12 @@ import { PageStore } from './page/page.store';
 import { CrudStore } from './crud/crud.store';
 import { StatisticStore } from './statistic/statistic.store';
 import { EditStore } from './edit/edit.store';
-import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, IDLE_SERVICE, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, IDLE_SERVICE, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DefaultResponsiveService } from './responsive.service';
 import { DefaultIdleService } from './idle.service';
 import { DefaultInteractionService } from './interaction.service';
+import { createUtil } from './implementation/createscriptutil';
+import { ScriptUtil } from '@ballware/meta-model';
 
 export function provideNgrxMetaServices(): EnvironmentProviders {
   return makeEnvironmentProviders(    
@@ -87,6 +89,11 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         deps: []
       },
       {
+        provide: SCRIPT_UTIL,
+        useFactory: (httpClient: HttpClient, identityService: IdentityService) => createUtil(httpClient, identityService.accessToken$, identityService.currentUser$),
+        deps: [HttpClient, IDENTITY_SERVICE]
+      },
+      {
         provide: ATTACHMENT_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
@@ -112,18 +119,18 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: META_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
+          scriptUtil: ScriptUtil,
           metaEntityApi: MetaEntityApi,
           genericEntityApiFactory: GenericEntityApiFactory,
-          httpClient: HttpClient, 
           translator: Translator,
           identityService: IdentityService,
           tenantService: TenantService            
-        ) => (lookupService: LookupService) => new MetaStore(store, httpClient, translator, metaEntityApi, genericEntityApiFactory, identityService, tenantService, lookupService),
+        ) => (lookupService: LookupService) => new MetaStore(store, scriptUtil, translator, metaEntityApi, genericEntityApiFactory, identityService, tenantService, lookupService),
         deps: [ 
           Store, 
+          SCRIPT_UTIL,
           META_ENTITY_API,
           GENERIC_ENTITY_API_FACTORY,
-          HttpClient,
           TRANSLATOR,
           IDENTITY_SERVICE,
           TENANT_SERVICE
@@ -156,32 +163,28 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: STATISTIC_SERVICE_FACTORY,
         useFactory: (
           store: Store,
-          httpClient: HttpClient,
-          metaStatisticApi: MetaStatisticApi,
-          identityService: IdentityService
-        ) => (lookupService: LookupService) => new StatisticStore(store, httpClient, metaStatisticApi, identityService, lookupService),
+          scriptUtil: ScriptUtil,          
+          metaStatisticApi: MetaStatisticApi
+        ) => (lookupService: LookupService) => new StatisticStore(store, scriptUtil, metaStatisticApi, lookupService),
         deps: [
           Store,
-          HttpClient,
-          META_STATISTIC_API,
-          IDENTITY_SERVICE
+          SCRIPT_UTIL,
+          META_STATISTIC_API
         ]
       },
       {
         provide: PAGE_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
+          scriptUtil: ScriptUtil,
           metaPageApi: MetaPageApi,
-          httpClient: HttpClient, 
-          identityService: IdentityService,
           tenantService: TenantService,
           toolbarService: ToolbarService
-        ) => (router: Router, lookupService: LookupService) => new PageStore(store, httpClient, router, identityService, tenantService, toolbarService, lookupService, metaPageApi),
+        ) => (router: Router, lookupService: LookupService) => new PageStore(store, scriptUtil, router, tenantService, toolbarService, lookupService, metaPageApi),
         deps: [
           Store, 
+          SCRIPT_UTIL,
           META_PAGE_API,
-          HttpClient,
-          IDENTITY_SERVICE,
           TENANT_SERVICE,
           TOOLBAR_SERVICE
         ]
