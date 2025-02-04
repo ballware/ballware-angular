@@ -1,5 +1,6 @@
 {
   "translations": {
+    "locale": "en-GB",
     "format": {
       "date": "MM/dd/yyyy",
       "datetime": "MM/dd/yyyy HH:mm:ss"
@@ -80,7 +81,8 @@
         "cancel": "Cancel",
         "remove": "Remove",
         "close": "Close",
-        "enterbarcode": "Scan barcode/qr-code"
+        "enterbarcode": "Scan barcode/qr-code",
+        "enterspeech": "Enter spoken text"
       },
       "notifications": {
         "saved": "Successfully saved",

@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 
 import { environment } from '../environments/environment';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
+import { provideRendererCommonsServices } from '@ballware/renderer-commons';
 
 declare let window :any;
 
@@ -38,6 +39,7 @@ export const appConfig: ApplicationConfig = {
             registrationStrategy: 'registerWhenStable:30000'
         }),
         provideNgrxMetaServices(),
+        provideRendererCommonsServices(),
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
         provideDxRenderFactoryRoutes(),
         provideIdentityKeycloakRestApi(window.ENV.BALLWARE_IDENTITYURL), 

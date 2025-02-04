@@ -2,41 +2,87 @@
 
 exports[`EditLayoutTextareaComponent should create 1`] = `
 <ballware-edit-textarea
+  allowSpeech="false"
   destroy={[Function Destroy]}
+  fullscreenDialogs$={[Function AnonymousSubject]}
   livecycle={[Function EditItemLivecycle]}
+  onSpeechApply={[Function Function]}
+  onSpeechCancel={[Function Function]}
   readonly={[Function Readonly]}
+  responsiveService={[Function ]}
+  showSpeech="false"
+  speechAvailable="false"
+  speechRecognitionService={[Function ]}
+  temporarySpeechValue=""
   validation={[Function Validation]}
   value={[Function StringValue]}
   visible={[Function Visible]}
 >
-  <dx-text-area
-    class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
+  <div
+    class="d-flex"
   >
-    <div
-      class="dx-texteditor-container"
+    <dx-text-area
+      class="mt-2 flex-fill dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
     >
       <div
-        class="dx-texteditor-input-container"
+        class="dx-texteditor-container"
       >
-        <textarea
-          aria-multiline="true"
-          autocomplete="off"
-          class="dx-texteditor-input"
-          name="mockedmember"
-          role="textbox"
-          tabindex="0"
-        />
         <div
-          class="dx-placeholder"
-          data-dx_placeholder=""
+          class="dx-texteditor-input-container"
+        >
+          <textarea
+            aria-multiline="true"
+            autocomplete="off"
+            class="dx-texteditor-input"
+            name="mockedmember"
+            role="textbox"
+            tabindex="0"
+          />
+          <div
+            class="dx-placeholder"
+            data-dx_placeholder=""
+          />
+        </div>
+        <div
+          class="dx-texteditor-buttons-container"
+        >
+          <div />
+        </div>
+      </div>
+    </dx-text-area>
+    <dx-button
+      aria-disabled="true"
+      aria-hidden="true"
+      aria-label="bi bi-mic"
+      class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon mt-2 dx-state-disabled dx-state-invisible"
+      icon="bi bi-mic"
+      role="button"
+    >
+      <div
+        class="dx-button-content"
+      >
+        <i
+          class="dx-icon bi bi-mic"
         />
       </div>
+    </dx-button>
+  </div><dx-popup
+    class="dx-overlay dx-popup dx-widget dx-state-invisible dx-visibility-change-handler"
+    height="auto"
+    maxheight="90vh"
+    minwidth="500px"
+    width="auto"
+  >
+    <div
+      class="dx-overlay-content dx-popup-fullscreen-width dx-popup-normal"
+      role="dialog"
+      style="min-width: 500px; max-height: 90vh; width: auto; height: auto;"
+      tabindex="0"
+    >
       <div
-        class="dx-texteditor-buttons-container"
-      >
-        <div />
-      </div>
+        class="dx-popup-content dx-popup-content-scrollable"
+      />
     </div>
-  </dx-text-area>
+  </dx-popup>
 </ballware-edit-textarea>
 `;

@@ -202,6 +202,11 @@ export interface TextOptions {
    * Allow barcode/qr code scan 
    */
   allowScanner?: boolean;
+
+  /**
+   * Allow speech recognition input
+   */
+  allowSpeech?: boolean;
 }
 
 /**

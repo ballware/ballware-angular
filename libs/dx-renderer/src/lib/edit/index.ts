@@ -28,3 +28,4 @@ export { EditLayoutJavascriptComponent } from './javascript/javascript.component
 export { EditLayoutSqlComponent } from './sql/sql.component';
 
 export { BarcodeScannerComponent } from './components/barcodescanner/barcodescanner.component';
+export { SpeechInputComponent } from './components/speechinput/speechinput.component';

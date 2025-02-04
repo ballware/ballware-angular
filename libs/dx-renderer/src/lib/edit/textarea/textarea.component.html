@@ -1,10 +1,30 @@
-<dx-text-area *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
-  class="mt-2"
-  [visible]="((visible.visible$ | async) ?? false)"
-  [label]="livecycle.layoutItem.options.caption ?? ''"
-  [name]="livecycle.layoutItem.options.dataMember"
-  [(value)]="value.value"
-  [readOnly]="(readonly.readonly$ | async) ?? false"
-  (onFocusIn)="livecycle.onEntered()">
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
-</dx-text-area>
+<div class="d-flex">
+  <dx-text-area *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+    class="mt-2 flex-fill"
+    [visible]="((visible.visible$ | async) ?? false)"
+    [label]="livecycle.layoutItem.options.caption ?? ''"
+    [name]="livecycle.layoutItem.options.dataMember"
+    [(value)]="value.value"
+    [readOnly]="(readonly.readonly$ | async) ?? false"
+    (onFocusIn)="livecycle.onEntered()">  
+    <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  </dx-text-area>
+  <dx-button class="mt-2" icon="bi bi-mic" (onClick)="onSpeechClicked()" [disabled]="!speechAvailable" [visible]="allowSpeech"></dx-button>
+</div>
+<dx-popup 
+  [visible]="showSpeech" 
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="'editing.actions.enterspeech' | i18next"
+  (onHidden)="onSpeechHidden()"
+  width="auto" 
+  minWidth="500px" 
+  maxHeight="90vh"
+  height="auto">
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onSpeechCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>  
+  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.applyclose' | i18next, onClick: onSpeechApply }" toolbar="bottom" location="after"></dxi-toolbar-item>  
+  <div *dxTemplate="let data of 'content'">
+    <ballware-speechinput [enabled]="showSpeech" (valueChange)="onSpeechValueChanged($event)"></ballware-speechinput>
+  </div> 
+</dx-popup>
