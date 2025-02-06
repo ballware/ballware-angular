@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutBoolComponent should create 1`] = `
+<ballware-edit-toggle
+  destroy={[Function Destroy]}
+  livecycle={[Function EditItemLivecycle]}
+  readonly={[Function Readonly]}
+  validation={[Function Validation]}
+  value={[Function BoolValue]}
+  visible={[Function Visible]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-switch
+    aria-checked="false"
+    aria-label="OFF"
+    class="pt-1 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-switch dx-swipeable dx-widget"
+    role="switch"
+    tabindex="0"
+  >
+    <div
+      class="dx-switch-wrapper"
+    >
+      <div
+        class="dx-switch-container"
+      >
+        <div
+          class="dx-switch-inner"
+          style="transform:  translateX(-50%);"
+        >
+          <div
+            class="dx-switch-on"
+          >
+            ON
+          </div>
+          <div
+            class="dx-switch-handle"
+            style="transform:  translateX(0%);"
+          />
+          <div
+            class="dx-switch-off"
+          >
+            OFF
+          </div>
+        </div>
+      </div>
+    </div>
+    <input
+      name="mockedmember"
+      type="hidden"
+      value="false"
+    />
+  </dx-switch>
+</ballware-edit-toggle>
+`;

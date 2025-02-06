@@ -6,7 +6,7 @@ exports[`EditLayoutBoolComponent should create 1`] = `
   livecycle={[Function EditItemLivecycle]}
   readonly={[Function Readonly]}
   validation={[Function Validation]}
-  value={[Function BoolValue]}
+  value={[Function NullableBoolValue]}
   visible={[Function Visible]}
 >
   <div

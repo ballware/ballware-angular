@@ -23,6 +23,7 @@ import { EditLayoutTextareaComponent } from '../textarea/textarea.component';
 import { EditLayoutButtonComponent } from '../button/button.component';
 import { EditLayoutRichtextComponent } from '../richtext/richtext.component';
 import { EditLayoutBoolComponent } from '../bool/bool.component';
+import { EditLayoutToggleComponent } from '../toggle/toggle.component';
 import { EditLayoutMapComponent } from '../map/map.component';
 import { CommonModule } from '@angular/common';
 
@@ -96,6 +97,13 @@ export class EditLayoutItemComponent implements AfterViewInit {
             componentRef.changeDetectorRef.detectChanges();
           }                        
           break;
+        case 'toggle': {
+            const componentRef = this.itemHost.createComponent(EditLayoutToggleComponent);
+
+            componentRef.setInput('initialLayoutItem', this.layoutItem);            
+            componentRef.changeDetectorRef.detectChanges();
+          }                        
+          break;          
         case 'date':
         case 'datetime': {
             //const { EditLayoutDatetimeComponent } = await import('../datetime/datetime.component');

@@ -110,7 +110,16 @@ export class UnknownArrayValue extends Value<unknown[]> {
 @Directive({
   standalone: true
 })
-export class BoolValue extends Value<boolean|null|undefined> {
+export class BoolValue extends Value<boolean> {
+  constructor() {
+    super(() => false);
+  }
+}
+
+@Directive({
+  standalone: true
+})
+export class NullableBoolValue extends Value<boolean|null|undefined> {
   constructor() {
     super(() => false as boolean|null|undefined);
   }
