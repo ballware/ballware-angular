@@ -67,14 +67,14 @@ const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
 };
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}api/statistic/selectlist`;
+  const url = `${metaServiceBaseUrl}/api/statistic/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}api/statistic/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/api/statistic/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);

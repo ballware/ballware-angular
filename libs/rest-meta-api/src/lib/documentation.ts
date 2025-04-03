@@ -3,14 +3,14 @@ import { MetaDocumentationApi } from '@ballware/meta-api';
 import { Observable } from 'rxjs';
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}api/documentation/selectlist`;
+  const url = `${metaServiceBaseUrl}/api/documentation/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}api/documentation/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/api/documentation/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);
