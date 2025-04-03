@@ -51,6 +51,20 @@ const allowedTenantFunc = (http: HttpClient, serviceBaseUrl: string) => (): Obse
     .get<{ Id: string, Name: string}[]>(url);
 }
 
+const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
+  const url = `${metaServiceBaseUrl}api/tenant/selectlist`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+}
+
+const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
+  const url = `${metaServiceBaseUrl}api/tenant/selectbyid/${id}`;
+
+  return http
+    .get<Record<string, unknown>>(url);
+}
+
 /**
  * Create adapter for tenant fetch operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -61,6 +75,8 @@ export function createMetaBackendTenantApi(
   serviceBaseUrl: string
 ): MetaTenantApi {
   return {
+    selectList: selectList(httpClient, serviceBaseUrl),
+    selectById: selectById(httpClient, serviceBaseUrl),
     metadataForTenant: metadataFunc(httpClient, serviceBaseUrl),
     allowed: allowedTenantFunc(httpClient, serviceBaseUrl)
   } as MetaTenantApi;

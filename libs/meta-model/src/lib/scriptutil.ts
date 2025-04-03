@@ -93,6 +93,62 @@
   ) => void;
 
   /**
+   * Fetch lookup with param select list by definition
+   *
+   * @param lookup Lookup definition object
+   * @param param Param for lookup
+   * @param callback Callback function called with result
+   */
+  withLookupListParam: (
+    lookup: unknown,
+    param: string | string[],
+    callback: (items: Array<Record<string, unknown>>) => void
+  ) => void;
+
+  /**
+   * Fetch lookup with param single element by definition and id
+   *
+   * @param lookup Lookup definition object
+   * @param param Param for lookup
+   * @param id Id of lookup element
+   * @param callback Callback function called with result
+   */
+  withLookupByIdParam: (
+    lookup: unknown,
+    param: string | string[],
+    id: string,
+    callback: (item?: Record<string, unknown>) => void
+  ) => void;
+
+  /**
+   * Fetch list of available pickvalues for entity and field
+   * @param lookup Lookup definition object
+   * @param entity Entity identifier
+   * @param field Field identifier
+   * @param callback Callback function called with result
+   */
+  withPickvalueList: (
+    lookup: unknown, 
+    entity: string, 
+    field: string, 
+    callback: (items: Array<Record<string, unknown>>) => void) => void;
+
+  /**
+   * Fetch single value of available pickvalues for entity and field
+   * @param lookup Lookup definition object
+   * @param entity Entity identifier
+   * @param field Field identifier
+   * @param value Value of pickvalue
+   * @param callback Callback function called with result
+   */
+  withPickvalueByValue: (
+    lookup: unknown, 
+    entity: string, 
+    field: string, 
+    value: number,
+    callback: (item: Record<string, unknown>) => void) => void;
+
+  /**
    * Fetch autocomplete list by definition
    *
    * @param autocomplete Autocomplete definition object

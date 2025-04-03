@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { EnvironmentProviders, makeEnvironmentProviders } from "@angular/core";
-import { GENERIC_ENTITY_API_FACTORY, IDENTITY_ROLE_API, IDENTITY_USER_API, META_ATTACHMENT_API_FACTORY, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_LOOKUP_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, META_TENANT_API } from "@ballware/meta-api";
+import { GENERIC_ENTITY_API_FACTORY, IDENTITY_ROLE_API, IDENTITY_USER_API, META_ATTACHMENT_API_FACTORY, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_LOOKUP_API, META_MLMODEL_API, META_NOTIFICATION_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, META_SUBSCRIPTION_API, META_TENANT_API } from "@ballware/meta-api";
 import { createKeycloakUserApi } from "./user";
 import { createKeycloakRoleApi } from "./role";
 import { createMetaBackendDocumentApi } from "./document";
@@ -11,6 +11,9 @@ import { createMetaBackendPageApi } from "./page";
 import { createMetaBackendPickvalueApi } from "./pickvalue";
 import { createMetaBackendProcessingstateApi } from "./processingstate";
 import { createMetaBackendStatisticApi } from "./statistic";
+import { createMetaBackendMlModelApi } from "./mlmodel";
+import { createMetaBackendNotificationApi } from "./notification";
+import { createMetaBackendSubscriptionApi } from "./subscription";
 import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
@@ -77,6 +80,21 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string, documentSe
         {
             provide: META_STATISTIC_API,
             useFactory: (client: HttpClient) => createMetaBackendStatisticApi(client, metaServiceBaseUrl),
+            deps: [ HttpClient ]
+        },
+        {
+            provide: META_MLMODEL_API,
+            useFactory: (client: HttpClient) => createMetaBackendMlModelApi(client, metaServiceBaseUrl),
+            deps: [ HttpClient ]
+        },
+        {
+            provide: META_NOTIFICATION_API,
+            useFactory: (client: HttpClient) => createMetaBackendNotificationApi(client, metaServiceBaseUrl),
+            deps: [ HttpClient ]
+        },
+        {
+            provide: META_SUBSCRIPTION_API,
+            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {

@@ -1,4 +1,4 @@
-import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 /**
@@ -61,6 +61,13 @@ export interface LookupDescriptor {
 export type LookupCreator = (param: string | Array<string>) => LookupDescriptor;
 
 /**
+ * Creator for getting lookup descriptor based on pickvalue request
+ * @param entity Entity identifier for pickvalue query
+ * @param field Entity field for pickvalue query
+ */
+export type PickvalueCreator = (entity: string, field: string) => LookupDescriptor;
+
+/**
  * Creator for getting autocomplete descriptor with additional query param
  * @param param Param attached to autocomplete query
  */
@@ -121,7 +128,7 @@ export interface LookupService extends OnDestroy {
 
   lookups$: Observable<Record<
       string,
-      LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
+      LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
     >|undefined>;
 
   getGenericLookupByIdentifier$: Observable<((

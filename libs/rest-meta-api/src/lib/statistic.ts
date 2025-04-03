@@ -66,6 +66,20 @@ const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
+const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
+  const url = `${metaServiceBaseUrl}api/statistic/selectlist`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+}
+
+const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
+  const url = `${metaServiceBaseUrl}api/statistic/selectbyid/${id}`;
+
+  return http
+    .get<Record<string, unknown>>(url);
+}
+
 /**
  * Create adapter for statistic fetch operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -76,6 +90,8 @@ export function createMetaBackendStatisticApi(
   serviceBaseUrl: string
 ): MetaStatisticApi {
   return {
+    selectList: selectList(httpClient, serviceBaseUrl),
+    selectById: selectById(httpClient, serviceBaseUrl),
     metadataForStatistic: metadataFunc(httpClient, serviceBaseUrl),
     dataForStatistic: dataFunc(httpClient, serviceBaseUrl),
   } as MetaStatisticApi;

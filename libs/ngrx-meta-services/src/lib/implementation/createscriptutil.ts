@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import { ScriptUtil } from '@ballware/meta-model';
 
 import { HttpClient } from '@angular/common/http';
-import { LookupCreator, LookupDescriptor, LookupStoreDescriptor } from '@ballware/meta-services';
+import { LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from '@ballware/meta-services';
 import { geocodeAddress, geocodeLocation } from './geocoder';
 import { firstValueFrom, Observable } from 'rxjs';
 import { speak } from './speech';
@@ -107,6 +107,37 @@ export const createUtil = (http: HttpClient, token$: Observable<string|undefined
     ) => {
       ((lookup as LookupDescriptor).store as LookupStoreDescriptor)
         .byIdFunc(id)
+        .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
+    },
+    withLookupByIdParam: (
+      lookup: unknown,
+      param: string | string[],
+      id: string,
+      callback: (item?: Record<string, unknown>) => void
+    ) => {
+      ((lookup as LookupCreator)(param).store as LookupStoreDescriptor)
+        .byIdFunc(id)
+        .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
+    },
+    withPickvalueList: (
+      lookup: unknown,
+      entity: string,
+      field: string,
+      callback: (items: Array<Record<string, unknown>>) => void
+    ) => {
+      ((lookup as PickvalueCreator)(entity, field).store as LookupStoreDescriptor)
+        .listFunc()
+        .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
+    },
+    withPickvalueByValue: (
+      lookup: unknown,
+      entity: string,
+      field: string,
+      value: number,
+      callback: (item?: Record<string, unknown>) => void
+    ) => {
+      ((lookup as PickvalueCreator)(entity, field).store as LookupStoreDescriptor)
+        .byIdFunc(value.toString())
         .subscribe({next: (result) => callback(result), error: (reason) => console.error(reason) });
     },
     withAutocompleteList: (

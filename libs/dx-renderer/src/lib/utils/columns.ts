@@ -1,5 +1,5 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
-import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor } from "@ballware/meta-services";
+import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from "@ballware/meta-services";
 import { dxEvent } from "devextreme/events";
 import { Column as DataGridColumn } from "devextreme/ui/data_grid";
 import { Column as TreeListColumn } from "devextreme/ui/tree_list";
@@ -23,7 +23,7 @@ export type OptionButtons =
     lookups:
       | Record<
           string,
-          LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
+          LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
         >
       | undefined,
     lookupParams: Record<string, unknown>
@@ -218,7 +218,7 @@ export function createColumnConfiguration<
   lookups:
     | Record<
         string,
-        LookupDescriptor | LookupCreator | AutocompleteCreator | Array<unknown>
+        LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
       >
     | undefined,
   lookupParams: Record<string, unknown>,

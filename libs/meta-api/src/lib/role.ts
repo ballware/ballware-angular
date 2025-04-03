@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
    * @param token - access token required for authentication
    * @returns Promise resolving list of available roles with id and display text
    */
-  selectListFunc: () => Observable<Array<Record<string, unknown>>>;
+  selectList: () => Observable<Array<Record<string, unknown>>>;
 
   /**
    * Returns a single existing role by identifier from identity system
@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
    * @param token - access token required for authentication
    * @returns Promise resoling single element with id and display text for requested identifier
    */
-  selectByIdFunc: (
+  selectById: (
     identifier: string
   ) => Observable<Record<string, unknown>>;
 }

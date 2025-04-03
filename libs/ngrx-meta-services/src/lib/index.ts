@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { Router } from '@angular/router';
-import { GENERIC_ENTITY_API_FACTORY, GenericEntityApiFactory, IDENTITY_ROLE_API, IDENTITY_USER_API, IdentityRoleApi, IdentityUserApi, META_ATTACHMENT_API_FACTORY, META_ENTITY_API, META_LOOKUP_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, MetaAttachmentApiFactory, MetaEntityApi, MetaLookupApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi } from '@ballware/meta-api';
+import { GENERIC_ENTITY_API_FACTORY, GenericEntityApiFactory, IDENTITY_ROLE_API, IDENTITY_USER_API, IdentityRoleApi, IdentityUserApi, META_ATTACHMENT_API_FACTORY, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_LOOKUP_API, META_MLMODEL_API, META_NOTIFICATION_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, META_SUBSCRIPTION_API, META_TENANT_API, MetaAttachmentApiFactory, MetaDocumentApi, MetaDocumentationApi, MetaEntityApi, MetaLookupApi, MetaMlModelApi, MetaNotificationApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi, MetaSubscriptionApi, MetaTenantApi } from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { provideComponentFeature } from './component';
@@ -109,11 +109,20 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
           store: Store, 
           userApi: IdentityUserApi,
           roleApi: IdentityRoleApi,
+          documentApi: MetaDocumentApi,
+          documentationApi: MetaDocumentationApi,
+          entityApi: MetaEntityApi,
+          mlmodelApi: MetaMlModelApi,
+          notificationApi: MetaNotificationApi,
+          pageApi: MetaPageApi,
+          statisticApi: MetaStatisticApi,
+          subscriptionApi: MetaSubscriptionApi,
+          tenantApi: MetaTenantApi,
           lookupApi: MetaLookupApi,
           pickvalueApi: MetaPickvalueApi,
           processingstateApi: MetaProcessingstateApi
-        ) => () => new LookupStore(store, userApi, roleApi, lookupApi, pickvalueApi, processingstateApi),
-        deps: [ Store, IDENTITY_USER_API, IDENTITY_ROLE_API, META_LOOKUP_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API ]
+        ) => () => new LookupStore(store, userApi, roleApi, documentApi, documentationApi, entityApi, mlmodelApi, notificationApi, pageApi, statisticApi, subscriptionApi, tenantApi, lookupApi, pickvalueApi, processingstateApi),
+        deps: [ Store, IDENTITY_USER_API, IDENTITY_ROLE_API, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_MLMODEL_API, META_NOTIFICATION_API, META_PAGE_API, META_STATISTIC_API, META_SUBSCRIPTION_API, META_TENANT_API, META_LOOKUP_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API ]
       },
       {
         provide: META_SERVICE_FACTORY,

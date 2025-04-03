@@ -11,14 +11,14 @@ import { Observable } from 'rxjs';
    * @param token - access token required for authentication
    * @returns Promise resolving list of available user with id and display text
    */
-  selectListFunc: () => Observable<Array<Record<string, unknown>>>;
+  selectList: () => Observable<Array<Record<string, unknown>>>;
   /**
    * Returns a single existing user by identifier from identity system
    *
    * @param token - access token required for authentication
    * @returns Promise resoling single element with id and display text for requested identifier
    */
-  selectByIdFunc: (identifier: string) => Observable<Record<string, unknown>>;
+  selectById: (identifier: string) => Observable<Record<string, unknown>>;
 
   /**
    * Switch current user to tenant
@@ -26,7 +26,7 @@ import { Observable } from 'rxjs';
    * @param tenant - identifier of destination tenant
    * @returns Promise resolved when tenant switch is completed
    */
-  switchTenantFunc: (tenant: string) => Observable<void>;
+  switchTenant: (tenant: string) => Observable<void>;
 }
 
 export const IDENTITY_USER_API = new InjectionToken<IdentityUserApi>('Identity user api');

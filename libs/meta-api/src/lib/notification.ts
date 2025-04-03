@@ -2,9 +2,9 @@ import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
 /**
- * Interface for documentation viewer operations
+ * Interface for notification operations
  */
- export interface MetaDocumentationApi {
+ export interface MetaNotificationApi {
   /**
    * Fetch list for lookup
    *
@@ -19,16 +19,6 @@ import { Observable } from 'rxjs';
    * @returns Observable containing lookup element
    */
   selectById: (id: string) => Observable<Record<string, unknown>>;
-
-  /**
-   * Fetch documentation for business object type
-   *
-   * @param entity Requested business object type
-   * @returns Observable containing rich text for rendering documentation
-   */
-  loadDocumentationForEntity: (
-    entity: string
-  ) => Observable<unknown>;
 }
 
-export const META_DOCUMENTATION_API = new InjectionToken<MetaDocumentationApi>('Meta documentation api');
+export const META_NOTIFICATION_API = new InjectionToken<MetaNotificationApi>('Meta notification api');

@@ -40,7 +40,7 @@ export const identityTokenRefreshed = createAction('[Identity] token refreshed',
 }>());
 
 export const identityAllowedTenantsFetched = createAction('[Identity] allowed tenants fetched', props<{
-    allowedTenants: Array<{ Id: string, Name: string }>
+    allowedTenants: Array<Record<string, unknown>>
 }>());
 
 export const identitySwitchTenant = createAction('[Identity] switch tenant', props<{

@@ -140,6 +140,41 @@ const documentsForEntityFunc = (http: HttpClient, serviceBaseUrl: string) => (
     .get<Array<DocumentSelectEntry>>(url);
 };
 
+const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
+  const url = `${metaServiceBaseUrl}api/entity/selectlist`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+}
+
+const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
+  const url = `${metaServiceBaseUrl}api/entity/selectbyid/${id}`;
+
+  return http
+    .get<Record<string, unknown>>(url);
+}
+
+const selectByIdentifier = (http: HttpClient, metaServiceBaseUrl: string) => (identifier: string): Observable<Record<string, unknown>> => {
+  const url = `${metaServiceBaseUrl}api/entity/selectbyidentifier/${identifier}`;
+
+  return http
+    .get<Record<string, unknown>>(url);
+}
+
+const rightSelectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
+  const url = `${metaServiceBaseUrl}api/entity/rightselectlist`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+}
+
+const rightSelectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
+  const url = `${metaServiceBaseUrl}api/entity/rightselectbyid/${id}`;
+
+  return http
+    .get<Record<string, unknown>>(url);
+}
+
 /**
  * Create adapter for entity metadata operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -150,6 +185,11 @@ export function createMetaBackendEntityApi(
   serviceBaseUrl: string
 ): MetaEntityApi {
   return {
+    selectList: selectList(httpClient, serviceBaseUrl),
+    selectById: selectById(httpClient, serviceBaseUrl),
+    selectByIdentifier: selectByIdentifier(httpClient, serviceBaseUrl),
+    rightSelectList: rightSelectList(httpClient, serviceBaseUrl),
+    rightSelectById: rightSelectById(httpClient, serviceBaseUrl),    
     metadataForEntity: metadataFunc(httpClient, serviceBaseUrl),
     documentsForEntity: documentsForEntityFunc(httpClient, serviceBaseUrl),
   } as MetaEntityApi;

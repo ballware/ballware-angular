@@ -8,6 +8,21 @@ import { InjectionToken } from '@angular/core';
  */
  export interface MetaStatisticApi {
   /**
+   * Fetch list for lookup
+   *
+   * @returns Observable containing result list of lookup query
+   */
+  selectList: () => Observable<Array<Record<string, unknown>>>;
+
+  /**
+   * Fetch single element for lookup by id
+   *
+   * @param id Id of lookup element
+   * @returns Observable containing lookup element
+   */
+  selectById: (id: string) => Observable<Record<string, unknown>>;
+
+  /**
    * Fetch metadata for statistic
    * @param identifier Unique identifier of statistic item
    * @returns Observable containing statistic metadata

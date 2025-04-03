@@ -43,7 +43,9 @@ describe('TenantEffects', () => {
 
         metaTenantApiMock =  {
             metadataForTenant: jest.fn().mockReturnValue(of(mockedTenant)),
-            allowed: jest.fn().mockReturnValue(true)
+            allowed: jest.fn().mockReturnValue(true),
+            selectList: jest.fn().mockReturnValue([]),
+            selectById: jest.fn().mockReturnValue(null)
         };
         
         const callbackSpy = jest.fn();

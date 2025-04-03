@@ -36,8 +36,8 @@ export function createKeycloakUserApi(
   serviceBaseUrl: string
 ): IdentityUserApi {
   return {
-    selectListFunc: selectListFunc(httpClient, serviceBaseUrl),
-    selectByIdFunc: selectByIdFunc(httpClient, serviceBaseUrl),
-    switchTenantFunc: switchTenantFunc(httpClient, serviceBaseUrl)
+    selectList: selectListFunc(httpClient, serviceBaseUrl),
+    selectById: selectByIdFunc(httpClient, serviceBaseUrl),
+    switchTenant: switchTenantFunc(httpClient, serviceBaseUrl)
   } as IdentityUserApi;
 }

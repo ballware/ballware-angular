@@ -27,7 +27,7 @@ export function createKeycloakRoleApi(
   serviceBaseUrl: string
 ): IdentityRoleApi {
   return {
-    selectListFunc: selectListFunc(httpClient, serviceBaseUrl),
-    selectByIdFunc: selectByIdFunc(httpClient, serviceBaseUrl),
+    selectList: selectListFunc(httpClient, serviceBaseUrl),
+    selectById: selectByIdFunc(httpClient, serviceBaseUrl),
   } as IdentityRoleApi;
 }

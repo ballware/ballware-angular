@@ -165,7 +165,43 @@ export class ToolbarComponent extends WithDestroy() {
                   }
                 });
               }              
-              break;              
+              break;
+            case 'staticmultilookup': {
+                this.toolbarItems.push({
+                  location: "before",
+                  locateInMenu: "auto",
+                  widget: 'dxTagBox',
+                  options: {
+                    label: toolbarItem.caption ?? '',
+                    width: toolbarItem.width ?? '400px', 
+                    searchEnabled: true,
+                    showClearButton: true,
+                    showDropDownButton: true,
+                    showSelectionControls: true,
+                    multiline: false,
+                    maxDisplayedTags: 3,
+                    dataSource: toolbarItem.options['items'] as any[],
+                    displayExpr: toolbarItem.options['displayExpr'] ?? 'text',
+                    valueExpr: toolbarItem.options['valueExpr'] ?? 'value',
+                    onInitialized: (e: TagBoxInitializedEvent) => {
+                      if (toolbarItem.name) {
+                        const toolbarItemRef = {
+                          getOption: (option) => e.component?.option(option),
+                          setOption: (option, value) => e.component?.option(option, value)
+                        } as ToolbarItemRef;                    
+  
+                        this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
+                      }                    
+                    },
+                    onValueChanged: (e: TagBoxValueChangedEvent) => {
+                      if (toolbarItem.name) {
+                        this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
+                      }
+                    }
+                  }
+                });
+              }              
+              break;                            
             case 'datetime':
               this.toolbarItems.push({
                 location: "before",

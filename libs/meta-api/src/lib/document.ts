@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 /**
  * Select list entry of available document list for printing
  */
- export interface DocumentSelectEntry {
+export interface DocumentSelectEntry {
   /**
    * Unique identifier of document
    */
@@ -20,6 +20,21 @@ import { Observable } from 'rxjs';
  * Interface for document printing operations
  */
 export interface MetaDocumentApi {
+  /**
+   * Fetch list for lookup
+   *
+   * @returns Observable containing result list of lookup query
+   */
+  selectList: () => Observable<Array<Record<string, unknown>>>;
+
+  /**
+   * Fetch single element for lookup by id
+   *
+   * @param id Id of lookup element
+   * @returns Observable containing lookup element
+   */
+  selectById: (id: string) => Observable<Record<string, unknown>>;
+
   /**
    * Fetch available print documents for business object type
    *

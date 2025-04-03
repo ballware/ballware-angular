@@ -16,7 +16,7 @@ export interface IdentityService {
     userName$: Observable<string|undefined>;
     accessToken$: Observable<string|undefined>;
 
-    allowedTenants$: Observable<Array<{ Id: string, Name: string }>|undefined>;
+    allowedTenants$: Observable<Array<Record<string, unknown>>|undefined>;
 
     initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean): void;
 

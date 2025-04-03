@@ -136,7 +136,7 @@ export const fetchAllowedTenants = createEffect((actions$ = inject(Actions), sto
 
 export const switchTenant = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), identityUserApi = inject(IDENTITY_USER_API), translator = inject(TRANSLATOR)) =>
     actions$.pipe((ofType(identitySwitchTenant)))
-        .pipe(switchMap(({ tenant }) => identityUserApi.switchTenantFunc(tenant)))
+        .pipe(switchMap(({ tenant }) => identityUserApi.switchTenant(tenant)))
         .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.logoutfortenantswitch') }}))))
         .pipe(tap(() => {
             oauthService.initLoginFlow();

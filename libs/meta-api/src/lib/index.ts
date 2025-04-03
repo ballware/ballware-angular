@@ -12,3 +12,6 @@ export * from './role';
 export * from './statistic';
 export * from './tenant';
 export * from './user';
+export * from './notification';
+export * from './subscription';
+export * from './mlmodel';

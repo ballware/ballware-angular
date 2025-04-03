@@ -55,10 +55,10 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
 
           if (allowedTenants) {
             allowedTenants.forEach(t => userMenuItems.push({
-              text: this.translator('session.switchtenant', { tenant: t.Name }),
+              text: this.translator('session.switchtenant', { tenant: t['Name'] }),
               onClick: () => {
                 this.accountMenu?.instance.hide();
-                this.identityService.switchTenant(t.Id);
+                this.identityService.switchTenant(t['Id'] as string);
               }
             }));
           }
