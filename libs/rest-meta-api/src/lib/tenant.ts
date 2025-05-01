@@ -37,7 +37,7 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
 const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
   tenant: string
 ): Observable<CompiledTenant> => {
-  const url = `${serviceBaseUrl}/api/tenant/metadatafortenant/${tenant}`;
+  const url = `${serviceBaseUrl}/tenant/metadatafortenant/${tenant}`;
 
   return http
     .get<Tenant>(url)
@@ -45,21 +45,21 @@ const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
 };
 
 const allowedTenantFunc = (http: HttpClient, serviceBaseUrl: string) => (): Observable<{ Id: string, Name: string}[]> => {
-  const url = `${serviceBaseUrl}/api/tenant/allowed`;
+  const url = `${serviceBaseUrl}/tenant/allowed`;
 
   return http
     .get<{ Id: string, Name: string}[]>(url);
 }
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}/api/tenant/selectlist`;
+  const url = `${metaServiceBaseUrl}/tenant/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/tenant/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/tenant/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);

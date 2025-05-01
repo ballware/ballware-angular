@@ -486,7 +486,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
         newLookups['subscriptionLookup'] = createMetaSubscriptionLookup(this.subscriptionApi, 'Id', 'Name');
         newLookups['tenantLookup'] = createMetaTenantLookup(this.tenantApi, 'Id', 'Name');
 
-        newLookups['entityIdentifierLookup'] = createMetaEntityIdentifierLookup(this.entityApi, 'Identifier', 'Name');
+        newLookups['entityIdentifierLookup'] = createMetaEntityIdentifierLookup(this.entityApi, 'Entity', 'Name');
         newLookups['entityRightLookup'] = createMetaEntityRightLookup(this.entityApi);
         newLookups['entityStateLookup'] = createMetaEntityStateLookup(this.processingstateApi);
         newLookups['entityPickvalueLookup'] = createMetaEntityPickvalueLookup(this.pickvalueApi);

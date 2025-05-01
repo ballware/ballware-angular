@@ -44,22 +44,22 @@ export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
   return compiledStatistic;
 };
 
-const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
+const metadataFunc = (http: HttpClient, metaServiceBaseUrl: string) => (
   identifier: string
 ): Observable<CompiledStatistic> => {
-  const url = `${serviceBaseUrl}/api/statistic/metadataforidentifier?identifier=${encodeURIComponent(identifier)}`;
+  const url = `${metaServiceBaseUrl}/statistic/metadataforidentifier/${encodeURIComponent(identifier)}`;
 
   return http
     .get<Statistic>(url)
     .pipe(map(data => compileStatistic(data)));
 };
 
-const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
+const dataFunc = (http: HttpClient, tenantServiceBaseUrl: string) => (
   identifier: string,
   params: QueryParams
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}/api/statistic/dataforidentifier?identifier=${encodeURIComponent(identifier)}${additionalParamsToUrl(
-    params
+  const url = `${tenantServiceBaseUrl}/statistic/dataforidentifier/${encodeURIComponent(identifier)}${additionalParamsToUrl(
+    params, '?'
   )}`;
 
   return http
@@ -67,14 +67,14 @@ const dataFunc = (http: HttpClient, serviceBaseUrl: string) => (
 };
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}/api/statistic/selectlist`;
+  const url = `${metaServiceBaseUrl}/statistic/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/statistic/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/statistic/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);
@@ -82,17 +82,19 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 
 /**
  * Create adapter for statistic fetch operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
+ * @param metaServiceBaseUrl Base URL to connect to ballware.meta.service
+ * @param tenantServiceBaseUrl Base URL to connect to ballware.tenant.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendStatisticApi(
   httpClient: HttpClient, 
-  serviceBaseUrl: string
+  metaServiceBaseUrl: string,
+  tenantServiceBaseUrl: string
 ): MetaStatisticApi {
   return {
-    selectList: selectList(httpClient, serviceBaseUrl),
-    selectById: selectById(httpClient, serviceBaseUrl),
-    metadataForStatistic: metadataFunc(httpClient, serviceBaseUrl),
-    dataForStatistic: dataFunc(httpClient, serviceBaseUrl),
+    selectList: selectList(httpClient, metaServiceBaseUrl),
+    selectById: selectById(httpClient, metaServiceBaseUrl),
+    metadataForStatistic: metadataFunc(httpClient, metaServiceBaseUrl),
+    dataForStatistic: dataFunc(httpClient, tenantServiceBaseUrl),
   } as MetaStatisticApi;
 }

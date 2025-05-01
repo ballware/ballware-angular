@@ -5,7 +5,7 @@ import { QueryParams } from "@ballware/meta-model";
  * @param params Object containing url parameter
  * @returns Url encoded string containing parameter
  */
- export function additionalParamsToUrl(params: QueryParams) {
+ export function additionalParamsToUrl(params: QueryParams, firstPrefix = '&') {
   let result = '';
 
   if (params) {
@@ -14,10 +14,10 @@ import { QueryParams } from "@ballware/meta-model";
 
       if (val instanceof Array) {
         val.forEach(
-          v => (result += `&${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+          v => (result += `${result !== '' ? '&' : firstPrefix}${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
         );
       } else {
-        result += `&${encodeURIComponent(k)}=${encodeURIComponent(val as string|number|boolean)}`;
+        result += `${result !== '' ? '&' : firstPrefix}${encodeURIComponent(k)}=${encodeURIComponent(val as string|number|boolean)}`;
       }
     });
   }

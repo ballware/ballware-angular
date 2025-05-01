@@ -3,14 +3,14 @@ import { DocumentSelectEntry, MetaDocumentApi } from '@ballware/meta-api';
 import { Observable, of } from 'rxjs';
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}/api/document/selectlist`;
+  const url = `${metaServiceBaseUrl}/document/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/document/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/document/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);
@@ -20,7 +20,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
-  const url = `${metaServiceBaseUrl}/api/document/selectlistdocumentsforentity/${entity}`;
+  const url = `${metaServiceBaseUrl}/document/selectlistdocumentsforentity/${entity}`;
 
   return http
     .get<Array<DocumentSelectEntry>>(url);

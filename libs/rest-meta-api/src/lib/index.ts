@@ -34,7 +34,11 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
     ]);
 }
 
-export function provideMetaBackendRestApi(metaServiceBaseUrl: string, documentServiceBaseUrl: string, storageServiceBaseUrl: string): EnvironmentProviders {
+export function provideMetaBackendRestApi(metaServiceBaseUrl: string, 
+    tenantServiceBaseUrl: string,
+    genericServiceBaseUrl: string,
+    documentServiceBaseUrl: string, 
+    storageServiceBaseUrl: string): EnvironmentProviders {
     return makeEnvironmentProviders(    
     [  
         {
@@ -59,7 +63,7 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string, documentSe
         },
         {
             provide: META_LOOKUP_API,
-            useFactory: (client: HttpClient) => createMetaBackendLookupApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendLookupApi(client, metaServiceBaseUrl, tenantServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
@@ -74,12 +78,12 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string, documentSe
         },
         {
             provide: META_PROCESSINGSTATE_API,
-            useFactory: (client: HttpClient) => createMetaBackendProcessingstateApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendProcessingstateApi(client, metaServiceBaseUrl, tenantServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
             provide: META_STATISTIC_API,
-            useFactory: (client: HttpClient) => createMetaBackendStatisticApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendStatisticApi(client, metaServiceBaseUrl, tenantServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
@@ -105,12 +109,23 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string, documentSe
     ]);
 }
   
-export function provideGenericBackendRestApi(metaServiceBaseUrl: string): EnvironmentProviders {
+export function provideGenericBackendRestApi(metaServiceBaseUrl: string, 
+    tenantServiceBaseUrl: string, 
+    genericServiceBaseUrl: string, 
+    documentServiceBaseUrl: string,
+    storageServiceBaseUrl: string)
+    : EnvironmentProviders {
     return makeEnvironmentProviders(    
       [  
           {
               provide: GENERIC_ENTITY_API_FACTORY,
-              useFactory: (client: HttpClient) => (entityBaseUrl: string) => createGenericBackendEntityApi(client, entityBaseUrl.replace('{meta}', metaServiceBaseUrl + "/")),
+              useFactory: (client: HttpClient) => (entityBaseUrl: string) => createGenericBackendEntityApi(client, 
+                entityBaseUrl
+                    .replace('{meta}', metaServiceBaseUrl + "/")
+                    .replace('{tenant}', tenantServiceBaseUrl + "/")
+                    .replace('{generic}', genericServiceBaseUrl + "/")
+                    .replace('{document}', documentServiceBaseUrl + "/")
+                    .replace('{storage}', storageServiceBaseUrl + "/")),
               deps: [ HttpClient ]
           },
       ]);

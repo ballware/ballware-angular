@@ -43,7 +43,17 @@ export const appConfig: ApplicationConfig = {
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
         provideDxRenderFactoryRoutes(),
         provideIdentityKeycloakRestApi(window.ENV.BALLWARE_IDENTITYURL), 
-        provideMetaBackendRestApi(window.ENV.BALLWARE_METAURL, window.ENV.BALLWARE_DOCUMENTURL, window.ENV.BALLWARE_STORAGEURL), 
-        provideGenericBackendRestApi(window.ENV.BALLWARE_METAURL)        
+        provideMetaBackendRestApi(
+            window.ENV.BALLWARE_METAURL, 
+            window.ENV.BALLWARE_TENANTURL, 
+            window.ENV.BALLWARE_GENERICURL, 
+            window.ENV.BALLWARE_DOCUMENTURL, 
+            window.ENV.BALLWARE_STORAGEURL), 
+        provideGenericBackendRestApi(
+            window.ENV.BALLWARE_METAURL, 
+            window.ENV.BALLWARE_TENANTURL, 
+            window.ENV.BALLWARE_GENERICURL, 
+            window.ENV.BALLWARE_DOCUMENTURL, 
+            window.ENV.BALLWARE_STORAGEURL)        
     ]
 };

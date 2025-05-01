@@ -2,20 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { MetaProcessingstateApi } from '@ballware/meta-api';
 import { Observable } from 'rxjs';
 
-const selectListForEntity = (http: HttpClient, serviceBaseUrl: string) => (
+const selectListForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}/api/processingstate/selectlistforentity/${entity}`;
+  const url = `${metaServiceBaseUrl}/processingstate/selectlistforentity/${entity}`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectListAllowedForEntityAndIds = (http: HttpClient, serviceBaseUrl: string) => (
+const selectListAllowedForEntityAndIds = (http: HttpClient, tenantServiceBaseUrl: string) => (
   entity: string,
   ids: Array<string>
 ): Observable<Array<Record<string, unknown>>> => {
-  const url = `${serviceBaseUrl}/api/processingstate/selectlistallowedsuccessorsforentities/${entity}?${ids
+  const url = `${tenantServiceBaseUrl}/processingstate/selectlistallowedsuccessorsforentities/${entity}?${ids
     .map(i => `id=${i}`)
     .join('&')}`;
 
@@ -23,10 +23,10 @@ const selectListAllowedForEntityAndIds = (http: HttpClient, serviceBaseUrl: stri
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectByStateForEntity = (http: HttpClient, serviceBaseUrl: string) => (
+const selectByStateForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ) => (state: number | string): Observable<Record<string, unknown>> => {
-  const url = `${serviceBaseUrl}/api/processingstate/selectbystateforentity/${entity}/${state}`;
+  const url = `${metaServiceBaseUrl}/processingstate/selectbystateforentity/${entity}/${state}`;
 
   return http
     .get<Record<string, unknown>>(url);
@@ -34,19 +34,21 @@ const selectByStateForEntity = (http: HttpClient, serviceBaseUrl: string) => (
 
 /**
  * Create adapter for processing state fetch operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
+ * @param metaServiceBaseUrl Base URL to connect to ballware.meta.service
+ * @param tenantServiceBaseUrl Base URL to connect to ballware.tenant.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendProcessingstateApi(
   httpClient: HttpClient, 
-  serviceBaseUrl: string
+  metaServiceBaseUrl: string,
+  tenantServiceBaseUrl: string
 ): MetaProcessingstateApi {
   return {
-    selectListForEntity: selectListForEntity(httpClient, serviceBaseUrl),
+    selectListForEntity: selectListForEntity(httpClient, metaServiceBaseUrl),
     selectListAllowedForEntityAndIds: selectListAllowedForEntityAndIds(
       httpClient,
-      serviceBaseUrl
+      tenantServiceBaseUrl
     ),
-    selectByStateForEntity: selectByStateForEntity(httpClient, serviceBaseUrl),
+    selectByStateForEntity: selectByStateForEntity(httpClient, metaServiceBaseUrl),
   } as MetaProcessingstateApi;
 }

@@ -13,6 +13,8 @@ export function BearerTokenInterceptor(req: HttpRequest<any>, next: HttpHandlerF
     const url = req.url.toLowerCase();
 
     if (url.startsWith(window.ENV.BALLWARE_METAURL.toLowerCase())
+      || url.startsWith(window.ENV.BALLWARE_TENANTURL.toLowerCase())
+      || url.startsWith(window.ENV.BALLWARE_GENERICURL.toLowerCase())
       || url.startsWith(window.ENV.BALLWARE_IDENTITYURL.toLowerCase())
       || url.startsWith(window.ENV.BALLWARE_DOCUMENTURL.toLowerCase())
       || url.startsWith(window.ENV.BALLWARE_STORAGEURL.toLowerCase())

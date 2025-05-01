@@ -121,55 +121,55 @@ const compileEntityMetadata = (
   return compiledMetaData;
 };
 
-const metadataFunc = (http: HttpClient, serviceBaseUrl: string) => (
+const metadataFunc = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<CompiledEntityMetadata> => {
-  const url = `${serviceBaseUrl}/api/entity/metadataforentity/${entity}`;
+  const url = `${metaServiceBaseUrl}/entity/metadataforentity/${entity}`;
 
   return http
     .get<EntityMetadata>(url)
     .pipe(map((value) => compileEntityMetadata(value)));
 };
 
-const documentsForEntityFunc = (http: HttpClient, serviceBaseUrl: string) => (
+const documentsForEntityFunc = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
-  const url = `${serviceBaseUrl}/api/document/selectlistdocumentsforentity/${entity}`;
+  const url = `${metaServiceBaseUrl}/document/selectlistdocumentsforentity/${entity}`;
 
   return http
     .get<Array<DocumentSelectEntry>>(url);
 };
 
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}/api/entity/selectlist`;
+  const url = `${metaServiceBaseUrl}/entity/selectlist`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/entity/selectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/entity/selectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);
 }
 
 const selectByIdentifier = (http: HttpClient, metaServiceBaseUrl: string) => (identifier: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/entity/selectbyidentifier/${identifier}`;
+  const url = `${metaServiceBaseUrl}/entity/selectbyidentifier/${identifier}`;
 
   return http
     .get<Record<string, unknown>>(url);
 }
 
 const rightSelectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
-  const url = `${metaServiceBaseUrl}/api/entity/rightselectlist`;
+  const url = `${metaServiceBaseUrl}/entity/selectlistrights`;
 
   return http
     .get<Array<Record<string, unknown>>>(url);
 }
 
 const rightSelectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string): Observable<Record<string, unknown>> => {
-  const url = `${metaServiceBaseUrl}/api/entity/rightselectbyid/${id}`;
+  const url = `${metaServiceBaseUrl}/entity/rightselectbyid/${id}`;
 
   return http
     .get<Record<string, unknown>>(url);
