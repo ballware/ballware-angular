@@ -31,6 +31,12 @@
     <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
     <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>    
     <dxo-scrolling mode="standard" rowRenderingMode="virtual"></dxo-scrolling>
+    <div *dxTemplate="let cell of 'static'">
+      <ballware-dynamic-column [gridMode]="'data'" [editing]="false" [lookupParams]="cell.data ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
+    </div>
+    <div *dxTemplate="let cell of 'staticedit'">
+      <ballware-dynamic-column [gridMode]="'data'" [editing]="false" [lookupParams]="cell.data ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
+    </div>
     <div *dxTemplate="let masterDetailItem of 'masterDetail'">        
         <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>                    
     </div>

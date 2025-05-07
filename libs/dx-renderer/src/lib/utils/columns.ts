@@ -132,6 +132,21 @@ export type OptionButtons =
           },
         } as ColumnType;
       }
+      case 'multilookup': {
+        return {
+          dataField: c.dataMember,
+          caption: c.caption,
+          width: c.width,
+          fixed: c.fixedPosition ? true : false,
+          fixedPosition: c.fixedPosition,
+          allowEditing: c.editable ?? false,
+          visible: c.visible ?? true,
+          sortOrder: c.sorting,          
+          editorOptions: c,
+          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
+          editCellTemplate: 'staticedit',
+        } as ColumnType;
+      }
       case 'staticlookup': {
         const items = c.items;
 
@@ -148,7 +163,7 @@ export type OptionButtons =
             dataSource: items,
             displayExpr: c.displayExpr ?? 'Text',
             valueExpr: c.valueExpr ?? 'Value',
-          },
+          }
         } as ColumnType;
       }
       case 'staticmultilookup': {
@@ -163,7 +178,7 @@ export type OptionButtons =
           sortOrder: c.sorting,
           editorOptions: c,
           cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
-          editCellTemplate: 'staticedit',
+          editCellTemplate: 'staticedit',          
         } as ColumnType;
       }
       case 'dynamic': {

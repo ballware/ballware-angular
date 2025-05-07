@@ -20,16 +20,16 @@
         [(changes)]="editing.gridEditChanges">
     </dxo-editing>
     <div *dxTemplate="let cell of 'static'">
-        <ballware-edit-dynamic-column [editing]="false" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+        <ballware-dynamic-column [gridMode]="'detail'" [editing]="false" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'staticedit'">
-        <ballware-edit-dynamic-column [editing]="true" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
-    </div>        
+        <ballware-dynamic-column [gridMode]="'detail'" [editing]="true" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
+    </div>     
     <div *dxTemplate="let cell of 'dynamic'">
-        <ballware-edit-dynamic-column [editing]="false" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+        <ballware-dynamic-column [gridMode]="'detail'" [editing]="false" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-edit-dynamic-column [editing]="true" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-edit-dynamic-column>
+        <ballware-dynamic-column [gridMode]="'detail'" [editing]="true" [lookupParams]="editing.lookupParams ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
     </div>    
 </dx-data-grid>
 <dx-validator [adapter]="editing.validationAdapterConfig">

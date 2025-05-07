@@ -16,7 +16,7 @@ import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.com
 import { I18NextModule } from "angular-i18next";
 
 @Component({
-    selector: 'ballware-edit-dynamic-column',
+    selector: 'ballware-dynamic-column',
     templateUrl: './dynamiccolumn.component.html',
     styleUrls: [],
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
@@ -28,6 +28,7 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
     @Input() lookupParams!: Record<string, unknown>;
     @Input() item!: Record<string, unknown>;
     @Input() editing!: boolean;
+    @Input() gridMode!: 'data'|'detail';
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
@@ -74,7 +75,9 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
                 if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing) {
                     const preparedColumn = cloneDeep(this.column);
                     
-                    detailGridCellPreparing(this.editing ? EditModes.EDIT : EditModes.VIEW, this.lookupParams, this.item, this.dataMember, preparedColumn);
+                    if (this.gridMode === 'detail') {
+                        detailGridCellPreparing(this.editing ? EditModes.EDIT : EditModes.VIEW, this.lookupParams, this.item, this.dataMember, preparedColumn);
+                    }                    
 
                     this.preparedColumn = preparedColumn;
                     this.prepared = true;

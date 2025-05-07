@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 
 import { I18NextModule } from 'angular-i18next';
 import { BarcodeScannerComponent } from '../../edit';
+import { DynamicColumnComponent } from '..';
 
 interface EditComponentWithOptions {
   /**
@@ -44,7 +45,7 @@ export interface DatagridSummary {
   selector: 'ballware-datagrid',
   templateUrl: './datagrid.component.html',
   styleUrls: ['./datagrid.component.scss'],
-  imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent],
+  imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent, DynamicColumnComponent],
   standalone: true
 })
 export class DatagridComponent extends WithDestroy() implements OnInit {
