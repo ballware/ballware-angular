@@ -5,7 +5,7 @@
     [rotated]="(options$ | async)?.rotated ?? false"
     [dataSource]="(data$ | async) ?? null"
     (onLegendClick)="onLegendClick($event)"
-    [series]="(series$ | async)">    
+    [series]="(series$ | async) ?? undefined">    
     <dxo-common-series-settings [argumentField]="(options$ | async)?.argumentField"></dxo-common-series-settings>
     <dxo-tooltip [enabled]="true"></dxo-tooltip>
     <dxo-export [enabled]="true" [fileName]="(exportFilename$ | async) ?? ''"></dxo-export>

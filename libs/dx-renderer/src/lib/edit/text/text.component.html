@@ -29,7 +29,7 @@
   minWidth="500px" 
   maxHeight="90vh"
   height="auto">
-  <dxi-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onScannerCancel }" toolbar="bottom" location="after"></dxi-toolbar-item>
+  <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onScannerCancel }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
   <div *dxTemplate="let data of 'content'">
     <ballware-barcodescanner [enabled]="showScanner" (valueChange)="onScannerValueChanged($event)"></ballware-barcodescanner>
   </div> 

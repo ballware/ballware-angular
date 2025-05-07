@@ -7,6 +7,7 @@ import { Observable, map } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { DxChartModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
+import { ChartSeries } from "devextreme/viz/common";
 
 @Component({
     selector: 'ballware-statistic-chart',
@@ -25,7 +26,7 @@ import { CommonModule } from "@angular/common";
     exportFilename$: Observable<string|undefined>;
     options$: Observable<StatisticChartOptions|undefined>;
     data$: Observable<Record<string, unknown>[]|undefined>;
-    series$: Observable<Array<object>|undefined>;
+    series$: Observable<Array<ChartSeries>|undefined>;
     visualRange$: Observable<number[]|undefined>;
     argumentAxisCustomizeText$: Observable<((arg: { value: number }) => string|number)|undefined>;
     argumentAxisConstantLines$: Observable<any[]|undefined>;
@@ -51,7 +52,7 @@ import { CommonModule } from "@angular/common";
         name: s.name,
         valueField: s.valueField,
         label: { visible: s.labelVisible, format: { type: s.format, precision: s.precision } }
-      }))));
+      } as ChartSeries))));
 
       this.argumentAxisCustomizeText$ = this.statisticService.argumentAxisCustomizeText$.pipe(map((customizeText) => customizeText 
         ? (arg: { value: number }) => customizeText(arg.value) ?? arg.value 
