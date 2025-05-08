@@ -29,7 +29,7 @@ export interface MetaService extends OnDestroy {
 
   query$: Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
   count$: Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
-  byId$: Observable<((id: string) => Observable<CrudItem>)|undefined>;
+  byId$: Observable<((query: string, id: string) => Observable<CrudItem>)|undefined>;
   create$: Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
   save$: Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
   saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;

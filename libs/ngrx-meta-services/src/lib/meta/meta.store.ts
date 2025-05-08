@@ -395,10 +395,10 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly byId$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
-        ? (id) => this.genericEntityApiFactory(entityMetadata.baseUrl)
-            .byId('primary', id)
+        ? (query, id) => this.genericEntityApiFactory(entityMetadata.baseUrl)
+            .byId(query, id)
             .pipe(map((item) => entityMetadata.itemMappingScript ? entityMetadata.itemMappingScript(item, customParam, this.scriptUtil) : item))
-        : undefined)) as Observable<((id: string) => Observable<CrudItem>)|undefined>;
+        : undefined)) as Observable<((query: string, id: string) => Observable<CrudItem>)|undefined>;
 
     readonly create$ = combineLatest([this.customParam$, this.entityMetadata$])
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)

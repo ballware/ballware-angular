@@ -220,7 +220,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$))
             .pipe(switchMap(([request, getEditLayout, create, displayName, headParams]) => (getEditLayout && create && displayName && headParams && request) ?
-                create('primary', headParams)
+                create(request.editLayout ?? 'primary', headParams)
                     .pipe(map((item) => ({
                         mode: EditModes.CREATE,
                         item: item,
@@ -249,7 +249,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
             .pipe(switchMap(([viewRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && viewRequest) ?
-                byId(viewRequest.item.Id)
+                byId(viewRequest.editLayout ?? 'primary', viewRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.VIEW,
                         item: item,
@@ -281,7 +281,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
             .pipe(switchMap(([editRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && editRequest) ?
-                byId(editRequest.item.Id)
+                byId(editRequest.editLayout ?? 'primary', editRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.EDIT,
                         item: item,
@@ -310,7 +310,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly remove = this.effect((request$: Observable<{ item: CrudItem }>) => 
         request$.pipe(withLatestFrom(this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$))
             .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName]) => (entityMetadata && byId && displayName && removeRequest) ? 
-                byId(removeRequest.item.Id)
+                byId('primary', removeRequest.item.Id)
                     .pipe(map((item) => 
                         ({
                             item: item,
