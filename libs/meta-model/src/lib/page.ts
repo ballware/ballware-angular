@@ -132,6 +132,11 @@ export interface CrudContainerOptions {
    * Identifier for page state
    */
   identifier?: string;
+
+  /**
+   * Additional static head params
+   */
+  params?: Record<string, unknown>
 }
 
 /**

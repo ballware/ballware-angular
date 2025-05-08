@@ -62,14 +62,6 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       .subscribe((customParam) => {
         this.metaService.setInitialCustomParam(customParam);
       });    
-    
-    this.pageService.headParams$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((headParams) => {
-          if (headParams) {
-            this.metaService.setHeadParams(headParams);
-          }
-      });
   }
 
   ngOnInit(): void {
@@ -87,6 +79,17 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       this.metaService.setIdentifier(identifier);
       this.crudService.setIdentifier(identifier);
     }
+
+    this.pageService.headParams$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((headParams) => {
+          if (headParams) {
+            this.metaService.setHeadParams({
+              ...(this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.params ?? {},
+              ...headParams
+            });                      
+          }
+      });
 
   }
 
