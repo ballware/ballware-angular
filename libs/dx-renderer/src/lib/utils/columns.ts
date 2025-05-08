@@ -1,11 +1,12 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
 import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from "@ballware/meta-services";
 import { dxEvent } from "devextreme/events";
-import { Column as DataGridColumn } from "devextreme/ui/data_grid";
-import { Column as TreeListColumn } from "devextreme/ui/tree_list";
+import { Column as DataGridColumn, ColumnCellTemplateData as DataGridColumnCellTemplateData } from "devextreme/ui/data_grid";
+import { Column as TreeListColumn, ColumnCellTemplateData as TreeListColumnCellTemplateData } from "devextreme/ui/tree_list";
 import { cloneDeep } from "lodash";
 import { get } from "lodash";
 import { createLookupDataSource } from "./datasource";
+import { DxElement } from "devextreme/core/element";
 
 export type OptionButtons =
   | 'add'
@@ -133,6 +134,21 @@ export type OptionButtons =
         } as ColumnType;
       }
       case 'multilookup': {
+        const lookup = (lookups && c.lookup && c.lookupParam
+          ? (lookups[c.lookup] as LookupCreator)(
+              get(lookupParams, c.lookupParam) as string
+            )
+          : lookups && c.lookup
+          ? lookups[c.lookup]
+          : undefined) as LookupDescriptor;
+
+        const dataSource = lookup
+          ? createLookupDataSource(
+              (lookup.store as LookupStoreDescriptor).listFunc,
+              (lookup.store as LookupStoreDescriptor).byIdFunc
+            )
+          : undefined;
+
         return {
           dataField: c.dataMember,
           caption: c.caption,
@@ -142,8 +158,24 @@ export type OptionButtons =
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,          
+          lookup: {
+            dataSource: dataSource?.store(),
+            displayExpr: lookup?.displayMember,
+            valueExpr: lookup?.valueMember,
+          },
           editorOptions: c,
-          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
+          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : (cellElement: DxElement, cellInfo: DataGridColumnCellTemplateData | TreeListColumnCellTemplateData) => {
+            const noBreakSpace = '\u00A0';
+            const cellLookup = cellInfo.column?.lookup;
+
+            const displayValues = (cellInfo.value || []).map(
+              (id: string) => (cellLookup && cellLookup.calculateCellValue) ? cellLookup.calculateCellValue(id) : id,
+            );
+            const text = displayValues.join(', ');
+
+            cellElement.textContent = text || noBreakSpace;
+            cellElement.title = text;
+          },
           editCellTemplate: 'staticedit',
         } as ColumnType;
       }

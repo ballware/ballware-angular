@@ -167,6 +167,22 @@ const createMetaPageLookup = (
     } as LookupDescriptor;
   };
 
+const createMetaProcessingstateLookup = (
+    api: MetaProcessingstateApi,
+    valueMember: string,
+    displayMember: string
+  ): LookupDescriptor => {
+    return {
+      type: 'lookup',
+      store: {
+        listFunc: () => api.selectList(),
+        byIdFunc: id => api.selectById(id),
+      } as LookupStoreDescriptor,
+      valueMember: valueMember,
+      displayMember: displayMember,
+    } as LookupDescriptor;
+  };
+
 const createMetaStatisticLookup = (
     api: MetaStatisticApi,
     valueMember: string,
@@ -482,6 +498,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
         newLookups['mlmodelLookup'] = createMetaMlModelLookup(this.mlmodelApi, 'Id', 'Name');
         newLookups['notificationLookup'] = createMetaNotificationLookup(this.notificationApi, 'Id', 'Name');
         newLookups['pageLookup'] = createMetaPageLookup(this.pageApi, 'Id', 'Name');
+        newLookups['processingstateLookup'] = createMetaProcessingstateLookup(this.processingstateApi, 'Id', 'Name');
         newLookups['statisticLookup'] = createMetaStatisticLookup(this.statisticApi, 'Id', 'Name');
         newLookups['subscriptionLookup'] = createMetaSubscriptionLookup(this.subscriptionApi, 'Id', 'Name');
         newLookups['tenantLookup'] = createMetaTenantLookup(this.tenantApi, 'Id', 'Name');
