@@ -7,5 +7,7 @@
   [autoAdjust]="true"
   [zoom]="30"
   [controls]="true"
-  [markers]="(markers$ | async) ?? []">
+  [markers]="(markers$ | async) ?? []"
+  >
+  <dxo-provider-config [useAdvancedMarkers]="false"></dxo-provider-config>
 </dx-map>

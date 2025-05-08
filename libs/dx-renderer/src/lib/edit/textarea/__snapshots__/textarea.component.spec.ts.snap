@@ -23,6 +23,7 @@ exports[`EditLayoutTextareaComponent should create 1`] = `
   >
     <dx-text-area
       class="mt-2 flex-fill dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
+      ngskiphydration="true"
     >
       <div
         class="dx-texteditor-container"
@@ -56,6 +57,7 @@ exports[`EditLayoutTextareaComponent should create 1`] = `
       aria-label="bi bi-mic"
       class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon mt-2 dx-state-disabled dx-state-invisible"
       icon="bi bi-mic"
+      ngskiphydration="true"
       role="button"
     >
       <div
@@ -71,6 +73,7 @@ exports[`EditLayoutTextareaComponent should create 1`] = `
     height="auto"
     maxheight="90vh"
     minwidth="500px"
+    ngskiphydration="true"
     width="auto"
   >
     <div

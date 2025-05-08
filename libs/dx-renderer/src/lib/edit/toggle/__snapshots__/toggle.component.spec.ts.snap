@@ -17,6 +17,7 @@ exports[`EditLayoutBoolComponent should create 1`] = `
     aria-checked="false"
     aria-label="OFF"
     class="pt-1 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-switch dx-swipeable dx-widget"
+    ngskiphydration="true"
     role="switch"
     tabindex="0"
   >

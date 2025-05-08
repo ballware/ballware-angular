@@ -9,6 +9,7 @@ exports[`EditLayoutButtonComponent should create 1`] = `
 >
   <dx-button
     class="dx-widget dx-button dx-button-mode-contained dx-button-normal mt-2"
+    ngskiphydration="true"
     role="button"
     tabindex="0"
   >

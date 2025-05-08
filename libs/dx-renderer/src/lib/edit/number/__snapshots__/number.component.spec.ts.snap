@@ -12,6 +12,7 @@ exports[`EditLayoutNumberComponent should create 1`] = `
 >
   <dx-number-box
     class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-numberbox dx-texteditor dx-show-clear-button dx-numberbox-spin dx-editor-outlined dx-widget"
+    ngskiphydration="true"
   >
     <input
       name="mockedmember"

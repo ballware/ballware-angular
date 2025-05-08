@@ -17,6 +17,7 @@ exports[`EditLayoutMapComponent should create 1`] = `
   >
   </div><dx-map
     class="dx-map dx-widget dx-visibility-change-handler"
+    ngskiphydration="true"
     style="width: 100%; height: 100%;"
   >
     <div

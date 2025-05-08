@@ -18,6 +18,7 @@ exports[`EditLayoutBoolComponent should create 1`] = `
     aria-invalid="false"
     aria-readonly="false"
     class="dx-widget dx-checkbox pt-1 dx-validator dx-visibility-change-handler"
+    ngskiphydration="true"
     role="checkbox"
     tabindex="0"
   >

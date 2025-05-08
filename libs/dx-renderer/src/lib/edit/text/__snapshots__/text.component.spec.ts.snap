@@ -17,6 +17,7 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
 >
   <dx-text-box
     class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
+    ngskiphydration="true"
   >
     <div
       class="dx-texteditor-container"
@@ -62,6 +63,7 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
     height="auto"
     maxheight="90vh"
     minwidth="500px"
+    ngskiphydration="true"
     width="auto"
   >
     <div
@@ -95,6 +97,7 @@ exports[`EditLayoutTextComponent should create text 1`] = `
 >
   <dx-text-box
     class="mt-2 dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-widget"
+    ngskiphydration="true"
   >
     <div
       class="dx-texteditor-container"
@@ -140,6 +143,7 @@ exports[`EditLayoutTextComponent should create text 1`] = `
     height="auto"
     maxheight="90vh"
     minwidth="500px"
+    ngskiphydration="true"
     width="auto"
   >
     <div
