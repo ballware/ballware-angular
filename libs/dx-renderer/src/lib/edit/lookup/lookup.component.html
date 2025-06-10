@@ -10,7 +10,7 @@
   [valueExpr]="livecycle.layoutItem.options.valueExpr ?? lookup.lookup?.valueMember ?? ''"
   [showClearButton]="true"
   [searchEnabled]="true"
-  [acceptCustomValue]="livecycle.layoutItem.options.acceptCustomValue ?? false"    
+  [acceptCustomValue]="lookup.acceptCustomValue"    
   (onFocusIn)="livecycle.onEntered()">
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
