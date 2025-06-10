@@ -15,6 +15,7 @@ export class Lookup implements OnInit {
   private _lookup: LookupDescriptor|undefined;
   private _dataSource$ = new BehaviorSubject<DataSource|null>(null);
 
+  private _acceptCustomValue!: boolean;
   private _hasLookupItemHintValue!: boolean;
 
   private _lookupItemKeyValueGetter: ((item: Record<string, unknown>) => unknown)|undefined;
@@ -45,6 +46,10 @@ export class Lookup implements OnInit {
     return this._dataSource$;
   }
 
+  public get acceptCustomValue() {
+    return this._acceptCustomValue;
+  }
+
   public setLookupItems(items: Array<any>) {
     return createArrayDatasource(items).then(dataSource => this._dataSource$.next(dataSource));
   }
@@ -59,12 +64,15 @@ export class Lookup implements OnInit {
 
   ngOnInit(): void {
 
+    this.livecycle.registerOption('acceptCustomValue', () => this._acceptCustomValue, (value) => this._acceptCustomValue = value as boolean)
     this.livecycle.registerOption('items', () => this._dataSource$.getValue()?.items(), (value) => this.setLookupItems(value  as []));
 
     this.livecycle.preparedLayoutItem$
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
         if (layoutItem) {
+          this._acceptCustomValue = layoutItem.options?.acceptCustomValue ?? false;
+
           combineLatest([this.editService.getValue$, this.lookupService.lookups$])
               .pipe(takeUntil(this.destroy.destroy$))
               .subscribe(([getValue, lookups]) => {

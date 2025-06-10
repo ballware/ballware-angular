@@ -14,7 +14,7 @@
   [showDropDownButton]=true
   [multiline]=false
   [maxDisplayedTags]=3
-  [acceptCustomValue]="livecycle.layoutItem.options.acceptCustomValue ?? false"
+  [acceptCustomValue]="lookup.acceptCustomValue"
   (onFocusIn)="livecycle.onEntered()">
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
