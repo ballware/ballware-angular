@@ -200,4 +200,12 @@
       }>
     ) => void
   ) => void;
+
+  /**
+   * Open document designer for document
+   */
+  openDocumentDesigner: (
+    documentId: string,
+    callback: (url: string) => void
+  ) => void;
 }

@@ -50,6 +50,15 @@ export interface MetaDocumentApi {
    *
    * @param token Access token required for authentication
    * @param documentId Identifier of user selected document
+   * @returns Observable containing url for designing document
+   */
+  designerUrl: (token: string, documentId: string) => Observable<string>;
+
+  /**
+   * Generate viewer url for document
+   *
+   * @param token Access token required for authentication
+   * @param documentId Identifier of user selected document
    * @param ids Ids of selected records to print
    * @returns Observable containing url for rendering document
    */
