@@ -103,8 +103,8 @@
         "host": "localhost",
         "port": 3000,
         "ssl": true,
-        "sslKey": "localhost-key.pem",
-        "sslCert": "localhost.pem"
+        "sslKey": "localhost+2-key.pem",
+        "sslCert": "localhost+2.pem"
       }
     },
     "extract-i18n": {
@@ -169,8 +169,8 @@
       "options": {
         "port": 3000,
         "ssl": true,
-        "sslCert": "localhost.pem",
-        "sslKey": "localhost-key.pem"
+        "sslCert": "localhost+2.pem",
+        "sslKey": "localhost+2-key.pem"
       },
       "configurations": {
         "development": {
