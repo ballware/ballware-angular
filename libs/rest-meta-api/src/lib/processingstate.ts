@@ -25,7 +25,19 @@ const selectListForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
     .get<Array<Record<string, unknown>>>(url);
 };
 
-const selectListAllowedForEntityAndIds = (http: HttpClient, tenantServiceBaseUrl: string) => (
+const selectListMetaAllowedForEntityAndIds = (http: HttpClient, metaServiceBaseUrl: string) => (
+  entity: string,
+  ids: Array<string>
+): Observable<Array<Record<string, unknown>>> => {
+  const url = `${metaServiceBaseUrl}/processingstate/selectlistallowedsuccessorsforentities/${entity}?${ids
+    .map(i => `id=${i}`)
+    .join('&')}`;
+
+  return http
+    .get<Array<Record<string, unknown>>>(url);
+};
+
+const selectListTenantAllowedForEntityAndIds = (http: HttpClient, tenantServiceBaseUrl: string) => (
   entity: string,
   ids: Array<string>
 ): Observable<Array<Record<string, unknown>>> => {
@@ -60,8 +72,12 @@ export function createMetaBackendProcessingstateApi(
   return {
     selectList: selectList(httpClient, metaServiceBaseUrl),
     selectById: selectById(httpClient, metaServiceBaseUrl),
-    selectListForEntity: selectListForEntity(httpClient, metaServiceBaseUrl),
-    selectListAllowedForEntityAndIds: selectListAllowedForEntityAndIds(
+    selectListForEntity: selectListForEntity(httpClient, metaServiceBaseUrl),    
+    selectListMetaAllowedForEntityAndIds: selectListMetaAllowedForEntityAndIds(
+      httpClient,
+      metaServiceBaseUrl
+    ),
+    selectListTenantAllowedForEntityAndIds: selectListTenantAllowedForEntityAndIds(
       httpClient,
       tenantServiceBaseUrl
     ),

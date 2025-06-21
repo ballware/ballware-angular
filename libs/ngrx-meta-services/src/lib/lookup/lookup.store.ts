@@ -381,7 +381,7 @@ const createGenericStateLookup = (
     } as LookupDescriptor;
   };
   
-const createGenericAllowedStateLookup = (
+const createMetaAllowedStateLookup = (
     api: MetaProcessingstateApi,
     entity: string,
     valueMember = 'State',
@@ -392,7 +392,30 @@ const createGenericAllowedStateLookup = (
         type: 'lookup',
         store: {
           listFunc: () =>
-            api.selectListAllowedForEntityAndIds(
+            api.selectListMetaAllowedForEntityAndIds(
+              entity,
+              Array.isArray(param) ? param : [param]
+            ),
+          byIdFunc: id => api.selectByStateForEntity(entity)(id),
+        } as LookupStoreDescriptor,
+        valueMember: valueMember,
+        displayMember: displayMember,
+      };
+    };
+  };
+
+const createTenantAllowedStateLookup = (
+    api: MetaProcessingstateApi,
+    entity: string,
+    valueMember = 'State',
+    displayMember = 'Name'
+  ): LookupCreator => {
+    return param => {
+      return {
+        type: 'lookup',
+        store: {
+          listFunc: () =>
+            api.selectListTenantAllowedForEntityAndIds(
               entity,
               Array.isArray(param) ? param : [param]
             ),
@@ -579,14 +602,22 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                   l.displayMember
                 );
                 break;
-            case 'stateallowed':
-                newLookups[l.identifier] = createGenericAllowedStateLookup(
+            case 'metastateallowed':
+                newLookups[l.identifier] = createMetaAllowedStateLookup(
                   this.processingstateApi,
                   l.entity as string,
                   l.valueMember,
                   l.displayMember
                 );
                 break;
+            case 'tenantstateallowed':
+                newLookups[l.identifier] = createTenantAllowedStateLookup(
+                  this.processingstateApi,
+                  l.entity as string,
+                  l.valueMember,
+                  l.displayMember
+                );
+                break;                
             }
         });
 
