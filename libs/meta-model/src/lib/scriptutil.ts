@@ -208,4 +208,11 @@
     documentId: string,
     callback: (url: string) => void
   ) => void;
+
+  /**
+   * Trigger subscriptions for ids
+   * 
+   * @param ids Collection of ids to trigger subscriptions for
+   */
+  triggerSubscriptions: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 }

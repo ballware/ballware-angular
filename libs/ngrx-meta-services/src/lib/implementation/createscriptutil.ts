@@ -7,9 +7,9 @@ import { ScriptUtil } from '@ballware/meta-model';
 import { HttpClient } from '@angular/common/http';
 import { LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from '@ballware/meta-services';
 import { geocodeAddress, geocodeLocation } from './geocoder';
-import { firstValueFrom, Observable } from 'rxjs';
+import { catchError, firstValueFrom, Observable } from 'rxjs';
 import { speak } from './speech';
-import { MetaDocumentApi } from '@ballware/meta-api';
+import { MetaDocumentApi, MetaSubscriptionApi } from '@ballware/meta-api';
 
 
 function beginOfYear(): Date {
@@ -74,7 +74,7 @@ function localDateToDate(date: Date): Date | null {
  * @param token Token used for authenticated webservice requests
  * @returns Generated util object
  */
-export const createUtil = (http: HttpClient, documentApi: MetaDocumentApi, idToken$: Observable<string|undefined>, accessToken$: Observable<string|undefined>, currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
+export const createUtil = (http: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, idToken$: Observable<string|undefined>, accessToken$: Observable<string|undefined>, currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
   return {
     http: () => http,
     token: () => firstValueFrom(accessToken$),
@@ -166,7 +166,7 @@ export const createUtil = (http: HttpClient, documentApi: MetaDocumentApi, idTok
       geocodeLocation(location, callback);
     },
     speak: (text: string) => speak(text),
-    openDocumentDesigner(documentId, callback) {
+    openDocumentDesigner: (documentId, callback) => {
       firstValueFrom(idToken$).then(token => {
         if (token) {
           documentApi.designerUrl(token, documentId)
@@ -181,5 +181,17 @@ export const createUtil = (http: HttpClient, documentApi: MetaDocumentApi, idTok
         console.error('Error getting token for opening document designer', err);
       });
     },
+    triggerSubscriptions: (ids, callback, error) => {
+      subscriptionApi.triggerSubscriptions(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });        
+    }
   } as ScriptUtil;
 };

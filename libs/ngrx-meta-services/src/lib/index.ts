@@ -90,8 +90,8 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       },
       {
         provide: SCRIPT_UTIL,
-        useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, identityService: IdentityService) => createUtil(httpClient, documentApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
-        deps: [HttpClient, META_DOCUMENT_API, IDENTITY_SERVICE]
+        useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
+        deps: [HttpClient, META_DOCUMENT_API, META_SUBSCRIPTION_API, IDENTITY_SERVICE]
       },
       {
         provide: ATTACHMENT_SERVICE_FACTORY,

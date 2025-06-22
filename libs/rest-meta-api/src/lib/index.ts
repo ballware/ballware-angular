@@ -98,7 +98,7 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string,
         },
         {
             provide: META_SUBSCRIPTION_API,
-            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl, documentServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
