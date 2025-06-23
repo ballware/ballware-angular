@@ -215,4 +215,13 @@
    * @param ids Collection of ids to trigger subscriptions for
    */
   triggerSubscriptions: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
+
+  /**
+   * Trigger datasource updates for given ids
+   * 
+   * @param ids Collection of ids to trigger update for
+   * @param callback Function called when update is triggered
+   * @param error Function called when update fails   
+   */
+  updateDatasources: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 }

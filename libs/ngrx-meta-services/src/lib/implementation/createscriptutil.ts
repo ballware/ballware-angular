@@ -192,6 +192,18 @@ export const createUtil = (http: HttpClient, documentApi: MetaDocumentApi, subsc
             if (error) error(reason?.message ?? reason);
           }
         });        
+    },
+    updateDatasources: (ids, callback, error) => {
+      documentApi.updateDatasources(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });        
     }
   } as ScriptUtil;
 };

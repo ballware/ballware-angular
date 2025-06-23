@@ -66,6 +66,14 @@ const viewerUrl = (documentServiceBaseUrl: string) => (
   return of(result);
 };
 
+const updateDatasources = (http: HttpClient, documentServiceBaseUrl: string) => (ids: Array<string>): Observable<void> => {
+
+  const url = `${documentServiceBaseUrl}/document/updatedatasources?id=${ids.map(id => encodeURIComponent(id)).join('&id=')}`;
+
+  return http
+    .post<void>(url, null);
+}
+
 /**
  * Create adapter for document data operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -86,5 +94,6 @@ export function createMetaBackendDocumentApi(
     ),
     designerUrl: designerUrl(documentServiceBaseUrl),
     viewerUrl: viewerUrl(documentServiceBaseUrl),
+    updateDatasources: updateDatasources(httpClient, documentServiceBaseUrl)
   } as MetaDocumentApi;
 }
