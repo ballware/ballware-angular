@@ -34,9 +34,11 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
     ]);
 }
 
-export function provideMetaBackendRestApi(metaServiceBaseUrl: string, 
+export function provideMetaBackendRestApi(
+    metaServiceBaseUrl: string, 
     tenantServiceBaseUrl: string,
     genericServiceBaseUrl: string,
+    mlServiceBaseUrl: string,
     documentServiceBaseUrl: string, 
     storageServiceBaseUrl: string): EnvironmentProviders {
     return makeEnvironmentProviders(    
@@ -88,7 +90,7 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string,
         },
         {
             provide: META_MLMODEL_API,
-            useFactory: (client: HttpClient) => createMetaBackendMlModelApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendMlModelApi(client, metaServiceBaseUrl, mlServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {

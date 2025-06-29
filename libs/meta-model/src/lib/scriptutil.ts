@@ -224,4 +224,13 @@
    * @param error Function called when update fails   
    */
   updateDatasources: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
+
+  /**
+   * Train machine learning model for given ids
+   * 
+   * @param ids Collection of ids to train model for
+   * @param callback Function called when training is triggered
+   * @param error Function called when training fails
+   */
+  train: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 }
