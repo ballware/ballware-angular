@@ -200,4 +200,37 @@
       }>
     ) => void
   ) => void;
+
+  /**
+   * Open document designer for document
+   */
+  openDocumentDesigner: (
+    documentId: string,
+    callback: (url: string) => void
+  ) => void;
+
+  /**
+   * Trigger subscriptions for ids
+   * 
+   * @param ids Collection of ids to trigger subscriptions for
+   */
+  triggerSubscriptions: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
+
+  /**
+   * Trigger datasource updates for given ids
+   * 
+   * @param ids Collection of ids to trigger update for
+   * @param callback Function called when update is triggered
+   * @param error Function called when update fails   
+   */
+  updateDatasources: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
+
+  /**
+   * Train machine learning model for given ids
+   * 
+   * @param ids Collection of ids to train model for
+   * @param callback Function called when training is triggered
+   * @param error Function called when training fails
+   */
+  train: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 }

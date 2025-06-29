@@ -19,9 +19,10 @@ export const identityReducer = createReducer(
         profileUrl,
         accessTokenAutoRefresh
     })),
-    on(identityUserLogin, (state, { refreshToken, accessToken, accessTokenExpiration, currentUser, tenant, userName }) => ({
+    on(identityUserLogin, (state, { idToken, refreshToken, accessToken, accessTokenExpiration, currentUser, tenant, userName }) => ({
         ...state,
         authenticated: true,
+        idToken,
         refreshToken,
         accessToken, 
         accessTokenExpiration,
@@ -32,6 +33,7 @@ export const identityReducer = createReducer(
     on(identityUserLogout, (state) => ({
         ...state,
         authenticated: false,
+        idToken: undefined,
         refreshToken: undefined,
         accessToken: undefined, 
         accessTokenExpiration: undefined,
@@ -40,8 +42,9 @@ export const identityReducer = createReducer(
         userName: undefined,
         allowedTenants: undefined
     })),
-    on(identityTokenRefreshed, (state, { refreshToken, accessToken, accessTokenExpiration }) => ({
+    on(identityTokenRefreshed, (state, { idToken, refreshToken, accessToken, accessTokenExpiration }) => ({
         ...state,
+        idToken,
         refreshToken,
         accessToken, 
         accessTokenExpiration,

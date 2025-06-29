@@ -27,9 +27,9 @@ export class PrintComponent {
 
         this.toolbarService.setPage(this.translator('datacontainer.actions.print'));
 
-        this.url$ = combineLatest([this.identityService.accessToken$, this.activatedRoute.queryParamMap])
-            .pipe(switchMap(([accessToken, queryParamMap]) => (accessToken && queryParamMap && queryParamMap.has('docId')) 
-                ? this.documentApi.viewerUrl(accessToken, queryParamMap.get('docId') as string, queryParamMap.getAll('id'))
+        this.url$ = combineLatest([this.identityService.idToken$, this.activatedRoute.queryParamMap])
+            .pipe(switchMap(([idToken, queryParamMap]) => (idToken && queryParamMap && queryParamMap.has('docId')) 
+                ? this.documentApi.viewerUrl(idToken, queryParamMap.get('docId') as string, queryParamMap.getAll('id'))
                     .pipe(map((url) => {                        
                         return this.domSanitizer.bypassSecurityTrustResourceUrl(url);
                     }))

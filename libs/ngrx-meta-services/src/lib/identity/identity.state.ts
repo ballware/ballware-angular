@@ -11,6 +11,7 @@ export interface IdentityState {
     profileUrl?: string,
 
     authenticated?: boolean,
+    idToken?: string,
     refreshToken?: string,
     accessToken?: string,
     accessTokenExpiration?: Date,
@@ -39,6 +40,7 @@ export const selectAllowedTenants = createSelector(selectIdentityFeature, (state
 export const selectAuthenticated = createSelector(selectIdentityFeature, (state: IdentityState) => state.authenticated);
 export const selectUserTenant = createSelector(selectIdentityFeature, (state: IdentityState) => state.tenant);
 export const selectUserName = createSelector(selectIdentityFeature, (state: IdentityState) => state.userName);
+export const selectIdToken = createSelector(selectIdentityFeature, (state: IdentityState) => state.idToken);
 export const selectAccessToken = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessToken);
 export const selectCurrentUser = createSelector(selectIdentityFeature, (state: IdentityState) => state.currentUser);
 export const selectAccessTokenExpiration = createSelector(selectIdentityFeature, (state: IdentityState) => state.accessTokenExpiration);
