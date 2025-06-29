@@ -7,7 +7,7 @@ import { ScriptUtil } from '@ballware/meta-model';
 import { HttpClient } from '@angular/common/http';
 import { LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from '@ballware/meta-services';
 import { geocodeAddress, geocodeLocation } from './geocoder';
-import { catchError, firstValueFrom, Observable } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { speak } from './speech';
 import { MetaDocumentApi, MetaMlModelApi, MetaSubscriptionApi } from '@ballware/meta-api';
 
