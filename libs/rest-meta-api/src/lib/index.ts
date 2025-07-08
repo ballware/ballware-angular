@@ -45,7 +45,7 @@ export function provideMetaBackendRestApi(
     [  
         {
             provide: META_ATTACHMENT_API_FACTORY,
-            useFactory: (client: HttpClient) => (owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, owner),
+            useFactory: (client: HttpClient) => (tenant: string, entity: string, owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, tenant, entity, owner),
             deps: [ HttpClient ]
         },
         {

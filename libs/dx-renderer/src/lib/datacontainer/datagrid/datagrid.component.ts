@@ -113,10 +113,11 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   }
 
   ngOnInit(): void {
-    combineLatest([this.metaService.editorEntered$, this.metaService.editorValueChanged$, this.metaService.editFunction$, this.metaService.customFunctionAllowed$, this.metaService.displayName$])
+    combineLatest([this.metaService.editorEntered$, this.metaService.editorValueChanged$, this.metaService.editFunction$, this.metaService.customFunctionAllowed$, this.metaService.entity$, this.metaService.displayName$])
       .pipe(takeUntil(this.destroy$))
-      .subscribe(([editorEntered, editorValueChanged, editFunction, customFunctionAllowed, displayName]) => {
-        if (editorEntered && editorValueChanged && customFunctionAllowed && displayName) {
+      .subscribe(([editorEntered, editorValueChanged, editFunction, customFunctionAllowed, entity, displayName]) => {
+        if (editorEntered && editorValueChanged && customFunctionAllowed && entity && displayName) {
+          this.masterDetailService.entity$.next(entity);
           this.displayName = displayName;
           this.editAllowed = (item) => editFunction ? customFunctionAllowed(editFunction, item) : false;
           this.editorEntered = editorEntered;

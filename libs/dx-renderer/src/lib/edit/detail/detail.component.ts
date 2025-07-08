@@ -1,7 +1,7 @@
 import { Component, forwardRef, Inject, Input, OnInit, Provider } from '@angular/core';
 import { DetailLayout } from '@ballware/meta-model';
 import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
-import { BehaviorSubject, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, takeUntil } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { EditLayoutContainerComponent } from '../layout/container.component';
 import { CommonModule } from '@angular/common';
@@ -31,12 +31,13 @@ export class EditDetailComponent extends WithDestroy() implements OnInit {
   }
 
   ngOnInit(): void {
-    this.masterdetailService.item$
+    combineLatest(this.masterdetailService.item$, this.masterdetailService.entity$)
       .pipe(takeUntil(this.destroy$))
-      .subscribe((item) => {
-        if (this.detailLayout && item) {
+      .subscribe(([item, entity]) => {
+        if (this.detailLayout && item && entity) {
           this.layout$.next(this.detailLayout);
           this.editService.setMode(EditModes.VIEW);
+          this.editService.setEntity(entity);
           this.editService.setItem(item);
         }
       });

@@ -4,7 +4,7 @@ import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog,
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
 import { nanoid } from "nanoid";
-import { Observable, from, map, of, switchMap, takeUntil } from "rxjs";
+import { Observable, from, map, of, switchMap, takeUntil, withLatestFrom } from "rxjs";
 import { createArrayDatasource } from "../../utils/datasource";
 import { DxDataGridModule, DxFileUploaderModule, DxPopupModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
@@ -49,7 +49,7 @@ import { Destroy, EditItemLivecycle, Readonly, Visible } from "@ballware/rendere
 
         this.dataSource$ = this.attachmentService.items$            
             .pipe(takeUntil(this.destroy.destroy$))            
-            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems, 'Name')) : of(undefined)));
+            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems, 'Id')) : of(undefined)));
 
         this.optionButtons$ = this.readonly.readonly$
             .pipe(takeUntil(this.destroy.destroy$))
@@ -78,8 +78,10 @@ import { Destroy, EditItemLivecycle, Readonly, Visible } from "@ballware/rendere
     
         this.editService.item$
             .pipe(takeUntil(this.destroy.destroy$))
-            .subscribe((item) => {
-                if (item) {
+            .pipe(withLatestFrom(this.editService.entity$))
+            .subscribe(([item, entity]) => {
+                if (item && entity) {
+                    this.attachmentService.setEntity(entity);
                     this.attachmentService.setOwner((item as CrudItem).Id);
                     this.attachmentService.fetch();
                 } 
@@ -97,11 +99,11 @@ import { Destroy, EditItemLivecycle, Readonly, Visible } from "@ballware/rendere
     }
 
     fileOpen(file: Record<string, unknown>) {
-        this.attachmentService.open(file['Name'] as string);
+        this.attachmentService.open(file['Id'] as string);
     }
 
     fileDelete(file: Record<string, unknown>) {
-        this.attachmentService.remove(file['Name'] as string);
+        this.attachmentService.remove({ id: file['Id'] as string, filename: file['Name'] as string });
     }
 
     fileUpload(file: File) {

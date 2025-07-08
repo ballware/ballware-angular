@@ -25,6 +25,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   @Input() mode?: EditModes;
   @Input() title?: string;
+  @Input() entity?: string;
   @Input() item?: unknown;
   @Input() editLayout!: EditLayout;
   @Input() fullscreen!: boolean;
@@ -67,9 +68,10 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   }
 
   ngOnInit(): void {
-      if (this.mode && this.item && this.editLayout) {
+      if (this.mode && this.entity && this.item && this.editLayout) {
         this.editService.setIdentifier(nanoid(11));
         this.editService.setMode(this.mode);
+        this.editService.setEntity(this.entity);
         this.editService.setItem(this.item as Record<string, unknown>);
         this.editService.setEditLayout(this.editLayout);
 
