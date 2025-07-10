@@ -23,20 +23,20 @@ import { Observable } from 'rxjs';
   /**
    * Fetch file url for display/download
    *
-   * @param fileName - File name from metadata
+   * @param id - Unique id of attachment from metadata
    * @returns Observable with URL for download of file
    */
-  open: (fileName: string) => Observable<string>;
+  open: (id: string) => Observable<string>;
 
   /**
    * Remove existing attachment
    *
-   * @param fileName - File name from metadata
+   * @param id - Unique id of attachment from metadata
    * @returns Observable resolved when remove operation finished
    */
-  remove: (fileName: string) => Observable<void>;
+  remove: (id: string) => Observable<void>;
 }
 
-export type MetaAttachmentApiFactory = (owner: string) => MetaAttachmentApi;
+export type MetaAttachmentApiFactory = (tenant: string, entity: string, owner: string) => MetaAttachmentApi;
 
 export const META_ATTACHMENT_API_FACTORY = new InjectionToken<MetaAttachmentApiFactory>("Meta attachment api factory");

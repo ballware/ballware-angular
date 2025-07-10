@@ -1,4 +1,4 @@
-import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface AttachmentRemoveDialog {
@@ -14,13 +14,14 @@ export interface AttachmentService extends OnDestroy {
   removeDialog$: Observable<AttachmentRemoveDialog|undefined>;
 
   setIdentifier(identifier: string): void;
+  setEntity(entity: string): void;
   setOwner(identifier: string): void;
 
   fetch(): void;
   upload(file: File): void;  
-  open(fileName: string): void;
-  remove(fileName: string): void;
-  drop(fileName: string): void;
+  open(id: string): void;
+  remove(request: { id: string, filename: string }): void;
+  drop(id: string): void;
 }
 
 export type AttachmentServiceFactory = () => AttachmentService;

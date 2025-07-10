@@ -54,6 +54,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         identifier
     }));
 
+    readonly entity$ = this.select(state => state.entity);
     readonly item$ = this.select(state => state.item);
     readonly mode$ = this.select(state => state.mode);
     readonly editLayout$ = this.select(state => state.editLayout);
@@ -63,6 +64,11 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         ...state,
         mode,
         readonly: mode === EditModes.VIEW
+    }));
+
+    readonly setEntity = this.updater((state, entity: string) => ({
+        ...state,
+        entity
     }));
 
     readonly setItem = this.updater((state, item: Record<string, unknown>) => ({

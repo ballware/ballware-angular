@@ -17,6 +17,7 @@ export interface CrudAction {
 
 export interface ItemEditDialog {
     mode: EditModes, 
+    entity: string,
     item: unknown, 
     title: string, 
     supportContinueAfterSave: boolean,

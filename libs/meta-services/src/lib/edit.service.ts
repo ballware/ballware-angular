@@ -8,6 +8,7 @@ import { MetaService } from './meta.service';
 export interface EditService extends OnDestroy {
     item$: Observable<Record<string, unknown>|undefined>;
     mode$: Observable<EditModes|undefined>;
+    entity$: Observable<string|undefined>;
     editLayout$: Observable<EditLayout|undefined>;
     readonly$: Observable<boolean|undefined>;
 
@@ -36,6 +37,7 @@ export interface EditService extends OnDestroy {
     setIdentifier(identifier: string): void;
 
     setMode(mode: EditModes): void;  
+    setEntity(entity: string): void;
     setItem(item: Record<string, unknown>): void;  
     setEditLayout(editLayout: EditLayout): void;
     setApply(applyMethod: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void): void;

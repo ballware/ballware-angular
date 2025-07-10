@@ -98,10 +98,11 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         useFactory: (
           store: Store, 
           notificationService: NotificationService, 
+          identityService: IdentityService,
           attachmentApiFactory: MetaAttachmentApiFactory, 
           translator: Translator
-        ) => () => new AttachmentStore(store, notificationService, attachmentApiFactory, translator),
-        deps: [ Store, NOTIFICATION_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
+        ) => () => new AttachmentStore(store, notificationService, identityService, attachmentApiFactory, translator),
+        deps: [ Store, NOTIFICATION_SERVICE, IDENTITY_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
       },
       {
         provide: LOOKUP_SERVICE_FACTORY,

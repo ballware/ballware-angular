@@ -171,6 +171,11 @@ const importFunc = (http: HttpClient, baseUrl: string) => (
     }));
 };
 
+interface ExportUrlResult {
+  Id: string,
+  TenantId: string
+}
+
 const exportFunc = (http: HttpClient, baseUrl: string) => (
   functionIdentifier: string,
   ids: string[]
@@ -178,11 +183,10 @@ const exportFunc = (http: HttpClient, baseUrl: string) => (
   const url = `${baseUrl}/exporturl?identifier=${encodeURIComponent(functionIdentifier)}`;
   
   return http
-    .post(url, `${ids.map(u => `id=${encodeURIComponent(u)}`).join('&')}`, {
+    .post<ExportUrlResult>(url, `${ids.map(u => `id=${encodeURIComponent(u)}`).join('&')}`, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      responseType: 'text'
+      }
     })
     .pipe(catchError((error: HttpErrorResponse) => {      
       return throwError(() => ({
@@ -192,7 +196,7 @@ const exportFunc = (http: HttpClient, baseUrl: string) => (
         payload: error.error
       } as ApiError))
     }))
-    .pipe(map(data => `${baseUrl}/download?id=${encodeURIComponent(data)}`));
+    .pipe(map(data => `${baseUrl}/download/${encodeURIComponent(data.TenantId)}/${encodeURIComponent(data.Id)}`));
 };
 
 

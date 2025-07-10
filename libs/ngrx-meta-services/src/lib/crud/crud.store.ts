@@ -247,11 +247,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     );
 
     readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
-        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
-            .pipe(switchMap(([viewRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && viewRequest) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
+            .pipe(switchMap(([viewRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && viewRequest) ?
                 byId(viewRequest.editLayout ?? 'primary', viewRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.VIEW,
+                        entity: entity,
                         item: item,
                         title: this.translator('datacontainer.titles.view', { entity: displayName }),
                         supportContinueAfterSave: false,
@@ -279,11 +280,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     );
 
     readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
-        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.displayName$))
-            .pipe(switchMap(([editRequest, getEditLayout, byId, displayName]) => (getEditLayout && byId && displayName && editRequest) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
+            .pipe(switchMap(([editRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && editRequest) ?
                 byId(editRequest.editLayout ?? 'primary', editRequest.item.Id)
                     .pipe(map((item) => ({
                         mode: EditModes.EDIT,
+                        entity: entity,
                         item: item,
                         title: this.translator('datacontainer.titles.edit', { entity: displayName }),
                         supportContinueAfterSave: false,
@@ -342,13 +344,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     );
       
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
-        request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$, this.metaService.headParams$))
-            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, headParams]) =>  customFunction.entity 
+        request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$, this.metaService.entity$, this.metaService.headParams$))
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, entity, headParams]) =>  customFunction.entity 
                 ? this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
                     itemDialog
                 }))({
                     mode: EditModes.EDIT,
+                    entity: customFunction.entity,
                     item: items,
                     title: customFunction.text,
                     supportContinueAfterSave: customFunction.supportContinue,
@@ -377,6 +380,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     itemDialog
                 }))({
                     mode: EditModes.EDIT,
+                    entity: entity,
                     item: params,
                     title: customFunction.text,
                     supportContinueAfterSave: customFunction.supportContinue,
@@ -536,15 +540,16 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     );
 
     readonly detailColumnEdit = this.effect((request$: Observable<{ mode: EditModes, item: unknown, column: GridLayoutColumn }>) => 
-        request$.pipe((withLatestFrom(this.metaService.getEditLayout$)))
-            .pipe(switchMap(([request, getEditLayout]) => getEditLayout 
-                ? of(request).pipe(withLatestFrom(of(getEditLayout(request.column.popuplayout ?? 'primary', request.mode))))
-                : of(request).pipe(withLatestFrom(of(undefined)))))
-            .pipe(tap(([request, editLayout]) => this.updater((state, detailColumnEditDialog: DetailColumnEditDialog|undefined) => ({
+        request$.pipe((withLatestFrom(this.metaService.getEditLayout$, this.metaService.entity$)))
+            .pipe(switchMap(([request, getEditLayout, entity]) => getEditLayout 
+                ? of(request).pipe(withLatestFrom(of(getEditLayout(request.column.popuplayout ?? 'primary', request.mode), of(entity))))
+                : of(request).pipe(withLatestFrom(of(undefined), of(entity)))))
+            .pipe(tap(([request, editLayout, entity]) => this.updater((state, detailColumnEditDialog: DetailColumnEditDialog|undefined) => ({
                 ...state,
                 detailColumnEditDialog
             }))((request && editLayout) ? ({
                 mode: request.mode,
+                entity: entity,
                 item: cloneDeep(request.item),   
                 title: request.column.caption,
                 dataMember: request.column.dataMember,                
