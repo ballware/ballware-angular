@@ -218,11 +218,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     }
 
     readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
-        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.displayName$, this.metaService.headParams$))
-            .pipe(switchMap(([request, getEditLayout, create, displayName, headParams]) => (getEditLayout && create && displayName && headParams && request) ?
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.entity$, this.metaService.displayName$, this.metaService.headParams$))
+            .pipe(switchMap(([request, getEditLayout, create, entity, displayName, headParams]) => (getEditLayout && create && entity && displayName && headParams && request) ?
                 create(request.editLayout ?? 'primary', headParams)
                     .pipe(map((item) => ({
                         mode: EditModes.CREATE,
+                        entity: entity,
                         item: item,
                         title: this.translator('datacontainer.titles.add', { entity: displayName }),
                         supportContinueAfterSave: false,
