@@ -1,8 +1,8 @@
 import { ApiError } from "@ballware/meta-api";
 import { AutocompleteStoreDescriptor, EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
-import { compileGetter } from 'devextreme/utils';
-import { BehaviorSubject, catchError, combineLatest, map, of, takeUntil } from "rxjs";
+import { compileGetter, compileSetter } from 'devextreme/utils';
+import { BehaviorSubject, catchError, combineLatest, map, of, takeUntil, withLatestFrom } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "../utils";
 import { Destroy, EditItemLivecycle } from "@ballware/renderer-commons";
 import { Directive, Inject, OnInit } from "@angular/core";
@@ -22,6 +22,9 @@ export class Lookup implements OnInit {
   private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>) => string)|undefined;
   private _lookupItemHintValueGetter: ((item: Record<string, unknown>) => string)|undefined;
   
+  private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
+  private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
+  
   public getLookupItemKeyValue(item: Record<string, unknown>) {    
     return this._lookupItemKeyValueGetter ? this._lookupItemKeyValueGetter(item) : undefined;
   }    
@@ -32,6 +35,22 @@ export class Lookup implements OnInit {
 
   public getLookupItemHintValue(item: Record<string, unknown>) {    
     return this._lookupItemHintValueGetter ? this._lookupItemHintValueGetter(item) : undefined;
+  }
+
+  public onCustomItemCreating(event: any) {
+    if (!this._acceptCustomValue) {
+      event.cancel = true;
+      return;
+    }
+
+    const customValue = {
+
+    };
+
+    this._lookupItemKeyValueSetter?.(customValue, event.text);
+    this._lookupItemDisplayValueSetter?.(customValue, event.text);
+    
+    event.customItem = customValue;
   }
 
   public get hasLookupItemHint() {
@@ -129,12 +148,16 @@ export class Lookup implements OnInit {
                       this._hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
 
                       const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
+                      const keyValueSetter = compileSetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
     
                       this._lookupItemKeyValueGetter = (item) => keyValueGetter(item);
+                      this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
     
-                      const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');                
+                      const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');          
+                      const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');      
               
                       this._lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
+                      this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
               
                       const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
               

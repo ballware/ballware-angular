@@ -11,7 +11,8 @@
   [showClearButton]="true"
   [searchEnabled]="true"
   [acceptCustomValue]="lookup.acceptCustomValue"    
-  (onFocusIn)="livecycle.onEntered()">
+  (onFocusIn)="livecycle.onEntered()"
+  (onCustomItemCreating)="lookup.onCustomItemCreating($event)">  
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
     <br *ngIf="lookup.hasLookupItemHint"/>
