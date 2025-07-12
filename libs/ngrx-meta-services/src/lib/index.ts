@@ -90,18 +90,19 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       },
       {
         provide: SCRIPT_UTIL,
-        useFactory: (httpClient: HttpClient, identityService: IdentityService) => createUtil(httpClient, identityService.accessToken$, identityService.currentUser$),
-        deps: [HttpClient, IDENTITY_SERVICE]
+        useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, mlApi: MetaMlModelApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, mlApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
+        deps: [HttpClient, META_DOCUMENT_API, META_SUBSCRIPTION_API, META_MLMODEL_API, IDENTITY_SERVICE]
       },
       {
         provide: ATTACHMENT_SERVICE_FACTORY,
         useFactory: (
           store: Store, 
           notificationService: NotificationService, 
+          identityService: IdentityService,
           attachmentApiFactory: MetaAttachmentApiFactory, 
           translator: Translator
-        ) => () => new AttachmentStore(store, notificationService, attachmentApiFactory, translator),
-        deps: [ Store, NOTIFICATION_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
+        ) => () => new AttachmentStore(store, notificationService, identityService, attachmentApiFactory, translator),
+        deps: [ Store, NOTIFICATION_SERVICE, IDENTITY_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
       },
       {
         provide: LOOKUP_SERVICE_FACTORY,

@@ -50,10 +50,27 @@ export interface MetaDocumentApi {
    *
    * @param token Access token required for authentication
    * @param documentId Identifier of user selected document
+   * @returns Observable containing url for designing document
+   */
+  designerUrl: (token: string, documentId: string) => Observable<string>;
+
+  /**
+   * Generate viewer url for document
+   *
+   * @param token Access token required for authentication
+   * @param documentId Identifier of user selected document
    * @param ids Ids of selected records to print
    * @returns Observable containing url for rendering document
    */
   viewerUrl: (token: string, documentId: string, ids: string[]) => Observable<string>;
+
+  /**
+   * Trigger datasource updates for given ids
+   * 
+   * @param ids Collection of ids to trigger update for
+   * @returns Observable resolving when update is triggered
+   */
+  updateDatasources: (ids: Array<string>) => Observable<void>;
 }
 
 export const META_DOCUMENT_API = new InjectionToken<MetaDocumentApi>('Meta document api');

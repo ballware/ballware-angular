@@ -145,7 +145,12 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                             entity: entityMetadata.entity,
                           } as LookupRequest,
                           {
-                            type: 'stateallowed',
+                            type: 'metastateallowed',
+                            identifier: 'allowedMetaStateLookup',
+                            entity: entityMetadata.entity,
+                          } as LookupRequest,
+                          {
+                            type: 'tenantstateallowed',
                             identifier: 'allowedStateLookup',
                             entity: entityMetadata.entity,
                           } as LookupRequest,

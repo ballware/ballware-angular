@@ -27,16 +27,16 @@
     (onValueChanged)="onValueChanged($event)" 
     [value]="multiLookupValue()"
     [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="column.displayExpr ?? 'Text'"
-    [valueExpr]="column.valueExpr ?? 'Value'">
+    [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Text'"
+    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Value'">
 </dx-tag-box>
 <dx-tag-box *ngIf="preparedColumn && 'multilookup' === preparedColumn.type"
     [readOnly]="!editing"
     (onValueChanged)="onValueChanged($event)" 
     [value]="multiLookupValue()"
     [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="column.displayExpr ?? 'Name'"
-    [valueExpr]="column.valueExpr ?? 'Id'"
+    [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Name'"
+    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'"
 ></dx-tag-box>
 <ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type" 
     [column]="preparedColumn" 

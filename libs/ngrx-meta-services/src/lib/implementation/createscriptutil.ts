@@ -9,6 +9,7 @@ import { LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreato
 import { geocodeAddress, geocodeLocation } from './geocoder';
 import { firstValueFrom, Observable } from 'rxjs';
 import { speak } from './speech';
+import { MetaDocumentApi, MetaMlModelApi, MetaSubscriptionApi } from '@ballware/meta-api';
 
 
 function beginOfYear(): Date {
@@ -73,10 +74,17 @@ function localDateToDate(date: Date): Date | null {
  * @param token Token used for authenticated webservice requests
  * @returns Generated util object
  */
-export const createUtil = (http: HttpClient, token$: Observable<string|undefined>, currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
+export const createUtil = (
+  http: HttpClient, 
+  documentApi: MetaDocumentApi, 
+  subscriptionApi: MetaSubscriptionApi, 
+  mlApi: MetaMlModelApi,
+  idToken$: Observable<string|undefined>, 
+  accessToken$: Observable<string|undefined>, 
+  currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
   return {
     http: () => http,
-    token: () => firstValueFrom(token$),
+    token: () => firstValueFrom(accessToken$),
     user: () => firstValueFrom(currentUser$),
     uuid: () => uuid(),
     parse: json => parse(json),
@@ -164,6 +172,57 @@ export const createUtil = (http: HttpClient, token$: Observable<string|undefined
     geocodeLocation: (location, callback) => {
       geocodeLocation(location, callback);
     },
-    speak: (text: string) => speak(text)
+    speak: (text: string) => speak(text),
+    openDocumentDesigner: (documentId, callback) => {
+      firstValueFrom(idToken$).then(token => {
+        if (token) {
+          documentApi.designerUrl(token, documentId)
+            .subscribe({
+              next: (url) => callback(url),
+              error: (reason) => console.error(reason)
+            });
+        } else {
+          console.error('No token available for opening document designer');
+        }
+      }).catch(err => {
+        console.error('Error getting token for opening document designer', err);
+      });
+    },
+    triggerSubscriptions: (ids, callback, error) => {
+      subscriptionApi.triggerSubscriptions(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });        
+    },
+    updateDatasources: (ids, callback, error) => {
+      documentApi.updateDatasources(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });        
+    },
+    train: (ids, callback, error) => {
+      mlApi.train(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });        
+    }
   } as ScriptUtil;
 };

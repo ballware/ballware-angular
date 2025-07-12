@@ -14,6 +14,7 @@ export interface MetaService extends OnDestroy {
   headParams$: Observable<QueryParams|undefined>;
   customParam$: Observable<Record<string, unknown>|undefined>;
 
+  entity$: Observable<string|undefined>;
   displayName$: Observable<string|undefined>;
   entityMetadata$: Observable<CompiledEntityMetadata|undefined>;
   entityDocuments$: Observable<DocumentSelectEntry[]|undefined>;

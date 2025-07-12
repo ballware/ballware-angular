@@ -5,6 +5,7 @@ export interface EditState {
 
     identifier?: string;
 
+    entity?: string;
     item?: Record<string, unknown>;  
     mode?: EditModes;
     editLayout?: EditLayout;

@@ -14,6 +14,7 @@ export interface IdentityService {
     currentUser$: Observable<Record<string, unknown>|undefined>;
     userTenant$: Observable<string|undefined>;
     userName$: Observable<string|undefined>;
+    idToken$: Observable<string|undefined>;
     accessToken$: Observable<string|undefined>;
 
     allowedTenants$: Observable<Array<Record<string, unknown>>|undefined>;

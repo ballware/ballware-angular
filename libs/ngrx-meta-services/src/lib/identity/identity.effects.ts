@@ -26,6 +26,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                             const identityClaims = oauthService.getIdentityClaims() as Record<string, unknown>;
 
                             store.dispatch(identityUserLogin({
+                                idToken: oauthService.getIdToken(),
                                 refreshToken: oauthService.getRefreshToken(),
                                 accessToken: oauthService.getAccessToken(),
                                 accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),                        
@@ -40,6 +41,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                     .pipe(filter((e) => e.type === 'token_received'))
                     .subscribe((_) => {
                         store.dispatch(identityTokenRefreshed({
+                            idToken: oauthService.getIdToken(),
                             refreshToken: oauthService.getRefreshToken(),
                             accessToken: oauthService.getAccessToken(),
                             accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration())
@@ -68,6 +70,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                         const identityClaims = oauthService.getIdentityClaims() as Record<string, unknown>;
 
                         store.dispatch(identityUserLogin({
+                            idToken: oauthService.getIdToken(),
                             refreshToken: oauthService.getRefreshToken(),
                             accessToken: oauthService.getAccessToken(),
                             accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),                        

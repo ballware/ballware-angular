@@ -25,6 +25,7 @@ describe('TenantEffects', () => {
     it('should resolve fetched tenant', fakeAsync(() => {
        
         const mockedUser = {
+            idToken: 'ID_TOKEN',
             refreshToken: 'REFRESH_TOKEN',
             accessToken: 'ACCESS_TOKEN',
             accessTokenExpiration: new Date(),

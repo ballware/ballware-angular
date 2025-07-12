@@ -89,7 +89,8 @@ export interface LookupRequest {
     | 'autocomplete'
     | 'autocompletewithparam'
     | 'state'
-    | 'stateallowed';
+    | 'metastateallowed'
+    | 'tenantstateallowed';
 
   /**
    * Unique identifier for lookup in consumer

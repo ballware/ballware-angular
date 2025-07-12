@@ -26,23 +26,53 @@ const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl:
     .get<Array<DocumentSelectEntry>>(url);
 };
 
+const designerUrl = (documentServiceBaseUrl: string) => (
+  token: string,
+  documentId: string
+): Observable<string> => {
+
+  const signonUrl = new URL(`${documentServiceBaseUrl}/signon/${encodeURIComponent(token)}`)
+
+  const designerUrl = new URL(`${documentServiceBaseUrl}/designer`);
+
+  designerUrl.searchParams.append('id', documentId);
+  
+  signonUrl.searchParams.append('redirect', designerUrl.toString());
+
+  const result = signonUrl.toString();
+
+  return of(result);
+};
+
+
 const viewerUrl = (documentServiceBaseUrl: string) => (
   token: string,
   documentId: string,
   ids: string[]
 ): Observable<string> => {
 
-  const url = new URL(`${documentServiceBaseUrl}/viewer`);
+  const signonUrl = new URL(`${documentServiceBaseUrl}/signon/${encodeURIComponent(token)}`)
 
-  url.searchParams.append('token', token);
-  url.searchParams.append('?docId', documentId);
+  const viewerUrl = new URL(`${documentServiceBaseUrl}/viewer`);
 
-  ids.forEach(id => url.searchParams.append('id', id));
+  viewerUrl.searchParams.append('docId', documentId);
+
+  ids.forEach(id => viewerUrl.searchParams.append('id', id));
   
-  const result = url.toString();
+  signonUrl.searchParams.append('redirect', viewerUrl.toString());
+
+  const result = signonUrl.toString();
 
   return of(result);
 };
+
+const updateDatasources = (http: HttpClient, documentServiceBaseUrl: string) => (ids: Array<string>): Observable<void> => {
+
+  const url = `${documentServiceBaseUrl}/document/updatedatasources?id=${ids.map(id => encodeURIComponent(id)).join('&id=')}`;
+
+  return http
+    .post<void>(url, null);
+}
 
 /**
  * Create adapter for document data operations with ballware.meta.service
@@ -62,6 +92,8 @@ export function createMetaBackendDocumentApi(
       httpClient,
       metaServiceBaseUrl
     ),
+    designerUrl: designerUrl(documentServiceBaseUrl),
     viewerUrl: viewerUrl(documentServiceBaseUrl),
+    updateDatasources: updateDatasources(httpClient, documentServiceBaseUrl)
   } as MetaDocumentApi;
 }

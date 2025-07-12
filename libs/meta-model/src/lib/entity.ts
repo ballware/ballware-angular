@@ -510,8 +510,23 @@ export interface EditLayoutItemOptions {
   /**
    * Optional data member for lookup query (only for editors with select list functionality).
    * The current business object property value of data member will be supplied as parameter to lookup query
+   * If the property value is undefined, the lookup query will be executed with lookupParam as parameter
    */
   lookupParam?: string;
+
+  /**
+   * Optional data member as entity for pickvalue query (only for editors with select list functionality).
+   * The current business object property value of data member will be supplied as parameter to pickvalue query
+   * If the property value is undefined, the pickvalue query will be executed with pickvalueEntity as parameter
+   */
+  pickvalueEntity?: string;
+
+  /**
+   * Optional data member as field identifier for pickvalue query (only for editors with select list functionality).
+   * The current business object property value of data member will be supplied as parameter to pickvalue query
+   * If the property value is undefined, the pickvalue query will be executed with pickvalueField as parameter
+   */
+  pickvalueField?: string;
 
   /**
    * Value data member in lookup query result (only for editors with select list functionality)

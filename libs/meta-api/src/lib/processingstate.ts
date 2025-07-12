@@ -31,13 +31,25 @@ import { Observable } from 'rxjs';
   ) => Observable<Array<Record<string, unknown>>>;
 
   /**
-   * Fetch select list containing all allowed states for business object ids
+   * Fetch select list containing all allowed states for meta business object ids
    *
-   * @param entity Identifier of business object type
+   * @param entity Identifier of meta business object type
    * @param ids Collection of ids to check
    * @returns Observable containing list of allowed processing states
    */
-  selectListAllowedForEntityAndIds: (
+  selectListMetaAllowedForEntityAndIds: (
+    entity: string,
+    ids: Array<string>
+  ) => Observable<Array<Record<string, unknown>>>;
+
+  /**
+   * Fetch select list containing all allowed states for tenant business object ids
+   *
+   * @param entity Identifier of tenant business object type
+   * @param ids Collection of ids to check
+   * @returns Observable containing list of allowed processing states
+   */
+  selectListTenantAllowedForEntityAndIds: (
     entity: string,
     ids: Array<string>
   ) => Observable<Array<Record<string, unknown>>>;

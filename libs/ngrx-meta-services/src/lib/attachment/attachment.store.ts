@@ -4,13 +4,13 @@ import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
 import { Observable, catchError, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
-import { AttachmentService, NotificationService, Translator } from "@ballware/meta-services";
+import { AttachmentService, IdentityService, NotificationService, Translator } from "@ballware/meta-services";
 import { attachmentDestroyed, attachmentUpdated } from "../component";
 import { AttachmentState } from "./attachment.state";
 
 export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentService, OnDestroy {
     
-    constructor(private store: Store, private notificationService: NotificationService, private attachmentApiFactory: MetaAttachmentApiFactory, private translator: Translator) {
+    constructor(private store: Store, private notificationService: NotificationService, private identityService: IdentityService, private attachmentApiFactory: MetaAttachmentApiFactory, private translator: Translator) {
         super({});
 
         this.state$
@@ -36,6 +36,7 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     
     readonly removeDialog$ = this.select(state => state.removeDialog);
     
+    readonly entity$ = this.select(state => state.entity);
     readonly owner$ = this.select(state => state.owner);
     readonly items$ = this.select(state => state.items);
 
@@ -44,15 +45,20 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
         identifier
     }));
 
+    readonly setEntity = this.updater((state, entity: string) => ({
+        ...state,
+        entity
+    }));
+
     readonly setOwner = this.updater((state, owner: string) => ({
         ...state,
         owner
     }));
 
     readonly fetch = this.effect<void>((trigger$) => 
-        trigger$.pipe(withLatestFrom(this.owner$))        
-            .pipe(switchMap(([, owner]) => owner
-                ? this.attachmentApiFactory(owner).query()
+        trigger$.pipe(withLatestFrom(this.identityService.userTenant$, this.entity$, this.owner$))        
+            .pipe(switchMap(([, tenant, entity, owner]) => tenant && entity && owner
+                ? this.attachmentApiFactory(tenant, entity, owner).query()
                 : of(undefined)))
             .pipe(catchError((error: ApiError) => {
                     this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -68,9 +74,9 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
     );
 
     readonly upload = this.effect((file$: Observable<File>) => 
-        file$.pipe(withLatestFrom(this.owner$))
-            .pipe(switchMap(([file, owner]) => (owner && file)
-                ? this.attachmentApiFactory(owner).upload(file)
+        file$.pipe(withLatestFrom(this.identityService.userTenant$, this.entity$, this.owner$))
+            .pipe(switchMap(([file, tenant, entity, owner]) => (tenant && entity && owner && file)
+                ? this.attachmentApiFactory(tenant, entity, owner).upload(file)
                     .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('attachment.messages.added'), severity: 'info' });                        
                     }))
@@ -83,10 +89,10 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
             .pipe(map(() => this.fetch()))  
     );
 
-    readonly open = this.effect((fileName$: Observable<string>) => 
-        fileName$.pipe(withLatestFrom(this.owner$))
-            .pipe(switchMap(([fileName, owner]) => (owner && fileName)
-                ? this.attachmentApiFactory(owner).open(fileName)
+    readonly open = this.effect((id$: Observable<string>) => 
+        id$.pipe(withLatestFrom(this.identityService.userTenant$, this.entity$, this.owner$))
+            .pipe(switchMap(([id, tenant, entity, owner]) => (tenant && entity && owner && id)
+                ? this.attachmentApiFactory(tenant, entity, owner).open(id)
                 : of(undefined)))
             .pipe(catchError((error: ApiError) => {
                 this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -96,20 +102,20 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
             .pipe(map((url) => url && window.open(url)))  
     );
     
-    readonly remove = this.updater((state, fileName: string) => ({
+    readonly remove = this.updater((state, { id, filename }: { id: string, filename: string}) => ({
         ...state,
         removeDialog: {
-            fileName,
-            title: this.translator('', { fileName }),
-            apply: (fileName) => this.drop(fileName),
+            fileName: filename,
+            title: this.translator('', { filename }),
+            apply: (_) => this.drop(id),
             cancel: this.updater((state) => ({ ...state, removeDialog: undefined }))
         }
     }));
     
     readonly drop = this.effect((fileName$: Observable<string>) => 
-        fileName$.pipe(withLatestFrom(this.owner$))
-            .pipe(switchMap(([fileName, owner]) => (owner && fileName)
-                ? this.attachmentApiFactory(owner).remove(fileName)
+        fileName$.pipe(withLatestFrom(this.identityService.userTenant$, this.entity$, this.owner$))
+            .pipe(switchMap(([fileName, tenant, entity, owner]) => (tenant && entity && owner && fileName)
+                ? this.attachmentApiFactory(tenant, entity, owner).remove(fileName)
                     .pipe(tap(() => { 
                         this.notificationService.triggerNotification({ message: this.translator('attachment.messages.removed'), severity: 'info' });
                         

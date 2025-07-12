@@ -1,7 +1,7 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
 import { identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
-import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh } from "./identity.state";
+import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
 
 export class IdentityServiceProxy implements IdentityService {
 
@@ -32,6 +32,10 @@ export class IdentityServiceProxy implements IdentityService {
 
     public get userName$() {
         return this.store.select(selectUserName);
+    }
+
+    public get idToken$() {
+        return this.store.select(selectIdToken);
     }
 
     public get accessToken$() {

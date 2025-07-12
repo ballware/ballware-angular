@@ -11,6 +11,7 @@ export const identityInitialize = createAction('[Identity] initialize', props<{
 }>());
 
 export const identityUserLogin = createAction('[Identity] user login', props<{
+    idToken: string,
     refreshToken: string,
     accessToken: string,
     accessTokenExpiration: Date,
@@ -34,6 +35,7 @@ export const identityManageProfile = createAction('[Identity] manage profile');
 export const identityRefreshToken = createAction('[Identity] refresh token');
 
 export const identityTokenRefreshed = createAction('[Identity] token refreshed', props<{
+    idToken: string,
     refreshToken: string,
     accessToken: string,
     accessTokenExpiration: Date,

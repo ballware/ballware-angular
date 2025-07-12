@@ -16,6 +16,14 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
     .get<Record<string, unknown>>(url);
 }
 
+const triggerSubscriptions = (http: HttpClient, documentServiceBaseUrl: string) => (ids: Array<string>): Observable<void> => {
+
+  const url = `${documentServiceBaseUrl}/subscription/trigger?id=${ids.map(id => encodeURIComponent(id)).join('&id=')}`;
+
+  return http
+    .post<void>(url, null);
+}
+
 /**
  * Create adapter for subscription data operations with ballware.meta.service
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
@@ -23,10 +31,12 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
  */
 export function createMetaBackendSubscriptionApi(
   httpClient: HttpClient, 
-  metaServiceBaseUrl: string
+  metaServiceBaseUrl: string,
+  documentServiceBaseUrl: string
 ): MetaSubscriptionApi {
   return {
     selectList: selectList(httpClient, metaServiceBaseUrl),
     selectById: selectById(httpClient, metaServiceBaseUrl),
+    triggerSubscriptions: triggerSubscriptions(httpClient, documentServiceBaseUrl)
   } as MetaSubscriptionApi;
 }

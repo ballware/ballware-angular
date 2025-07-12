@@ -1,6 +1,6 @@
 import { Component, Inject, Input, OnDestroy, OnInit } from "@angular/core";
 import { GridLayoutColumn } from "@ballware/meta-model";
-import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService } from "@ballware/meta-services";
+import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService, PickvalueCreator } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
@@ -96,7 +96,14 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
                             const foundLookup = lookups[this.preparedColumn.lookup];
 
                             if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
-                                lookup = (foundLookup as LookupCreator)(get(this.lookupParams, this.preparedColumn.lookupParam) as string);
+                                const dynamicLookupParam = (get(this.lookupParams, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
+
+                                lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
+                            } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
+                                const dynamicPickvalueEntity = (get(this.lookupParams, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
+                                const dynamicPickvalueField = (get(this.lookupParams, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
+
+                                lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
                             } else if (foundLookup as LookupDescriptor) {
                                 lookup = foundLookup as LookupDescriptor;
                             }

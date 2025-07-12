@@ -34,16 +34,18 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
     ]);
 }
 
-export function provideMetaBackendRestApi(metaServiceBaseUrl: string, 
+export function provideMetaBackendRestApi(
+    metaServiceBaseUrl: string, 
     tenantServiceBaseUrl: string,
     genericServiceBaseUrl: string,
+    mlServiceBaseUrl: string,
     documentServiceBaseUrl: string, 
     storageServiceBaseUrl: string): EnvironmentProviders {
     return makeEnvironmentProviders(    
     [  
         {
             provide: META_ATTACHMENT_API_FACTORY,
-            useFactory: (client: HttpClient) => (owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, owner),
+            useFactory: (client: HttpClient) => (tenant: string, entity: string, owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, tenant, entity, owner),
             deps: [ HttpClient ]
         },
         {
@@ -88,7 +90,7 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string,
         },
         {
             provide: META_MLMODEL_API,
-            useFactory: (client: HttpClient) => createMetaBackendMlModelApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendMlModelApi(client, metaServiceBaseUrl, mlServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
@@ -98,7 +100,7 @@ export function provideMetaBackendRestApi(metaServiceBaseUrl: string,
         },
         {
             provide: META_SUBSCRIPTION_API,
-            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl, documentServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {

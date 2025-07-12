@@ -47,6 +47,7 @@ export const appConfig: ApplicationConfig = {
             window.ENV.BALLWARE_METAURL, 
             window.ENV.BALLWARE_TENANTURL, 
             window.ENV.BALLWARE_GENERICURL, 
+            window.ENV.BALLWARE_MLURL,
             window.ENV.BALLWARE_DOCUMENTURL, 
             window.ENV.BALLWARE_STORAGEURL), 
         provideGenericBackendRestApi(
