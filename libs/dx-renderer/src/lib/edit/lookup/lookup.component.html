@@ -10,8 +10,9 @@
   [valueExpr]="livecycle.layoutItem.options.valueExpr ?? lookup.lookup?.valueMember ?? ''"
   [showClearButton]="true"
   [searchEnabled]="true"
-  [acceptCustomValue]="livecycle.layoutItem.options.acceptCustomValue ?? false"    
-  (onFocusIn)="livecycle.onEntered()">
+  [acceptCustomValue]="lookup.acceptCustomValue"    
+  (onFocusIn)="livecycle.onEntered()"
+  (onCustomItemCreating)="lookup.onCustomItemCreating($event)">  
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
     <br *ngIf="lookup.hasLookupItemHint"/>
