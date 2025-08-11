@@ -22,10 +22,10 @@
         [(changes)]="editing.gridEditChanges">
     </dxo-editing>
     <div *dxTemplate="let cell of 'dynamic'">
-        <ballware-dynamic-column [gridMode]="'detail'" [editing]="false" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
+        <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-dynamic-column [gridMode]="'detail'" [editing]="true" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-dynamic-column>
+        <ballware-detail-dynamic-column [readonly]="false" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
     </div>    
 </dx-tree-list>
 <dx-validator [adapter]="editing.validationAdapterConfig">

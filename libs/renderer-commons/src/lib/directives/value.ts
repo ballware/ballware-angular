@@ -9,6 +9,8 @@ import { EditItemLivecycle } from "./edititemlivecycle";
   standalone: true
 })
 class Value<TValue> implements OnInit {
+
+  public dataMember$ = new BehaviorSubject<string|undefined>(undefined);
   
   public currentValue$ = new BehaviorSubject<TValue|undefined>(undefined);
   public notifyValueChange$ = new Subject<void>();
@@ -33,6 +35,8 @@ class Value<TValue> implements OnInit {
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
         if (layoutItem) {
+          this.dataMember$.next(layoutItem.options?.dataMember);
+
           this.refreshValueTrigger$
             .pipe(takeUntil(this.destroy.destroy$))
             .pipe(withLatestFrom(this.editService.getValue$))
