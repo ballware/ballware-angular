@@ -75,11 +75,11 @@ export class DetailCollectionEditing implements OnInit {
     private detailGridRowValidating: ((dataMember: string, detailItem: Record<string, unknown>) => string) | undefined;
     private initNewDetailItem: ((dataMember: string, detailItem: Record<string, unknown>) => void) | undefined;
 
-    private detailEditorInitialized: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef) => void)|undefined;
-    private detailEditorValidating: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => boolean)|undefined;
-    private detailEditorValueChanged: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
-    private detailEditorEntered: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string) => void)|undefined;
-    private detailEditorEvent: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
+    private detailEditorInitialized: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef) => void)|undefined;
+    private detailEditorValidating: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => boolean)|undefined;
+    private detailEditorValueChanged: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
+    private detailEditorEntered: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string) => void)|undefined;
+    private detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
 
     constructor(
         @Inject(TRANSLATOR) private translator: Translator,
@@ -141,11 +141,11 @@ export class DetailCollectionEditing implements OnInit {
                     this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
                     this.initNewDetailItem = (dataMember, detailItem) => initNewDetailItem({ dataMember, detailItem });
                     
-                    this.detailEditorInitialized = (dataMember, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItem, identifier, component });
-                    this.detailEditorValidating = (dataMember, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItem, identifier, ruleIdentifier, value });
-                    this.detailEditorEntered = (dataMember, detailItem, identifier) => detailEditorEntered({ dataMember, detailItem, identifier });
-                    this.detailEditorValueChanged = (dataMember, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItem, identifier, value, notify });
-                    this.detailEditorEvent = (dataMember, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItem, identifier, event });
+                    this.detailEditorInitialized = (dataMember, detailItemIndex, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItemIndex, detailItem, identifier, component });
+                    this.detailEditorValidating = (dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value });
+                    this.detailEditorEntered = (dataMember, detailItemIndex, detailItem, identifier) => detailEditorEntered({ dataMember, detailItemIndex, detailItem, identifier });
+                    this.detailEditorValueChanged = (dataMember, detailItemIndex, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItemIndex, detailItem, identifier, value, notify });
+                    this.detailEditorEvent = (dataMember, detailItemIndex, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItemIndex, detailItem, identifier, event });
     
                     this.columns = createColumnConfiguration<ColumnType>(
                         (key, options) => this.translator(key, options),
@@ -180,7 +180,73 @@ export class DetailCollectionEditing implements OnInit {
         }
       }
   
-      public onEditorPreparing(e: DataGridEditorPreparingEvent|TreeListEditorPreparingEvent) {
+      public onCustomEditorPreparing(e: { 
+        row: Record<string, unknown>, 
+        rowIndex: number,
+        dataField: string, 
+        column: GridLayoutColumn,
+        editorOptions: any,
+        component: EditComponentWithOptions
+      }) {
+        if (e.row && e.dataField) {          
+          const defaultValueChanged = e.editorOptions.onValueChanged;
+          const defaultFocusIn = e.editorOptions.onFocusIn;
+          const defaultFocusOut = e.editorOptions.onFocusOut;
+  
+          e.editorOptions.onValueChanged = (args: {
+            value: CrudItem | ValueType;
+          }) => {
+            if (defaultValueChanged) defaultValueChanged(args);
+  
+            if (
+              this.dataMember &&
+              this.detailEditorValueChanged &&
+              e.row &&
+              e.dataField
+            ) {
+              this.detailEditorValueChanged(
+                this.dataMember,
+                e.rowIndex,
+                e.row,
+                e.dataField,
+                args.value,
+                true
+              );
+            }
+          };
+  
+          e.editorOptions.onFocusIn = (args: unknown) => {
+            if (defaultFocusIn) defaultFocusIn(args);
+  
+            if (this.dataMember && this.detailEditorEntered && e.row && e.dataField) {
+              this.detailEditorEntered(this.dataMember, e.rowIndex, e.row, e.dataField);
+            }
+          };
+  
+          e.editorOptions.onFocusOut = (args: unknown) => {
+            if (defaultFocusOut) defaultFocusOut(args);
+  
+            //if (this.grid?.instance.hasEditData()) {
+            //  this.grid?.instance.saveEditData();
+            //}
+          }
+  
+
+          if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
+            this.detailEditorInitialized(
+              this.dataMember,
+              e.rowIndex,
+              e.row,
+              e.dataField,
+              componentToEditItemRef(e.component)
+            );
+          }
+            
+          e.editorOptions.valueChangeEvent = 'blur change focusout';
+        } 
+      }
+
+      public onIntegratedEditorPreparing(e: DataGridEditorPreparingEvent|TreeListEditorPreparingEvent) {
         if (e.parentType === 'dataRow' && e.row && e.dataField) {
           if (this.dataMember && this.detailGridCellPreparing) {
             this.detailGridCellPreparing(
@@ -208,6 +274,7 @@ export class DetailCollectionEditing implements OnInit {
             ) {
               this.detailEditorValueChanged(
                 this.dataMember,
+                e.component.getRowIndexByKey(e.row.key),
                 e.row.data,
                 e.dataField,
                 args.value,
@@ -220,7 +287,7 @@ export class DetailCollectionEditing implements OnInit {
             if (defaultFocusIn) defaultFocusIn(args);
   
             if (this.dataMember && this.detailEditorEntered && e.row && e.dataField) {
-              this.detailEditorEntered(this.dataMember, e.row.data, e.dataField);
+              this.detailEditorEntered(this.dataMember, e.component.getRowIndexByKey(e.row.key), e.row.data, e.dataField);
             }
           };
   
@@ -236,6 +303,7 @@ export class DetailCollectionEditing implements OnInit {
             if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
               this.detailEditorInitialized(
                 this.dataMember,
+                e.component.getRowIndexByKey(e.row.key),
                 e.row.data,
                 e.dataField,
                 componentToEditItemRef(args.component)
