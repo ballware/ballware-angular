@@ -25,7 +25,7 @@
         <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-detail-dynamic-column [readonly]="false" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
+        <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
     </div>    
 </dx-tree-list>
 <dx-validator [adapter]="editing.validationAdapterConfig">
