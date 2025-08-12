@@ -8,6 +8,13 @@ import { editDestroyed, editUpdated } from "../component";
 import { EditService, EditItemRef, EditModes, MetaService, InteractionService } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
 
+interface DetailEditUtil extends EditUtil {
+    getDetailEditorOption: (identifier: string, option: string) => unknown;
+    setDetailEditorOption: (identifier: string, option: string, value: unknown) => void;
+    getDetailItem: () => Record<string, unknown>;
+    getDetailItemIndex: () => number;
+}
+
 export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
 
     private editItems: Record<string, EditItemRef|undefined> = {}; 
@@ -100,6 +107,18 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             apply: (editUtil, item, continueAfterSave) => this.applyMethod && this.applyMethod(editUtil, item, continueAfterSave),
             cancel: () => this.cancelMethod && this.cancelMethod()
         } as EditUtil);
+
+    
+    readonly detailEditUtil = (dataMember: string, detailItem: Record<string, unknown>, detailItemIndex: number) => ({
+            getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
+            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value }),            
+            getDetailEditorOption: (identifier, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailItemIndex}.${identifier}`, option }),
+            setDetailEditorOption: (identifier, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailItemIndex}.${identifier}`, option, value }),
+            getDetailItem: () => detailItem,
+            getDetailItemIndex: () => detailItemIndex,
+            apply: (editUtil, item, continueAfterSave) => this.applyMethod && this.applyMethod(editUtil, item, continueAfterSave),
+            cancel: () => this.cancelMethod && this.cancelMethod()
+        } as DetailEditUtil);
    
     readonly getValue$ = combineLatest([this.item$])
         .pipe(map(([item]) => item ? (request: { dataMember: string }) => get(item, request.dataMember) : undefined));
@@ -172,41 +191,41 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
 
     readonly detailEditorInitialized$ = combineLatest([this.mode$, this.metaService.editorInitialized$])
         .pipe(map(([mode, editorInitialized]) => (mode && editorInitialized)
-            ? ({ dataMember, detailItem, identifier, component }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => 
+            ? ({ dataMember, detailItemIndex, detailItem, identifier, component }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => 
             {
-                this.editItems[`${dataMember}.${identifier}`] = component;
+                this.editItems[`${dataMember}.${detailItemIndex}.${identifier}`] = component;
 
-                editorInitialized(mode, detailItem, this.editUtil(), `${dataMember}.${identifier}`);
+                editorInitialized(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`);
             }
             : undefined )
         );
 
     readonly detailEditorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
         .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
-            ? ({ dataMember, detailItem, identifier, ruleIdentifier, value }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => editorValidating(mode, detailItem, this.editUtil(), `${dataMember}.${identifier}`, value, ruleIdentifier)
+            ? ({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => editorValidating(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, value, ruleIdentifier)
             : () => true)
         );    
     
     readonly detailEditorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])
         .pipe(map(([mode, item, editorEntered]) => (mode && item && editorEntered)
-            ? ({ dataMember, detailItem, identifier }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string }) => editorEntered(mode, detailItem, this.editUtil(), `${dataMember}.${identifier}`)
+            ? ({ dataMember, detailItemIndex, detailItem, identifier }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => editorEntered(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`)
             : undefined)
         );
 
     readonly detailEditorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
         .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
-            ? ({ dataMember, detailItem, identifier, event }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => editorEvent(mode, detailItem, this.editUtil(), `${dataMember}.${identifier}`, event)
+            ? ({ dataMember, detailItemIndex, detailItem, identifier, event }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => editorEvent(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, event)
             : undefined)
         );
       
     readonly detailEditorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])            
         .pipe(map(([mode, item, setValue, editorValueChanged]) => 
             (mode && item && editorValueChanged && setValue) 
-            ? ({ dataMember, detailItem, identifier, value, notify }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => {
+            ? ({ dataMember, detailItemIndex, detailItem, identifier, value, notify }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => {
                 set(detailItem, identifier, value);
 
                 if (notify) {
-                    editorValueChanged(mode, item, this.editUtil(), `${dataMember}.${identifier}`, value as ValueType);
+                    editorValueChanged(mode, item, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, value as ValueType);
                 }
             } : undefined)
         );

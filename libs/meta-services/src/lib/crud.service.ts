@@ -51,6 +51,7 @@ export interface ImportDialog {
 
 export interface DetailColumnEditDialog {
     mode: EditModes,
+    entity: string,
     item: unknown, 
     dataMember: string,
     title: string, 

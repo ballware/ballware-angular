@@ -542,13 +542,17 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly detailColumnEdit = this.effect((request$: Observable<{ mode: EditModes, item: unknown, column: GridLayoutColumn }>) => 
         request$.pipe((withLatestFrom(this.metaService.getEditLayout$, this.metaService.entity$)))
-            .pipe(switchMap(([request, getEditLayout, entity]) => getEditLayout 
-                ? of(request).pipe(withLatestFrom(of(getEditLayout(request.column.popuplayout ?? 'primary', request.mode), of(entity))))
-                : of(request).pipe(withLatestFrom(of(undefined), of(entity)))))
+            .pipe(switchMap(([request, getEditLayout, entity]) => {
+                const editLayout = getEditLayout 
+                    ? getEditLayout(request.column.popuplayout ?? 'primary', request.mode)
+                    : undefined;
+
+                return of(request).pipe(withLatestFrom(of(editLayout), of(entity)));
+            }))
             .pipe(tap(([request, editLayout, entity]) => this.updater((state, detailColumnEditDialog: DetailColumnEditDialog|undefined) => ({
                 ...state,
                 detailColumnEditDialog
-            }))((request && editLayout) ? ({
+            }))((request && editLayout && entity) ? ({
                 mode: request.mode,
                 entity: entity,
                 item: cloneDeep(request.item),   

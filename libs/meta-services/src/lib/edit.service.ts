@@ -26,11 +26,11 @@ export interface EditService extends OnDestroy {
     detailGridRowValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => string) | undefined>;
     initNewDetailItem$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => void) | undefined>;
 
-    detailEditorInitialized$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => void)|undefined>;
-    detailEditorValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
-    detailEditorEntered$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string }) => void)|undefined>;
-    detailEditorEvent$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
-    detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
+    detailEditorInitialized$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => void)|undefined>;
+    detailEditorValidating$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
+    detailEditorEntered$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => void)|undefined>;
+    detailEditorEvent$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
+    detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
     
     validator$: Observable<(() => boolean)|undefined>;
 

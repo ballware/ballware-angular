@@ -1,5 +1,5 @@
-import { Component, Inject, Input, OnDestroy, OnInit } from "@angular/core";
-import { GridLayoutColumn } from "@ballware/meta-model";
+import { Component, Inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import { EditUtil, GridLayoutColumn } from "@ballware/meta-model";
 import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService, PickvalueCreator } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
@@ -11,24 +11,30 @@ import { combineLatest, takeUntil } from "rxjs";
 import { createLookupDataSource } from "../../utils/datasource";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
-import { DxCheckBoxModule, DxDateBoxModule, DxNumberBoxModule, DxTagBoxModule } from "devextreme-angular";
+import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
 import { I18NextModule } from "angular-i18next";
 
 @Component({
-    selector: 'ballware-dynamic-column',
-    templateUrl: './dynamiccolumn.component.html',
+    selector: 'ballware-entity-dynamic-column',
+    templateUrl: './entitydynamiccolumn.component.html',
     styleUrls: [],
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
     standalone: true
 })
-export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy { 
+export class EntityDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy { 
+    @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
+    @ViewChild('numberbox', { static: false }) numberbox?: DxNumberBoxComponent;
+    @ViewChild('datebox', { static: false }) datebox?: DxDateBoxComponent;
+    @ViewChild('datetimebox', { static: false }) datetimebox?: DxDateBoxComponent;
+    @ViewChild('statictagbox', { static: false }) statictagbox?: DxTagBoxComponent;
+    @ViewChild('tagbox', { static: false }) tagbox?: DxTagBoxComponent;
+
     @Input() dataMember!: string;
     @Input() column!: GridLayoutColumn;
     @Input() lookupParams!: Record<string, unknown>;
     @Input() item!: Record<string, unknown>;
-    @Input() editing!: boolean;
-    @Input() gridMode!: 'data'|'detail';
+    @Input() readonly!: boolean;
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
@@ -37,7 +43,11 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
 
-    constructor(@Inject(LOOKUP_SERVICE) private lookupService: LookupService, @Inject(META_SERVICE) private metaService: MetaService) {
+    onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
+
+    constructor(
+        @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+        @Inject(META_SERVICE) private metaService: MetaService) {
         super();
     }
 
@@ -57,11 +67,41 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
         return this.value as Array<any>;
     }
 
-    onValueChanged(e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) {                
-        set(this.item, this.dataMember, e.value);
-        this.value = get(this.item, this.dataMember);
+    getEditorOption(option: string): unknown {
+        switch (this.preparedColumn?.type) {
+            case 'bool':
+                return this.checkbox?.instance.option(option);
+            case 'number':
+                return this.numberbox?.instance.option(option);
+            case 'date':
+                return this.datebox?.instance.option(option);
+            case 'datetime':
+                return this.datetimebox?.instance.option(option);
+            case 'staticmultilookup':
+                return this.statictagbox?.instance.option(option);
+            case 'multilookup':
+                return this.tagbox?.instance.option(option);
+        }
+
+        return undefined;
     }
 
+    setEditorOption(option: string, value: unknown) {
+        switch (this.preparedColumn?.type) {
+            case 'bool':
+                return this.checkbox?.instance.option(option, value);
+            case 'number':
+                return this.numberbox?.instance.option(option, value);
+            case 'date':
+                return this.datebox?.instance.option(option, value);
+            case 'datetime':
+                return this.datetimebox?.instance.option(option, value);
+            case 'staticmultilookup':
+                return this.statictagbox?.instance.option(option, value);
+            case 'multilookup':
+                return this.tagbox?.instance.option(option, value);
+        }
+    }
 
     ngOnInit(): void {
 
@@ -69,16 +109,31 @@ export class DynamicColumnComponent extends WithDestroy() implements OnInit, OnD
             this.value = get(this.item, this.dataMember);
         }
         
-        combineLatest([this.lookupService.lookups$, this.lookupService.getGenericLookupByIdentifier$, this.metaService.detailGridCellPreparing$])
+        combineLatest([
+            this.lookupService.lookups$, 
+            this.lookupService.getGenericLookupByIdentifier$, 
+            this.metaService.detailGridCellPreparing$,
+            this.metaService.editorValueChanged$])
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing]) => {
-                if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing) {
+            .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing, editorValueChanged]) => {
+                if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing && editorValueChanged) {
                     const preparedColumn = cloneDeep(this.column);
                     
-                    if (this.gridMode === 'detail') {
-                        detailGridCellPreparing(this.editing ? EditModes.EDIT : EditModes.VIEW, this.lookupParams, this.item, this.dataMember, preparedColumn);
-                    }                    
+                    this.onValueChanged = (e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => {
 
+                        const editUtil = {
+                            getEditorOption: (dataMember, option) => dataMember === this.dataMember ? this.getEditorOption(option) : undefined,
+                            setEditorOption: (dataMember, option, value) => dataMember === this.dataMember && this.setEditorOption(option, value),
+                            apply: () => console.warn('Apply in DynamicColumnComponent not implemented'),
+                            cancel: () => console.warn('Cancel in DynamicColumnComponent not implemented')
+                        } as EditUtil;
+
+                        set(this.item, this.dataMember, e.value);
+                        this.value = get(this.item, this.dataMember);
+
+                        editorValueChanged(!this.readonly ? EditModes.EDIT : EditModes.VIEW, this.item, editUtil, this.dataMember, e.value);
+                    };
+                    
                     this.preparedColumn = preparedColumn;
                     this.prepared = true;
 
