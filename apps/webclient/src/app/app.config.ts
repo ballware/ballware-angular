@@ -13,6 +13,7 @@ import { provideServiceWorker } from '@angular/service-worker';
 
 import { environment } from '../environments/environment';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
+import { provideCommonMetaServices} from '@ballware/common-meta-services';
 import { provideRendererCommonsServices } from '@ballware/renderer-commons';
 
 declare let window :any;
@@ -38,6 +39,7 @@ export const appConfig: ApplicationConfig = {
             // or after 30 seconds (whichever comes first).
             registrationStrategy: 'registerWhenStable:30000'
         }),
+        provideCommonMetaServices(),
         provideNgrxMetaServices(),
         provideRendererCommonsServices(),
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),

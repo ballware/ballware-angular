@@ -22,10 +22,7 @@ import { PageStore } from './page/page.store';
 import { CrudStore } from './crud/crud.store';
 import { StatisticStore } from './statistic/statistic.store';
 import { EditStore } from './edit/edit.store';
-import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, IDLE_SERVICE, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, RESPONSIVE_SERVICE, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
-import { DefaultResponsiveService } from './responsive.service';
-import { DefaultIdleService } from './idle.service';
-import { DefaultInteractionService } from './interaction.service';
+import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
 
@@ -72,22 +69,7 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: TOOLBAR_SERVICE,
         useFactory: (store: Store) => new ToolbarServiceProxy(store),
         deps: [ Store ]
-      },
-      {
-        provide: RESPONSIVE_SERVICE,
-        useFactory: () => new DefaultResponsiveService(),
-        deps: []
       },      
-      {
-        provide: IDLE_SERVICE,
-        useFactory: () => new DefaultIdleService(),
-        deps: []
-      },
-      {
-        provide: INTERACTION_SERVICE,
-        useFactory: () => new DefaultInteractionService(),
-        deps: []
-      },
       {
         provide: SCRIPT_UTIL,
         useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, mlApi: MetaMlModelApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, mlApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
