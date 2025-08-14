@@ -18,9 +18,9 @@ export class Lookup implements OnInit {
   private _acceptCustomValue!: boolean;
   private _hasLookupItemHintValue!: boolean;
 
-  private _lookupItemKeyValueGetter: ((item: Record<string, unknown>) => unknown)|undefined;
-  private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>) => string)|undefined;
-  private _lookupItemHintValueGetter: ((item: Record<string, unknown>) => string)|undefined;
+  private _lookupItemKeyValueGetter: ((item: Record<string, unknown>|unknown) => unknown)|undefined;
+  private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
+  private _lookupItemHintValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
   
   private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
   private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
@@ -43,14 +43,18 @@ export class Lookup implements OnInit {
       return;
     }
 
-    const customValue = {
+    if (this._lookup?.type === 'autocomplete') {
+      event.customItem = event.text;
+    } else {
+      const customValue = {
 
-    };
+      };
 
-    this._lookupItemKeyValueSetter?.(customValue, event.text);
-    this._lookupItemDisplayValueSetter?.(customValue, event.text);
-    
-    event.customItem = customValue;
+      this._lookupItemKeyValueSetter?.(customValue, event.text);
+      this._lookupItemDisplayValueSetter?.(customValue, event.text);
+      
+      event.customItem = customValue;
+    }
   }
 
   public get hasLookupItemHint() {
@@ -144,24 +148,29 @@ export class Lookup implements OnInit {
                   
                   this.dataSource$
                     .pipe(takeUntil(this.destroy.destroy$))
-                    .subscribe(dataSource => {                      
-                      this._hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
+                    .subscribe(dataSource => {     
+                      if (this._lookup?.type === 'autocomplete') {
+                        this._lookupItemKeyValueGetter = (item) => item as string;
+                        this._lookupItemDisplayValueGetter = (item) => item as string;
+                      } else {
+                        this._hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
 
-                      const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
-                      const keyValueSetter = compileSetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
-    
-                      this._lookupItemKeyValueGetter = (item) => keyValueGetter(item);
-                      this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
-    
-                      const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');          
-                      const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');      
-              
-                      this._lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
-                      this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
-              
-                      const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
-              
-                      this._lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;                      
+                        const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
+                        const keyValueSetter = compileSetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
+      
+                        this._lookupItemKeyValueGetter = (item) => keyValueGetter(item);
+                        this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
+      
+                        const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');          
+                        const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');      
+                
+                        this._lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
+                        this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
+                
+                        const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
+                
+                        this._lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;                      
+                      }
                     });
                 }                
               });
