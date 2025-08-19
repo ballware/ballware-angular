@@ -37,20 +37,13 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
 export function provideMetaBackendRestApi(
     metaServiceBaseUrl: string, 
     tenantServiceBaseUrl: string,
-    genericServiceBaseUrl: string,
     mlServiceBaseUrl: string,
-    documentServiceBaseUrl: string, 
     storageServiceBaseUrl: string): EnvironmentProviders {
     return makeEnvironmentProviders(    
     [  
         {
             provide: META_ATTACHMENT_API_FACTORY,
             useFactory: (client: HttpClient) => (tenant: string, entity: string, owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, tenant, entity, owner),
-            deps: [ HttpClient ]
-        },
-        {
-            provide: META_DOCUMENT_API,
-            useFactory: (client: HttpClient) => createMetaBackendDocumentApi(client, metaServiceBaseUrl, documentServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
@@ -94,20 +87,35 @@ export function provideMetaBackendRestApi(
             deps: [ HttpClient ]
         },
         {
-            provide: META_NOTIFICATION_API,
-            useFactory: (client: HttpClient) => createMetaBackendNotificationApi(client, metaServiceBaseUrl),
-            deps: [ HttpClient ]
-        },
-        {
-            provide: META_SUBSCRIPTION_API,
-            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, metaServiceBaseUrl, documentServiceBaseUrl),
-            deps: [ HttpClient ]
-        },
-        {
             provide: META_TENANT_API,
             useFactory: (client: HttpClient) => createMetaBackendTenantApi(client, metaServiceBaseUrl),
             deps: [ HttpClient ]
         },
+    ]);
+}
+
+export function provideDocumentBackendRestApi(
+    documentServiceBaseUrl: string,
+    documentServiceSignonUrl: string,
+    documentServiceDesignerUrl: string,
+    documentServiceViewerUrl: string): EnvironmentProviders {
+    return makeEnvironmentProviders(    
+    [  
+        {
+            provide: META_DOCUMENT_API,
+            useFactory: (client: HttpClient) => createMetaBackendDocumentApi(client, documentServiceBaseUrl, documentServiceSignonUrl, documentServiceDesignerUrl, documentServiceViewerUrl ),
+            deps: [ HttpClient ]
+        },
+        {
+            provide: META_NOTIFICATION_API,
+            useFactory: (client: HttpClient) => createMetaBackendNotificationApi(client, documentServiceBaseUrl),
+            deps: [ HttpClient ]
+        },
+        {
+            provide: META_SUBSCRIPTION_API,
+            useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, documentServiceBaseUrl),
+            deps: [ HttpClient ]
+        },        
     ]);
 }
   

@@ -26,14 +26,14 @@ const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl:
     .get<Array<DocumentSelectEntry>>(url);
 };
 
-const designerUrl = (documentServiceBaseUrl: string) => (
+const designerUrl = (documentServiceSignonUrl: string, documentServiceDesignerUrl: string) => (
   token: string,
   documentId: string
 ): Observable<string> => {
 
-  const signonUrl = new URL(`${documentServiceBaseUrl}/signon/${encodeURIComponent(token)}`)
+  const signonUrl = new URL(`${documentServiceSignonUrl}/${encodeURIComponent(token)}`)
 
-  const designerUrl = new URL(`${documentServiceBaseUrl}/designer`);
+  const designerUrl = new URL(`${documentServiceDesignerUrl}`);
 
   designerUrl.searchParams.append('id', documentId);
   
@@ -45,15 +45,15 @@ const designerUrl = (documentServiceBaseUrl: string) => (
 };
 
 
-const viewerUrl = (documentServiceBaseUrl: string) => (
+const viewerUrl = (documentServiceSignonUrl: string, documentServiceViewerUrl: string) => (
   token: string,
   documentId: string,
   ids: string[]
 ): Observable<string> => {
 
-  const signonUrl = new URL(`${documentServiceBaseUrl}/signon/${encodeURIComponent(token)}`)
+  const signonUrl = new URL(`${documentServiceSignonUrl}/${encodeURIComponent(token)}`)
 
-  const viewerUrl = new URL(`${documentServiceBaseUrl}/viewer`);
+  const viewerUrl = new URL(`${documentServiceViewerUrl}`);
 
   viewerUrl.searchParams.append('docId', documentId);
 
@@ -75,25 +75,30 @@ const updateDatasources = (http: HttpClient, documentServiceBaseUrl: string) => 
 }
 
 /**
- * Create adapter for document data operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
+ * Create adapter for document data operations with ballware.document.service
+ * @param documentServiceBaseUrl Base URL to connect to ballware.document.service
+ * @param documentServiceSignonUrl Base URL for document signon service
+ * @param documentServiceDesignerUrl Base URL for document designer
+ * @param documentServiceViewerUrl Base URL for document viewer
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendDocumentApi(
   httpClient: HttpClient, 
-  metaServiceBaseUrl: string,
-  documentServiceBaseUrl: string
+  documentServiceBaseUrl: string,
+  documentServiceSignonUrl: string,
+  documentServiceDesignerUrl: string,
+  documentServiceViewerUrl: string
 ): MetaDocumentApi {
   return {
-    selectList: selectList(httpClient, metaServiceBaseUrl),
-    selectById: selectById(httpClient, metaServiceBaseUrl),
+    selectList: selectList(httpClient, documentServiceBaseUrl),
+    selectById: selectById(httpClient, documentServiceBaseUrl),
 
     selectListPrintDocumentsForEntity: selectListPrintDocumentsForEntity(
       httpClient,
-      metaServiceBaseUrl
+      documentServiceBaseUrl
     ),
-    designerUrl: designerUrl(documentServiceBaseUrl),
-    viewerUrl: viewerUrl(documentServiceBaseUrl),
+    designerUrl: designerUrl(documentServiceSignonUrl, documentServiceDesignerUrl),
+    viewerUrl: viewerUrl(documentServiceSignonUrl, documentServiceViewerUrl),
     updateDatasources: updateDatasources(httpClient, documentServiceBaseUrl)
   } as MetaDocumentApi;
 }

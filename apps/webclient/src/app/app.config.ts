@@ -7,7 +7,7 @@ import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
-import { provideIdentityKeycloakRestApi, provideMetaBackendRestApi, provideGenericBackendRestApi } from '@ballware/rest-meta-api';
+import { provideIdentityKeycloakRestApi, provideMetaBackendRestApi, provideGenericBackendRestApi, provideDocumentBackendRestApi } from '@ballware/rest-meta-api';
 import { provideDxRenderFactoryComponents, provideDxRenderFactoryRoutes } from '@ballware/dx-renderer';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -48,10 +48,13 @@ export const appConfig: ApplicationConfig = {
         provideMetaBackendRestApi(
             window.ENV.BALLWARE_METAURL, 
             window.ENV.BALLWARE_TENANTURL, 
-            window.ENV.BALLWARE_GENERICURL, 
             window.ENV.BALLWARE_MLURL,
-            window.ENV.BALLWARE_DOCUMENTURL, 
             window.ENV.BALLWARE_STORAGEURL), 
+        provideDocumentBackendRestApi(
+            window.ENV.BALLWARE_DOCUMENTURL, 
+            window.ENV.BALLWARE_DOCUMENT_SIGNON_URL,
+            window.ENV.BALLWARE_DOCUMENT_DESIGNER_URL,
+            window.ENV.BALLWARE_DOCUMENT_VIEWER_URL),
         provideGenericBackendRestApi(
             window.ENV.BALLWARE_METAURL, 
             window.ENV.BALLWARE_TENANTURL, 
