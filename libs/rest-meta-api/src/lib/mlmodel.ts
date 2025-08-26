@@ -18,7 +18,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 
 const train = (http: HttpClient, mlServiceBaseUrl: string) => (ids: Array<string>): Observable<void> => {
 
-  const url = `${mlServiceBaseUrl}/train?id=${ids.map(id => encodeURIComponent(id)).join('&id=')}`;
+  const url = `${mlServiceBaseUrl}/mlmodel/train?id=${ids.map(id => encodeURIComponent(id)).join('&id=')}`;
 
   return http
     .post<void>(url, null);

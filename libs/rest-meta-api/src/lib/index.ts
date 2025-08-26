@@ -36,9 +36,11 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
 
 export function provideMetaBackendRestApi(
     metaServiceBaseUrl: string, 
+    documentServiceBaseUrl: string,
     tenantServiceBaseUrl: string,
     mlServiceBaseUrl: string,
-    storageServiceBaseUrl: string): EnvironmentProviders {
+    storageServiceBaseUrl: string
+    ): EnvironmentProviders {
     return makeEnvironmentProviders(    
     [  
         {
@@ -73,7 +75,7 @@ export function provideMetaBackendRestApi(
         },
         {
             provide: META_PROCESSINGSTATE_API,
-            useFactory: (client: HttpClient) => createMetaBackendProcessingstateApi(client, metaServiceBaseUrl, tenantServiceBaseUrl),
+            useFactory: (client: HttpClient) => createMetaBackendProcessingstateApi(client, metaServiceBaseUrl, tenantServiceBaseUrl, documentServiceBaseUrl),
             deps: [ HttpClient ]
         },
         {
@@ -123,6 +125,7 @@ export function provideGenericBackendRestApi(metaServiceBaseUrl: string,
     tenantServiceBaseUrl: string, 
     genericServiceBaseUrl: string, 
     documentServiceBaseUrl: string,
+    mlServiceBaseUrl: string,
     storageServiceBaseUrl: string)
     : EnvironmentProviders {
     return makeEnvironmentProviders(    
@@ -135,6 +138,7 @@ export function provideGenericBackendRestApi(metaServiceBaseUrl: string,
                     .replace('{tenant}', tenantServiceBaseUrl + "/")
                     .replace('{generic}', genericServiceBaseUrl + "/")
                     .replace('{document}', documentServiceBaseUrl + "/")
+                    .replace('{ml}', mlServiceBaseUrl + "/")
                     .replace('{storage}', storageServiceBaseUrl + "/")),
               deps: [ HttpClient ]
           },
