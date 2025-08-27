@@ -17,7 +17,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 }
 
 
-const selectListPrintDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
+const selectListDocumentsForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string
 ): Observable<Array<DocumentSelectEntry>> => {
   const url = `${metaServiceBaseUrl}/document/selectlistdocumentsforentity/${entity}`;
@@ -93,7 +93,7 @@ export function createMetaBackendDocumentApi(
     selectList: selectList(httpClient, documentServiceBaseUrl),
     selectById: selectById(httpClient, documentServiceBaseUrl),
 
-    selectListPrintDocumentsForEntity: selectListPrintDocumentsForEntity(
+    selectListDocumentsForEntity: selectListDocumentsForEntity(
       httpClient,
       documentServiceBaseUrl
     ),

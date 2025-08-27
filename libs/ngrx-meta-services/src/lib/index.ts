@@ -113,15 +113,17 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
           store: Store, 
           scriptUtil: ScriptUtil,
           metaEntityApi: MetaEntityApi,
+          metaDocumentApi: MetaDocumentApi,
           genericEntityApiFactory: GenericEntityApiFactory,
           translator: Translator,
           identityService: IdentityService,
           tenantService: TenantService            
-        ) => (lookupService: LookupService) => new MetaStore(store, scriptUtil, translator, metaEntityApi, genericEntityApiFactory, identityService, tenantService, lookupService),
+        ) => (lookupService: LookupService) => new MetaStore(store, scriptUtil, translator, metaEntityApi, metaDocumentApi, genericEntityApiFactory, identityService, tenantService, lookupService),
         deps: [ 
           Store, 
           SCRIPT_UTIL,
           META_ENTITY_API,
+          META_DOCUMENT_API,
           GENERIC_ENTITY_API_FACTORY,
           TRANSLATOR,
           IDENTITY_SERVICE,

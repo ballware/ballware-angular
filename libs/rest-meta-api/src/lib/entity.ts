@@ -131,15 +131,6 @@ const metadataFunc = (http: HttpClient, metaServiceBaseUrl: string) => (
     .pipe(map((value) => compileEntityMetadata(value)));
 };
 
-const documentsForEntityFunc = (http: HttpClient, metaServiceBaseUrl: string) => (
-  entity: string
-): Observable<Array<DocumentSelectEntry>> => {
-  const url = `${metaServiceBaseUrl}/document/selectlistdocumentsforentity/${entity}`;
-
-  return http
-    .get<Array<DocumentSelectEntry>>(url);
-};
-
 const selectList = (http: HttpClient, metaServiceBaseUrl: string) => (): Observable<Array<Record<string, unknown>>> => {
   const url = `${metaServiceBaseUrl}/entity/selectlist`;
 
@@ -190,7 +181,6 @@ export function createMetaBackendEntityApi(
     selectByIdentifier: selectByIdentifier(httpClient, serviceBaseUrl),
     rightSelectList: rightSelectList(httpClient, serviceBaseUrl),
     rightSelectById: rightSelectById(httpClient, serviceBaseUrl),    
-    metadataForEntity: metadataFunc(httpClient, serviceBaseUrl),
-    documentsForEntity: documentsForEntityFunc(httpClient, serviceBaseUrl),
+    metadataForEntity: metadataFunc(httpClient, serviceBaseUrl)
   } as MetaEntityApi;
 }
