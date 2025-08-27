@@ -17,16 +17,16 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 }
 
 /**
- * Create adapter for notification data operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
+ * Create adapter for notification data operations with ballware.document.service
+ * @param documentServiceBaseUrl Base URL to connect to ballware.document.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendNotificationApi(
   httpClient: HttpClient, 
-  metaServiceBaseUrl: string
+  documentServiceBaseUrl: string
 ): MetaNotificationApi {
   return {
-    selectList: selectList(httpClient, metaServiceBaseUrl),
-    selectById: selectById(httpClient, metaServiceBaseUrl),
+    selectList: selectList(httpClient, documentServiceBaseUrl),
+    selectById: selectById(httpClient, documentServiceBaseUrl),
   } as MetaNotificationApi;
 }

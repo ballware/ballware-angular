@@ -25,18 +25,17 @@ const triggerSubscriptions = (http: HttpClient, documentServiceBaseUrl: string) 
 }
 
 /**
- * Create adapter for subscription data operations with ballware.meta.service
- * @param serviceBaseUrl Base URL to connect to ballware.meta.service
+ * Create adapter for subscription data operations with ballware.document.service
+ * @param documentServiceBaseUrl Base URL to connect to ballware.document.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendSubscriptionApi(
   httpClient: HttpClient, 
-  metaServiceBaseUrl: string,
   documentServiceBaseUrl: string
 ): MetaSubscriptionApi {
   return {
-    selectList: selectList(httpClient, metaServiceBaseUrl),
-    selectById: selectById(httpClient, metaServiceBaseUrl),
+    selectList: selectList(httpClient, documentServiceBaseUrl),
+    selectById: selectById(httpClient, documentServiceBaseUrl),
     triggerSubscriptions: triggerSubscriptions(httpClient, documentServiceBaseUrl)
   } as MetaSubscriptionApi;
 }

@@ -54,16 +54,6 @@ import { InjectionToken } from '@angular/core';
   metadataForEntity: (
     entity: string
   ) => Observable<CompiledEntityMetadata>;
-
-  /**
-   * Fetch available print documents for business object type
-   *
-   * @param entity Identifier for business object type
-   * @returns Observable containing available print documents for entity
-   */
-  documentsForEntity: (
-    entity: string
-  ) => Observable<Array<DocumentSelectEntry>>;
 }
 
 export const META_ENTITY_API = new InjectionToken<MetaEntityApi>('Meta entity api');

@@ -1,5 +1,5 @@
 import { OnDestroy } from "@angular/core";
-import { GenericEntityApiFactory, MetaEntityApi } from "@ballware/meta-api";
+import { GenericEntityApiFactory, MetaDocumentApi, MetaEntityApi } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -19,6 +19,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
         private readonly scriptUtil: ScriptUtil,
         private translator: Translator, 
         private metaEntityApi: MetaEntityApi, 
+        private metaDocumentApi: MetaDocumentApi,
         private genericEntityApiFactory: GenericEntityApiFactory,
         private identityService: IdentityService, 
         private tenantService: TenantService, 
@@ -165,7 +166,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
         this.effect(_ => this.entity$            
             .pipe(switchMap((entity) => (entity) 
-                ? this.metaEntityApi.documentsForEntity(entity)
+                ? this.metaDocumentApi.selectListDocumentsForEntity(entity)
                 : of(undefined)))
             .pipe(tap((entityDocuments) => {                
                 if (entityDocuments) {

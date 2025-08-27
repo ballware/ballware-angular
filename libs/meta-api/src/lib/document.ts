@@ -41,7 +41,7 @@ export interface MetaDocumentApi {
    * @param entity Identifier for business object type
    * @returns Observable containing available print documents for entity
    */
-  selectListPrintDocumentsForEntity: (
+  selectListDocumentsForEntity: (
     entity: string
   ) => Observable<Array<DocumentSelectEntry>>;
 
