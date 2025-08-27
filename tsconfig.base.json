@@ -17,6 +17,9 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@ballware/common-meta-services": [
+        "libs/common-meta-services/src/index.ts"
+      ],
       "@ballware/dx-renderer": ["libs/dx-renderer/src/index.ts"],
       "@ballware/meta-api": ["libs/meta-api/src/index.ts"],
       "@ballware/meta-model": ["libs/meta-model/src/index.ts"],
@@ -24,8 +27,7 @@
       "@ballware/meta-services": ["libs/meta-services/src/index.ts"],
       "@ballware/ngrx-meta-services": ["libs/ngrx-meta-services/src/index.ts"],
       "@ballware/renderer-commons": ["libs/renderer-commons/src/index.ts"],
-      "@ballware/rest-meta-api": ["libs/rest-meta-api/src/index.ts"],
-      "@ballware/common-meta-services": ["libs/common-meta-services/src/index.ts"]
+      "@ballware/rest-meta-api": ["libs/rest-meta-api/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
