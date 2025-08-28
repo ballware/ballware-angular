@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 
 import { provideNgrxMetaServices } from '@ballware/ngrx-meta-services';
 import { provideStore } from '@ngrx/store';
@@ -15,11 +15,13 @@ import { environment } from '../environments/environment';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 import { provideCommonMetaServices} from '@ballware/common-meta-services';
 import { provideRendererCommonsServices } from '@ballware/renderer-commons';
+import { LayoutModule } from '@angular/cdk/layout';
 
 declare let window :any;
 
 export const appConfig: ApplicationConfig = {
     providers: [
+        importProvidersFrom(LayoutModule),
         provideHttpClient(withInterceptors([BearerTokenInterceptor])),
         provideStore(routerReducer),
         provideRouterStore(),

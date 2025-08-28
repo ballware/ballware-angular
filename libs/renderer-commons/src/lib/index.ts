@@ -3,7 +3,6 @@ import { SPEECHRECOGNITION_SERVICE, DefaultSpeechRecognitionService } from './sp
 import { Translator, TRANSLATOR } from '@ballware/meta-services';
 
 export * from './directives';
-export * from './responsive-detector/responsive-detector.component';
 export * from './speech-recognition';
 
 export function provideRendererCommonsServices(): EnvironmentProviders {

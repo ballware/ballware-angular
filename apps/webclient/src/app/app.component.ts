@@ -1,5 +1,4 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ResponsiveDetectorComponent } from '@ballware/renderer-commons';
 import { ApplicationComponent } from '@ballware/dx-renderer';
 import { IDENTITY_SERVICE, IdentityService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 
@@ -11,7 +10,7 @@ declare let window :any;
   selector: 'ballware-root',
   templateUrl: './app.component.html',
   styleUrls: [],
-  imports: [CommonModule, ApplicationComponent, ResponsiveDetectorComponent],
+  imports: [CommonModule, ApplicationComponent],
   providers: [],
   standalone: true
 })
