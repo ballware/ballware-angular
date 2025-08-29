@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutTextareaComponent } from './textarea.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import { EDIT_SERVICE, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TRANSLATOR } from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { It, Mock } from 'moq.ts';
@@ -14,6 +14,7 @@ describe('EditLayoutTextareaComponent', () => {
   let component: EditLayoutTextareaComponent;
   let fixture: ComponentFixture<EditLayoutTextareaComponent>;
 
+  const mockedTranslator = jest.fn();
   const mockedTranslationService = new Mock<ITranslationService>()
     .setup(instance => instance.t(It.IsAny<string>())).returns('mocked text');
 
@@ -32,7 +33,11 @@ describe('EditLayoutTextareaComponent', () => {
         {
           provide: I18NEXT_SERVICE,
           useFactory: () => mockedTranslationService.object()
-        } as Provider,   
+        } as Provider,
+        {
+          provide: TRANSLATOR,
+          useValue: mockedTranslator
+        },   
         {
           provide: RESPONSIVE_SERVICE,
           useFactory: () => mockedResponsiveService.object()

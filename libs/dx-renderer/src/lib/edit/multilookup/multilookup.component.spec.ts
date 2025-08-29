@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutMultilookupComponent } from './multilookup.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService, TRANSLATOR } from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
@@ -11,6 +11,7 @@ describe('EditLayoutMultilookupComponent', () => {
   let component: EditLayoutMultilookupComponent;
   let fixture: ComponentFixture<EditLayoutMultilookupComponent>;
 
+  const mockedTranslator = jest.fn();
   const mockedNotificationService = new Mock<NotificationService>();
   const mockedLookupService = new Mock<LookupService>();
   const mockedEditService = mockedEditServiceContext();
@@ -18,7 +19,11 @@ describe('EditLayoutMultilookupComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutMultilookupComponent ],
-      providers: [        
+      providers: [       
+        {
+          provide: TRANSLATOR,
+          useValue: mockedTranslator
+        }, 
         {
           provide: NOTIFICATION_SERVICE,
           useFactory: () => mockedNotificationService.object()

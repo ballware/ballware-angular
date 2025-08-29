@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Component, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE } from '@ballware/meta-services';
+import { EDIT_SERVICE, TRANSLATOR } from '@ballware/meta-services';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { Destroy, EditItemLivecycle } from '@ballware/renderer-commons';
 import { Required } from './required';
@@ -28,12 +28,17 @@ describe('Required', () => {
   let component: EditRequiredTestComponent;
   let fixture: ComponentFixture<EditRequiredTestComponent>;
   
+  const mockedTranslator = jest.fn();
   const mockedEditService = mockedEditServiceContext();
         
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditRequiredTestComponent ],
-      providers: [        
+      providers: [      
+        {
+          provide: TRANSLATOR,
+          useValue: mockedTranslator
+        },  
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()

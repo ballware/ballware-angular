@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutJsonComponent } from './json.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE } from '@ballware/meta-services';
+import { EDIT_SERVICE, TRANSLATOR } from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 
@@ -10,12 +10,17 @@ describe('EditLayoutJsonComponent', () => {
   let component: EditLayoutJsonComponent;
   let fixture: ComponentFixture<EditLayoutJsonComponent>;
 
+  const mockedTranslator = jest.fn();
   const mockedEditService = mockedEditServiceContext();
         
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutJsonComponent ],
       providers: [        
+        {
+          provide: TRANSLATOR,
+          useValue: mockedTranslator
+        },
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
