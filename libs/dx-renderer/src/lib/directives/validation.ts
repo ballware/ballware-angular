@@ -1,4 +1,4 @@
-import { EDIT_SERVICE, EditService } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from "rxjs";
 
 import { AsyncRule, CompareRule, CustomRule, EmailRule, NumericRule, PatternRule, RangeRule, RequiredRule, StringLengthRule } from "devextreme-angular/common";
@@ -26,7 +26,12 @@ export class Validation implements OnInit {
     this.emailValidation$.next(active);
   }
 
-  constructor(private destroy: Destroy, private livecycle: EditItemLivecycle, @Inject(EDIT_SERVICE) private editService: EditService) {}
+  constructor(
+    private destroy: Destroy, 
+    private livecycle: EditItemLivecycle, 
+    @Inject(EDIT_SERVICE) private editService: EditService,
+    @Inject(TRANSLATOR) private translator: Translator
+  ) {}
 
   ngOnInit(): void {
 
@@ -40,7 +45,10 @@ export class Validation implements OnInit {
                 const validationRules = [] as ValidationRule[];
 
                 if (required) {
-                    validationRules.push({ type: 'required' } as RequiredRule);
+                    validationRules.push({ 
+                      type: 'required', 
+                      message: this.translator('validation.messages.required', { label: layoutItem.options?.caption })
+                    } as RequiredRule);
                 }
 
                 if (email) {

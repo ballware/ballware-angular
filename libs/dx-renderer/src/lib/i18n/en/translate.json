@@ -7,7 +7,7 @@
     },
     "validation": {
       "messages": {
-        "required": "Input required"
+        "required": "Input required: {{label}}"
       }
     },
     "session": {
