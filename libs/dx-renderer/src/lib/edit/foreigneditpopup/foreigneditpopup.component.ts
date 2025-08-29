@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output, Provider } from "@angular/core";
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Optional, Output, Provider, SkipSelf } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
 import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory } from "@ballware/meta-services";
 import { combineLatest, takeUntil } from "rxjs";
@@ -25,8 +25,8 @@ import { CrudDialogComponent } from "../dialog/dialog.component";
         } as Provider,
         { 
           provide: CRUD_SERVICE, 
-          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
-          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
+          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, parentCrudService?: CrudService) => serviceFactory(router, metaService, parentCrudService),
+          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, [new Optional(), new SkipSelf(), CRUD_SERVICE]]  
         } as Provider,       
       ],
       imports: [CommonModule, CrudDialogComponent, EditLayoutComponent],

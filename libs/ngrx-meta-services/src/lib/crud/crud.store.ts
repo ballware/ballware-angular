@@ -12,8 +12,15 @@ import { CrudState } from "./crud.state";
 
 export class CrudStore extends ComponentStore<CrudState> implements CrudService, OnDestroy {
     
-    constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translator: Translator, private router: Router) {
-        super({});
+    constructor(private store: Store, 
+        private metaService: MetaService, 
+        private notificationService: NotificationService, 
+        private translator: Translator, 
+        private router: Router,
+        private parentCrudService?: CrudService) {
+        super({
+            toplevel: !parentCrudService,
+        });
 
         this.state$
             .pipe(takeUntil(this.destroy$))

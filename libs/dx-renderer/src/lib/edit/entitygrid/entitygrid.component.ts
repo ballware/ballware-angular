@@ -1,4 +1,4 @@
-import { Component, forwardRef, Inject, OnDestroy, OnInit, Provider } from '@angular/core';
+import { Component, forwardRef, Inject, OnDestroy, OnInit, Optional, Provider, SkipSelf } from '@angular/core';
 import { GridLayout } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
@@ -43,8 +43,8 @@ interface EntityGridItemOptions {
     } as Provider,
     { 
       provide: CRUD_SERVICE, 
-      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
-      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
+      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, parentCrudService?: CrudService) => serviceFactory(router, metaService, parentCrudService),
+      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, [new Optional(), new SkipSelf(), CRUD_SERVICE]]  
     } as Provider,
     {
       provide: DataSourceService,

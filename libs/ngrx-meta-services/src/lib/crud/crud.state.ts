@@ -3,6 +3,8 @@ import { CrudAction, CrudEditMenuItem, DetailColumnEditDialog, ImportDialog, Ite
 
 export interface CrudState {
   
+    toplevel?: boolean;
+
     queryIdentifier?: string;
     identifier?: string;
 

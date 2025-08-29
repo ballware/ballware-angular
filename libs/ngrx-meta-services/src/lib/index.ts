@@ -22,7 +22,7 @@ import { PageStore } from './page/page.store';
 import { CrudStore } from './crud/crud.store';
 import { StatisticStore } from './statistic/statistic.store';
 import { EditStore } from './edit/edit.store';
-import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, CrudService, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
 
@@ -135,8 +135,8 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         useFactory: (
           store: Store, 
           translator: Translator,         
-          notificationService: NotificationService           
-        ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translator, router),
+          notificationService: NotificationService       
+        ) => (router: Router, metaService: MetaService, parentCrudService?: CrudService) => new CrudStore(store, metaService, notificationService, translator, router, parentCrudService),
         deps: [ 
           Store, 
           TRANSLATOR,
