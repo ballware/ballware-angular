@@ -569,6 +569,11 @@ export interface EditLayoutItemOptions {
   lookupMember?: string;
 
   /**
+   * Lookup property to group lookup items
+   */
+  lookupGroupBy?: string;
+
+  /**
    * Hint displayed as tooltip on editor
    */
   hint?: string;

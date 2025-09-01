@@ -11,6 +11,7 @@
   [showClearButton]="true"
   [searchEnabled]="true"
   [acceptCustomValue]="lookup.acceptCustomValue"    
+  [grouped]="lookup.grouped"
   (onFocusIn)="livecycle.onEntered()"
   (onCustomItemCreating)="lookup.onCustomItemCreating($event)">  
   <div *dxTemplate="let item of 'item'">

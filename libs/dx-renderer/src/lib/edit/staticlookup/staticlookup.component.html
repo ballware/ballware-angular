@@ -10,6 +10,7 @@
   [valueExpr]="livecycle.layoutItem.options.valueExpr ?? 'Value'"
   [showClearButton]="true"
   [searchEnabled]="true"
+  [grouped]="lookup.grouped"
   [acceptCustomValue]="lookup.acceptCustomValue"
   (onFocusIn)="livecycle.onEntered()">
   <div *dxTemplate="let item of 'item'">

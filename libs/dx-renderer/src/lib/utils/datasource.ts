@@ -74,14 +74,18 @@ export function createEditableGridDatasource(
 
 export async function createArrayDatasource(
   data: any[],
-  keyProperty = 'Id'
+  options?: {
+    keyProperty?: string,
+    groupByProperty?: string
+  }
 ): Promise<DataSource> {
   const dataSource = new DataSource({    
     store: {
       type: 'array',
-      key: keyProperty,
+      key: options?.keyProperty ?? 'Id',
       data: data,
-    },
+    }, 
+    group: options?.groupByProperty
   });
 
   await dataSource.load();
@@ -96,12 +100,15 @@ interface LookupCache {
 export function createLookupDataSource(
   fetchListFunc: () => Observable<Array<Record<string, unknown>>>,
   byIdFunc: (id: string) => Observable<Record<string, unknown>>,
-  keyProperty = 'Id'
+  options?: {
+    keyProperty?: string,
+    groupByProperty?: string
+  }
 ): DataSource {
   const valueCache: LookupCache = {};
 
   const dataStore = new CustomStore({
-    key: keyProperty,
+    key: options?.keyProperty ?? 'Id',
     loadMode: 'raw',
     load: function() {
       return firstValueFrom(fetchListFunc());
@@ -128,7 +135,8 @@ export function createLookupDataSource(
 
   const dataSource = new DataSource({
     store: dataStore,
-    paginate: false
+    paginate: false,
+    group: options?.groupByProperty
   });
 
   return dataSource;

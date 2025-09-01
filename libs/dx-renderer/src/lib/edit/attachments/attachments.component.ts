@@ -49,7 +49,7 @@ import { Destroy, EditItemLivecycle, Readonly, Visible } from "@ballware/rendere
 
         this.dataSource$ = this.attachmentService.items$            
             .pipe(takeUntil(this.destroy.destroy$))            
-            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems, 'Id')) : of(undefined)));
+            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems)) : of(undefined)));
 
         this.optionButtons$ = this.readonly.readonly$
             .pipe(takeUntil(this.destroy.destroy$))

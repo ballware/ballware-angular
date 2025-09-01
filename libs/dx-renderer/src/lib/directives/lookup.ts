@@ -2,7 +2,7 @@ import { ApiError } from "@ballware/meta-api";
 import { AutocompleteStoreDescriptor, EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { compileGetter, compileSetter } from 'devextreme/utils';
-import { BehaviorSubject, catchError, combineLatest, map, of, takeUntil, withLatestFrom } from "rxjs";
+import { BehaviorSubject, catchError, combineLatest, of, takeUntil } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "../utils";
 import { Destroy, EditItemLivecycle } from "@ballware/renderer-commons";
 import { Directive, Inject, OnInit } from "@angular/core";
@@ -17,6 +17,8 @@ export class Lookup implements OnInit {
 
   private _acceptCustomValue!: boolean;
   private _hasLookupItemHintValue!: boolean;
+  private _lookupGroupBy?: string;
+  private _grouped!: boolean;
 
   private _lookupItemKeyValueGetter: ((item: Record<string, unknown>|unknown) => unknown)|undefined;
   private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
@@ -73,8 +75,14 @@ export class Lookup implements OnInit {
     return this._acceptCustomValue;
   }
 
+  public get grouped() {
+    return this._grouped;
+  }
+
   public setLookupItems(items: Array<any>) {
-    return createArrayDatasource(items).then(dataSource => this._dataSource$.next(dataSource));
+    return createArrayDatasource(items, {
+      groupByProperty: this._lookupGroupBy
+    }).then(dataSource => this._dataSource$.next(dataSource));
   }
 
   constructor(
@@ -102,6 +110,8 @@ export class Lookup implements OnInit {
                 if (getValue && lookups) {
                   const lookup = layoutItem?.options?.lookup;
                   const lookupParam = layoutItem?.options?.lookupParam;
+                  this._lookupGroupBy = layoutItem?.options?.lookupGroupBy;
+                  this._grouped = !!this._lookupGroupBy;
 
                   const myLookup = lookup && lookups ? (lookups[lookup] as LookupDescriptor|LookupCreator) : undefined;
 
@@ -128,7 +138,10 @@ export class Lookup implements OnInit {
                               this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });       
                               
                               return of();
-                            }))
+                            })),
+                          {
+                            groupByProperty: this._lookupGroupBy
+                          }
                         ));
                       } else if (currentLookup.type === 'autocomplete') {
                         this._dataSource$.next(createAutocompleteDataSource(

@@ -11,6 +11,7 @@
   [showSelectionControls]=true
   [showDropDownButton]=true
   [multiline]=false
+  [grouped]="lookup.grouped"
   [acceptCustomValue]="true"
   (onFocusIn)="livecycle.onEntered()">
   <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
