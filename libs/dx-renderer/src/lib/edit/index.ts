@@ -29,3 +29,5 @@ export { EditLayoutSqlComponent } from './sql/sql.component';
 
 export { BarcodeScannerComponent } from './components/barcodescanner/barcodescanner.component';
 export { SpeechInputComponent } from './components/speechinput/speechinput.component';
+
+export { provideDxCrudOperatorFactory } from './operators';

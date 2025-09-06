@@ -16,29 +16,29 @@ export interface CrudAction {
 }
 
 export interface ItemEditDialog {
-    mode: EditModes, 
+    mode: EditModes,
     entity: string,
-    item: unknown, 
-    title: string, 
+    item: unknown,
+    title: string,
     supportContinueAfterSave: boolean,
-    editLayout?: EditLayout, 
+    editLayout?: EditLayout,
     externalEditor?: boolean,
     foreignEntity?: string,
-    customFunction?: EntityCustomFunction,    
-    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void, 
-    cancel: () => void    
+    customFunction?: EntityCustomFunction,
+    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void,
+    cancel: () => void
 }
 
 export interface ItemRemoveDialog {
-    item: Record<string, unknown>, 
-    title: string, 
-    apply: (item: Record<string, unknown>) => void, 
-    cancel: () => void    
+    item: Record<string, unknown>,
+    title: string,
+    apply: (item: Record<string, unknown>) => void,
+    cancel: () => void
 }
 
 export interface CrudEditMenuItem {
-    id: string, 
-    text: string, 
+    id: string,
+    text: string,
     icon?: string,
     customFunction?: EntityCustomFunction
 }
@@ -46,18 +46,18 @@ export interface CrudEditMenuItem {
 export interface ImportDialog {
     importFunction: EntityCustomFunction
     apply: (file: File) => void;
-    cancel: () => void;   
+    cancel: () => void;
 }
 
 export interface DetailColumnEditDialog {
     mode: EditModes,
     entity: string,
-    item: unknown, 
+    item: unknown,
     dataMember: string,
-    title: string, 
-    editLayout: EditLayout, 
-    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void, 
-    cancel: () => void    
+    title: string,
+    editLayout: EditLayout,
+    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void,
+    cancel: () => void
 }
 
 export interface CrudService extends OnDestroy {
@@ -84,22 +84,22 @@ export interface CrudService extends OnDestroy {
         actions: CrudAction[]
     }|undefined>;
 
-    selectActionSheet$: Observable<{ 
-        item: CrudItem, 
-        actions: CrudAction[] 
-    }|undefined>;
-
-    selectPrintSheet$: Observable<{ 
-        items: CrudItem[], 
+    selectActionSheet$: Observable<{
+        item: CrudItem,
         actions: CrudAction[]
     }|undefined>;
 
-    selectExportSheet$: Observable<{ 
-        items: CrudItem[], 
+    selectPrintSheet$: Observable<{
+        items: CrudItem[],
         actions: CrudAction[]
     }|undefined>;
 
-    selectImportSheet$: Observable<{ 
+    selectExportSheet$: Observable<{
+        items: CrudItem[],
+        actions: CrudAction[]
+    }|undefined>;
+
+    selectImportSheet$: Observable<{
         actions: CrudAction[]
     }|undefined>;
 
@@ -126,21 +126,31 @@ export interface CrudService extends OnDestroy {
 
     drop(request: { item: CrudItem }): void;
 
-    selectAdd(request: { target: Element, defaultEditLayout: string }): void;    
+    selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { items: CrudItem[], target: Element }): void;
     selectExport(request: { items: CrudItem[], target: Element }): void;
     selectImport(request: { target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
-    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void; 
-        
-    selectAddDone(): void;    
+    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
+
+    selectAddDone(): void;
     selectPrintDone(): void;
     selectExportDone(): void;
     selectImportDone(): void;
     selectOptionsDone(): void;
 }
 
-export type CrudServiceFactory = (router: Router, metaService: MetaService, parentCrudService?: CrudService) => CrudService;
+export interface CrudOperator {
+  readonly kind: string;
+  registerService(service: CrudService): void;
+}
+
+export type CrudServiceFactory = (router: Router, metaService: MetaService, crudOperator: CrudOperator) => CrudService;
 
 export const CRUD_SERVICE = new InjectionToken<CrudService>('Crud service');
 export const CRUD_SERVICE_FACTORY = new InjectionToken<CrudServiceFactory>('Crud service factory');
+
+export type CrudOperatorFactory = (router: Router, parentOperator?: CrudOperator) => CrudOperator;
+
+export const CRUD_OPERATOR = new InjectionToken<CrudOperator>('Crud operator');
+export const CRUD_OPERATOR_FACTORY = new InjectionToken<CrudOperatorFactory>('Crud operator factory');

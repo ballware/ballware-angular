@@ -1,6 +1,19 @@
 import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CRUD_SERVICE, CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import {
+  CRUD_SERVICE,
+  CrudService,
+  DetailColumnEditDialog,
+  EditModes,
+  ImportDialog,
+  ItemEditDialog,
+  ItemRemoveDialog,
+  META_SERVICE,
+  MetaService,
+  RESPONSIVE_SERVICE,
+  ResponsiveService,
+  SCREEN_SIZE
+} from '@ballware/meta-services';
 import { DxActionSheetComponent, DxActionSheetModule, DxFileUploaderModule, DxPopupModule } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
@@ -45,9 +58,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(
-      private domSanitizer: DomSanitizer, 
-      @Inject(META_SERVICE) private metaService: MetaService, 
-      @Inject(CRUD_SERVICE) private crudService: CrudService, 
+      private domSanitizer: DomSanitizer,
+      @Inject(META_SERVICE) private metaService: MetaService,
+      @Inject(CRUD_SERVICE) private crudService: CrudService,
       @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
     super();
 
@@ -86,7 +99,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe((detailColumnEditDialog) => {
         this.detailColumnEditDialog = detailColumnEditDialog;
-      });      
+      });
   }
 
   ngOnInit(): void {
@@ -140,7 +153,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
           this.crudService.selectExportDone();
         }
-      });      
+      });
 
     this.crudService.selectImportSheet$
       .pipe(takeUntil(this.destroy$))
@@ -153,7 +166,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
           this.crudService.selectImportDone();
         }
-      });            
+      });
   }
 
   public actionItemClicked(e: ItemClickEvent) {

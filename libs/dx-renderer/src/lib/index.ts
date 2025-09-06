@@ -11,6 +11,7 @@ import { provideRouter, Routes, withComponentInputBinding } from '@angular/route
 import { PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
+import { provideDxCrudOperatorFactory } from './edit';
 
 export { ApplicationComponent } from './application';
 
@@ -21,23 +22,24 @@ export interface DxRenderFactoryConfig {
 export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig): EnvironmentProviders {
 
   loadMessages(deMessages);
-  locale(navigator.language);    
+  locale(navigator.language);
 
   moment.locale(
     navigator.languages ? navigator.languages[0] : navigator.language
   );
 
   globalConfig(
-    { 
-      licenseKey: config.licenseKey, 
-      editorStylingMode: 'underlined'        
+    {
+      licenseKey: config.licenseKey,
+      editorStylingMode: 'underlined'
     }
   );
 
   return makeEnvironmentProviders([
     importProvidersFrom(I18NextModule.forRoot()),
-    I18N_PROVIDERS
-  ]); 
+    I18N_PROVIDERS,
+    provideDxCrudOperatorFactory(),
+  ]);
 }
 
 const routes: Routes = [
@@ -59,5 +61,5 @@ export function provideDxRenderFactoryRoutes(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     provideRouter(routes, withComponentInputBinding())]
-  ); 
+  );
 }

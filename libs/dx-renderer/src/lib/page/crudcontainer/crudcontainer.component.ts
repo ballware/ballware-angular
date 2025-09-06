@@ -1,9 +1,30 @@
 import { Component, forwardRef, Inject, Input, OnDestroy, OnInit, Optional, Provider, SkipSelf } from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE, PageService } from '@ballware/meta-services';
+import {
+  ATTACHMENT_SERVICE,
+  ATTACHMENT_SERVICE_FACTORY,
+  AttachmentServiceFactory,
+  CRUD_OPERATOR, CRUD_OPERATOR_FACTORY,
+  CRUD_SERVICE,
+  CRUD_SERVICE_FACTORY, CrudOperator, CrudOperatorFactory,
+  CrudService,
+  CrudServiceFactory,
+  LOOKUP_SERVICE,
+  LOOKUP_SERVICE_FACTORY,
+  LookupService,
+  LookupServiceFactory,
+  META_SERVICE,
+  META_SERVICE_FACTORY,
+  MetaService,
+  MetaServiceFactory,
+  NOTIFICATION_SERVICE,
+  NotificationService,
+  PAGE_SERVICE,
+  PageService
+} from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
 import { takeUntil } from 'rxjs';
-import { DataSourceService } from '../../utils/datasource.service';
+import { DataSourceService } from '../../utils';
 import { WithDestroy } from '../../utils/withdestroy';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -14,26 +35,31 @@ import { CrudActionsComponent } from '../../edit';
   selector: 'ballware-page-crudcontainer',
   templateUrl: './crudcontainer.component.html',
   styleUrls: ['./crudcontainer.component.scss'],
-  providers: [    
-    { 
-      provide: LOOKUP_SERVICE, 
+  providers: [
+    {
+      provide: LOOKUP_SERVICE,
       useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]  
+      deps: [LOOKUP_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: META_SERVICE, 
+    {
+      provide: META_SERVICE,
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
     } as Provider,
-    { 
-      provide: ATTACHMENT_SERVICE, 
+    {
+      provide: ATTACHMENT_SERVICE,
       useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
-      deps: [ATTACHMENT_SERVICE_FACTORY]  
+      deps: [ATTACHMENT_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: CRUD_SERVICE, 
-      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, parentCrudService?: CrudService) => serviceFactory(router, metaService, parentCrudService),
-      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, [new Optional(), new SkipSelf(), CRUD_SERVICE]]  
+    {
+      provide: CRUD_OPERATOR,
+      useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
+      deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+    },
+    {
+      provide: CRUD_SERVICE,
+      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, crudOperator: CrudOperator) => serviceFactory(router, metaService, crudOperator),
+      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, CRUD_OPERATOR]
     } as Provider,
     {
       provide: DataSourceService,
@@ -48,11 +74,14 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
 
   @Input() layoutItem?: PageLayoutItem;
 
+  public renderOverlayActions = this.crudOperator.kind === 'overlay';
+
   constructor(
-    @Inject(PAGE_SERVICE) private pageService: PageService, 
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
-    @Inject(META_SERVICE) private metaService: MetaService, 
-    @Inject(CRUD_SERVICE) private crudService: CrudService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService,
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+    @Inject(META_SERVICE) private metaService: MetaService,
+    @Inject(CRUD_SERVICE) private crudService: CrudService,
+    @Inject(CRUD_OPERATOR) private crudOperator: CrudOperator,
     private datasourceService : DataSourceService) {
 
     super();
@@ -61,7 +90,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       .pipe(takeUntil(this.destroy$))
       .subscribe((customParam) => {
         this.metaService.setInitialCustomParam(customParam);
-      });    
+      });
   }
 
   ngOnInit(): void {
@@ -87,7 +116,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
             this.metaService.setHeadParams({
               ...(this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.params ?? {},
               ...headParams
-            });                      
+            });
           }
       });
 
@@ -95,7 +124,7 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    
+
     this.datasourceService.ngOnDestroy();
     this.crudService.ngOnDestroy();
     this.metaService.ngOnDestroy();

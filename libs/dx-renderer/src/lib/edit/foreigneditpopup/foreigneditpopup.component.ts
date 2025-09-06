@@ -1,6 +1,21 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Optional, Output, Provider, SkipSelf } from "@angular/core";
 import { CrudItem } from "@ballware/meta-model";
-import { CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, ItemEditDialog, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory } from "@ballware/meta-services";
+import {
+  CRUD_OPERATOR, CRUD_OPERATOR_FACTORY,
+  CRUD_SERVICE,
+  CRUD_SERVICE_FACTORY, CrudOperator, CrudOperatorFactory,
+  CrudService,
+  CrudServiceFactory,
+  ItemEditDialog,
+  LOOKUP_SERVICE,
+  LOOKUP_SERVICE_FACTORY,
+  LookupService,
+  LookupServiceFactory,
+  META_SERVICE,
+  META_SERVICE_FACTORY,
+  MetaService,
+  MetaServiceFactory
+} from '@ballware/meta-services';
 import { combineLatest, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { Router } from "@angular/router";
@@ -12,22 +27,27 @@ import { CrudDialogComponent } from "../dialog/dialog.component";
     selector: 'ballware-crud-foreigneditpopup',
     templateUrl: './foreigneditpopup.component.html',
     styleUrls: ['./foreigneditpopup.component.scss'],
-    providers: [    
-        { 
-          provide: LOOKUP_SERVICE, 
+    providers: [
+        {
+          provide: LOOKUP_SERVICE,
           useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-          deps: [LOOKUP_SERVICE_FACTORY]  
+          deps: [LOOKUP_SERVICE_FACTORY]
         } as Provider,
-        { 
-          provide: META_SERVICE, 
+        {
+          provide: META_SERVICE,
           useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-          deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
+          deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
         } as Provider,
-        { 
-          provide: CRUD_SERVICE, 
-          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, parentCrudService?: CrudService) => serviceFactory(router, metaService, parentCrudService),
-          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, [new Optional(), new SkipSelf(), CRUD_SERVICE]]  
-        } as Provider,       
+        {
+          provide: CRUD_OPERATOR,
+          useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
+          deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+        },
+        {
+          provide: CRUD_SERVICE,
+          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, crudOperator: CrudOperator) => serviceFactory(router, metaService, crudOperator),
+          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, CRUD_OPERATOR]
+        } as Provider,
       ],
       imports: [CommonModule, CrudDialogComponent, EditLayoutComponent],
       standalone: true
@@ -38,26 +58,26 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
     @Input() customFunctionEntity!: string;
     @Input() customFunctionId!: string;
     @Input() customFunctionParam!: unknown;
-    
+
     @Output() editFinished = new EventEmitter<void>();
 
     public itemDialog: ItemEditDialog|undefined;
 
     constructor(
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
-        @Inject(META_SERVICE) private metaService: MetaService, 
+        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+        @Inject(META_SERVICE) private metaService: MetaService,
         @Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
-        
+
         this.crudService.itemDialog$
             .pipe(takeUntil(this.destroy$))
             .subscribe((itemDialog) => {
-                this.itemDialog = itemDialog;              
+                this.itemDialog = itemDialog;
 
                 if (!itemDialog) {
                     this.editFinished.emit();
                 }
-            });            
+            });
     }
 
     ngOnInit(): void {
@@ -78,7 +98,7 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
                         }
                     }
                 });
-        }        
+        }
     }
 
     override ngOnDestroy(): void {

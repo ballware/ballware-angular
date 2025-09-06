@@ -22,13 +22,38 @@ import { PageStore } from './page/page.store';
 import { CrudStore } from './crud/crud.store';
 import { StatisticStore } from './statistic/statistic.store';
 import { EditStore } from './edit/edit.store';
-import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, CrudService, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
+import {
+  ATTACHMENT_SERVICE_FACTORY,
+  CRUD_SERVICE_FACTORY,
+  CrudOperator,
+  EDIT_SERVICE_FACTORY,
+  IDENTITY_SERVICE,
+  IdentityService,
+  INTERACTION_SERVICE,
+  InteractionService,
+  LOOKUP_SERVICE_FACTORY,
+  LookupService,
+  META_SERVICE_FACTORY,
+  MetaService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
+  PAGE_SERVICE_FACTORY,
+  SCRIPT_UTIL,
+  SETTINGS_SERVICE,
+  STATISTIC_SERVICE_FACTORY,
+  TENANT_SERVICE,
+  TenantService,
+  TOOLBAR_SERVICE,
+  ToolbarService,
+  Translator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
 
 export function provideNgrxMetaServices(): EnvironmentProviders {
-  return makeEnvironmentProviders(    
-    [  
+  return makeEnvironmentProviders(
+    [
       provideSettingsFeature(),
       provideNotificationFeature(),
       provideIdentityFeature(),
@@ -49,27 +74,27 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
         provide: SETTINGS_SERVICE,
         useFactory: (store: Store) => new SettingsServiceProxy(store),
         deps: [ Store ]
-      },         
+      },
       {
         provide: NOTIFICATION_SERVICE,
         useFactory: (store: Store) => new NotificationServiceProxy(store),
         deps: [ Store ]
-      },          
+      },
       {
         provide: IDENTITY_SERVICE,
         useFactory: (store: Store) => new IdentityServiceProxy(store),
         deps: [ Store ]
-      },  
+      },
       {
         provide: TENANT_SERVICE,
         useFactory: (store: Store) => new TenantServiceProxy(store),
         deps: [ Store ]
-      },          
+      },
       {
         provide: TOOLBAR_SERVICE,
         useFactory: (store: Store) => new ToolbarServiceProxy(store),
         deps: [ Store ]
-      },      
+      },
       {
         provide: SCRIPT_UTIL,
         useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, mlApi: MetaMlModelApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, mlApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
@@ -78,10 +103,10 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: ATTACHMENT_SERVICE_FACTORY,
         useFactory: (
-          store: Store, 
-          notificationService: NotificationService, 
+          store: Store,
+          notificationService: NotificationService,
           identityService: IdentityService,
-          attachmentApiFactory: MetaAttachmentApiFactory, 
+          attachmentApiFactory: MetaAttachmentApiFactory,
           translator: Translator
         ) => () => new AttachmentStore(store, notificationService, identityService, attachmentApiFactory, translator),
         deps: [ Store, NOTIFICATION_SERVICE, IDENTITY_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
@@ -89,7 +114,7 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: LOOKUP_SERVICE_FACTORY,
         useFactory: (
-          store: Store, 
+          store: Store,
           userApi: IdentityUserApi,
           roleApi: IdentityRoleApi,
           documentApi: MetaDocumentApi,
@@ -110,17 +135,17 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: META_SERVICE_FACTORY,
         useFactory: (
-          store: Store, 
+          store: Store,
           scriptUtil: ScriptUtil,
           metaEntityApi: MetaEntityApi,
           metaDocumentApi: MetaDocumentApi,
           genericEntityApiFactory: GenericEntityApiFactory,
           translator: Translator,
           identityService: IdentityService,
-          tenantService: TenantService            
+          tenantService: TenantService
         ) => (lookupService: LookupService) => new MetaStore(store, scriptUtil, translator, metaEntityApi, metaDocumentApi, genericEntityApiFactory, identityService, tenantService, lookupService),
-        deps: [ 
-          Store, 
+        deps: [
+          Store,
           SCRIPT_UTIL,
           META_ENTITY_API,
           META_DOCUMENT_API,
@@ -133,31 +158,31 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: CRUD_SERVICE_FACTORY,
         useFactory: (
-          store: Store, 
-          translator: Translator,         
-          notificationService: NotificationService       
-        ) => (router: Router, metaService: MetaService, parentCrudService?: CrudService) => new CrudStore(store, metaService, notificationService, translator, router, parentCrudService),
-        deps: [ 
-          Store, 
+          store: Store,
+          translator: Translator,
+          notificationService: NotificationService
+        ) => (router: Router, metaService: MetaService, crudOperator: CrudOperator) => new CrudStore(store, metaService, notificationService, translator, router, crudOperator),
+        deps: [
+          Store,
           TRANSLATOR,
-          NOTIFICATION_SERVICE 
+          NOTIFICATION_SERVICE
         ]
-      },        
+      },
       {
         provide: EDIT_SERVICE_FACTORY,
         useFactory: (
           store: Store,
           interactionService: InteractionService
         ) => (metaService: MetaService) => new EditStore(store, interactionService, metaService),
-        deps: [ 
+        deps: [
           Store, INTERACTION_SERVICE
         ]
-      },             
+      },
       {
         provide: STATISTIC_SERVICE_FACTORY,
         useFactory: (
           store: Store,
-          scriptUtil: ScriptUtil,          
+          scriptUtil: ScriptUtil,
           metaStatisticApi: MetaStatisticApi
         ) => (lookupService: LookupService) => new StatisticStore(store, scriptUtil, metaStatisticApi, lookupService),
         deps: [
@@ -169,14 +194,14 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       {
         provide: PAGE_SERVICE_FACTORY,
         useFactory: (
-          store: Store, 
+          store: Store,
           scriptUtil: ScriptUtil,
           metaPageApi: MetaPageApi,
           tenantService: TenantService,
           toolbarService: ToolbarService
         ) => (router: Router, lookupService: LookupService) => new PageStore(store, scriptUtil, router, tenantService, toolbarService, lookupService, metaPageApi),
         deps: [
-          Store, 
+          Store,
           SCRIPT_UTIL,
           META_PAGE_API,
           TENANT_SERVICE,

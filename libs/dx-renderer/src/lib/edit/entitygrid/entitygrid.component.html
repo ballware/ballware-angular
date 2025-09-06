@@ -7,7 +7,7 @@
   [masterDetailTemplate]="masterDetailTemplate">
   <ng-template #masterDetailTemplate>
     <ballware-edit-detail [detailLayout]="(gridLayout$ | async)?.details!"></ballware-edit-detail>
-  </ng-template>    
+  </ng-template>
 </ballware-entitygrid>
-<ballware-crud-actions>
+<ballware-crud-actions *ngIf='renderOverlayActions'>
 </ballware-crud-actions>
