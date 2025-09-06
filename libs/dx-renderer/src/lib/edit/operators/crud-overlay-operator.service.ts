@@ -1,7 +1,11 @@
 import { CrudOperator, CrudService } from '@ballware/meta-services';
 import { Router } from '@angular/router';
 
-export class CrudOverlayOperatorService implements CrudOperator {
+export interface CrudOverlayOperator {
+
+}
+
+export class CrudOverlayOperatorService implements CrudOperator, CrudOverlayOperator {
 
   readonly kind = 'overlay';
 

@@ -30,6 +30,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PageLayoutItemComponent } from '../layout/item.component';
 import { CrudActionsComponent } from '../../edit';
+import { CRUD_OVERLAY_OPERATOR } from '../../edit/operators';
 
 @Component({
   selector: 'ballware-page-crudcontainer',
@@ -55,6 +56,11 @@ import { CrudActionsComponent } from '../../edit';
       provide: CRUD_OPERATOR,
       useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
       deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+    },
+    {
+      provide: CRUD_OVERLAY_OPERATOR,
+      useFactory: (operator: CrudOperator) => operator.kind === 'overlay' ? operator : undefined,
+      deps: [CRUD_OPERATOR]
     },
     {
       provide: CRUD_SERVICE,

@@ -23,6 +23,8 @@ import { I18NextModule } from 'angular-i18next';
 import { ForeignEditPopupComponent } from '../foreigneditpopup/foreigneditpopup.component';
 import { CrudDialogComponent } from '../dialog/dialog.component';
 import { EditLayoutComponent } from '../layout/layout.component';
+import { CRUD_OVERLAY_OPERATOR } from '../operators';
+import { CrudOverlayOperator } from '../operators/crud-overlay-operator.service';
 
 @Component({
   selector: 'ballware-crud-actions',
@@ -61,6 +63,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
       private domSanitizer: DomSanitizer,
       @Inject(META_SERVICE) private metaService: MetaService,
       @Inject(CRUD_SERVICE) private crudService: CrudService,
+      @Inject(CRUD_OVERLAY_OPERATOR) private crudOverlayOperator: CrudOverlayOperator,
       @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
     super();
 

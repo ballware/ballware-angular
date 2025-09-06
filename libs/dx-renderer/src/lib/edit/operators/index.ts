@@ -1,7 +1,7 @@
-import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
+import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
 import { CRUD_OPERATOR_FACTORY, CrudOperator } from '@ballware/meta-services';
 
-import { CrudOverlayOperatorService } from './crud-overlay-operator.service';
+import { CrudOverlayOperator, CrudOverlayOperatorService } from './crud-overlay-operator.service';
 import { CrudTopLevelOperatorService } from './crud-toplevel-operator.service';
 import { Router } from '@angular/router';
 
@@ -21,3 +21,5 @@ export function provideDxCrudOperatorFactory(): EnvironmentProviders {
     }
   ]);
 }
+
+export const CRUD_OVERLAY_OPERATOR = new InjectionToken<CrudOverlayOperator>('Crud overlay operator');

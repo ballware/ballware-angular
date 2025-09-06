@@ -22,6 +22,7 @@ import { Router } from "@angular/router";
 import { EditLayoutComponent } from "../layout/layout.component";
 import { CommonModule } from "@angular/common";
 import { CrudDialogComponent } from "../dialog/dialog.component";
+import { CRUD_OVERLAY_OPERATOR } from '../operators';
 
 @Component({
     selector: 'ballware-crud-foreigneditpopup',
@@ -42,6 +43,11 @@ import { CrudDialogComponent } from "../dialog/dialog.component";
           provide: CRUD_OPERATOR,
           useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
           deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+        },
+        {
+          provide: CRUD_OVERLAY_OPERATOR,
+          useFactory: (operator: CrudOperator) => operator.kind === 'overlay' ? operator : undefined,
+          deps: [CRUD_OPERATOR]
         },
         {
           provide: CRUD_SERVICE,

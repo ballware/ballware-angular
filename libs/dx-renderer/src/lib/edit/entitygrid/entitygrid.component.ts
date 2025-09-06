@@ -32,6 +32,7 @@ import { CrudActionsComponent } from '../actions/actions.component';
 import { CommonModule } from '@angular/common';
 import { EditDetailComponent } from '../detail/detail.component';
 import { Destroy, EditItemLivecycle, Readonly, Visible } from '@ballware/renderer-commons';
+import { CRUD_OVERLAY_OPERATOR } from '../operators';
 
 interface EntityGridItemOptions {
   uniqueKey?: string;
@@ -67,6 +68,11 @@ interface EntityGridItemOptions {
       provide: CRUD_OPERATOR,
       useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
       deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+    },
+    {
+      provide: CRUD_OVERLAY_OPERATOR,
+      useFactory: (operator: CrudOperator) => operator.kind === 'overlay' ? operator : undefined,
+      deps: [CRUD_OPERATOR]
     },
     {
       provide: CRUD_SERVICE,
