@@ -1,31 +1,31 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [entity]="itemDialog.entity" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [supportContinueAfterSave]="itemDialog.supportContinueAfterSave" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [entity]="itemDialog.entity" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [supportContinueAfterSave]="itemDialog.supportContinueAfterSave" [apply]="itemDialog.apply" [cancel]="cancelEdit">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
   [fullscreen]="(fullscreenDialogs$ | async) ?? false"
-  [customFunctionEntity]="itemDialog.foreignEntity"  
+  [customFunctionEntity]="itemDialog.foreignEntity"
   [customFunctionId]="itemDialog.customFunction.id"
   [customFunctionParam]="itemDialog.item"
-  (editFinished)="itemDialog.cancel()">
+  (editFinished)="cancelEdit()">
 </ballware-crud-foreigneditpopup>
 <dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
-  [visible]="true" 
+  [visible]="true"
   [showCloseButton]="true"
   [title]="itemDialog.title"
   [fullScreen]="true"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onExternalEditorDialogClose()">
-  <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
+  <iframe [title]="itemDialog.title" class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
-<dx-popup *ngIf="removeDialog" 
-  [visible]="true" 
+<dx-popup *ngIf="removeDialog"
+  [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onRemoveDialogCancel()"
-  width="auto" 
-  minWidth="500px" 
+  width="auto"
+  minWidth="500px"
   height="auto">
   <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'danger', text: 'editing.actions.remove' | i18next, onClick: onRemoveDialogApply }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
   <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onRemoveDialogCancel }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
@@ -34,22 +34,22 @@
   </div>
 </dx-popup>
 <dx-popup *ngIf="importDialog"
-  [visible]="true" 
+  [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onImportDialogCancel()"
-  width="auto" 
-  minWidth="500px" 
+  width="auto"
+  minWidth="500px"
   height="auto">
   <div *dxTemplate="let data of 'content'">
     <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
   </div>
 </dx-popup>
-<ballware-crud-dialog *ngIf="detailColumnEditDialog" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="detailColumnEditDialog.mode" [title]="detailColumnEditDialog.title" [entity]="detailColumnEditDialog.entity" [item]="detailColumnEditDialog.item" [editLayout]="detailColumnEditDialog.editLayout" [apply]="detailColumnEditDialog.apply" [cancel]="detailColumnEditDialog.cancel">
+<ballware-crud-dialog *ngIf="detailColumnEditDialog" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="detailColumnEditDialog.mode" [title]="detailColumnEditDialog.title" [entity]="detailColumnEditDialog.entity" [item]="detailColumnEditDialog.item" [editLayout]="detailColumnEditDialog.editLayout" [apply]="detailColumnEditDialog.apply" [cancel]="onDetailColumnEditDialogCancel">
   <ballware-edit-layout></ballware-edit-layout>
-</ballware-crud-dialog> 
+</ballware-crud-dialog>
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"

@@ -250,13 +250,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
                         apply: (editUtil, editedItem, continueAfterSave) => {
                             this.save({ item: editedItem as CrudItem, continueAfterSave });
-                        },
-                        cancel: () => {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
-                         }
+                        }
                     } as ItemEditDialog)))
                 : of(undefined)))
             .pipe(tap((itemDialog) => {
@@ -283,13 +277,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                 ...state,
                                 itemDialog: undefined
                             }))();
-                        },
-                        cancel: () => {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
-                         }
+                        }
                     } as ItemEditDialog)))
                 : of(undefined)))
             .pipe(tap((itemDialog) => {
@@ -313,13 +301,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
                         apply: (editUtil, editedItem, continueAfterSave) => {
                             this.save({ item: editedItem as CrudItem, continueAfterSave });
-                        },
-                        cancel: () => {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
-                         }
+                        }
                     } as ItemEditDialog)))
                 : of(undefined)))
             .pipe(tap((itemDialog) => {
@@ -340,12 +322,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                             title: this.translator('datacontainer.titles.remove', { entity: displayName }),
                             apply: () => {
                                 this.drop({ item });
-                            },
-                            cancel: () => {
-                                this.updater((state) => ({
-                                    ...state,
-                                    removeDialog: undefined
-                                }))();
                             }
                         } as ItemRemoveDialog))) : of(undefined)))
             .pipe(tap((removeDialog) => this.updater((state, removeDialog: ItemRemoveDialog|undefined) => ({
@@ -387,13 +363,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                 itemDialog: undefined
                             }))();
                         }
-                    },
-                    cancel: () => {
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))();
-                     }
+                    }
                 } as ItemEditDialog)
                 : prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
                 this.updater((state, itemDialog: ItemEditDialog) => ({
@@ -429,13 +399,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                 }))();
                             }
                         }
-                    },
-                    cancel: () => {
-                        this.updater((state) => ({
-                            ...state,
-                            itemDialog: undefined
-                        }))();
-                     }
+                    }
                 } as ItemEditDialog);
             }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));
 
@@ -540,10 +504,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))({
                 importFunction: request.customFunction,
                 apply: (file) => this.uploadItems({ query: request.customFunction.id, file }),
-                cancel: () => this.updater((state) => ({
-                        ...state,
-                        importDialog: undefined
-                    }))()
              } as ImportDialog)))
     );
 
@@ -584,12 +544,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         set(request.item as Record<string, unknown>, request.column.dataMember, get(item, request.column.dataMember));
                     }
 
-                    this.updater((state) => ({
-                        ...state,
-                        detailColumnEditDialog: undefined
-                    }))();
-                 },
-                 cancel: () => {
                     this.updater((state) => ({
                         ...state,
                         detailColumnEditDialog: undefined
@@ -864,4 +818,24 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
         ...state,
         selectActionSheet: undefined
     }));
+
+    readonly cancelEdit: () => void = this.updater((state) => ({
+      ...state,
+      itemDialog: undefined
+    }));
+
+  readonly cancelRemove: () => void = this.updater((state) => ({
+    ...state,
+    removeDialog: undefined
+  }));
+
+  readonly cancelImport: () => void = this.updater((state) => ({
+    ...state,
+    importDialog: undefined
+  }));
+
+  readonly cancelDetailColumnEdit: () => void = this.updater((state) => ({
+    ...state,
+    detailColumnEditDialog: undefined
+  }));
 }

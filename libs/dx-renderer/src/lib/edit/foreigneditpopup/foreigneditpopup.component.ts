@@ -69,6 +69,8 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
 
     public itemDialog: ItemEditDialog|undefined;
 
+    readonly cancelEdit = () => this.crudService.cancelEdit();
+
     constructor(
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(META_SERVICE) private metaService: MetaService,

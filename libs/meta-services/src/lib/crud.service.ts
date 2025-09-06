@@ -25,15 +25,13 @@ export interface ItemEditDialog {
     externalEditor?: boolean,
     foreignEntity?: string,
     customFunction?: EntityCustomFunction,
-    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void,
-    cancel: () => void
+    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void
 }
 
 export interface ItemRemoveDialog {
     item: Record<string, unknown>,
     title: string,
-    apply: (item: Record<string, unknown>) => void,
-    cancel: () => void
+    apply: (item: Record<string, unknown>) => void
 }
 
 export interface CrudEditMenuItem {
@@ -46,7 +44,6 @@ export interface CrudEditMenuItem {
 export interface ImportDialog {
     importFunction: EntityCustomFunction
     apply: (file: File) => void;
-    cancel: () => void;
 }
 
 export interface DetailColumnEditDialog {
@@ -56,8 +53,7 @@ export interface DetailColumnEditDialog {
     dataMember: string,
     title: string,
     editLayout: EditLayout,
-    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void,
-    cancel: () => void
+    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void
 }
 
 export interface CrudService extends OnDestroy {
@@ -138,6 +134,11 @@ export interface CrudService extends OnDestroy {
     selectExportDone(): void;
     selectImportDone(): void;
     selectOptionsDone(): void;
+
+    cancelEdit(): void;
+    cancelRemove(): void;
+    cancelImport(): void;
+    cancelDetailColumnEdit(): void;
 }
 
 export interface CrudOperator {

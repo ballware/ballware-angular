@@ -197,7 +197,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onRemoveDialogCancel() {
-    this.removeDialog?.cancel();
+    this.crudService.cancelRemove();
   }
 
   public onImportDialogApply(file: File) {
@@ -205,11 +205,17 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onImportDialogCancel() {
-    this.importDialog?.cancel();
+    this.crudService.cancelImport();
   }
 
   public onExternalEditorDialogClose() {
-    this.itemDialog?.cancel();
+    this.crudService.cancelEdit();
   }
+
+  public onDetailColumnEditDialogCancel() {
+    this.crudService.cancelDetailColumnEdit();
+  }
+
+  readonly cancelEdit = () => this.crudService.cancelEdit();
 
 }
