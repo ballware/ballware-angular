@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Optional, Output, Provider, SkipSelf } from "@angular/core";
-import { CrudItem } from "@ballware/meta-model";
+import { CrudItem, EditUtil } from '@ballware/meta-model';
 import {
   CRUD_OPERATOR, CRUD_OPERATOR_FACTORY,
   CRUD_SERVICE,
@@ -70,7 +70,12 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
     public itemDialog: ItemEditDialog|undefined;
 
     readonly cancelEdit = () => this.crudService.cancelEdit();
-    readonly applyEdit = () => this.crudService.cancelEdit();
+    readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => this.crudService.applyEdit({
+      editUtil,
+      item,
+      continueAfterSave,
+      customFunction: this.itemDialog?.customFunction
+    });
 
     constructor(
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
