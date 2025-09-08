@@ -10,7 +10,6 @@ import { crudDestroyed, crudUpdated } from '../component';
 import {
   CrudAction,
   CrudEditMenuItem,
-  CrudOperator,
   CrudService,
   DetailColumnEditOperation,
   EditModes,
@@ -30,8 +29,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
         private metaService: MetaService,
         private notificationService: NotificationService,
         private translator: Translator,
-        private router: Router,
-        private crudOperator: CrudOperator) {
+        private router: Router) {
         super({});
 
         this.state$
@@ -128,8 +126,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     headCustomFunctions
                 }))(headCustomFunctions)))
         );
-
-        this.crudOperator.registerService(this);
     }
 
     readonly currentInteractionTarget$: Subject<Element | undefined> = new Subject<Element|undefined>();

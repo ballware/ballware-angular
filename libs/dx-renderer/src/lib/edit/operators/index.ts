@@ -1,5 +1,5 @@
 import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
-import { CRUD_OPERATOR_FACTORY, CrudOperator } from '@ballware/meta-services';
+import { CRUD_OPERATOR_FACTORY, CrudOperator, CrudService } from '@ballware/meta-services';
 
 import { CrudOverlayOperator, CrudOverlayOperatorService } from './crud-overlay-operator.service';
 import { CrudTopLevelOperatorService } from './crud-toplevel-operator.service';
@@ -10,13 +10,13 @@ export function provideDxCrudOperatorFactory(): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
       provide: CRUD_OPERATOR_FACTORY,
-      useFactory: () => (router: Router, parentOperator?: CrudOperator) => {
+      useFactory: () => (router: Router, crudService: CrudService, parentOperator?: CrudOperator) => {
 
         if (!parentOperator) {
-          return new CrudTopLevelOperatorService(router);
+          return new CrudTopLevelOperatorService(router, crudService);
         }
 
-        return new CrudOverlayOperatorService(router);
+        return new CrudOverlayOperatorService(router, crudService);
       }
     }
   ]);

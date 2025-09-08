@@ -148,15 +148,14 @@ export interface CrudService extends OnDestroy {
 
 export interface CrudOperator {
   readonly kind: string;
-  registerService(service: CrudService): void;
 }
 
-export type CrudServiceFactory = (router: Router, metaService: MetaService, crudOperator: CrudOperator) => CrudService;
+export type CrudServiceFactory = (router: Router, metaService: MetaService) => CrudService;
 
 export const CRUD_SERVICE = new InjectionToken<CrudService>('Crud service');
 export const CRUD_SERVICE_FACTORY = new InjectionToken<CrudServiceFactory>('Crud service factory');
 
-export type CrudOperatorFactory = (router: Router, parentOperator?: CrudOperator) => CrudOperator;
+export type CrudOperatorFactory = (router: Router, crudService: CrudService, parentOperator?: CrudOperator) => CrudOperator;
 
 export const CRUD_OPERATOR = new InjectionToken<CrudOperator>('Crud operator');
 export const CRUD_OPERATOR_FACTORY = new InjectionToken<CrudOperatorFactory>('Crud operator factory');

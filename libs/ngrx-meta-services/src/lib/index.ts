@@ -161,7 +161,7 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
           store: Store,
           translator: Translator,
           notificationService: NotificationService
-        ) => (router: Router, metaService: MetaService, crudOperator: CrudOperator) => new CrudStore(store, metaService, notificationService, translator, router, crudOperator),
+        ) => (router: Router, metaService: MetaService) => new CrudStore(store, metaService, notificationService, translator, router),
         deps: [
           Store,
           TRANSLATOR,

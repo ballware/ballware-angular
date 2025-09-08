@@ -48,11 +48,11 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public EditModes = EditModes;
 
-  public editOperation: ItemEditOperation|undefined;
-  public removeOperation: ItemRemoveOperation|undefined;
-  public importOperation: ImportOperation|undefined;
+  public editOperationOverlay: ItemEditOperation|undefined;
+  public removeOperationOverlay: ItemRemoveOperation|undefined;
+  public importOperationOverlay: ImportOperation|undefined;
 
-  public detailColumnEditOperation: DetailColumnEditOperation|undefined;
+  public detailColumnEditOperationOverlay: DetailColumnEditOperation|undefined;
 
   public sanitizedExternalEditorUrl: SafeUrl|undefined;
 
@@ -80,29 +80,29 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 
-    this.crudService.editOperation$
+    this.crudOverlayOperator.editOperationOverlay$
       .pipe(takeUntil(this.destroy$))
       .subscribe((editOperation) => {
-        this.editOperation = editOperation;
-        this.sanitizedExternalEditorUrl = this.editOperation?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.editOperation.item as unknown) as string) : undefined;
+        this.editOperationOverlay = editOperation;
+        this.sanitizedExternalEditorUrl = this.editOperationOverlay?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.editOperationOverlay.item as unknown) as string) : undefined;
       });
 
-    this.crudService.removeOperation$
+    this.crudOverlayOperator.removeOperationOverlay$
       .pipe(takeUntil(this.destroy$))
       .subscribe((removeOperation) => {
-        this.removeOperation = removeOperation;
+        this.removeOperationOverlay = removeOperation;
       });
 
-    this.crudService.importOperation$
+    this.crudOverlayOperator.importOperationOverlay$
       .pipe(takeUntil(this.destroy$))
       .subscribe((importOperation) => {
-        this.importOperation = importOperation;
+        this.importOperationOverlay = importOperation;
       });
 
-    this.crudService.detailColumnEditOperation$
+    this.crudOverlayOperator.detailColumnEditOperationOverlay$
       .pipe(takeUntil(this.destroy$))
       .subscribe((detailColumnEditOperation) => {
-        this.detailColumnEditOperation = detailColumnEditOperation;
+        this.detailColumnEditOperationOverlay = detailColumnEditOperation;
       });
   }
 
@@ -194,8 +194,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onRemoveDialogApply() {
-    if (this.removeOperation) {
-      this.crudService.applyRemove({ item: this.removeOperation?.item });
+    if (this.removeOperationOverlay) {
+      this.crudService.applyRemove({ item: this.removeOperationOverlay?.item });
     }
   }
 
@@ -204,8 +204,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onImportDialogApply(file: File) {
-    if (this.importOperation) {
-      this.crudService.applyImport({ file, customFunction: this.importOperation.importFunction });
+    if (this.importOperationOverlay) {
+      this.crudService.applyImport({ file, customFunction: this.importOperationOverlay.importFunction });
     }
   }
 
@@ -218,8 +218,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   readonly applyDetailColumnEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
-    if (this.detailColumnEditOperation) {
-      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditOperation.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditOperation.column });
+    if (this.detailColumnEditOperationOverlay) {
+      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditOperationOverlay.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditOperationOverlay.column });
     }
   }
 
@@ -228,12 +228,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
-    if (this.editOperation) {
+    if (this.editOperationOverlay) {
       this.crudService.applyEdit({
         item: item,
         continueAfterSave: continueAfterSave,
         editUtil: editUtil,
-        customFunction: this.editOperation.customFunction
+        customFunction: this.editOperationOverlay.customFunction
       });
     }
   }

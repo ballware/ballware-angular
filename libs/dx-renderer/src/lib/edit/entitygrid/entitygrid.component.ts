@@ -65,20 +65,20 @@ interface EntityGridItemOptions {
       deps: [ATTACHMENT_SERVICE_FACTORY]
     } as Provider,
     {
+      provide: CRUD_SERVICE,
+      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
+    } as Provider,
+    {
       provide: CRUD_OPERATOR,
-      useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, parentOperator?: CrudOperator) => crudOperatorFactory(router, parentOperator),
-      deps: [CRUD_OPERATOR_FACTORY, Router, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
+      useFactory: (crudOperatorFactory: CrudOperatorFactory, router: Router, crudService: CrudService, parentOperator?: CrudOperator) => crudOperatorFactory(router, crudService, parentOperator),
+      deps: [CRUD_OPERATOR_FACTORY, Router, CRUD_SERVICE, [new Optional(), new SkipSelf(), CRUD_OPERATOR]]
     },
     {
       provide: CRUD_OVERLAY_OPERATOR,
       useFactory: (operator: CrudOperator) => operator.kind === 'overlay' ? operator : undefined,
       deps: [CRUD_OPERATOR]
     },
-    {
-      provide: CRUD_SERVICE,
-      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService, crudOperator: CrudOperator) => serviceFactory(router, metaService, crudOperator),
-      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE, CRUD_OPERATOR]
-    } as Provider,
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
