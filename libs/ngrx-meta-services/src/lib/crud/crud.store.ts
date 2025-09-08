@@ -1,7 +1,7 @@
 import { OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiError } from '@ballware/meta-api';
-import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
+import { CrudItem, EditUtil, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
 import { cloneDeep, isEqual, get, set } from 'lodash';
@@ -247,10 +247,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         item: item,
                         title: this.translator('datacontainer.titles.add', { entity: displayName }),
                         supportContinueAfterSave: false,
-                        editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
-                        apply: (editUtil, editedItem, continueAfterSave) => {
-                            this.save({ item: editedItem as CrudItem, continueAfterSave });
-                        }
+                        editLayout: getEditLayout(request.editLayout, EditModes.CREATE)
                     } as ItemEditDialog)))
                 : of(undefined)))
             .pipe(tap((itemDialog) => {
@@ -298,10 +295,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         item: item,
                         title: this.translator('datacontainer.titles.edit', { entity: displayName }),
                         supportContinueAfterSave: false,
-                        editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
-                        apply: (editUtil, editedItem, continueAfterSave) => {
-                            this.save({ item: editedItem as CrudItem, continueAfterSave });
-                        }
+                        editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT)
                     } as ItemEditDialog)))
                 : of(undefined)))
             .pipe(tap((itemDialog) => {
@@ -355,15 +349,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     editLayout: undefined,
                     externalEditor: false,
                     foreignEntity: customFunction.entity,
-                    customFunction: customFunction,
-                    apply: (editUtil, editedItem, continueAfterSave) => {
-                        if (!continueAfterSave) {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
-                        }
-                    }
+                    customFunction: customFunction
                 } as ItemEditDialog)
                 : prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
                 this.updater((state, itemDialog: ItemEditDialog) => ({
@@ -378,28 +364,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     editLayout: getEditLayout(customFunction.editLayout, EditModes.EDIT),
                     externalEditor: customFunction.externalEditor,
                     foreignEntity: customFunction.entity,
-                    customFunction: customFunction,
-                    apply: (editUtil, editedItem, continueAfterSave) => {
-                        if (!customFunction.externalEditor && !customFunction.entity) {
-                            evaluateCustomFunction(customFunction.id, continueAfterSave, editUtil, editedItem,
-                                (evaluatedResult) => {
-                                    if (Array.isArray(evaluatedResult)) {
-                                        this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem>, continueAfterSave });
-                                    } else {
-                                        this.save({ customFunction, item: evaluatedResult as CrudItem, continueAfterSave });
-                                    }
-                                },
-                                (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'warning' })
-                            );
-                        } else  {
-                            if (!continueAfterSave) {
-                                this.updater((state) => ({
-                                    ...state,
-                                    itemDialog: undefined
-                                }))();
-                            }
-                        }
-                    }
+                    customFunction: customFunction
                 } as ItemEditDialog);
             }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));
 
@@ -502,8 +467,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 ...state,
                 importDialog
             }))({
-                importFunction: request.customFunction,
-                apply: (file) => this.uploadItems({ query: request.customFunction.id, file }),
+                importFunction: request.customFunction
              } as ImportDialog)))
     );
 
@@ -535,20 +499,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))((request && editLayout && entity) ? ({
                 mode: request.mode,
                 entity: entity,
-                item: cloneDeep(request.item),
+                originalItem: request.item,
+                editableItem: cloneDeep(request.item),
                 title: request.column.caption,
                 dataMember: request.column.dataMember,
                 editLayout: editLayout,
-                apply: (editUtil, item) => {
-                    if (request.column.dataMember) {
-                        set(request.item as Record<string, unknown>, request.column.dataMember, get(item, request.column.dataMember));
-                    }
-
-                    this.updater((state) => ({
-                        ...state,
-                        detailColumnEditDialog: undefined
-                    }))();
-                 }
+                column: request.column
             } as DetailColumnEditDialog) : undefined)))
     );
 
@@ -819,23 +775,81 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
         selectActionSheet: undefined
     }));
 
-    readonly cancelEdit: () => void = this.updater((state) => ({
+    readonly applyEdit = this.effect((request$: Observable<{ item: Record<string, unknown>, continueAfterSave: boolean, editUtil: EditUtil, customFunction?: EntityCustomFunction }>)=>
+      request$.pipe(
+        withLatestFrom(this.metaService.evaluateCustomFunction$),
+        tap(([{ item, continueAfterSave, editUtil, customFunction }, evaluateCustomFunction ]) => {
+          if (!customFunction) {
+            this.save({ item: item as CrudItem, continueAfterSave });
+          } else {
+            if (!customFunction.externalEditor && !customFunction.entity && evaluateCustomFunction) {
+              evaluateCustomFunction(customFunction.id, continueAfterSave, editUtil, item,
+                (evaluatedResult) => {
+                  if (Array.isArray(evaluatedResult)) {
+                    this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem>, continueAfterSave });
+                  } else {
+                    this.save({ customFunction, item: evaluatedResult as CrudItem, continueAfterSave });
+                  }
+                },
+                (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'warning' })
+              );
+            } else  {
+              if (!continueAfterSave) {
+                this.updater((state) => ({
+                  ...state,
+                  itemDialog: undefined
+                }))();
+              }
+            }
+          }
+        })
+      )
+    );
+
+    readonly cancelEdit = this.updater((state) => ({
       ...state,
       itemDialog: undefined
     }));
 
-  readonly cancelRemove: () => void = this.updater((state) => ({
-    ...state,
-    removeDialog: undefined
-  }));
+    readonly applyRemove = this.effect((request$: Observable<{ item: Record<string, unknown> }>) =>
+      request$.pipe(
+        tap(({ item }) => this.drop({ item: item as CrudItem }))
+      )
+    );
 
-  readonly cancelImport: () => void = this.updater((state) => ({
-    ...state,
-    importDialog: undefined
-  }));
+    readonly cancelRemove = this.updater((state) => ({
+      ...state,
+      removeDialog: undefined
+    }));
 
-  readonly cancelDetailColumnEdit: () => void = this.updater((state) => ({
-    ...state,
-    detailColumnEditDialog: undefined
-  }));
+    readonly applyImport = this.effect((request$: Observable<{ file: File, customFunction: EntityCustomFunction }>)=>
+      request$.pipe(
+        tap(({ file, customFunction }) => this.uploadItems({ query: customFunction.id, file }))
+      )
+    );
+
+    readonly cancelImport = this.updater((state) => ({
+      ...state,
+      importDialog: undefined
+    }));
+
+    readonly applyDetailColumnEdit = this.effect((request$: Observable<{ originalItem: Record<string, unknown>, editedItem: Record<string, unknown>, column: GridLayoutColumn }>) =>
+      request$.pipe(
+        tap(({ originalItem, editedItem, column }) => {
+          if (column.dataMember) {
+            set(originalItem as Record<string, unknown>, column.dataMember, get(editedItem, column.dataMember));
+          }
+
+          this.updater((state) => ({
+            ...state,
+            detailColumnEditDialog: undefined
+          }))();
+        })
+      )
+    );
+
+    readonly cancelDetailColumnEdit = this.updater((state) => ({
+      ...state,
+      detailColumnEditDialog: undefined
+    }));
 }

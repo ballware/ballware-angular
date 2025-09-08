@@ -1,4 +1,14 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [entity]="itemDialog.entity" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [supportContinueAfterSave]="itemDialog.supportContinueAfterSave" [apply]="itemDialog.apply" [cancel]="cancelEdit">
+<ballware-crud-dialog
+  *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity"
+  [fullscreen]="(fullscreenDialogs$ | async) ?? false"
+  [mode]="itemDialog.mode"
+  [title]="itemDialog.title"
+  [entity]="itemDialog.entity"
+  [item]="itemDialog.item"
+  [editLayout]="itemDialog.editLayout"
+  [supportContinueAfterSave]="itemDialog.supportContinueAfterSave"
+  [apply]="applyEdit"
+  [cancel]="cancelEdit">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
@@ -47,7 +57,16 @@
     <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
   </div>
 </dx-popup>
-<ballware-crud-dialog *ngIf="detailColumnEditDialog" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="detailColumnEditDialog.mode" [title]="detailColumnEditDialog.title" [entity]="detailColumnEditDialog.entity" [item]="detailColumnEditDialog.item" [editLayout]="detailColumnEditDialog.editLayout" [apply]="detailColumnEditDialog.apply" [cancel]="onDetailColumnEditDialogCancel">
+<ballware-crud-dialog
+  *ngIf="detailColumnEditDialog"
+  [fullscreen]="(fullscreenDialogs$ | async) ?? false"
+  [mode]="detailColumnEditDialog.mode"
+  [title]="detailColumnEditDialog.title"
+  [entity]="detailColumnEditDialog.entity"
+  [item]="detailColumnEditDialog.editableItem"
+  [editLayout]="detailColumnEditDialog.editLayout"
+  [apply]="applyDetailColumnEdit"
+  [cancel]="cancelDetailColumnEdit">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
 <dx-action-sheet #actionMenu

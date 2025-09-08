@@ -25,6 +25,7 @@ import { CrudDialogComponent } from '../dialog/dialog.component';
 import { EditLayoutComponent } from '../layout/layout.component';
 import { CRUD_OVERLAY_OPERATOR } from '../operators';
 import { CrudOverlayOperator } from '../operators/crud-overlay-operator.service';
+import { EditUtil } from '@ballware/meta-model';
 
 @Component({
   selector: 'ballware-crud-actions',
@@ -193,7 +194,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onRemoveDialogApply() {
-    this.removeDialog?.apply(this.removeDialog.item);
+    if (this.removeDialog) {
+      this.crudService.applyRemove({ item: this.removeDialog?.item });
+    }
   }
 
   public onRemoveDialogCancel() {
@@ -201,7 +204,9 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onImportDialogApply(file: File) {
-    this.importDialog?.apply(file);
+    if (this.importDialog) {
+      this.crudService.applyImport({ file, customFunction: this.importDialog.importFunction });
+    }
   }
 
   public onImportDialogCancel() {
@@ -212,8 +217,25 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
     this.crudService.cancelEdit();
   }
 
-  public onDetailColumnEditDialogCancel() {
+  readonly applyDetailColumnEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
+    if (this.detailColumnEditDialog) {
+      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditDialog.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditDialog.column });
+    }
+  }
+
+  readonly cancelDetailColumnEdit = () => {
     this.crudService.cancelDetailColumnEdit();
+  }
+
+  readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
+    if (this.itemDialog) {
+      this.crudService.applyEdit({
+        item: item,
+        continueAfterSave: continueAfterSave,
+        editUtil: editUtil,
+        customFunction: this.itemDialog.customFunction
+      });
+    }
   }
 
   readonly cancelEdit = () => this.crudService.cancelEdit();

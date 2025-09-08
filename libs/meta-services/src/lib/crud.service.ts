@@ -24,14 +24,12 @@ export interface ItemEditDialog {
     editLayout?: EditLayout,
     externalEditor?: boolean,
     foreignEntity?: string,
-    customFunction?: EntityCustomFunction,
-    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void
+    customFunction?: EntityCustomFunction
 }
 
 export interface ItemRemoveDialog {
     item: Record<string, unknown>,
-    title: string,
-    apply: (item: Record<string, unknown>) => void
+    title: string
 }
 
 export interface CrudEditMenuItem {
@@ -43,17 +41,17 @@ export interface CrudEditMenuItem {
 
 export interface ImportDialog {
     importFunction: EntityCustomFunction
-    apply: (file: File) => void;
 }
 
 export interface DetailColumnEditDialog {
     mode: EditModes,
     entity: string,
-    item: unknown,
+    originalItem: unknown,
+    editableItem: unknown,
     dataMember: string,
     title: string,
     editLayout: EditLayout,
-    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void
+    column: GridLayoutColumn
 }
 
 export interface CrudService extends OnDestroy {
@@ -135,9 +133,16 @@ export interface CrudService extends OnDestroy {
     selectImportDone(): void;
     selectOptionsDone(): void;
 
+    applyEdit(request: { item: Record<string, unknown>, continueAfterSave: boolean, editUtil: EditUtil, customFunction?: EntityCustomFunction }): void;
     cancelEdit(): void;
+
+    applyRemove(request: { item: Record<string, unknown> }): void;
     cancelRemove(): void;
+
+    applyImport(request: { file: File, customFunction: EntityCustomFunction }): void;
     cancelImport(): void;
+
+    applyDetailColumnEdit(request: { originalItem: Record<string, unknown>, editedItem: Record<string, unknown>, column: GridLayoutColumn }): void;
     cancelDetailColumnEdit(): void;
 }
 
