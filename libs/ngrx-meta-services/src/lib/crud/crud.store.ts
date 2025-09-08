@@ -12,12 +12,12 @@ import {
   CrudEditMenuItem,
   CrudOperator,
   CrudService,
-  DetailColumnEditDialog,
+  DetailColumnEditOperation,
   EditModes,
   FunctionIdentifier,
-  ImportDialog,
-  ItemEditDialog,
-  ItemRemoveDialog,
+  ImportOperation,
+  ItemEditOperation,
+  ItemRemoveOperation,
   MetaService,
   NotificationService,
   Translator
@@ -213,10 +213,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly headCustomFunctions$ = this.select(state => state.headCustomFunctions);
     readonly exportMenuItems$ = this.select(state => state.exportMenuItems);
     readonly importMenuItems$ = this.select(state => state.importMenuItems);
-    readonly itemDialog$ = this.select(state => state.itemDialog);
-    readonly removeDialog$ = this.select(state => state.removeDialog);
-    readonly importDialog$ = this.select(state => state.importDialog);
-    readonly detailColumnEditDialog$ = this.select(state => state.detailColumnEditDialog);
+    readonly editOperation$ = this.select(state => state.editOperation);
+    readonly removeOperation$ = this.select(state => state.removeOperation);
+    readonly importOperation$ = this.select(state => state.importOperation);
+    readonly detailColumnEditOperation$ = this.select(state => state.detailColumnEditOperation);
     readonly selectAddSheet$ = this.select(state => state.selectAddSheet);
     readonly selectActionSheet$ = this.select(state => state.selectActionSheet);
     readonly selectPrintSheet$ = this.select(state => state.selectPrintSheet);
@@ -248,13 +248,13 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         title: this.translator('datacontainer.titles.add', { entity: displayName }),
                         supportContinueAfterSave: false,
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE)
-                    } as ItemEditDialog)))
+                    } as ItemEditOperation)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {
-                this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
+            .pipe(tap((editOperation) => {
+                this.updater((state, editOperation: ItemEditOperation|undefined) => ({
                     ...state,
-                    itemDialog
-                }))(itemDialog);
+                    editOperation
+                }))(editOperation);
             }))
     );
 
@@ -268,20 +268,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         item: item,
                         title: this.translator('datacontainer.titles.view', { entity: displayName }),
                         supportContinueAfterSave: false,
-                        editLayout: getEditLayout(viewRequest.editLayout, EditModes.VIEW),
-                        apply: () => {
-                            this.updater((state) => ({
-                                ...state,
-                                itemDialog: undefined
-                            }))();
-                        }
-                    } as ItemEditDialog)))
+                        editLayout: getEditLayout(viewRequest.editLayout, EditModes.VIEW)
+                    } as ItemEditOperation)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {
-                this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
+            .pipe(tap((editOperation) => {
+                this.updater((state, editOperation: ItemEditOperation|undefined) => ({
                     ...state,
-                    itemDialog
-                }))(itemDialog);
+                  editOperation
+                }))(editOperation);
             }))
     );
 
@@ -296,13 +290,13 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         title: this.translator('datacontainer.titles.edit', { entity: displayName }),
                         supportContinueAfterSave: false,
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT)
-                    } as ItemEditDialog)))
+                    } as ItemEditOperation)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {
-                this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
+            .pipe(tap((editOperation) => {
+                this.updater((state, editOperation: ItemEditOperation|undefined) => ({
                     ...state,
-                    itemDialog
-                }))(itemDialog);
+                  editOperation
+                }))(editOperation);
             }))
     );
 
@@ -317,11 +311,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                             apply: () => {
                                 this.drop({ item });
                             }
-                        } as ItemRemoveDialog))) : of(undefined)))
-            .pipe(tap((removeDialog) => this.updater((state, removeDialog: ItemRemoveDialog|undefined) => ({
+                        } as ItemRemoveOperation))) : of(undefined)))
+            .pipe(tap((removeOperation) => this.updater((state, removeOperation: ItemRemoveOperation|undefined) => ({
                 ...state,
-                removeDialog
-            }))(removeDialog)))
+                removeOperation
+            }))(removeOperation)))
     );
 
     readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) =>
@@ -337,9 +331,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) =>
         request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$, this.metaService.entity$, this.metaService.headParams$))
             .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, entity, headParams]) =>  customFunction.entity
-                ? this.updater((state, itemDialog: ItemEditDialog) => ({
+                ? this.updater((state, editOperation: ItemEditOperation) => ({
                     ...state,
-                    itemDialog
+                    editOperation
                 }))({
                     mode: EditModes.EDIT,
                     entity: customFunction.entity,
@@ -350,11 +344,11 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     externalEditor: false,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction
-                } as ItemEditDialog)
+                } as ItemEditOperation)
                 : prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
-                this.updater((state, itemDialog: ItemEditDialog) => ({
+                this.updater((state, editOperation: ItemEditOperation) => ({
                     ...state,
-                    itemDialog
+                    editOperation
                 }))({
                     mode: EditModes.EDIT,
                     entity: entity,
@@ -365,7 +359,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     externalEditor: customFunction.externalEditor,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction
-                } as ItemEditDialog);
+                } as ItemEditOperation);
             }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));
 
     readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem, continueAfterSave: boolean }>) =>
@@ -378,7 +372,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         if (!saveRequest.continueAfterSave) {
                             this.updater((state) => ({
                                 ...state,
-                                itemDialog: undefined
+                                editOperation: undefined
                             }))();
 
                             this.reload();
@@ -402,7 +396,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         if (!saveRequest.continueAfterSave) {
                             this.updater((state) => ({
                                 ...state,
-                                itemDialog: undefined
+                                editOperation: undefined
                             }))();
 
                             this.reload();
@@ -426,7 +420,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
                         this.updater((state) => ({
                             ...state,
-                            importDialog: undefined
+                            importOperation: undefined
                         }))();
 
                         this.reload();
@@ -447,7 +441,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
                         this.updater((state) => ({
                             ...state,
-                            removeDialog: undefined
+                            removeOperation: undefined
                         }))();
 
                         this.reload();
@@ -463,12 +457,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly importItems = this.effect((importRequest$: Observable<{ customFunction: EntityCustomFunction }>) =>
         importRequest$
-            .pipe(tap((request) => this.updater((state, importDialog: ImportDialog) => ({
+            .pipe(tap((request) => this.updater((state, importOperation: ImportOperation) => ({
                 ...state,
-                importDialog
+                importOperation
             }))({
                 importFunction: request.customFunction
-             } as ImportDialog)))
+             } as ImportOperation)))
     );
 
     readonly exportItems = this.effect((exportRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) =>
@@ -493,9 +487,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
                 return of(request).pipe(withLatestFrom(of(editLayout), of(entity)));
             }))
-            .pipe(tap(([request, editLayout, entity]) => this.updater((state, detailColumnEditDialog: DetailColumnEditDialog|undefined) => ({
+            .pipe(tap(([request, editLayout, entity]) => this.updater((state, detailColumnEditOperation: DetailColumnEditOperation|undefined) => ({
                 ...state,
-                detailColumnEditDialog
+                detailColumnEditOperation
             }))((request && editLayout && entity) ? ({
                 mode: request.mode,
                 entity: entity,
@@ -505,7 +499,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 dataMember: request.column.dataMember,
                 editLayout: editLayout,
                 column: request.column
-            } as DetailColumnEditDialog) : undefined)))
+            } as DetailColumnEditOperation) : undefined)))
     );
 
     readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) =>
@@ -797,7 +791,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
               if (!continueAfterSave) {
                 this.updater((state) => ({
                   ...state,
-                  itemDialog: undefined
+                  editOperation: undefined
                 }))();
               }
             }
@@ -808,7 +802,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly cancelEdit = this.updater((state) => ({
       ...state,
-      itemDialog: undefined
+      editOperation: undefined
     }));
 
     readonly applyRemove = this.effect((request$: Observable<{ item: Record<string, unknown> }>) =>
@@ -819,7 +813,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly cancelRemove = this.updater((state) => ({
       ...state,
-      removeDialog: undefined
+      removeOperation: undefined
     }));
 
     readonly applyImport = this.effect((request$: Observable<{ file: File, customFunction: EntityCustomFunction }>)=>
@@ -830,7 +824,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly cancelImport = this.updater((state) => ({
       ...state,
-      importDialog: undefined
+      importOperation: undefined
     }));
 
     readonly applyDetailColumnEdit = this.effect((request$: Observable<{ originalItem: Record<string, unknown>, editedItem: Record<string, unknown>, column: GridLayoutColumn }>) =>
@@ -842,7 +836,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
           this.updater((state) => ({
             ...state,
-            detailColumnEditDialog: undefined
+            detailColumnEditOperation: undefined
           }))();
         })
       )
@@ -850,6 +844,6 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
     readonly cancelDetailColumnEdit = this.updater((state) => ({
       ...state,
-      detailColumnEditDialog: undefined
+      detailColumnEditOperation: undefined
     }));
 }

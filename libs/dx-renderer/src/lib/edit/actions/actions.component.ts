@@ -3,11 +3,11 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import {
   CRUD_SERVICE,
   CrudService,
-  DetailColumnEditDialog,
+  DetailColumnEditOperation,
   EditModes,
-  ImportDialog,
-  ItemEditDialog,
-  ItemRemoveDialog,
+  ImportOperation,
+  ItemEditOperation,
+  ItemRemoveOperation,
   META_SERVICE,
   MetaService,
   RESPONSIVE_SERVICE,
@@ -48,11 +48,11 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public EditModes = EditModes;
 
-  public itemDialog: ItemEditDialog|undefined;
-  public removeDialog: ItemRemoveDialog|undefined;
-  public importDialog: ImportDialog|undefined;
+  public editOperation: ItemEditOperation|undefined;
+  public removeOperation: ItemRemoveOperation|undefined;
+  public importOperation: ImportOperation|undefined;
 
-  public detailColumnEditDialog: DetailColumnEditDialog|undefined;
+  public detailColumnEditOperation: DetailColumnEditOperation|undefined;
 
   public sanitizedExternalEditorUrl: SafeUrl|undefined;
 
@@ -80,29 +80,29 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 
-    this.crudService.itemDialog$
+    this.crudService.editOperation$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((itemDialog) => {
-        this.itemDialog = itemDialog;
-        this.sanitizedExternalEditorUrl = this.itemDialog?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.itemDialog.item as unknown) as string) : undefined;
+      .subscribe((editOperation) => {
+        this.editOperation = editOperation;
+        this.sanitizedExternalEditorUrl = this.editOperation?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.editOperation.item as unknown) as string) : undefined;
       });
 
-    this.crudService.removeDialog$
+    this.crudService.removeOperation$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((removeDialog) => {
-        this.removeDialog = removeDialog;
+      .subscribe((removeOperation) => {
+        this.removeOperation = removeOperation;
       });
 
-    this.crudService.importDialog$
+    this.crudService.importOperation$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((importDialog) => {
-        this.importDialog = importDialog;
+      .subscribe((importOperation) => {
+        this.importOperation = importOperation;
       });
 
-    this.crudService.detailColumnEditDialog$
+    this.crudService.detailColumnEditOperation$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((detailColumnEditDialog) => {
-        this.detailColumnEditDialog = detailColumnEditDialog;
+      .subscribe((detailColumnEditOperation) => {
+        this.detailColumnEditOperation = detailColumnEditOperation;
       });
   }
 
@@ -194,8 +194,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onRemoveDialogApply() {
-    if (this.removeDialog) {
-      this.crudService.applyRemove({ item: this.removeDialog?.item });
+    if (this.removeOperation) {
+      this.crudService.applyRemove({ item: this.removeOperation?.item });
     }
   }
 
@@ -204,8 +204,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onImportDialogApply(file: File) {
-    if (this.importDialog) {
-      this.crudService.applyImport({ file, customFunction: this.importDialog.importFunction });
+    if (this.importOperation) {
+      this.crudService.applyImport({ file, customFunction: this.importOperation.importFunction });
     }
   }
 
@@ -218,8 +218,8 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   readonly applyDetailColumnEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
-    if (this.detailColumnEditDialog) {
-      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditDialog.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditDialog.column });
+    if (this.detailColumnEditOperation) {
+      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditOperation.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditOperation.column });
     }
   }
 
@@ -228,12 +228,12 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
-    if (this.itemDialog) {
+    if (this.editOperation) {
       this.crudService.applyEdit({
         item: item,
         continueAfterSave: continueAfterSave,
         editUtil: editUtil,
-        customFunction: this.itemDialog.customFunction
+        customFunction: this.editOperation.customFunction
       });
     }
   }

@@ -6,7 +6,7 @@ import {
   CRUD_SERVICE_FACTORY, CrudOperator, CrudOperatorFactory,
   CrudService,
   CrudServiceFactory,
-  ItemEditDialog,
+  ItemEditOperation,
   LOOKUP_SERVICE,
   LOOKUP_SERVICE_FACTORY,
   LookupService,
@@ -67,14 +67,14 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
 
     @Output() editFinished = new EventEmitter<void>();
 
-    public itemDialog: ItemEditDialog|undefined;
+    public itemOperation: ItemEditOperation|undefined;
 
     readonly cancelEdit = () => this.crudService.cancelEdit();
     readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => this.crudService.applyEdit({
       editUtil,
       item,
       continueAfterSave,
-      customFunction: this.itemDialog?.customFunction
+      customFunction: this.itemOperation?.customFunction
     });
 
     constructor(
@@ -83,12 +83,12 @@ export class ForeignEditPopupComponent extends WithDestroy() implements OnInit, 
         @Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
 
-        this.crudService.itemDialog$
+        this.crudService.editOperation$
             .pipe(takeUntil(this.destroy$))
-            .subscribe((itemDialog) => {
-                this.itemDialog = itemDialog;
+            .subscribe((itemOperation) => {
+                this.itemOperation = itemOperation;
 
-                if (!itemDialog) {
+                if (!itemOperation) {
                     this.editFinished.emit();
                 }
             });

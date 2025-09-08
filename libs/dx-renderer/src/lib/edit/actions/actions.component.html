@@ -1,33 +1,33 @@
 <ballware-crud-dialog
-  *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity"
+  *ngIf="editOperation && editOperation.editLayout && !editOperation.externalEditor && !editOperation.foreignEntity"
   [fullscreen]="(fullscreenDialogs$ | async) ?? false"
-  [mode]="itemDialog.mode"
-  [title]="itemDialog.title"
-  [entity]="itemDialog.entity"
-  [item]="itemDialog.item"
-  [editLayout]="itemDialog.editLayout"
-  [supportContinueAfterSave]="itemDialog.supportContinueAfterSave"
+  [mode]="editOperation.mode"
+  [title]="editOperation.title"
+  [entity]="editOperation.entity"
+  [item]="editOperation.item"
+  [editLayout]="editOperation.editLayout"
+  [supportContinueAfterSave]="editOperation.supportContinueAfterSave"
   [apply]="applyEdit"
   [cancel]="cancelEdit">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
-<ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
+<ballware-crud-foreigneditpopup *ngIf="editOperation && !editOperation.externalEditor && editOperation.foreignEntity && editOperation.customFunction"
   [fullscreen]="(fullscreenDialogs$ | async) ?? false"
-  [customFunctionEntity]="itemDialog.foreignEntity"
-  [customFunctionId]="itemDialog.customFunction.id"
-  [customFunctionParam]="itemDialog.item"
+  [customFunctionEntity]="editOperation.foreignEntity"
+  [customFunctionId]="editOperation.customFunction.id"
+  [customFunctionParam]="editOperation.item"
   (editFinished)="cancelEdit()">
 </ballware-crud-foreigneditpopup>
-<dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
+<dx-popup *ngIf="editOperation && editOperation.externalEditor"
   [visible]="true"
   [showCloseButton]="true"
-  [title]="itemDialog.title"
+  [title]="editOperation.title"
   [fullScreen]="true"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onExternalEditorDialogClose()">
-  <iframe [title]="itemDialog.title" class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
+  <iframe [title]="editOperation.title" class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
-<dx-popup *ngIf="removeDialog"
+<dx-popup *ngIf="removeOperation"
   [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
@@ -43,7 +43,7 @@
     <p>{{'datacontainer.messages.remove' | i18next: { entity: displayName$ | async } }}</p>
   </div>
 </dx-popup>
-<dx-popup *ngIf="importDialog"
+<dx-popup *ngIf="importOperation"
   [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
@@ -58,13 +58,13 @@
   </div>
 </dx-popup>
 <ballware-crud-dialog
-  *ngIf="detailColumnEditDialog"
+  *ngIf="detailColumnEditOperation"
   [fullscreen]="(fullscreenDialogs$ | async) ?? false"
-  [mode]="detailColumnEditDialog.mode"
-  [title]="detailColumnEditDialog.title"
-  [entity]="detailColumnEditDialog.entity"
-  [item]="detailColumnEditDialog.editableItem"
-  [editLayout]="detailColumnEditDialog.editLayout"
+  [mode]="detailColumnEditOperation.mode"
+  [title]="detailColumnEditOperation.title"
+  [entity]="detailColumnEditOperation.entity"
+  [item]="detailColumnEditOperation.editableItem"
+  [editLayout]="detailColumnEditOperation.editLayout"
   [apply]="applyDetailColumnEdit"
   [cancel]="cancelDetailColumnEdit">
   <ballware-edit-layout></ballware-edit-layout>

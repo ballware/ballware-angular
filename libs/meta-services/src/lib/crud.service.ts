@@ -15,7 +15,7 @@ export interface CrudAction {
     execute: (target: Element) => void
 }
 
-export interface ItemEditDialog {
+export interface ItemEditOperation {
     mode: EditModes,
     entity: string,
     item: unknown,
@@ -27,7 +27,7 @@ export interface ItemEditDialog {
     customFunction?: EntityCustomFunction
 }
 
-export interface ItemRemoveDialog {
+export interface ItemRemoveOperation {
     item: Record<string, unknown>,
     title: string
 }
@@ -39,11 +39,11 @@ export interface CrudEditMenuItem {
     customFunction?: EntityCustomFunction
 }
 
-export interface ImportDialog {
+export interface ImportOperation {
     importFunction: EntityCustomFunction
 }
 
-export interface DetailColumnEditDialog {
+export interface DetailColumnEditOperation {
     mode: EditModes,
     entity: string,
     originalItem: unknown,
@@ -68,11 +68,11 @@ export interface CrudService extends OnDestroy {
     exportMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
     importMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
 
-    itemDialog$: Observable<ItemEditDialog|undefined>;
-    removeDialog$: Observable<ItemRemoveDialog|undefined>;
-    importDialog$: Observable<ImportDialog|undefined>;
+    editOperation$: Observable<ItemEditOperation|undefined>;
+    removeOperation$: Observable<ItemRemoveOperation|undefined>;
+    importOperation$: Observable<ImportOperation|undefined>;
 
-    detailColumnEditDialog$: Observable<DetailColumnEditDialog|undefined>;
+    detailColumnEditOperation$: Observable<DetailColumnEditOperation|undefined>;
 
     selectAddSheet$: Observable<{
         actions: CrudAction[]
