@@ -2,7 +2,8 @@ import { AutocompleteCreator, LookupCreator, LookupDescriptor, PickvalueCreator 
 
 export interface LookupState {
 
-    identifier?: string;
+    state: 'init' | 'loading' | 'loaded';
 
+    identifier?: string;
     lookups?: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>;
 }

@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Select list entry of available document list for printing
@@ -19,21 +20,7 @@ export interface DocumentSelectEntry {
 /**
  * Interface for document printing operations
  */
-export interface MetaDocumentApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+export interface MetaDocumentApi extends SelectableMetaApi {
 
   /**
    * Fetch available print documents for business object type
@@ -66,7 +53,7 @@ export interface MetaDocumentApi {
 
   /**
    * Trigger datasource updates for given ids
-   * 
+   *
    * @param ids Collection of ids to trigger update for
    * @returns Observable resolving when update is triggered
    */

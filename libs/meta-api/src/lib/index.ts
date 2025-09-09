@@ -1,3 +1,4 @@
+export * from './selectable';
 export * from './attachment';
 export * from './document';
 export * from './documentation';

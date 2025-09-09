@@ -1,28 +1,15 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for subscription operations
  */
- export interface MetaSubscriptionApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+ export interface MetaSubscriptionApi extends SelectableMetaApi {
 
   /**
    * Trigger subscriptions for given ids
-   * 
+   *
    * @param ids Collection of ids to trigger subscription for
    * @returns Observable resolving when subscription is triggered
    */

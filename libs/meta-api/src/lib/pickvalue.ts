@@ -27,8 +27,9 @@ import { Observable } from 'rxjs';
    */
   selectByValueForEntityAndField: (
     entity: string,
-    field: string
-  ) => (value: number | string) => Observable<Record<string, unknown>>;
+    field: string,
+    value: number | string
+  ) => Observable<Record<string, unknown>>;
 }
 
 export const META_PICKVALUE_API = new InjectionToken<MetaPickvalueApi>('Meta pickvalue api');

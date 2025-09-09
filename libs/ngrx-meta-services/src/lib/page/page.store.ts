@@ -1,4 +1,3 @@
-import { HttpClient } from "@angular/common/http";
 import { OnDestroy } from "@angular/core";
 import { Router } from "@angular/router";
 import { MetaPageApi } from "@ballware/meta-api";
@@ -9,11 +8,11 @@ import { cloneDeep, isEmpty, isEqual } from "lodash";
 import * as qs from "qs";
 import { Observable, combineLatest, distinctUntilChanged, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { pageDestroyed, pageUpdated } from "../component";
-import { IdentityService, LookupRequest, LookupService, PageService, TenantService, ToolbarService, ToolbarItemRef } from "@ballware/meta-services";
+import { LookupRequest, LookupService, PageService, TenantService, ToolbarService, ToolbarItemRef } from "@ballware/meta-services";
 import { PageState } from "./page.state";
 
 export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageService {
-    
+
     private scriptActions: ScriptActions;
 
     private toolbarItems: Record<string, ToolbarItemRef|undefined> = {};
@@ -25,7 +24,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         private router: Router,
         private tenantService: TenantService,
         private toolbarService: ToolbarService,
-        private lookupService: LookupService,      
+        private lookupService: LookupService,
         private metaPageApi: MetaPageApi) {
 
         super({ initialized: false, headParams: {} });
@@ -33,12 +32,12 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         this.state$
             .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {                
+            .subscribe((state) => {
                 if (state.pageIdentifier) {
                     this.store.dispatch(pageUpdated({ identifier: state.pageIdentifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Meta state update');
-                    console.debug(state);    
+                    console.debug(state);
                 }
             });
 
@@ -48,18 +47,18 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 if (state.pageIdentifier) {
                     this.store.dispatch(pageDestroyed({ identifier: state.pageIdentifier }));
                 }
-            });  
+            });
 
         this.editUtil = {
             getEditorOption: (dataMember, option) => this.toolbarItems[dataMember] ? this.toolbarItems[dataMember]?.getOption(option) : undefined,
             setEditorOption: (dataMember, option, value) => this.toolbarItems[dataMember] ? this.toolbarItems[dataMember]?.setOption(option, value) : undefined
         } as EditUtil;
-      
+
         this.scriptActions = {
             loadData: (params) => this.loadData(params)
         };
 
-        this.effect(_ => this.select((state) => state.pageIdentifier)            
+        this.effect(_ => this.select((state) => state.pageIdentifier)
             .pipe(tap((_) => {
                 this.updater((state, _) => ({
                   ...state,
@@ -80,16 +79,16 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                 }))();
 
                 this.toolbarService.setPage(page?.layout.title ?? "", page?.layout.documentationEntity);
-            }))            
+            }))
             .pipe(tap((page) => {
                 this.toolbarItems = {};
-        
+
                 page?.layout?.toolbaritems?.forEach(item => {
                   if (item.name) {
                     this.toolbarItems[item.name] = undefined;
                   }
                 });
-        
+
                 if (!page?.layout?.toolbaritems?.length) {
                   this.updater((state) => ({
                     ...state,
@@ -100,7 +99,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             .pipe(tap((page) => {
                 if (page) {
                     const lookups = [] as Array<LookupRequest>;
-          
+
                     if (page.lookups) {
                       lookups.push(...page.lookups.map(l => {
                         if (l.type === 1) {
@@ -138,7 +137,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                         }
                       }));
                     }
-          
+
                     if (page.picklists) {
                       lookups.push(
                         ...page.picklists.map(p => {
@@ -151,14 +150,16 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                         })
                       );
                     }
-                              
-                    this.lookupService.requestLookups(lookups);
+
+                    this.lookupService.init({
+                      lookups
+                    });
                   }
             }))
         );
 
-        this.effect(_ => 
-            combineLatest([this.page$, this.lookupService.lookups$])                
+        this.effect(_ =>
+            combineLatest([this.page$, this.lookupService.lookups$])
                 .pipe(tap(([page, lookups]) => {
                     if (page && lookups) {
                         page.compiledCustomScripts.prepareCustomParam(lookups, this.scriptUtil, {}, (p) => this.updater((state) => ({
@@ -170,15 +171,15 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         );
 
         this.effect(_ => combineLatest([this.select(state => state.pageUrl), this.tenantService.navigationLayout$, this.tenantService.pages$])
-          .pipe(tap(([pageUrl, navigationLayout, pages]) => {            
+          .pipe(tap(([pageUrl, navigationLayout, pages]) => {
             if (navigationLayout && pages && pageUrl) {
               if (pageUrl === 'default') {
                 if (navigationLayout.defaultUrl) {
                   this.router.navigate([`/page/${navigationLayout.defaultUrl}`]);
-                }   
+                }
               } else {
                 const page = pages.find(p => p.options.url === pageUrl);
-          
+
                 if (page?.options?.page) {
                   this.setPageId(page.options.page)
                 }
@@ -189,7 +190,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
 
       this.effect(_ => this.select(state => state.pageQuery)
         .pipe(withLatestFrom(this.select(state => state.headParams), this.select(state => state.pageIdentifier)))
-        .pipe(tap(([queryParams, headParams, pageIdentifier]) => {          
+        .pipe(tap(([queryParams, headParams, pageIdentifier]) => {
 
           if ((!queryParams || isEmpty(queryParams)) && !isEmpty(headParams) && pageIdentifier) {
             this.resetPage();
@@ -203,7 +204,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
         }))
       );
     }
-  
+
     readonly initialized$ = this.select((state) => state.initialized);
     readonly page$ = this.select((state) => state.page);
     readonly title$ = this.select((state) => state.title);
@@ -228,12 +229,12 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
       pageIdentifier
     }));
 
-    readonly loadData = this.effect((params$: Observable<QueryParams>) => 
+    readonly loadData = this.effect((params$: Observable<QueryParams>) =>
         params$
             .pipe(tap((params) => {
                 this.router.navigate([], { queryParams: { page: qs.stringify(params) }, queryParamsHandling: 'merge' });
 
-                setTimeout(() => 
+                setTimeout(() =>
                   this.updater((state) => ({
                       ...state,
                       initialized: true
@@ -242,7 +243,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             }))
     );
 
-    readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) => 
+    readonly paramEditorInitialized = this.effect((params$: Observable<{ name: string, item: ToolbarItemRef }>) =>
         combineLatest([this.page$, this.lookupService.lookups$, params$])
             .pipe(withLatestFrom(this.headParams$))
             .pipe(tap(([[page, lookups, { name, item }], pageParam]) => {
@@ -250,7 +251,7 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                     this.toolbarItems[name] = item;
 
                     page.compiledCustomScripts.paramEditorInitialized(name, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam);
-                    
+
                     if (!Object.keys(this.toolbarItems).some(item => !this.toolbarItems[item])) {
                         if (page) {
                             page.compiledCustomScripts.paramsInitialized(false, lookups, this.scriptUtil, this.scriptActions, pageParam);
@@ -260,23 +261,23 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
             }))
     );
 
-    readonly paramEditorDestroyed = this.effect((name$: Observable<string>) => 
+    readonly paramEditorDestroyed = this.effect((name$: Observable<string>) =>
         name$
             .pipe(tap((name) => {
                 delete this.toolbarItems[name];
             }))
     );
 
-    paramEditorValueChanged = this.effect((params$: Observable<{ name: string, value: ValueType }>) => 
+    paramEditorValueChanged = this.effect((params$: Observable<{ name: string, value: ValueType }>) =>
         combineLatest([this.page$, this.lookupService.lookups$, this.headParams$, params$])
             .pipe(tap(([page, lookups, pageParam, { name, value }]) => {
                 if (page && lookups && pageParam) {
-                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam);  
+                  page.compiledCustomScripts.paramEditorValueChanged(name, value, this.editUtil, lookups, this.scriptUtil, this.scriptActions, pageParam);
                 }
             }))
     );
 
-    paramEditorEvent = this.effect((params$: Observable<{ name: string, event: string, param?: ValueType }>) => 
+    paramEditorEvent = this.effect((params$: Observable<{ name: string, event: string, param?: ValueType }>) =>
         combineLatest([this.page$, this.lookupService.lookups$, params$])
             .pipe(withLatestFrom(this.headParams$))
             .pipe(tap(([[page, lookups, { name, event, param }], pageParam]) => {

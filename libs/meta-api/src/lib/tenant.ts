@@ -2,25 +2,12 @@ import { Observable } from 'rxjs';
 
 import { CompiledTenant } from '@ballware/meta-model';
 import { InjectionToken } from '@angular/core';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for tenant data operations
  */
- export interface MetaTenantApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+ export interface MetaTenantApi extends SelectableMetaApi {
 
   /**
    * Fetch metadatan for tenant
@@ -30,8 +17,8 @@ import { InjectionToken } from '@angular/core';
   metadataForTenant: (tenant: string) => Observable<CompiledTenant>;
 
   /**
-   * Fetch list of allowed tenants for current user   
-   * @returns List of tenants 
+   * Fetch list of allowed tenants for current user
+   * @returns List of tenants
    */
   allowed: () => Observable<Array<Record<string, unknown>>>;
 }

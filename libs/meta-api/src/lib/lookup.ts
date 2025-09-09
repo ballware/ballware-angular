@@ -1,25 +1,11 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for fetching lookups
  */
- export interface MetaLookupApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
-
+ export interface MetaLookupApi extends SelectableMetaApi {
 
   /**
    * Fetch list by lookup
@@ -39,8 +25,9 @@ import { Observable } from 'rxjs';
    * @returns Observable containing lookup element
    */
   selectByIdForLookup: (
-    lookup: string
-  ) => (id: string) => Observable<Record<string, unknown>>;
+    lookup: string,
+    id: string
+  ) => Observable<Record<string, unknown>>;
 
   /**
    * Fetch list by lookup identifier
@@ -60,8 +47,9 @@ import { Observable } from 'rxjs';
    * @returns Observable containing lookup element
    */
   selectByIdForLookupIdentifier: (
-    identifier: string
-  ) => (id: string) => Observable<Record<string, unknown>>;
+    identifier: string,
+    id: string
+  ) => Observable<Record<string, unknown>>;
 
   /**
    * Fetch list by lookup with param
@@ -85,8 +73,9 @@ import { Observable } from 'rxjs';
    */
   selectByIdForLookupWithParam: (
     lookup: string,
-    param: unknown
-  ) => (id: string) => Observable<Record<string, unknown>>;
+    param: unknown,
+    id: string
+  ) => Observable<Record<string, unknown>>;
 
   /**
    * Fetch list of proposals for lookup

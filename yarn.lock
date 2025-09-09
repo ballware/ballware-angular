@@ -11594,6 +11594,7 @@ __metadata:
     rxjs-marbles: "npm:^7.0.1"
     storybook: "npm:^8.2.9"
     ts-jest: "npm:29.1.1"
+    ts-mockito: "npm:^2.6.1"
     ts-node: "npm:10.9.1"
     tslib: "npm:^2.3.0"
     typemoq: "npm:^2.1.0"
@@ -20255,7 +20256,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.10, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4":
+"lodash@npm:^4.17.10, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.17.4, lodash@npm:^4.17.5":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -26225,6 +26226,15 @@ __metadata:
     typescript: "*"
     webpack: ^5.0.0
   checksum: d5a9ecf5440c82724d78b20e08965eebf4b23fcdf644d215e089144794faaaf955564c83b13954728a6f10c7bef292d3990905870152275191779c8661385c77
+  languageName: node
+  linkType: hard
+
+"ts-mockito@npm:^2.6.1":
+  version: 2.6.1
+  resolution: "ts-mockito@npm:2.6.1"
+  dependencies:
+    lodash: "npm:^4.17.5"
+  checksum: 861125f4d44ed8e9506067f95b6c9ff83e3d62d849a475b7229e1913d17657f34936f448f8af9f8070c0307946b81c83ca4a97e267022159c0f96de72379f522
   languageName: node
   linkType: hard
 

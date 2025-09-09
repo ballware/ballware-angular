@@ -12,8 +12,9 @@ const selectListForLookupFunc = (http: HttpClient, tenantServiceBaseUrl: string)
 };
 
 const selectByIdForLookupFunc = (http: HttpClient, tenantServiceBaseUrl: string) => (
-  lookupId: string
-) => (id: string): Observable<Record<string, unknown>> => {
+  lookupId: string,
+  id: string
+): Observable<Record<string, unknown>> => {
   const url = `${tenantServiceBaseUrl}/lookup/selectbyidforlookup/${lookupId}/${id}`;
 
   return http
@@ -30,8 +31,9 @@ const selectListForLookupIdentifierFunc = (http: HttpClient, tenantServiceBaseUr
 };
 
 const selectByIdForLookupIdentifierFunc = (http: HttpClient, tenantServiceBaseUrl: string) => (
-  identifier: string
-) => (id: string): Observable<Record<string, unknown>> => {
+  identifier: string,
+  id: string
+): Observable<Record<string, unknown>> => {
   const url = `${tenantServiceBaseUrl}/lookup/selectbyidforlookupidentifier/${identifier}/${id}`;
 
   return http
@@ -50,8 +52,9 @@ const selectListForLookupWithParamFunc = (http: HttpClient, tenantServiceBaseUrl
 
 const selectByIdForLookupWithParamFunc = (http: HttpClient, tenantServiceBaseUrl: string) => (
   lookupId: string,
-  param: unknown
-) => (id: string): Observable<Record<string, unknown>> => {
+  param: unknown,
+  id: string
+): Observable<Record<string, unknown>> => {
   const url = `${tenantServiceBaseUrl}/lookup/selectbyidforlookupwithparam/${lookupId}/${param}/${id}`;
 
   return http
@@ -93,12 +96,13 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
 
 /**
  * Create adapter for lookup fetch operations with ballware.meta.service
+ * @param httpClient Http client to use for requests
  * @param metaServiceBaseUrl Base URL to connect to ballware.meta.service
  * @param tenantServiceBaseUrl Base URL to connect to ballware.tenant.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendLookupApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   metaServiceBaseUrl: string,
   tenantServiceBaseUrl: string
 ): MetaLookupApi {
@@ -108,24 +112,24 @@ export function createMetaBackendLookupApi(
     selectListForLookup: selectListForLookupFunc(httpClient, tenantServiceBaseUrl),
     selectByIdForLookup: selectByIdForLookupFunc(httpClient, tenantServiceBaseUrl),
     selectListForLookupIdentifier: selectListForLookupIdentifierFunc(
-      httpClient, 
+      httpClient,
       tenantServiceBaseUrl
     ),
     selectByIdForLookupIdentifier: selectByIdForLookupIdentifierFunc(
-      httpClient, 
+      httpClient,
       tenantServiceBaseUrl
     ),
     selectListForLookupWithParam: selectListForLookupWithParamFunc(
-      httpClient, 
+      httpClient,
       tenantServiceBaseUrl
     ),
     selectByIdForLookupWithParam: selectByIdForLookupWithParamFunc(
-      httpClient, 
+      httpClient,
       tenantServiceBaseUrl
     ),
     autoCompleteForLookup: autoCompleteForLookupFunc(httpClient, tenantServiceBaseUrl),
     autoCompleteForLookupWithParam: autoCompleteForLookupWithParamFunc(
-      httpClient, 
+      httpClient,
       tenantServiceBaseUrl
     ),
   } as MetaLookupApi;
