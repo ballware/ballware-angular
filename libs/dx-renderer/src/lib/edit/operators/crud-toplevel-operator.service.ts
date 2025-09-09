@@ -1,14 +1,16 @@
 import {
   CrudOperator,
-  CrudService, DetailColumnEditOperation,
+  CrudService,
+  DetailColumnEditOperation,
   ImportOperation,
   ItemEditOperation,
   ItemRemoveOperation
 } from '@ballware/meta-services';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { OnDestroy } from '@angular/core';
 import { CrudOverlayOperator } from './crud-overlay-operator.service';
+import { CrudItem } from '@ballware/meta-model';
 
 export class CrudTopLevelOperatorService implements CrudOperator, CrudOverlayOperator, OnDestroy {
 
@@ -31,8 +33,10 @@ export class CrudTopLevelOperatorService implements CrudOperator, CrudOverlayOpe
 
     this.crudService.editOperation$
       .pipe(takeUntil(this.destroy$))
-      .subscribe(op => {
+      .pipe(withLatestFrom(this.crudService.queryIdentifier$))
+      .subscribe(([op, query]) => {
         if (op && !op.customFunction && op.editLayout && op.editLayout.fullscreen) {
+          this.router.navigate([`/entity/${op.entity}/${query}/${op.mode}/${op.editLayout.identifier}/${(op.item as CrudItem).Id}`]);
           console.log('CrudTopLevelOperatorService', 'navigate', op);
         } else {
           this.editOperationOverlay$.next(op);

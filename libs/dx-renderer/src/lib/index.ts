@@ -8,7 +8,7 @@ import moment from 'moment';
 
 import globalConfig from 'devextreme/core/config';
 import { provideRouter, Routes, withComponentInputBinding } from '@angular/router';
-import { PageComponent } from './page';
+import { EntityComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
 import { provideDxCrudOperatorFactory } from './edit';
@@ -50,6 +50,10 @@ const routes: Routes = [
   {
       path: 'page/:id',
       component: PageComponent
+  },
+  {
+      path: 'entity/:entity/:query/:mode/:editLayout/:id',
+      component: EntityComponent
   },
   {
       path: '**',

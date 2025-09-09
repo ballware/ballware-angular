@@ -25,7 +25,6 @@ import { EditStore } from './edit/edit.store';
 import {
   ATTACHMENT_SERVICE_FACTORY,
   CRUD_SERVICE_FACTORY,
-  CrudOperator,
   EDIT_SERVICE_FACTORY,
   IDENTITY_SERVICE,
   IdentityService,
