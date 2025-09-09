@@ -2,25 +2,12 @@ import { Observable } from 'rxjs';
 
 import { CompiledStatistic, QueryParams } from '@ballware/meta-model';
 import { InjectionToken } from '@angular/core';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for statistic data operations
  */
- export interface MetaStatisticApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+ export interface MetaStatisticApi extends SelectableMetaApi {
 
   /**
    * Fetch metadata for statistic

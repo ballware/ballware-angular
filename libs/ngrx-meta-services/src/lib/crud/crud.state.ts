@@ -1,45 +1,45 @@
 import { CrudItem, EntityCustomFunction } from "@ballware/meta-model";
-import { CrudAction, CrudEditMenuItem, DetailColumnEditDialog, ImportDialog, ItemEditDialog, ItemRemoveDialog } from "@ballware/meta-services";
+import { CrudAction, CrudEditMenuItem, DetailColumnEditOperation, ImportOperation, ItemEditOperation, ItemRemoveOperation } from "@ballware/meta-services";
 
 export interface CrudState {
-  
+
     queryIdentifier?: string;
     identifier?: string;
 
     addMenuItems?: CrudEditMenuItem[];
     headCustomFunctions?: EntityCustomFunction[];
-  
+
     exportMenuItems?: CrudEditMenuItem[];
     importMenuItems?: CrudEditMenuItem[];
-  
-    itemDialog?: ItemEditDialog;
-    removeDialog?: ItemRemoveDialog;
-    importDialog?: ImportDialog;
-  
-    detailColumnEditDialog?: DetailColumnEditDialog;
+
+    editOperation?: ItemEditOperation;
+    removeOperation?: ItemRemoveOperation;
+    importOperation?: ImportOperation;
+
+    detailColumnEditOperation?: DetailColumnEditOperation;
 
     selectAddSheet?: {
         actions: CrudAction[]
     };
-  
-    selectActionSheet?: { 
-        item: CrudItem, 
-        actions: CrudAction[]
-    };
-  
-    selectPrintSheet?: { 
-        items: CrudItem[],  
+
+    selectActionSheet?: {
+        item: CrudItem,
         actions: CrudAction[]
     };
 
-    selectExportSheet?: { 
-        items: CrudItem[],  
+    selectPrintSheet?: {
+        items: CrudItem[],
         actions: CrudAction[]
     };
 
-    selectImportSheet?: { 
+    selectExportSheet?: {
+        items: CrudItem[],
         actions: CrudAction[]
     };
-  
+
+    selectImportSheet?: {
+        actions: CrudAction[]
+    };
+
     fetchedItems?: CrudItem[];
 }

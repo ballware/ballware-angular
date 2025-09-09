@@ -1,6 +1,19 @@
 import { Component, Inject, Input, OnInit, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { CRUD_SERVICE, CrudService, DetailColumnEditDialog, EditModes, ImportDialog, ItemEditDialog, ItemRemoveDialog, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
+import {
+  CRUD_SERVICE,
+  CrudService,
+  DetailColumnEditOperation,
+  EditModes,
+  ImportOperation,
+  ItemEditOperation,
+  ItemRemoveOperation,
+  META_SERVICE,
+  MetaService,
+  RESPONSIVE_SERVICE,
+  ResponsiveService,
+  SCREEN_SIZE
+} from '@ballware/meta-services';
 import { DxActionSheetComponent, DxActionSheetModule, DxFileUploaderModule, DxPopupModule } from 'devextreme-angular';
 import { ItemClickEvent } from 'devextreme/ui/action_sheet';
 import { BehaviorSubject, Observable, map, takeUntil, withLatestFrom } from 'rxjs';
@@ -10,6 +23,9 @@ import { I18NextModule } from 'angular-i18next';
 import { ForeignEditPopupComponent } from '../foreigneditpopup/foreigneditpopup.component';
 import { CrudDialogComponent } from '../dialog/dialog.component';
 import { EditLayoutComponent } from '../layout/layout.component';
+import { CRUD_OVERLAY_OPERATOR } from '../operators';
+import { CrudOverlayOperator } from '../operators/crud-overlay-operator.service';
+import { EditUtil } from '@ballware/meta-model';
 
 @Component({
   selector: 'ballware-crud-actions',
@@ -32,11 +48,11 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
   public EditModes = EditModes;
 
-  public itemDialog: ItemEditDialog|undefined;
-  public removeDialog: ItemRemoveDialog|undefined;
-  public importDialog: ImportDialog|undefined;
+  public editOperationOverlay: ItemEditOperation|undefined;
+  public removeOperationOverlay: ItemRemoveOperation|undefined;
+  public importOperationOverlay: ImportOperation|undefined;
 
-  public detailColumnEditDialog: DetailColumnEditDialog|undefined;
+  public detailColumnEditOperationOverlay: DetailColumnEditOperation|undefined;
 
   public sanitizedExternalEditorUrl: SafeUrl|undefined;
 
@@ -45,9 +61,10 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(
-      private domSanitizer: DomSanitizer, 
-      @Inject(META_SERVICE) private metaService: MetaService, 
-      @Inject(CRUD_SERVICE) private crudService: CrudService, 
+      private domSanitizer: DomSanitizer,
+      @Inject(META_SERVICE) private metaService: MetaService,
+      @Inject(CRUD_SERVICE) private crudService: CrudService,
+      @Inject(CRUD_OVERLAY_OPERATOR) private crudOverlayOperator: CrudOverlayOperator,
       @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
     super();
 
@@ -63,30 +80,30 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
     this.displayName$ = this.metaService.displayName$.pipe(takeUntil(this.destroy$));
 
-    this.crudService.itemDialog$
+    this.crudOverlayOperator.editOperationOverlay$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((itemDialog) => {
-        this.itemDialog = itemDialog;
-        this.sanitizedExternalEditorUrl = this.itemDialog?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.itemDialog.item as unknown) as string) : undefined;
+      .subscribe((editOperation) => {
+        this.editOperationOverlay = editOperation;
+        this.sanitizedExternalEditorUrl = this.editOperationOverlay?.externalEditor ? this.domSanitizer.bypassSecurityTrustResourceUrl((this.editOperationOverlay.item as unknown) as string) : undefined;
       });
 
-    this.crudService.removeDialog$
+    this.crudOverlayOperator.removeOperationOverlay$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((removeDialog) => {
-        this.removeDialog = removeDialog;
+      .subscribe((removeOperation) => {
+        this.removeOperationOverlay = removeOperation;
       });
 
-    this.crudService.importDialog$
+    this.crudOverlayOperator.importOperationOverlay$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((importDialog) => {
-        this.importDialog = importDialog;
+      .subscribe((importOperation) => {
+        this.importOperationOverlay = importOperation;
       });
 
-    this.crudService.detailColumnEditDialog$
+    this.crudOverlayOperator.detailColumnEditOperationOverlay$
       .pipe(takeUntil(this.destroy$))
-      .subscribe((detailColumnEditDialog) => {
-        this.detailColumnEditDialog = detailColumnEditDialog;
-      });      
+      .subscribe((detailColumnEditOperation) => {
+        this.detailColumnEditOperationOverlay = detailColumnEditOperation;
+      });
   }
 
   ngOnInit(): void {
@@ -140,7 +157,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
           this.crudService.selectExportDone();
         }
-      });      
+      });
 
     this.crudService.selectImportSheet$
       .pipe(takeUntil(this.destroy$))
@@ -153,7 +170,7 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
 
           this.crudService.selectImportDone();
         }
-      });            
+      });
   }
 
   public actionItemClicked(e: ItemClickEvent) {
@@ -177,23 +194,50 @@ export class CrudActionsComponent extends WithDestroy() implements OnInit {
   }
 
   public onRemoveDialogApply() {
-    this.removeDialog?.apply(this.removeDialog.item);
+    if (this.removeOperationOverlay) {
+      this.crudService.applyRemove({ item: this.removeOperationOverlay?.item });
+    }
   }
 
   public onRemoveDialogCancel() {
-    this.removeDialog?.cancel();
+    this.crudService.cancelRemove();
   }
 
   public onImportDialogApply(file: File) {
-    this.importDialog?.apply(file);
+    if (this.importOperationOverlay) {
+      this.crudService.applyImport({ file, customFunction: this.importOperationOverlay.importFunction });
+    }
   }
 
   public onImportDialogCancel() {
-    this.importDialog?.cancel();
+    this.crudService.cancelImport();
   }
 
   public onExternalEditorDialogClose() {
-    this.itemDialog?.cancel();
+    this.crudService.cancelEdit();
   }
+
+  readonly applyDetailColumnEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
+    if (this.detailColumnEditOperationOverlay) {
+      this.crudService.applyDetailColumnEdit({ originalItem: this.detailColumnEditOperationOverlay.originalItem as Record<string, unknown>, editedItem: item, column: this.detailColumnEditOperationOverlay.column });
+    }
+  }
+
+  readonly cancelDetailColumnEdit = () => {
+    this.crudService.cancelDetailColumnEdit();
+  }
+
+  readonly applyEdit = (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => {
+    if (this.editOperationOverlay) {
+      this.crudService.applyEdit({
+        item: item,
+        continueAfterSave: continueAfterSave,
+        editUtil: editUtil,
+        customFunction: this.editOperationOverlay.customFunction
+      });
+    }
+  }
+
+  readonly cancelEdit = () => this.crudService.cancelEdit();
 
 }

@@ -61,8 +61,9 @@ const selectListTenantAllowedForEntityAndIds = (http: HttpClient, tenantServiceB
 };
 
 const selectByStateForEntity = (http: HttpClient, metaServiceBaseUrl: string) => (
-  entity: string
-) => (state: number | string): Observable<Record<string, unknown>> => {
+  entity: string,
+  state: number | string
+): Observable<Record<string, unknown>> => {
   const url = `${metaServiceBaseUrl}/processingstate/selectbystateforentity/${entity}/${state}`;
 
   return http
@@ -71,13 +72,14 @@ const selectByStateForEntity = (http: HttpClient, metaServiceBaseUrl: string) =>
 
 /**
  * Create adapter for processing state fetch operations with ballware.meta.service
+ * @param httpClient Http client to use for requests
  * @param metaServiceBaseUrl Base URL to connect to ballware.meta.service
  * @param tenantServiceBaseUrl Base URL to connect to ballware.tenant.service
  * @param documentServiceBaseUrl Base URL to connect to ballware.document.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendProcessingstateApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   metaServiceBaseUrl: string,
   tenantServiceBaseUrl: string,
   documentServiceBaseUrl: string
@@ -85,7 +87,7 @@ export function createMetaBackendProcessingstateApi(
   return {
     selectList: selectList(httpClient, metaServiceBaseUrl),
     selectById: selectById(httpClient, metaServiceBaseUrl),
-    selectListForEntity: selectListForEntity(httpClient, metaServiceBaseUrl),    
+    selectListForEntity: selectListForEntity(httpClient, metaServiceBaseUrl),
     selectListMetaAllowedForEntityAndIds: selectListMetaAllowedForEntityAndIds(
       httpClient,
       metaServiceBaseUrl,

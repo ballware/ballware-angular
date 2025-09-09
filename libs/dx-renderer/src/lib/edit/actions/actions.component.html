@@ -1,31 +1,41 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="itemDialog.mode" [title]="itemDialog.title" [entity]="itemDialog.entity" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [supportContinueAfterSave]="itemDialog.supportContinueAfterSave" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog
+  *ngIf="editOperationOverlay && editOperationOverlay.editLayout && !editOperationOverlay.externalEditor && !editOperationOverlay.foreignEntity"
+  [fullscreen]="(fullscreenDialogs$ | async) ?? false"
+  [mode]="editOperationOverlay.mode"
+  [title]="editOperationOverlay.title"
+  [entity]="editOperationOverlay.entity"
+  [item]="editOperationOverlay.item"
+  [editLayout]="editOperationOverlay.editLayout"
+  [supportContinueAfterSave]="editOperationOverlay.supportContinueAfterSave"
+  [apply]="applyEdit"
+  [cancel]="cancelEdit">
   <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>
-<ballware-crud-foreigneditpopup *ngIf="itemDialog && !itemDialog.externalEditor && itemDialog.foreignEntity && itemDialog.customFunction"
+<ballware-crud-foreigneditpopup *ngIf="editOperationOverlay && !editOperationOverlay.externalEditor && editOperationOverlay.foreignEntity && editOperationOverlay.customFunction"
   [fullscreen]="(fullscreenDialogs$ | async) ?? false"
-  [customFunctionEntity]="itemDialog.foreignEntity"  
-  [customFunctionId]="itemDialog.customFunction.id"
-  [customFunctionParam]="itemDialog.item"
-  (editFinished)="itemDialog.cancel()">
+  [customFunctionEntity]="editOperationOverlay.foreignEntity"
+  [customFunctionId]="editOperationOverlay.customFunction.id"
+  [customFunctionParam]="editOperationOverlay.item"
+  (editFinished)="cancelEdit()">
 </ballware-crud-foreigneditpopup>
-<dx-popup *ngIf="itemDialog && itemDialog.externalEditor"
-  [visible]="true" 
+<dx-popup *ngIf="editOperationOverlay && editOperationOverlay.externalEditor"
+  [visible]="true"
   [showCloseButton]="true"
-  [title]="itemDialog.title"
+  [title]="editOperationOverlay.title"
   [fullScreen]="true"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onExternalEditorDialogClose()">
-  <iframe class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
+  <iframe [title]="editOperationOverlay.title" class="w-100 h-100" [src]="sanitizedExternalEditorUrl"></iframe>
 </dx-popup>
-<dx-popup *ngIf="removeDialog" 
-  [visible]="true" 
+<dx-popup *ngIf="removeOperationOverlay"
+  [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.remove' | i18next: { entity: displayName$ | async }"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onRemoveDialogCancel()"
-  width="auto" 
-  minWidth="500px" 
+  width="auto"
+  minWidth="500px"
   height="auto">
   <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'danger', text: 'editing.actions.remove' | i18next, onClick: onRemoveDialogApply }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
   <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onRemoveDialogCancel }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
@@ -33,23 +43,32 @@
     <p>{{'datacontainer.messages.remove' | i18next: { entity: displayName$ | async } }}</p>
   </div>
 </dx-popup>
-<dx-popup *ngIf="importDialog"
-  [visible]="true" 
+<dx-popup *ngIf="importOperationOverlay"
+  [visible]="true"
   [showCloseButton]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.titles.import' | i18next: { entity: displayName$ | async }"
   [animation]="{ hide: undefined, show: undefined }"
   (onHidden)="onImportDialogCancel()"
-  width="auto" 
-  minWidth="500px" 
+  width="auto"
+  minWidth="500px"
   height="auto">
   <div *dxTemplate="let data of 'content'">
     <dx-file-uploader width="400px" [multiple]="false" accept="*" uploadMode="instantly" [uploadFile]="onImportDialogApply"> </dx-file-uploader>
   </div>
 </dx-popup>
-<ballware-crud-dialog *ngIf="detailColumnEditDialog" [fullscreen]="(fullscreenDialogs$ | async) ?? false" [mode]="detailColumnEditDialog.mode" [title]="detailColumnEditDialog.title" [entity]="detailColumnEditDialog.entity" [item]="detailColumnEditDialog.item" [editLayout]="detailColumnEditDialog.editLayout" [apply]="detailColumnEditDialog.apply" [cancel]="detailColumnEditDialog.cancel">
+<ballware-crud-dialog
+  *ngIf="detailColumnEditOperationOverlay"
+  [fullscreen]="(fullscreenDialogs$ | async) ?? false"
+  [mode]="detailColumnEditOperationOverlay.mode"
+  [title]="detailColumnEditOperationOverlay.title"
+  [entity]="detailColumnEditOperationOverlay.entity"
+  [item]="detailColumnEditOperationOverlay.editableItem"
+  [editLayout]="detailColumnEditOperationOverlay.editLayout"
+  [apply]="applyDetailColumnEdit"
+  [cancel]="cancelDetailColumnEdit">
   <ballware-edit-layout></ballware-edit-layout>
-</ballware-crud-dialog> 
+</ballware-crud-dialog>
 <dx-action-sheet #actionMenu
   width="auto"
   [showCancelButton]="true"

@@ -1,24 +1,11 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for documentation viewer operations
  */
- export interface MetaDocumentationApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+ export interface MetaDocumentationApi extends SelectableMetaApi {
 
   /**
    * Fetch documentation for business object type

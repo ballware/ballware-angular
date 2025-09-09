@@ -14,8 +14,9 @@ const selectListForEntityAndField = (http: HttpClient, metaServiceBaseUrl: strin
 
 const selectByValueForEntityAndField = (http: HttpClient, metaServiceBaseUrl: string) => (
   entity: string,
-  field: string
-) => (value: number | string): Observable<Record<string, unknown>> => {
+  field: string,
+  value: number | string
+): Observable<Record<string, unknown>> => {
   const url = `${metaServiceBaseUrl}/pickvalue/selectbyvalueforentityandfield/${entity}/${field}/${value}`;
 
   return http
@@ -24,11 +25,12 @@ const selectByValueForEntityAndField = (http: HttpClient, metaServiceBaseUrl: st
 
 /**
  * Create adapter for pickvalue fetch operations with ballware.meta.service
+ * @param httpClient Http client to use for requests
  * @param serviceBaseUrl Base URL to connect to ballware.meta.service
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendPickvalueApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   serviceBaseUrl: string
 ): MetaPickvalueApi {
   return {

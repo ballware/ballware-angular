@@ -1,28 +1,15 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Functions for accessing user information from identity provider
  */
- export interface IdentityUserApi {
-  /**
-   * Returning a list of available users in identity system
-   *
-   * @param token - access token required for authentication
-   * @returns Promise resolving list of available user with id and display text
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-  /**
-   * Returns a single existing user by identifier from identity system
-   *
-   * @param token - access token required for authentication
-   * @returns Promise resoling single element with id and display text for requested identifier
-   */
-  selectById: (identifier: string) => Observable<Record<string, unknown>>;
+ export interface IdentityUserApi extends SelectableMetaApi {
 
   /**
    * Switch current user to tenant
-   * 
+   *
    * @param tenant - identifier of destination tenant
    * @returns Promise resolved when tenant switch is completed
    */

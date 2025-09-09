@@ -1,3 +1,12 @@
-<ballware-crud-dialog *ngIf="itemDialog && itemDialog.editLayout && !itemDialog.externalEditor && !itemDialog.foreignEntity" [fullscreen]="fullscreen" [mode]="itemDialog.mode" [entity]="itemDialog.entity" [title]="itemDialog.title" [item]="itemDialog.item" [editLayout]="itemDialog.editLayout" [apply]="itemDialog.apply" [cancel]="itemDialog.cancel">
+<ballware-crud-dialog
+  *ngIf="itemOperation && itemOperation.editLayout && !itemOperation.externalEditor && !itemOperation.foreignEntity"
+  [fullscreen]="fullscreen"
+  [mode]="itemOperation.mode"
+  [entity]="itemOperation.entity"
+  [title]="itemOperation.title"
+  [item]="itemOperation.item"
+  [editLayout]="itemOperation.editLayout"
+  [apply]="applyEdit"
+  [cancel]="cancelEdit">
     <ballware-edit-layout></ballware-edit-layout>
 </ballware-crud-dialog>

@@ -62,8 +62,9 @@ import { Observable } from 'rxjs';
    * @returns Observable containing processing state data
    */
   selectByStateForEntity: (
-    entity: string
-  ) => (state: number | string) => Observable<Record<string, unknown>>;
+    entity: string,
+    state: number | string
+  ) => Observable<Record<string, unknown>>;
 }
 
 export const META_PROCESSINGSTATE_API = new InjectionToken<MetaProcessingstateApi>('Meta processingstate api');

@@ -1,24 +1,11 @@
 import { InjectionToken } from '@angular/core';
-import { Observable } from 'rxjs';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for notification operations
  */
- export interface MetaNotificationApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
+export interface MetaNotificationApi extends SelectableMetaApi {
 
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
 }
 
 export const META_NOTIFICATION_API = new InjectionToken<MetaNotificationApi>('Meta notification api');

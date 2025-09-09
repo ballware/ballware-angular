@@ -2,25 +2,12 @@ import { Observable } from 'rxjs';
 
 import { CompiledPageData } from '@ballware/meta-model';
 import { InjectionToken } from '@angular/core';
+import { SelectableMetaApi } from './selectable';
 
 /**
  * Interface for page metadata operations
  */
- export interface MetaPageApi {
-  /**
-   * Fetch list for lookup
-   *
-   * @returns Observable containing result list of lookup query
-   */
-  selectList: () => Observable<Array<Record<string, unknown>>>;
-
-  /**
-   * Fetch single element for lookup by id
-   *
-   * @param id Id of lookup element
-   * @returns Observable containing lookup element
-   */
-  selectById: (id: string) => Observable<Record<string, unknown>>;
+ export interface MetaPageApi extends SelectableMetaApi {
 
   /**
    * Fetch page metadata by identifier

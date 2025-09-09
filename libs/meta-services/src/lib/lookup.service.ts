@@ -127,6 +127,12 @@ export interface LookupService extends OnDestroy {
 
   setIdentifier(identifier: string): void;
 
+  init(request: {
+          lookups: LookupRequest[]
+       }): void;
+
+  ready$: Observable<boolean>;
+
   lookups$: Observable<Record<
       string,
       LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
@@ -137,8 +143,6 @@ export interface LookupService extends OnDestroy {
       valueExpr: string,
       displayExpr: string
     ) => LookupDescriptor) | undefined>;
-
-  requestLookups(request :LookupRequest[]): void;
 }
 
 export type LookupServiceFactory = () => LookupService;
