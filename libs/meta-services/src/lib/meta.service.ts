@@ -1,4 +1,4 @@
-import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
@@ -51,14 +51,14 @@ export interface MetaService extends OnDestroy {
   editorEntered$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
   editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
   editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
-  editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>; 
-  
-  interactionKeyboardLine$: Observable<((  
-    mode: EditModes, 
+  editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>;
+
+  interactionKeyboardLine$: Observable<((
+    mode: EditModes,
     item: Record<string, unknown>,
     editUtil: EditUtil,
     value: string
-  ) => void)|undefined>; 
+  ) => void)|undefined>;
 
   detailGridCellPreparing$: Observable<((
       mode: EditModes,
@@ -73,7 +73,7 @@ export interface MetaService extends OnDestroy {
       item: Record<string, unknown>,
       detailItem: Record<string, unknown>,
       identifier: string
-  ) => string)|undefined>;
+  ) => Observable<string|undefined>)|undefined>;
 
   initNewDetailItem$: Observable<((
       dataMember: string,

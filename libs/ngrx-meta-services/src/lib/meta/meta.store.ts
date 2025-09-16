@@ -15,26 +15,26 @@ interface TemplateItemOptions {
 }
 
 export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
-    constructor(private store: Store, 
+    constructor(private store: Store,
         private readonly scriptUtil: ScriptUtil,
-        private translator: Translator, 
-        private metaEntityApi: MetaEntityApi, 
+        private translator: Translator,
+        private metaEntityApi: MetaEntityApi,
         private metaDocumentApi: MetaDocumentApi,
         private genericEntityApiFactory: GenericEntityApiFactory,
-        private identityService: IdentityService, 
-        private tenantService: TenantService, 
+        private identityService: IdentityService,
+        private tenantService: TenantService,
         private lookupService: LookupService) {
         super({});
 
         this.state$
             .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {                
+            .subscribe((state) => {
                 if (state.identifier) {
                     this.store.dispatch(metaUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Meta state update');
-                    console.debug(state);    
+                    console.debug(state);
                 }
             });
 
@@ -44,48 +44,48 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                 if (state.identifier) {
                     this.store.dispatch(metaDestroyed({ identifier: state.identifier }));
                 }
-            });            
+            });
 
-        this.effect(_ => this.entity$            
-            .pipe(switchMap((entity) => (entity) 
+        this.effect(_ => this.entity$
+            .pipe(switchMap((entity) => (entity)
                 ? this.metaEntityApi.metadataForEntity(entity)
                 : of(undefined)))
-            .pipe(tap((entityMetadata) => {                
+            .pipe(tap((entityMetadata) => {
                 this.updater((state, entityMetadata: CompiledEntityMetadata|undefined) => ({
                     ...state,
                     entityMetadata,
                     displayName: entityMetadata?.displayName,
                     customFunctions: entityMetadata?.customFunctions ?? [],
                     entityTemplates: entityMetadata?.templates ?? [],
-                    addFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_add') 
-                        ?? { 
-                            id: 'add', 
-                            type: 'default_add', 
-                            text: this.translator('datacontainer.actions.add', { entity: entityMetadata?.displayName }), 
-                            editLayout: 'primary' 
+                    addFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_add')
+                        ?? {
+                            id: 'add',
+                            type: 'default_add',
+                            text: this.translator('datacontainer.actions.add', { entity: entityMetadata?.displayName }),
+                            editLayout: 'primary'
                         },
-                    viewFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_view') 
-                        ?? { 
-                            id: 'view', 
-                            type: 'default_view', 
+                    viewFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_view')
+                        ?? {
+                            id: 'view',
+                            type: 'default_view',
                             icon: 'bi bi-eye-fill',
-                            text: this.translator('datacontainer.actions.show', { entity: entityMetadata?.displayName }), 
-                            editLayout: 'primary' 
-                        },                        
-                    editFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_edit') 
-                        ?? { 
-                            id: 'edit', 
-                            type: 'default_edit', 
-                            icon: 'bi bi-pencil-fill',
-                            text: this.translator('datacontainer.actions.edit', { entity: entityMetadata?.displayName }), 
-                            editLayout: 'primary' 
+                            text: this.translator('datacontainer.actions.show', { entity: entityMetadata?.displayName }),
+                            editLayout: 'primary'
                         },
-                }))(entityMetadata);                
+                    editFunction: entityMetadata?.customFunctions?.find(c => c.type === 'default_edit')
+                        ?? {
+                            id: 'edit',
+                            type: 'default_edit',
+                            icon: 'bi bi-pencil-fill',
+                            text: this.translator('datacontainer.actions.edit', { entity: entityMetadata?.displayName }),
+                            editLayout: 'primary'
+                        },
+                }))(entityMetadata);
             }))
             .pipe(tap((entityMetadata) => {
                 if (entityMetadata) {
                     const lookups = [] as Array<LookupRequest>;
-          
+
                     if (entityMetadata.lookups) {
                       lookups.push(...entityMetadata.lookups.map(l => {
                         if (l.type === 1) {
@@ -123,7 +123,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                         }
                       }));
                     }
-          
+
                     if (entityMetadata.picklists) {
                       lookups.push(
                         ...entityMetadata.picklists.map(p => {
@@ -136,7 +136,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                         })
                       );
                     }
-          
+
                     if (entityMetadata.stateColumn) {
                       lookups.push(
                         ...[
@@ -158,24 +158,24 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                         ]
                       );
                     }
-          
+
                     this.lookupService.requestLookups(lookups);
                   }
-            }))           
+            }))
         );
 
-        this.effect(_ => this.entity$            
-            .pipe(switchMap((entity) => (entity) 
+        this.effect(_ => this.entity$
+            .pipe(switchMap((entity) => (entity)
                 ? this.metaDocumentApi.selectListDocumentsForEntity(entity)
                 : of(undefined)))
-            .pipe(tap((entityDocuments) => {                
+            .pipe(tap((entityDocuments) => {
                 if (entityDocuments) {
                     this.updater((state, entityDocuments: DocumentSelectEntry[]) => ({
                         ...state,
                         entityDocuments
                     }))(entityDocuments);
                 }
-            }))            
+            }))
         );
 
         this.effect(_ => combineLatest([this.entityMetadata$, this.lookupService.lookups$, this.initialCustomParam$])
@@ -191,7 +191,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                 }
             })));
     }
-    
+
     readonly entity$ = this.select(state => state.entity);
 
     readonly setIdentifier = this.updater((state, identifier: string) => ({
@@ -202,11 +202,11 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
     readonly setEntity = this.updater((state, entity: string) => ({
             ...state,
             entity
-        }));        
-    
+        }));
+
     readonly readOnly$ = this.select(state => state.readOnly);
 
-    readonly setReadOnly = 
+    readonly setReadOnly =
         this.updater((state, readOnly: boolean) => ({
             ...state,
             readOnly
@@ -214,7 +214,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly headParams$ = this.select(state => state.headParams);
 
-    readonly setHeadParams = 
+    readonly setHeadParams =
         this.updater((state, headParams: QueryParams) => ({
             ...state,
             headParams
@@ -222,25 +222,25 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly initialCustomParam$ = this.select(state => state.initialCustomParam);
 
-    readonly setInitialCustomParam = 
+    readonly setInitialCustomParam =
         this.updater((state, initialCustomParam: Record<string, unknown>|undefined) => ({
             ...state,
             initialCustomParam
-        }));   
-        
+        }));
+
     readonly customParam$ = this.select(state => state.customParam);
 
-    readonly setCustomParam = 
+    readonly setCustomParam =
         this.updater((state, customParam: Record<string, unknown>|undefined) => ({
             ...state,
             customParam
-        }));           
+        }));
 
-    readonly entityMetadata$ = this.select(state => state.entityMetadata);      
+    readonly entityMetadata$ = this.select(state => state.entityMetadata);
     readonly entityDocuments$ = this.select(state => state.entityDocuments);
     readonly entityTemplates$ = this.select(state => state.entityTemplates);
 
-    readonly displayName$ = this.select(state => state.displayName);    
+    readonly displayName$ = this.select(state => state.displayName);
     readonly customFunctions$ = this.select(state => state.customFunctions);
 
     readonly addFunction$ = this.select(state => state.addFunction);
@@ -254,15 +254,15 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
         ])
         .pipe(map(([customParam, entityMetadata, lookups]) => (customParam && entityMetadata && lookups) ? (identifier) => {
           const gridLayout = entityMetadata.gridLayouts?.find(layout => layout.identifier === identifier);
-  
+
           if (gridLayout && entityMetadata.compiledCustomScripts?.prepareGridLayout) {
             const preparedGridLayout = cloneDeep(gridLayout);
-  
+
             entityMetadata.compiledCustomScripts?.prepareGridLayout(lookups, customParam, this.scriptUtil, preparedGridLayout);
-  
+
             return preparedGridLayout;
           }
-  
+
           return gridLayout;
         } : undefined)) as Observable<((identifier: string) => GridLayout|undefined)|undefined>;
 
@@ -275,7 +275,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
         ])
         .pipe(map(([customParam, entityMetadata, entityTemplates, lookups, tenantTemplates]) => (customParam && entityMetadata && entityTemplates && lookups && tenantTemplates) ? (identifier, mode) => {
             const editLayout = entityMetadata.editLayouts?.find(layout => layout.identifier === identifier);
-    
+
             if (editLayout) {
 
                 const preparedEditLayout = cloneDeep(editLayout);
@@ -320,13 +320,13 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                 preparedEditLayout.items = materializeTemplates(preparedEditLayout.items);
 
                 if (entityMetadata.compiledCustomScripts?.prepareEditLayout) {
-                    
+
                     entityMetadata.compiledCustomScripts?.prepareEditLayout(mode, lookups, customParam, this.scriptUtil, preparedEditLayout);
                 }
 
                 return preparedEditLayout;
             }
-    
+
             return undefined;
         } : undefined)) as Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;
 
@@ -373,23 +373,23 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                 hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
                 : hasRight(`${entityMetadata.application}.${entityMetadata.entity}.${right}`))
             ) ?? false;
-        })) as Observable<((item: CrudItem, right: string) => boolean)|undefined>;        
-    
-    readonly dropAllowed$ = this.itemAllowed$        
+        })) as Observable<((item: CrudItem, right: string) => boolean)|undefined>;
+
+    readonly dropAllowed$ = this.itemAllowed$
         .pipe(map((itemAllowed) => itemAllowed ? (item: CrudItem) => itemAllowed(item, 'delete') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
 
-    readonly printAllowed$ = combineLatest([this.itemAllowed$, this.entityDocuments$])        
+    readonly printAllowed$ = combineLatest([this.itemAllowed$, this.entityDocuments$])
         .pipe(map(([itemAllowed, entityDocuments]) => (entityDocuments && entityDocuments.length > 0 && itemAllowed) ? (item: CrudItem) => itemAllowed(item, 'print') : undefined)) as Observable<((item: CrudItem) => boolean)|undefined>;
-    
+
     readonly customFunctionAllowed$ = combineLatest([this.headAllowed$, this.itemAllowed$])
-        .pipe(map(([headAllowed, itemAllowed]) => (headAllowed && itemAllowed) 
+        .pipe(map(([headAllowed, itemAllowed]) => (headAllowed && itemAllowed)
             ? (customFunction: EntityCustomFunction, item?: CrudItem) =>
                 (customFunction.type === 'default_view' || customFunction.type === 'default_edit' || customFunction.type === 'edit') && item ? itemAllowed(item, customFunction.id) : headAllowed(customFunction.id)
-            : undefined)) as Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;        
+            : undefined)) as Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
 
     readonly count$ = this.entityMetadata$
         .pipe(map((entityMetadata) => (entityMetadata)
-            ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl).count(query, params)                
+            ? (query, params) => this.genericEntityApiFactory(entityMetadata.baseUrl).count(query, params)
             : undefined)) as Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
 
     readonly query$ = combineLatest([this.customParam$, this.entityMetadata$])
@@ -423,8 +423,8 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
         .pipe(map(([customParam, entityMetadata]) => (customParam && entityMetadata)
         ? (query, items) => this.genericEntityApiFactory(entityMetadata.baseUrl)
             .saveBatch(query, entityMetadata.itemReverseMappingScript ? items.map(item => entityMetadata.itemReverseMappingScript(item, customParam, this.scriptUtil)) : items)
-        : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;     
-        
+        : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;
+
     readonly drop$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
         ? (item) => this.genericEntityApiFactory(entityMetadata.baseUrl)
@@ -482,31 +482,31 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             }
             : undefined)) as Observable<((identifier: string, continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
 
-    readonly editorPreparing$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])            
+    readonly editorPreparing$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (mode, item, layoutItem, identifier) => layoutItem.options && entityMetadata.compiledCustomScripts?.editorPreparing && entityMetadata.compiledCustomScripts?.editorPreparing(mode, item, layoutItem.options, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
-      
+
     readonly editorInitialized$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorInitialized && entityMetadata.compiledCustomScripts.editorInitialized(mode, item, editUtil, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-      
+
     readonly editorEntered$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (mode, item, editUtil, identifier) => entityMetadata.compiledCustomScripts?.editorEntered && entityMetadata.compiledCustomScripts.editorEntered(mode, item, editUtil, identifier, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-      
+
     readonly editorValueChanged$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (_mode, item, editUtil, identifier, value) => entityMetadata.compiledCustomScripts?.editorValueChanged && entityMetadata.compiledCustomScripts.editorValueChanged(item, editUtil, identifier, value, lookups, this.scriptUtil)
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
-      
+
     readonly editorValidating$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (_mode, item, editUtil, identifier, value, validation) => entityMetadata.compiledCustomScripts?.editorValidating ? entityMetadata.compiledCustomScripts.editorValidating(item, editUtil, identifier, value, validation, lookups, this.scriptUtil) : true
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
-      
+
     readonly editorEvent$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (_mode, item, editUtil, identifier, event) => entityMetadata.compiledCustomScripts?.editorEvent && entityMetadata.compiledCustomScripts.editorEvent(item, editUtil, identifier, event, lookups, this.scriptUtil)
@@ -515,7 +515,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
     readonly interactionKeyboardLine$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
             ? (_mode, item, editUtil, value) => entityMetadata.compiledCustomScripts?.interactionKeyboardLine && entityMetadata.compiledCustomScripts.interactionKeyboardLine(item, editUtil, value, lookups, this.scriptUtil)
-            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, value: string) => void)|undefined>;            
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, value: string) => void)|undefined>;
 
     readonly detailGridCellPreparing$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
@@ -524,12 +524,12 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
 
     readonly detailGridRowValidating$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
-            ? (mode, item, detailItem, identifier) => entityMetadata.compiledCustomScripts?.detailGridRowValidating ? entityMetadata.compiledCustomScripts.detailGridRowValidating(mode, item as CrudItem, detailItem, identifier, this.scriptUtil) : undefined
-            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => string) | undefined>;
-    
+            ? (mode, item, detailItem, identifier) => entityMetadata.compiledCustomScripts?.detailGridRowValidating ? of(entityMetadata.compiledCustomScripts.detailGridRowValidating(mode, item as CrudItem, detailItem, identifier, this.scriptUtil)) : of(undefined)
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string) => Observable<string|undefined>) | undefined>;
+
     readonly initNewDetailItem$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
             ? (dataMember, item, detailItem) => entityMetadata.compiledCustomScripts?.initNewDetailItem && entityMetadata.compiledCustomScripts.initNewDetailItem(dataMember, item as CrudItem, detailItem, this.scriptUtil)
             : undefined)) as Observable<((dataMember: string, item: Record<string, unknown>, detailItem: Record<string, unknown>) => void) | undefined>;
-  
+
 }

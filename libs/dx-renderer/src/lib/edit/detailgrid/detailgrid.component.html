@@ -1,20 +1,19 @@
 <div [class]="!((visible.visible$ | async) ?? false) ? 'd-none' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
 <dx-data-grid *ngIf="!editing.showSource && editing.columns" #grid
     [visible]="(visible.visible$ | async) ?? false"
-    [height]="editing.height" 
+    [height]="editing.height"
     width="100%"
     [repaintChangesOnly]="true"
-    [columnAutoWidth]="true"    
+    [columnAutoWidth]="true"
     [columns]="columns"
     [dataSource]="value.value"
     (onToolbarPreparing)="editing.onToolbarPreparing($event)"
     (onEditorPreparing)="editing.onIntegratedEditorPreparing($event)"
     (onRowClick)="editing.onRowClick($event)"
-    (onInitNewRow)="editing.onInitNewRow($event)"
-    (onRowValidating)="editing.onRowValidating($event)">
-    <dxo-editing [mode]="editing.editMode === 'row' ? 'row' : 'cell'" [useIcons]="true" 
-        [allowAdding]="editing.allowAdd" 
-        [allowUpdating]="editing.editMode === 'row' && editing.allowUpdate" 
+    (onInitNewRow)="editing.onInitNewRow($event)">
+    <dxo-editing [mode]="editing.editMode === 'row' ? 'row' : 'cell'" [useIcons]="true"
+        [allowAdding]="editing.allowAdd"
+        [allowUpdating]="editing.editMode === 'row' && editing.allowUpdate"
         [allowDeleting]="editing.allowDelete"
         [(editRowKey)]="editing.gridEditRowKey"
         [(changes)]="editing.gridEditChanges">
@@ -24,17 +23,17 @@
     </div>
     <div *dxTemplate="let cell of 'staticedit'">
         <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>     
+    </div>
     <div *dxTemplate="let cell of 'dynamic'">
         <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
     </div>
     <div *dxTemplate="let cell of 'dynamicedit'">
         <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>    
+    </div>
 </dx-data-grid>
 <dx-validator [adapter]="editing.validationAdapterConfig">
     <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
 </dx-validator>
-<dx-toolbar class="w-100" *ngIf="editing.showSource && editing.sourceToolbarItems" [items]="editing.sourceToolbarItems">    
+<dx-toolbar class="w-100" *ngIf="editing.showSource && editing.sourceToolbarItems" [items]="editing.sourceToolbarItems">
 </dx-toolbar>
 <ballware-edit-json *ngIf="editing.showSource" [initialLayoutItem]="livecycle.layoutItem" ></ballware-edit-json>

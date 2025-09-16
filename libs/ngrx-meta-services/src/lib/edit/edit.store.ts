@@ -3,7 +3,7 @@ import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } fro
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual, get, set } from "lodash";
-import { combineLatest, distinctUntilChanged, map, takeUntil, withLatestFrom } from "rxjs";
+import { combineLatest, distinctUntilChanged, map, Observable, takeUntil, withLatestFrom } from 'rxjs';
 import { editDestroyed, editUpdated } from "../component";
 import { EditService, EditItemRef, EditModes, MetaService, InteractionService } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
@@ -17,7 +17,7 @@ interface DetailEditUtil extends EditUtil {
 
 export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
 
-    private editItems: Record<string, EditItemRef|undefined> = {}; 
+    private editItems: Record<string, EditItemRef|undefined> = {};
     private applyMethod?: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
     private cancelMethod?: () => void;
 
@@ -38,12 +38,12 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         this.state$
             .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {                
+            .subscribe((state) => {
                 if (state.identifier) {
                     this.store.dispatch(editUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Edit state update');
-                    console.debug(state);    
+                    console.debug(state);
                 }
             });
 
@@ -54,8 +54,8 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
                     this.store.dispatch(editDestroyed({ identifier: state.identifier }));
                 }
             });
-    }    
-    
+    }
+
     readonly setIdentifier = this.updater((state, identifier: string) => ({
         ...state,
         identifier
@@ -96,7 +96,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         this.cancelMethod = cancelMethod;
     }
 
-    readonly setValidator = this.updater((state, validator: (() => boolean)|undefined) => ({
+    readonly setValidator = this.updater((state, validator: (() => Observable<boolean>)|undefined) => ({
         ...state,
         validator
     }));
@@ -108,10 +108,10 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             cancel: () => this.cancelMethod && this.cancelMethod()
         } as EditUtil);
 
-    
+
     readonly detailEditUtil = (dataMember: string, detailItem: Record<string, unknown>, detailItemIndex: number) => ({
             getEditorOption: (dataMember, option) => this.getEditorOption({ dataMember, option }),
-            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value }),            
+            setEditorOption: (dataMember, option, value) => this.setEditorOption({ dataMember, option, value }),
             getDetailEditorOption: (identifier, option) => this.getEditorOption({ dataMember: `${dataMember}.${detailItemIndex}.${identifier}`, option }),
             setDetailEditorOption: (identifier, option, value) => this.setEditorOption({ dataMember: `${dataMember}.${detailItemIndex}.${identifier}`, option, value }),
             getDetailItem: () => detailItem,
@@ -119,20 +119,20 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             apply: (editUtil, item, continueAfterSave) => this.applyMethod && this.applyMethod(editUtil, item, continueAfterSave),
             cancel: () => this.cancelMethod && this.cancelMethod()
         } as DetailEditUtil);
-   
+
     readonly getValue$ = combineLatest([this.item$])
         .pipe(map(([item]) => item ? (request: { dataMember: string }) => get(item, request.dataMember) : undefined));
 
     readonly setValue$ = combineLatest([this.item$])
         .pipe(map(([item]) => item ? (request: { dataMember: string, value: unknown } ) => set(item, request.dataMember, request.value) : undefined));
 
-    readonly editorPreparing$ = combineLatest([this.mode$, this.item$, this.metaService.editorPreparing$])            
+    readonly editorPreparing$ = combineLatest([this.mode$, this.item$, this.metaService.editorPreparing$])
         .pipe(map(([mode, item, editorPreparing]) => (mode && item && editorPreparing)
                 ? (request: { dataMember: string, layoutItem: EditLayoutItem }) => editorPreparing(mode, item, request.layoutItem, request.dataMember)
                 : undefined));
 
-    readonly editorInitialized$ = combineLatest([this.mode$, this.item$, this.metaService.editorInitialized$])            
-            .pipe(map(([mode, item, editorInitialized]) => 
+    readonly editorInitialized$ = combineLatest([this.mode$, this.item$, this.metaService.editorInitialized$])
+            .pipe(map(([mode, item, editorInitialized]) =>
                 (mode && item && editorInitialized) ? (request: { dataMember: string, ref: EditItemRef }) => {
 
                     this.editItems[request.dataMember] = request.ref;
@@ -145,17 +145,17 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
                 ? (request: { dataMember: string; ruleIdentifier: string; value: ValueType; }) => editorValidating(mode, item, this.editUtil(), request.dataMember, request.value, request.ruleIdentifier)
                 : () => true)
-            );    
-                    
-    readonly editorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])            
-            .pipe(map(([mode, item, setValue, editorValueChanged]) => 
+            );
+
+    readonly editorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])
+            .pipe(map(([mode, item, setValue, editorValueChanged]) =>
                 (mode && item && editorValueChanged && setValue) ? ({ dataMember, value, notify }: { dataMember: string; value: ValueType; notify: boolean; }) => {
                     setValue({ dataMember, value });
 
                     if (notify) {
                         editorValueChanged(mode, item, this.editUtil(), dataMember, value);
                     }
-                } : undefined            
+                } : undefined
             )
         );
 
@@ -165,7 +165,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             : undefined)
         );
 
-    readonly editorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
+    readonly editorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])
         .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
             ? ({ dataMember, event }: { dataMember: string; event: string; }) => editorEvent(mode, item, this.editUtil(), dataMember, event)
             : undefined)
@@ -176,7 +176,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
             ? ({ detailItem, identifier, options }: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => detailGridCellPreparing(mode, item, detailItem, identifier, options)
             : undefined)
         );
-    
+
     readonly detailGridRowValidating$ = combineLatest([this.mode$, this.item$, this.metaService.detailGridRowValidating$])
         .pipe(map(([mode, item, detailGridRowValidating]) => (mode && item && detailGridRowValidating)
             ? ({ dataMember, detailItem }: { dataMember: string, detailItem: Record<string, unknown> }) => detailGridRowValidating(mode, item, detailItem, dataMember)
@@ -191,7 +191,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
 
     readonly detailEditorInitialized$ = combineLatest([this.mode$, this.metaService.editorInitialized$])
         .pipe(map(([mode, editorInitialized]) => (mode && editorInitialized)
-            ? ({ dataMember, detailItemIndex, detailItem, identifier, component }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => 
+            ? ({ dataMember, detailItemIndex, detailItem, identifier, component }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) =>
             {
                 this.editItems[`${dataMember}.${detailItemIndex}.${identifier}`] = component;
 
@@ -204,23 +204,23 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
         .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
             ? ({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => editorValidating(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, value, ruleIdentifier)
             : () => true)
-        );    
-    
+        );
+
     readonly detailEditorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])
         .pipe(map(([mode, item, editorEntered]) => (mode && item && editorEntered)
             ? ({ dataMember, detailItemIndex, detailItem, identifier }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => editorEntered(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`)
             : undefined)
         );
 
-    readonly detailEditorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])        
+    readonly detailEditorEvent$ = combineLatest([this.mode$, this.item$, this.metaService.editorEvent$])
         .pipe(map(([mode, item, editorEvent]) => (mode && item && editorEvent)
             ? ({ dataMember, detailItemIndex, detailItem, identifier, event }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => editorEvent(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, event)
             : undefined)
         );
-      
-    readonly detailEditorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])            
-        .pipe(map(([mode, item, setValue, editorValueChanged]) => 
-            (mode && item && editorValueChanged && setValue) 
+
+    readonly detailEditorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])
+        .pipe(map(([mode, item, setValue, editorValueChanged]) =>
+            (mode && item && editorValueChanged && setValue)
             ? ({ dataMember, detailItemIndex, detailItem, identifier, value, notify }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => {
                 set(detailItem, identifier, value);
 
@@ -229,7 +229,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
                 }
             } : undefined)
         );
-        
+
     readonly validator$ = this.select(state => state.validator);
 
     private readonly getEditor = (request: { dataMember: string }) => this.editItems[request.dataMember];

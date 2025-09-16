@@ -1,6 +1,6 @@
 import { Component, forwardRef, Inject, OnDestroy } from '@angular/core';
 import { InitializedEvent } from 'devextreme/ui/validation_group';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { EditLayout } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
 import { DxScrollViewModule, DxValidationGroupModule, DxValidationSummaryModule } from 'devextreme-angular';
@@ -32,7 +32,7 @@ export class EditLayoutComponent implements OnDestroy {
     this.editService.setValidator(() => {
       const validationResult = e.component?.validate();
 
-      return validationResult ? (validationResult.isValid ?? false) : false;
+      return of(validationResult ? (validationResult.isValid ?? false) : false);
     });
   }
 }

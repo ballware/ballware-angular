@@ -2,12 +2,13 @@ import { Directive, Inject, OnInit } from "@angular/core";
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { Destroy, EditItemLivecycle, UnknownArrayValue, Readonly } from "@ballware/renderer-commons";
 
-import { Column as DataGridColumn, DataChange as DataGridDataChange, ToolbarPreparingEvent as DataGridToolbarPreparingEvent, EditorPreparingEvent as DataGridEditorPreparingEvent, RowClickEvent as DataGridRowClickEvent, InitNewRowEvent as DataGridInitNewRowEvent, RowValidatingEvent as DataGridRowValidatingEvent } from "devextreme/ui/data_grid";
-import { Column as TreeListColumn, DataChange as TreeListDataChange, ToolbarPreparingEvent as TreeListToolbarPreparingEvent, EditorPreparingEvent as TreeListEditorPreparingEvent, RowClickEvent as TreelistRowClickEvent, InitNewRowEvent as TreeListInitNewRowEvent, RowValidatingEvent as TreeListRowValidatingEvent } from "devextreme/ui/tree_list";
+import { Column as DataGridColumn, DataChange as DataGridDataChange, ToolbarPreparingEvent as DataGridToolbarPreparingEvent, EditorPreparingEvent as DataGridEditorPreparingEvent, RowClickEvent as DataGridRowClickEvent, InitNewRowEvent as DataGridInitNewRowEvent } from "devextreme/ui/data_grid";
+import { Column as TreeListColumn, DataChange as TreeListDataChange, ToolbarPreparingEvent as TreeListToolbarPreparingEvent, EditorPreparingEvent as TreeListEditorPreparingEvent, RowClickEvent as TreelistRowClickEvent, InitNewRowEvent as TreeListInitNewRowEvent } from "devextreme/ui/tree_list";
 import { Item as ToolbarItem } from "devextreme/ui/toolbar";
-import { combineLatest, takeUntil } from "rxjs";
+import { combineLatest, Observable, of, takeUntil } from 'rxjs';
 import { createColumnConfiguration } from "../utils";
 import { CrudItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
+import { ValidationCallbackData } from 'devextreme/common';
 
 type ColumnType = DataGridColumn | TreeListColumn;
 
@@ -21,7 +22,7 @@ interface EditComponentWithOptions {
       */
     option<TPropertyName extends string, TValue = unknown>(optionName: TPropertyName, optionValue: TValue): void;
 }
-  
+
 const componentToEditItemRef = (component: EditComponentWithOptions) => {
     return {
         getOption: option => component.option(option),
@@ -29,7 +30,7 @@ const componentToEditItemRef = (component: EditComponentWithOptions) => {
     } as EditItemRef;
 };
 
-export interface DetailCollectionEditingOptions {  
+export interface DetailCollectionEditingOptions {
     add?: boolean;
     update?: boolean;
     delete?: boolean;
@@ -60,19 +61,19 @@ export class DetailCollectionEditing implements OnInit {
 
     public sourceToolbarItems: ToolbarItem[]|undefined;
 
-    public validationAdapterConfig = {      
+    public validationAdapterConfig = {
         getValue: () => ({
           editChanges: this.gridEditChanges
         })
     };
-  
+
     public gridEditChanges: (DataGridDataChange<any, any>|TreeListDataChange<any, any>)[] = [];
     public gridEditRowKey: number|null = null;
 
-    private dataMember: string|undefined;   
+    private dataMember: string|undefined;
 
     private detailGridCellPreparing: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, column: GridLayoutColumn) => void) | undefined;
-    private detailGridRowValidating: ((dataMember: string, detailItem: Record<string, unknown>) => string) | undefined;
+    private detailGridRowValidating: ((dataMember: string, detailItem: Record<string, unknown>) => Observable<string|undefined>) | undefined;
     private initNewDetailItem: ((dataMember: string, detailItem: Record<string, unknown>) => void) | undefined;
 
     private detailEditorInitialized: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef) => void)|undefined;
@@ -100,7 +101,7 @@ export class DetailCollectionEditing implements OnInit {
                 hint: this.translator('datacontainer.actions.showList'),
                 text: this.translator('datacontainer.actions.showList'),
                 icon: 'bi bi-table',
-                onClick: () => {              
+                onClick: () => {
                   this.showSource = false;
                   this.value.refreshValue();
                 },
@@ -109,56 +110,57 @@ export class DetailCollectionEditing implements OnInit {
         ];
     }
 
-    ngOnInit(): void {      
-        combineLatest([this.livecycle.preparedLayoutItem$, this.readonly.readonly$, this.editService.mode$, this.editService.item$, 
-            this.lookupService.lookups$, 
-            this.editService.detailGridCellPreparing$, 
-            this.editService.detailGridRowValidating$, 
-            this.editService.initNewDetailItem$, 
-            this.editService.detailEditorInitialized$, 
-            this.editService.detailEditorValidating$, 
-            this.editService.detailEditorEntered$, 
-            this.editService.detailEditorEvent$, 
+    ngOnInit(): void {
+        combineLatest([this.livecycle.preparedLayoutItem$, this.readonly.readonly$, this.editService.mode$, this.editService.item$,
+            this.lookupService.lookups$,
+            this.editService.detailGridCellPreparing$,
+            this.editService.detailGridRowValidating$,
+            this.editService.initNewDetailItem$,
+            this.editService.detailEditorInitialized$,
+            this.editService.detailEditorValidating$,
+            this.editService.detailEditorEntered$,
+            this.editService.detailEditorEvent$,
             this.editService.detailEditorValueChanged$])
             .pipe(takeUntil(this.destroy.destroy$))
-            .subscribe(([layoutItem, readonly, mode, item, lookups, 
+            .subscribe(([layoutItem, readonly, mode, item, lookups,
                 detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
-                if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups 
-                    && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem 
+                if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups
+                    && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem
                     && detailEditorInitialized && detailEditorValidating && detailEditorEntered && detailEditorEvent && detailEditorValueChanged) {
                     this.dataMember = layoutItem.options?.dataMember;
                     this.height = layoutItem.options?.height;
                     this.options = layoutItem.options?.itemoptions as DetailCollectionEditingOptions;
                     this.lookupParams = item;
-    
+
                     this.editMode = (!readonly) ? this.options?.editMode ?? 'row' : 'row';
                     this.allowAdd = (!readonly && this.options?.add) ?? false;
                     this.allowUpdate = (!readonly && this.options?.update) ?? false;
                     this.allowDelete = (!readonly && this.options?.delete) ?? false;
                     this.allowShowSource = this.options?.showSource ?? false;
-    
+
                     this.detailGridCellPreparing = (dataMember, detailItem, identifier, column) => detailGridCellPreparing({ dataMember, detailItem, identifier, options: column });
                     this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
                     this.initNewDetailItem = (dataMember, detailItem) => initNewDetailItem({ dataMember, detailItem });
-                    
+
                     this.detailEditorInitialized = (dataMember, detailItemIndex, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItemIndex, detailItem, identifier, component });
                     this.detailEditorValidating = (dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value });
                     this.detailEditorEntered = (dataMember, detailItemIndex, detailItem, identifier) => detailEditorEntered({ dataMember, detailItemIndex, detailItem, identifier });
                     this.detailEditorValueChanged = (dataMember, detailItemIndex, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItemIndex, detailItem, identifier, value, notify });
                     this.detailEditorEvent = (dataMember, detailItemIndex, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItemIndex, detailItem, identifier, event });
-    
+
                     this.columns = createColumnConfiguration<ColumnType>(
                         (key, options) => this.translator(key, options),
-                        this.options.columns,                    
+                        this.options.columns,
                         lookups,
                         item,
                         'detail',
                         this.options.editMode ?? 'row',
                         undefined,
-                        undefined
+                        undefined,
+                        this.onDetailRowValidating
                     );
                 }
-        });      
+        });
     }
 
     public onToolbarPreparing(e: DataGridToolbarPreparingEvent|TreeListToolbarPreparingEvent) {
@@ -179,25 +181,25 @@ export class DetailCollectionEditing implements OnInit {
           } as ToolbarItem)
         }
       }
-  
-      public onCustomEditorPreparing(e: { 
-        row: Record<string, unknown>, 
+
+      public onCustomEditorPreparing(e: {
+        row: Record<string, unknown>,
         rowIndex: number,
-        dataField: string, 
+        dataField: string,
         column: GridLayoutColumn,
         editorOptions: any,
         component: EditComponentWithOptions
       }) {
-        if (e.row && e.dataField) {          
+        if (e.row && e.dataField) {
           const defaultValueChanged = e.editorOptions.onValueChanged;
           const defaultFocusIn = e.editorOptions.onFocusIn;
           const defaultFocusOut = e.editorOptions.onFocusOut;
-  
+
           e.editorOptions.onValueChanged = (args: {
             value: CrudItem | ValueType;
           }) => {
             if (defaultValueChanged) defaultValueChanged(args);
-  
+
             if (
               this.dataMember &&
               this.detailEditorValueChanged &&
@@ -214,23 +216,23 @@ export class DetailCollectionEditing implements OnInit {
               );
             }
           };
-  
+
           e.editorOptions.onFocusIn = (args: unknown) => {
             if (defaultFocusIn) defaultFocusIn(args);
-  
+
             if (this.dataMember && this.detailEditorEntered && e.row && e.dataField) {
               this.detailEditorEntered(this.dataMember, e.rowIndex, e.row, e.dataField);
             }
           };
-  
+
           e.editorOptions.onFocusOut = (args: unknown) => {
             if (defaultFocusOut) defaultFocusOut(args);
-  
+
             //if (this.grid?.instance.hasEditData()) {
             //  this.grid?.instance.saveEditData();
             //}
           }
-  
+
 
           if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
             this.detailEditorInitialized(
@@ -241,9 +243,9 @@ export class DetailCollectionEditing implements OnInit {
               componentToEditItemRef(e.component)
             );
           }
-            
+
           e.editorOptions.valueChangeEvent = 'blur change focusout';
-        } 
+        }
       }
 
       public onIntegratedEditorPreparing(e: DataGridEditorPreparingEvent|TreeListEditorPreparingEvent) {
@@ -256,16 +258,16 @@ export class DetailCollectionEditing implements OnInit {
               e.editorOptions
             );
           }
-  
+
           const defaultValueChanged = e.editorOptions.onValueChanged;
           const defaultFocusIn = e.editorOptions.onFocusIn;
           const defaultFocusOut = e.editorOptions.onFocusOut;
-  
+
           e.editorOptions.onValueChanged = (args: {
             value: CrudItem | ValueType;
           }) => {
             if (defaultValueChanged) defaultValueChanged(args);
-  
+
             if (
               this.dataMember &&
               this.detailEditorValueChanged &&
@@ -282,23 +284,23 @@ export class DetailCollectionEditing implements OnInit {
               );
             }
           };
-  
+
           e.editorOptions.onFocusIn = (args: unknown) => {
             if (defaultFocusIn) defaultFocusIn(args);
-  
+
             if (this.dataMember && this.detailEditorEntered && e.row && e.dataField) {
               this.detailEditorEntered(this.dataMember, e.component.getRowIndexByKey(e.row.key), e.row.data, e.dataField);
             }
           };
-  
+
           e.editorOptions.onFocusOut = (args: unknown) => {
             if (defaultFocusOut) defaultFocusOut(args);
-  
+
             //if (this.grid?.instance.hasEditData()) {
             //  this.grid?.instance.saveEditData();
             //}
           }
-  
+
           e.editorOptions.onInitialized = (args: { component: EditComponentWithOptions }) => {
             if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
               this.detailEditorInitialized(
@@ -310,41 +312,39 @@ export class DetailCollectionEditing implements OnInit {
               );
             }
           };
-  
+
           e.editorOptions.valueChangeEvent = 'blur change focusout keyup';
-        } 
+        }
       }
-  
-      public onRowClick(e: DataGridRowClickEvent|TreelistRowClickEvent) {      
+
+      public onRowClick(e: DataGridRowClickEvent|TreelistRowClickEvent) {
         if (this.allowUpdate) {
           if (e.component.hasEditData()) {
             if ((e.component as any).getController('validating').validate()) {
               e.component.saveEditData();
             }
           }
-  
+
           if (!e.component.hasEditData()) {
             e.component.editRow(e.rowIndex);
-          }       
+          }
         }
       }
-  
+
       public onInitNewRow(e: DataGridInitNewRowEvent|TreeListInitNewRowEvent) {
         if (this.dataMember && this.initNewDetailItem) {
           this.initNewDetailItem(this.dataMember, e.data);
         }
       }
-  
-      public onRowValidating(e: DataGridRowValidatingEvent|TreeListRowValidatingEvent) {
+
+      readonly onDetailRowValidating = (e: ValidationCallbackData)=> {
         if (this.dataMember && this.detailGridRowValidating) {
-          const validatingData = { ...e.oldData, ...e.newData };
-  
-          const newErrorText = this.detailGridRowValidating(this.dataMember, validatingData);
-  
-          if (newErrorText) {
-            e.errorText = newErrorText;
-            e.isValid = false;          
-          }
+
+          const validatingData = { ...e.data };
+
+          return this.detailGridRowValidating(this.dataMember, validatingData);
         }
+
+        return of(undefined);
       }
 }

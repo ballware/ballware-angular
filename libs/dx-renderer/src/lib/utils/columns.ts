@@ -7,6 +7,9 @@ import { cloneDeep } from "lodash";
 import { get } from "lodash";
 import { createLookupDataSource } from "./datasource";
 import { DxElement } from "devextreme/core/element";
+import { firstValueFrom, Observable } from 'rxjs';
+import { AsyncRule } from 'devextreme-angular/common';
+import { ValidationCallbackData } from 'devextreme/common';
 
 export type OptionButtons =
   | 'add'
@@ -41,7 +44,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -52,7 +55,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -64,7 +67,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -79,7 +82,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -92,7 +95,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -121,7 +124,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -153,11 +156,11 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
-          sortOrder: c.sorting,          
+          sortOrder: c.sorting,
           lookup: {
             dataSource: dataSource?.store(),
             displayExpr: lookup?.displayMember,
@@ -186,7 +189,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -203,14 +206,14 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: (editMode === 'row' && c.editable) ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
           cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
-          editCellTemplate: 'staticedit',          
+          editCellTemplate: 'staticedit',
         } as ColumnType;
       }
       case 'dynamic': {
@@ -218,7 +221,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: (editMode === 'row' && c.editable) ?? false,
           visible: c.visible ?? true,
@@ -233,7 +236,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: false,
           visible: c.visible ?? true,
@@ -247,7 +250,7 @@ export type OptionButtons =
           dataField: c.dataMember,
           caption: c.caption,
           width: c.width,
-          fixed: c.fixedPosition ? true : false,
+          fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
@@ -276,7 +279,8 @@ export function createColumnConfiguration<
     data: CrudItem,
     target: Element
   ) => void,
-  onButtonAllowed?: (button: OptionButtons, data: CrudItem) => boolean
+  onButtonAllowed?: (button: OptionButtons, data: CrudItem) => boolean,
+  onRowValidating?: (e: ValidationCallbackData) => Observable<string|undefined>
 ): Array<ColumnType> {
   const gridColumns =
     cloneDeep(columns ?? [])
@@ -392,6 +396,30 @@ export function createColumnConfiguration<
             },
           ],
         } as ColumnType);
+      }
+      break;
+    case 'detail':
+      {
+        if (onRowValidating) {
+          gridColumns.push({
+            visible: false,
+            validationRules: [
+              {
+                type: 'async',
+                validationCallback: async (e) => {
+                  const message = await firstValueFrom(onRowValidating(e));
+
+                  if (message) {
+                    e.rule.message = message;
+                    return false;
+                  }
+
+                  return true;
+                }
+              } as AsyncRule
+            ]
+          } as ColumnType)
+        }
       }
       break;
   }
