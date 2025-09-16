@@ -17,7 +17,7 @@ export interface EditService extends OnDestroy {
 
     editorPreparing$: Observable<((request: { dataMember: string, layoutItem: EditLayoutItem }) => void)|undefined>;
     editorInitialized$: Observable<((request: { dataMember: string, ref: EditItemRef }) => void)|undefined>;
-    editorValidating$: Observable<((request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
+    editorValidating$: Observable<((request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => Observable<boolean>)|undefined>;
     editorValueChanged$: Observable<((request: { dataMember: string, value: ValueType, notify: boolean }) => void)|undefined>;
     editorEntered$: Observable<((request: { dataMember: string }) => void)|undefined>;
     editorEvent$: Observable<((request: { dataMember: string, event: string }) => void)|undefined>;
@@ -27,7 +27,7 @@ export interface EditService extends OnDestroy {
     initNewDetailItem$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => void) | undefined>;
 
     detailEditorInitialized$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => void)|undefined>;
-    detailEditorValidating$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
+    detailEditorValidating$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => Observable<boolean>)|undefined>;
     detailEditorEntered$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => void)|undefined>;
     detailEditorEvent$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;
     detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;

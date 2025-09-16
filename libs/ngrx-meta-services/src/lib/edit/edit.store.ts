@@ -3,7 +3,7 @@ import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } fro
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual, get, set } from "lodash";
-import { combineLatest, distinctUntilChanged, map, Observable, takeUntil, withLatestFrom } from 'rxjs';
+import { combineLatest, distinctUntilChanged, map, Observable, of, takeUntil, withLatestFrom } from 'rxjs';
 import { editDestroyed, editUpdated } from "../component";
 import { EditService, EditItemRef, EditModes, MetaService, InteractionService } from "@ballware/meta-services";
 import { EditState } from "./edit.state";
@@ -144,7 +144,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly editorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
             .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
                 ? (request: { dataMember: string; ruleIdentifier: string; value: ValueType; }) => editorValidating(mode, item, this.editUtil(), request.dataMember, request.value, request.ruleIdentifier)
-                : () => true)
+                : () => of(true))
             );
 
     readonly editorValueChanged$ = combineLatest([this.mode$, this.item$, this.setValue$, this.metaService.editorValueChanged$])
@@ -203,7 +203,7 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
     readonly detailEditorValidating$ = combineLatest([this.mode$, this.item$, this.metaService.editorValidating$])
         .pipe(map(([mode, item, editorValidating]) => (mode && item && editorValidating)
             ? ({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value }: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => editorValidating(mode, detailItem, this.detailEditUtil(dataMember, detailItem, detailItemIndex), `${dataMember}.${identifier}`, value, ruleIdentifier)
-            : () => true)
+            : () => of(true))
         );
 
     readonly detailEditorEntered$ = combineLatest([this.mode$, this.item$, this.metaService.editorEntered$])

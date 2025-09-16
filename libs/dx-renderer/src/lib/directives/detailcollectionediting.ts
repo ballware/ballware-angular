@@ -77,7 +77,7 @@ export class DetailCollectionEditing implements OnInit {
     private initNewDetailItem: ((dataMember: string, detailItem: Record<string, unknown>) => void) | undefined;
 
     private detailEditorInitialized: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef) => void)|undefined;
-    private detailEditorValidating: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => boolean)|undefined;
+    private detailEditorValidating: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => Observable<boolean>)|undefined;
     private detailEditorValueChanged: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
     private detailEditorEntered: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string) => void)|undefined;
     private detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
