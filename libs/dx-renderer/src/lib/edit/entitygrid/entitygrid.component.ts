@@ -2,7 +2,7 @@ import { Component, forwardRef, Inject, OnDestroy, OnInit, Provider } from '@ang
 import { GridLayout } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
 import { nanoid } from 'nanoid';
-import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, switchMap, takeUntil, of } from 'rxjs';
 import { DataSourceService } from '../../utils/datasource.service';
 import { Router } from '@angular/router';
 import { EntitygridComponent } from '../../datacontainer';
@@ -25,34 +25,34 @@ interface EntityGridItemOptions {
   selector: 'ballware-edit-entitygrid',
   templateUrl: './entitygrid.component.html',
   styleUrls: [],
-  providers: [    
-    { 
-      provide: LOOKUP_SERVICE, 
+  providers: [
+    {
+      provide: LOOKUP_SERVICE,
       useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]  
+      deps: [LOOKUP_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: META_SERVICE, 
+    {
+      provide: META_SERVICE,
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]  
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
     } as Provider,
-    { 
-      provide: ATTACHMENT_SERVICE, 
+    {
+      provide: ATTACHMENT_SERVICE,
       useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
-      deps: [ATTACHMENT_SERVICE_FACTORY]  
+      deps: [ATTACHMENT_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: CRUD_SERVICE, 
+    {
+      provide: CRUD_SERVICE,
       useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
-      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]  
+      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
     } as Provider,
     {
       provide: DataSourceService,
       useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
       deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
     },
-    { 
-      provide: MasterdetailService, useClass: MasterdetailService 
+    {
+      provide: MasterdetailService, useClass: MasterdetailService
     }
   ],
   imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
@@ -68,10 +68,10 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
   public height$ = new BehaviorSubject<string|undefined>('100%');
 
   constructor(
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
-    @Inject(META_SERVICE) private metaService: MetaService, 
-    @Inject(CRUD_SERVICE) private crudService: CrudService, 
-    private datasourceService: DataSourceService, 
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+    @Inject(META_SERVICE) private metaService: MetaService,
+    @Inject(CRUD_SERVICE) private crudService: CrudService,
+    private datasourceService: DataSourceService,
     @Inject(EDIT_SERVICE) private editService: EditService,
     public destroy: Destroy,
     public livecycle: EditItemLivecycle,
@@ -88,9 +88,10 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
         }
       });
 
-    this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$])
-      .pipe(takeUntil(this.destroy.destroy$))
-      .pipe(map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined));
+    this.gridLayout$ = this.layoutIdentifier$.pipe(
+      takeUntil(this.destroy.destroy$),
+      switchMap((layoutIdentifier) => layoutIdentifier ? this.metaService.getGridLayout(layoutIdentifier) : of(undefined))
+    );
   }
 
   ngOnInit(): void {
@@ -106,7 +107,7 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
     this.livecycle.preparedLayoutItem$
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
-        
+
         const gridOptions = layoutItem?.options?.itemoptions as EntityGridItemOptions;
 
         if (layoutItem?.options?.dataMember) {
@@ -120,11 +121,11 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
         this.crudService.setQuery(gridOptions?.query ?? 'primary');
 
         this.layoutIdentifier$.next(gridOptions?.layout ?? 'primary');
-        this.height$.next(layoutItem?.options?.height);        
+        this.height$.next(layoutItem?.options?.height);
       });
   }
 
-  ngOnDestroy(): void {  
+  ngOnDestroy(): void {
     this.editService.ngOnDestroy();
     this.datasourceService.ngOnDestroy();
     this.crudService.ngOnDestroy();

@@ -11,13 +11,13 @@ import { CommonModule } from '@angular/common';
   templateUrl: './counter.component.html',
   styleUrls: ['./counter.component.scss'],
   providers: [
-    { 
-      provide: LOOKUP_SERVICE, 
+    {
+      provide: LOOKUP_SERVICE,
       useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]  
+      deps: [LOOKUP_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: META_SERVICE, 
+    {
+      provide: META_SERVICE,
       useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
       deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
     } as Provider,
@@ -37,7 +37,7 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
   public count: number|undefined = undefined;
 
   constructor(
-    @Inject(PAGE_SERVICE) private pageService: PageService, 
+    @Inject(PAGE_SERVICE) private pageService: PageService,
     @Inject(META_SERVICE) private metaService: MetaService) {
     super();
 
@@ -55,17 +55,17 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
         }
       });
 
-    combineLatest([this.metaService.count$, this.pageService.headParams$])
+    this.pageService.headParams$
       .pipe(takeUntil(this.destroy$))
-      .pipe(switchMap(([countFunc, pageParam]) => (countFunc && pageParam)
-        ? countFunc(this.query ?? 'primary', pageParam)
-          .pipe(catchError((error: ApiError) => {      
-            if (error.status === 401) {              
+      .pipe(switchMap((pageParam) => (pageParam)
+        ? this.metaService.count(this.query ?? 'primary', pageParam)
+          .pipe(catchError((error: ApiError) => {
+            if (error.status === 401) {
               this.tabNotAuthorized.emit({ tab: this.tab });
 
-              return of(0);              
-            }             
-            
+              return of(0);
+            }
+
             throw error;
           }))
         : of(undefined)))

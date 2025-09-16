@@ -1,6 +1,6 @@
 import { InjectionToken, OnDestroy } from '@angular/core';
 import { CrudItem, EditLayout, EditUtil, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { EditModes } from './editmodes';
 import { MetaService } from './meta.service';
 import { Router } from '@angular/router';
@@ -16,29 +16,29 @@ export interface CrudAction {
 }
 
 export interface ItemEditDialog {
-    mode: EditModes, 
+    mode: EditModes,
     entity: string,
-    item: unknown, 
-    title: string, 
+    item: unknown,
+    title: string,
     supportContinueAfterSave: boolean,
-    editLayout?: EditLayout, 
+    editLayout?: EditLayout,
     externalEditor?: boolean,
     foreignEntity?: string,
-    customFunction?: EntityCustomFunction,    
-    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void, 
-    cancel: () => void    
+    customFunction?: EntityCustomFunction,
+    apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void,
+    cancel: () => void
 }
 
 export interface ItemRemoveDialog {
-    item: Record<string, unknown>, 
-    title: string, 
-    apply: (item: Record<string, unknown>) => void, 
-    cancel: () => void    
+    item: Record<string, unknown>,
+    title: string,
+    apply: (item: Record<string, unknown>) => void,
+    cancel: () => void
 }
 
 export interface CrudEditMenuItem {
-    id: string, 
-    text: string, 
+    id: string,
+    text: string,
     icon?: string,
     customFunction?: EntityCustomFunction
 }
@@ -46,26 +46,28 @@ export interface CrudEditMenuItem {
 export interface ImportDialog {
     importFunction: EntityCustomFunction
     apply: (file: File) => void;
-    cancel: () => void;   
+    cancel: () => void;
 }
 
 export interface DetailColumnEditDialog {
     mode: EditModes,
     entity: string,
-    item: unknown, 
+    item: unknown,
     dataMember: string,
-    title: string, 
-    editLayout: EditLayout, 
-    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void, 
-    cancel: () => void    
+    title: string,
+    editLayout: EditLayout,
+    apply: (editUtil: EditUtil, item: Record<string, unknown>) => void,
+    cancel: () => void
 }
 
 export interface CrudService extends OnDestroy {
 
+    ready$: Observable<boolean>;
+
     currentInteractionTarget$: Observable<Element|undefined>;
 
-    functionAllowed$: Observable<((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined>;
-    functionExecute$: Observable<((button: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => void)|undefined>;
+    functionAllowed: (identifier: FunctionIdentifier, data: CrudItem) => Observable<boolean>;
+    functionExecute: (request: { identifier: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element }) => Subscription;
 
     addMenuItems$: Observable<CrudEditMenuItem[]|undefined>;
 
@@ -84,22 +86,22 @@ export interface CrudService extends OnDestroy {
         actions: CrudAction[]
     }|undefined>;
 
-    selectActionSheet$: Observable<{ 
-        item: CrudItem, 
-        actions: CrudAction[] 
-    }|undefined>;
-
-    selectPrintSheet$: Observable<{ 
-        items: CrudItem[], 
+    selectActionSheet$: Observable<{
+        item: CrudItem,
         actions: CrudAction[]
     }|undefined>;
 
-    selectExportSheet$: Observable<{ 
-        items: CrudItem[], 
+    selectPrintSheet$: Observable<{
+        items: CrudItem[],
         actions: CrudAction[]
     }|undefined>;
 
-    selectImportSheet$: Observable<{ 
+    selectExportSheet$: Observable<{
+        items: CrudItem[],
+        actions: CrudAction[]
+    }|undefined>;
+
+    selectImportSheet$: Observable<{
         actions: CrudAction[]
     }|undefined>;
 
@@ -115,7 +117,7 @@ export interface CrudService extends OnDestroy {
     edit(request: { item: CrudItem, editLayout: string }): void;
     remove(request: { item: CrudItem }): void;
     print(request: { documentId: string, items: CrudItem[] }): void;
-    customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): void;
+    customEdit(request: { customFunction: EntityCustomFunction, items?: CrudItem[] }): Subscription;
     exportItems(request: { customFunction: EntityCustomFunction, items: CrudItem[] }): void;
     importItems(request: { customFunction: EntityCustomFunction }): void;
 
@@ -126,14 +128,14 @@ export interface CrudService extends OnDestroy {
 
     drop(request: { item: CrudItem }): void;
 
-    selectAdd(request: { target: Element, defaultEditLayout: string }): void;    
+    selectAdd(request: { target: Element, defaultEditLayout: string }): void;
     selectPrint(request: { items: CrudItem[], target: Element }): void;
     selectExport(request: { items: CrudItem[], target: Element }): void;
     selectImport(request: { target: Element }): void;
     selectOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
-    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void; 
-        
-    selectAddDone(): void;    
+    selectCustomOptions(request: { item: CrudItem, target: Element, defaultEditLayout: string }): void;
+
+    selectAddDone(): void;
     selectPrintDone(): void;
     selectExportDone(): void;
     selectImportDone(): void;

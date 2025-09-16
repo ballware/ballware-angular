@@ -1,6 +1,6 @@
 import { InjectionToken, OnDestroy } from '@angular/core';
 import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from '@ballware/meta-model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
 import { MetaService } from './meta.service';
@@ -12,40 +12,40 @@ export interface EditService extends OnDestroy {
     editLayout$: Observable<EditLayout|undefined>;
     readonly$: Observable<boolean|undefined>;
 
-    getValue$: Observable<((request: { dataMember: string }) => unknown)|undefined>;
-    setValue$: Observable<((request: { dataMember: string, value: unknown }) => void)|undefined>;
-    
-    editorPreparing$: Observable<((request: { dataMember: string, layoutItem: EditLayoutItem }) => void)|undefined>;
-    editorInitialized$: Observable<((request: { dataMember: string, ref: EditItemRef }) => void)|undefined>;
-    editorValidating$: Observable<((request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
-    editorValueChanged$: Observable<((request: { dataMember: string, value: ValueType, notify: boolean }) => void)|undefined>;
-    editorEntered$: Observable<((request: { dataMember: string }) => void)|undefined>;
-    editorEvent$: Observable<((request: { dataMember: string, event: string }) => void)|undefined>;    
+    getValue: (request: { dataMember: string }) => Observable<unknown>;
+    setValue: (request: { dataMember: string, value: unknown }) => Subscription;
 
-    detailGridCellPreparing$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => void) | undefined>;
-    detailGridRowValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => string) | undefined>;
-    initNewDetailItem$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => void) | undefined>;
+    editorPreparing: (request: { dataMember: string, layoutItem: EditLayoutItem }) => Observable<EditLayoutItem>;
+    editorInitialized: (request: { dataMember: string, ref: EditItemRef }) => Subscription;
+    editorValidating: (request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => Observable<boolean>;
+    editorValueChanged: (request: { dataMember: string, value: ValueType, notify: boolean }) => Subscription;
+    editorEntered: (request: { dataMember: string }) => Subscription;
+    editorEvent: (request: { dataMember: string, event: string }) => Subscription;
 
-    detailEditorInitialized$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => void)|undefined>;
-    detailEditorValidating$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => boolean)|undefined>;
-    detailEditorEntered$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => void)|undefined>;
-    detailEditorEvent$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => void)|undefined>;    
-    detailEditorValueChanged$: Observable<((request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => void) | undefined>;
-    
-    validator$: Observable<(() => boolean)|undefined>;
+    detailGridCellPreparing: (request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => Observable<GridLayoutColumn>;
+    detailGridRowValidating: (request: { dataMember: string, detailItem: Record<string, unknown> }) => Observable<string | undefined>;
+    initNewDetailItem: (request: { dataMember: string, detailItem: Record<string, unknown> }) => Observable<Record<string, unknown>>;
+
+    detailEditorInitialized: (request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef }) => Subscription;
+    detailEditorValidating: (request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType }) => Observable<boolean>;
+    detailEditorEntered: (request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string }) => Subscription;
+    detailEditorEvent: (request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string }) => Subscription;
+    detailEditorValueChanged: (request: { dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean }) => Subscription;
+
+    validate: () => Observable<boolean>;
 
     setIdentifier(identifier: string): void;
 
-    setMode(mode: EditModes): void;  
+    setMode(mode: EditModes): void;
     setEntity(entity: string): void;
-    setItem(item: Record<string, unknown>): void;  
+    setItem(item: Record<string, unknown>): void;
     setEditLayout(editLayout: EditLayout): void;
     setApply(applyMethod: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void): void;
     setCancel(cancelMethod: () => void): void;
-  
-    setValidator(validator: (() => boolean)|undefined): void;  
-  
-    editUtil(): EditUtil;    
+
+    setValidator(validator: (() => boolean) | undefined): void;
+
+    editUtil(): EditUtil;
 }
 
 export type EditServiceFactory = (metaService: MetaService) => EditService;

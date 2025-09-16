@@ -1,5 +1,5 @@
 import { EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from "rxjs";
+import { BehaviorSubject, Observable, combineLatest, map, takeUntil, firstValueFrom } from 'rxjs';
 
 import { AsyncRule, CompareRule, CustomRule, EmailRule, NumericRule, PatternRule, RangeRule, RequiredRule, StringLengthRule } from "devextreme-angular/common";
 
@@ -12,7 +12,7 @@ export type ValidationRule = RequiredRule | NumericRule | RangeRule | StringLeng
   standalone: true
 })
 export class Validation implements OnInit {
-  
+
   public requiredValidation$ = new BehaviorSubject<boolean>(false);
   public emailValidation$ = new BehaviorSubject<boolean>(false);
 
@@ -27,8 +27,8 @@ export class Validation implements OnInit {
   }
 
   constructor(
-    private destroy: Destroy, 
-    private livecycle: EditItemLivecycle, 
+    private destroy: Destroy,
+    private livecycle: EditItemLivecycle,
     @Inject(EDIT_SERVICE) private editService: EditService,
     @Inject(TRANSLATOR) private translator: Translator
   ) {}
@@ -39,14 +39,14 @@ export class Validation implements OnInit {
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
         if (layoutItem) {
-          this.validationRules$ = combineLatest([this.requiredValidation$, this.emailValidation$, this.editService.editorValidating$])
+          this.validationRules$ = combineLatest([this.requiredValidation$, this.emailValidation$])
             .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(map(([required, email, editorValidating]) => {
+            .pipe(map(([required, email]) => {
                 const validationRules = [] as ValidationRule[];
 
                 if (required) {
-                    validationRules.push({ 
-                      type: 'required', 
+                    validationRules.push({
+                      type: 'required',
                       message: this.translator('validation.messages.required', { label: layoutItem.options?.caption })
                     } as RequiredRule);
                 }
@@ -55,12 +55,12 @@ export class Validation implements OnInit {
                     validationRules.push({ type: 'email' } as EmailRule);
                 }
 
-                if (layoutItem.options?.dataMember && layoutItem.options?.validations && editorValidating) {
+                if (layoutItem.options?.dataMember && layoutItem.options?.validations) {
                     layoutItem.options?.validations.forEach(rule => validationRules.push({
-                        type: 'custom',
+                        type: 'async',
                         message: rule.message,
-                        validationCallback: (options) => editorValidating({ dataMember: layoutItem.options?.dataMember as string, ruleIdentifier: rule.identifier, value: options.value })
-                    } as CustomRule));
+                        validationCallback: async (options) => await firstValueFrom(this.editService.editorValidating({ dataMember: layoutItem.options?.dataMember as string, ruleIdentifier: rule.identifier, value: options.value }))
+                    } as AsyncRule));
                 }
 
                 return validationRules;

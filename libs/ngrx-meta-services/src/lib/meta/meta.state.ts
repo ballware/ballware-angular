@@ -1,6 +1,8 @@
 import { CompiledEntityMetadata, DocumentSelectEntry, EntityCustomFunction, QueryParams, Template } from "@ballware/meta-model";
 
 export interface MetaState {
+    ready: boolean;
+
     identifier?: string;
 
     entity?: string;
@@ -19,5 +21,5 @@ export interface MetaState {
 
     addFunction?: EntityCustomFunction;
     viewFunction?: EntityCustomFunction;
-    editFunction?: EntityCustomFunction;    
+    editFunction?: EntityCustomFunction;
 }

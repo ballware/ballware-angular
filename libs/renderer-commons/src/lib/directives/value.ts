@@ -11,7 +11,7 @@ import { EditItemLivecycle } from "./edititemlivecycle";
 class Value<TValue> implements OnInit {
 
   public dataMember$ = new BehaviorSubject<string|undefined>(undefined);
-  
+
   public currentValue$ = new BehaviorSubject<TValue|undefined>(undefined);
   public notifyValueChange$ = new Subject<void>();
 
@@ -30,7 +30,7 @@ class Value<TValue> implements OnInit {
   ngOnInit(): void {
 
     this.livecicle.registerOption('value', () => this.value, (value) => this.setValueWithoutNotification(value as TValue));
-    
+
     this.livecicle.preparedLayoutItem$
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
@@ -39,28 +39,29 @@ class Value<TValue> implements OnInit {
 
           this.refreshValueTrigger$
             .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(withLatestFrom(this.editService.getValue$))
-            .subscribe(([, getValue]) => {
-              if (getValue && layoutItem?.options?.dataMember) {
-                this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
+            .subscribe(() => {
+              if (layoutItem?.options?.dataMember) {
+                this.editService.getValue({ dataMember: layoutItem?.options?.dataMember })
+                  .subscribe((value) => {
+                    this.currentValue$.next(value as TValue);
+                  });
               }
             });
 
-          this.editService.getValue$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .subscribe((getValue) => {
-              if (getValue && layoutItem?.options?.dataMember) {
-                this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
-      
-                combineLatest([this.editService.editorValueChanged$, this.notifyValueChange$])
-                  .pipe(takeUntil(this.destroy.destroy$))
-                  .subscribe(([editorValueChanged]) => {
-                    if (editorValueChanged && layoutItem?.options?.dataMember) {
-                      editorValueChanged({ dataMember: layoutItem.options.dataMember, value: this.currentValue$.getValue() as ValueType, notify: true });
-                    }
+          if (layoutItem?.options?.dataMember) {
+            this.editService.getValue({ dataMember: layoutItem?.options?.dataMember })
+              .subscribe((value) => {
+                this.currentValue$.next(value as TValue);
+
+                if (layoutItem?.options?.dataMember) {
+                  this.editService.editorValueChanged({
+                    dataMember: layoutItem.options.dataMember,
+                    value: this.currentValue$.getValue() as ValueType,
+                    notify: true
                   });
-              }
-            });            
+                }
+              });
+          }
         }
       });
   }

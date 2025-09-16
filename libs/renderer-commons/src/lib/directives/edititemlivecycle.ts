@@ -1,14 +1,14 @@
 import { EditLayoutItem } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
 import { cloneDeep } from "lodash";
-import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from "rxjs";
+import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { Directive, Inject, Input, OnInit } from "@angular/core";
 import { Destroy } from "./destroy";
 
 @Directive({
   standalone: true
 })
-export class EditItemLivecycle implements OnInit, EditItemRef {  
+export class EditItemLivecycle implements OnInit, EditItemRef {
   @Input() initialLayoutItem!: EditLayoutItem|undefined;
 
   private readonly _optionRegistry = new Array<{ option: string, getter: () => unknown, setter: (value: unknown) => void }>();
@@ -46,7 +46,7 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
       return registeredOption.getter();
     }
 
-    throw new Error(`Unsupported option <${option}>`);                
+    throw new Error(`Unsupported option <${option}>`);
   }
 
   readonly setOption = (option: string, value: unknown) => {
@@ -64,51 +64,35 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
 
   constructor(private destroy: Destroy, @Inject(EDIT_SERVICE) private editService: EditService ) {}
 
-  ngOnInit(): void {        
-    if (this.initialLayoutItem) {
-      combineLatest([this.editService.editorPreparing$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .pipe(map(([editorPreparing]) => {
-            if (editorPreparing) {
-              if (this.initialLayoutItem?.options?.dataMember) {
-                const preparedLayoutItem = cloneDeep(this.initialLayoutItem);
+  ngOnInit(): void {
+    if (this.initialLayoutItem && this.initialLayoutItem?.options?.dataMember) {
+      const preparedLayoutItem = cloneDeep(this.initialLayoutItem);
 
-                editorPreparing({ dataMember: this.initialLayoutItem.options.dataMember, layoutItem: preparedLayoutItem });
-
-                return preparedLayoutItem;
-              } else {
-                return this.initialLayoutItem;
-              }
+      this.editService.editorPreparing({ dataMember: this.initialLayoutItem.options.dataMember, layoutItem: preparedLayoutItem })
+        .pipe(
+          takeUntil(this.destroy.destroy$),
+          tap((preparedLayoutItem) => this._preparedLayoutItem$.next(preparedLayoutItem)),
+          tap((preparedLayoutItem: EditLayoutItem) => {
+            if (preparedLayoutItem.options?.dataMember) {
+              this.editService.editorInitialized({ dataMember: preparedLayoutItem.options.dataMember, ref: this });
             }
+          })
+        )
+        .subscribe(preparedLayoutItem => this.layoutItem = preparedLayoutItem);
 
-            return undefined;
-          }
-        ))
-        .subscribe((preparedLayoutItem) => this._preparedLayoutItem$.next(preparedLayoutItem));
-
-      combineLatest([this.preparedLayoutItem$, this.editService.editorInitialized$])
+      this._editorEntered$
         .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([layoutItem, editorInitialized]) => {
-          if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
-            editorInitialized({ dataMember: layoutItem.options.dataMember, ref: this });
-          }
-
-          this.layoutItem = layoutItem;
-        });
-
-      combineLatest([this.editService.editorEntered$, this._editorEntered$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([editorEntered,]) => {
-          if (editorEntered && this.initialLayoutItem?.options?.dataMember) {
-            editorEntered({ dataMember: this.initialLayoutItem.options.dataMember });
+        .subscribe(() => {
+          if (this.initialLayoutItem?.options?.dataMember) {
+            this.editService.editorEntered({ dataMember: this.initialLayoutItem.options.dataMember });
           }
         });
 
-      combineLatest([this.editService.editorEvent$, this._editorEvent$])
+      this._editorEvent$
         .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([editorEvent, { event }]) => {
-          if (editorEvent && this.initialLayoutItem?.options?.dataMember) {
-            editorEvent({ dataMember: this.initialLayoutItem.options.dataMember, event });
+        .subscribe(({ event }) => {
+          if (this.initialLayoutItem?.options?.dataMember) {
+            this.editService.editorEvent({ dataMember: this.initialLayoutItem.options.dataMember, event });
           }
         });
     }

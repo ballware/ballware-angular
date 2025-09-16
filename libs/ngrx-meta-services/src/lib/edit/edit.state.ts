@@ -6,10 +6,8 @@ export interface EditState {
     identifier?: string;
 
     entity?: string;
-    item?: Record<string, unknown>;  
+    item?: Record<string, unknown>;
     mode?: EditModes;
     editLayout?: EditLayout;
     readonly?: boolean;
-
-    validator: (() => boolean)|undefined;
 }

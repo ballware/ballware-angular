@@ -12,10 +12,10 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dialog.component.html',
   styleUrls: ['./dialog.component.scss'],
   providers: [
-    { 
-      provide: EDIT_SERVICE, 
+    {
+      provide: EDIT_SERVICE,
       useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
-      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]  
+      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
     } as Provider
   ],
   imports: [CommonModule, DxPopupModule],
@@ -50,21 +50,21 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
     this.applyAndContinue$
       .pipe(takeUntil(this.destroy$))
-      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
-      .subscribe(([, validator, item]) => {
-        if (item && (!validator || validator())) {
+      .pipe(withLatestFrom(this.editService.item$, this.editService.validate()))
+      .subscribe(([, item, validated]) => {
+        if (item && validated) {
           this.apply && this.apply(this.editService.editUtil(), item as Record<string, unknown>, true);
         }
       });
 
     this.applyAndClose$
       .pipe(takeUntil(this.destroy$))
-      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
-      .subscribe(([, validator, item]) => {
-        if (item && (!validator || validator())) {
+      .pipe(withLatestFrom(this.editService.item$, this.editService.validate()))
+      .subscribe(([, item, validated]) => {
+        if (item && validated) {
           this.apply && this.apply(this.editService.editUtil(), item, false);
         }
-      });      
+      });
   }
 
   ngOnInit(): void {
@@ -81,13 +81,13 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
         if (this.cancel) {
           this.editService.setCancel(this.cancel);
-        }        
+        }
       }
   }
 
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    
+
     this.editService.ngOnDestroy();
   }
 

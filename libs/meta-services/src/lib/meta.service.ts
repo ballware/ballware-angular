@@ -1,6 +1,6 @@
-import { Injectable, InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken, OnDestroy } from '@angular/core';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, Template, ValueType } from '@ballware/meta-model';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { EditModes } from './editmodes';
 import { LookupService } from './lookup.service';
 
@@ -10,6 +10,8 @@ export interface MetaService extends OnDestroy {
   setReadOnly(readOnly: boolean): void;
   setHeadParams(headParams: QueryParams): void;
   setInitialCustomParam(customParam: Record<string, unknown>|undefined): void;
+
+  ready$: Observable<boolean>;
 
   headParams$: Observable<QueryParams|undefined>;
   customParam$: Observable<Record<string, unknown>|undefined>;
@@ -22,64 +24,69 @@ export interface MetaService extends OnDestroy {
   entityTemplates$: Observable<Template[]|undefined>;
 
   customFunctions$: Observable<EntityCustomFunction[]|undefined>;
-  prepareCustomFunction$: Observable<((identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams) => void)|undefined>;
-  evaluateCustomFunction$: Observable<((identifier: string,  continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
 
-  getGridLayout$: Observable<((identifier: string) => GridLayout|undefined)|undefined>;
-  getEditLayout$: Observable<((identifier: string, mode: EditModes) => EditLayout|undefined)|undefined>;
+  prepareCustomFunction: (request: { identifier: string, selection: CrudItem[]|undefined, execute: (param: Record<string, unknown>) => void, message: (message: string) => void, params?: QueryParams }) => Subscription;
+  evaluateCustomFunction: (request: { identifier: string,  continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void }) => Subscription;
 
-  query$: Observable<((query: string, params: QueryParams) => Observable<CrudItem[]>)|undefined>;
-  count$: Observable<((query: string, params: QueryParams) => Observable<number>)|undefined>;
-  byId$: Observable<((query: string, id: string) => Observable<CrudItem>)|undefined>;
-  create$: Observable<((query: string, params: QueryParams) => Observable<CrudItem>)|undefined>;
-  save$: Observable<((query: string, item: CrudItem) => Observable<void>)|undefined>;
-  saveBatch$: Observable<((query: string, items: CrudItem[]) => Observable<void>)|undefined>;
-  drop$: Observable<((item: CrudItem) => Observable<void>) | undefined>;
-  importItems$: Observable<((query: string, file: File) => Observable<void>)|undefined>;
-  exportItems$: Observable<((query: string, items: CrudItem[]) => Observable<string>)|undefined>;
+  getGridLayout: (identifier: string) => Observable<GridLayout|undefined>;
+  getEditLayout: (identifier: string, mode: EditModes) => Observable<EditLayout|undefined>;
+
+  query: (query: string, params: QueryParams) => Observable<CrudItem[]>;
+  count: (query: string, params: QueryParams) => Observable<number>;
+  byId: (query: string, id: string) => Observable<CrudItem>;
+  create: (query: string, params: QueryParams) => Observable<CrudItem>;
+  save: (query: string, item: CrudItem) => Observable<void>;
+  saveBatch: (query: string, items: CrudItem[]) => Observable<void>;
+  drop: (item: CrudItem) => Observable<void>;
+  importItems: (query: string, file: File) => Observable<void>;
+  exportItems: (query: string, items: CrudItem[]) => Observable<string>;
 
   addFunction$: Observable<EntityCustomFunction|undefined>;
   viewFunction$: Observable<EntityCustomFunction|undefined>;
   editFunction$: Observable<EntityCustomFunction|undefined>;
 
-  dropAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
-  customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
+  dropAllowed: (item: CrudItem) => Observable<boolean>;
+  printAllowed: (item: CrudItem) => Observable<boolean>;
+  customFunctionAllowed: (customFunction: EntityCustomFunction, item?: CrudItem) => Observable<boolean>;
 
-  editorPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
-  editorInitialized$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-  editorEntered$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
-  editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
-  editorValidating$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string) => boolean)|undefined>;
-  editorEvent$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string) => void)|undefined>; 
-  
-  interactionKeyboardLine$: Observable<((  
-    mode: EditModes, 
-    item: Record<string, unknown>,
-    editUtil: EditUtil,
-    value: string
-  ) => void)|undefined>; 
+  editorPreparing: (request: { mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string }) => Observable<EditLayoutItem>;
+  editorInitialized: (request: { mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string }) => Subscription;
+  editorEntered: (request: { mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string }) => Subscription;
+  editorValueChanged: (request: { mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType }) => Subscription;
+  editorValidating: (request: { mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType, validation: string }) => Observable<boolean>;
+  editorEvent: (request: { mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, event: string }) => Subscription;
 
-  detailGridCellPreparing$: Observable<((
-      mode: EditModes,
-      item: Record<string, unknown>,
-      detailItem: Record<string, unknown>,
-      identifier: string,
-      options: GridLayoutColumn
-  ) => void)|undefined>;
+  interactionKeyboardLine: (request: {
+                              mode: EditModes,
+                              item: Record<string, unknown>,
+                              editUtil: EditUtil,
+                              value: string
+                            }
+  ) => Subscription;
 
-  detailGridRowValidating$: Observable<((
-      mode: EditModes,
-      item: Record<string, unknown>,
-      detailItem: Record<string, unknown>,
-      identifier: string
-  ) => string)|undefined>;
+  detailGridCellPreparing: (request: {
+                              mode: EditModes,
+                              item: Record<string, unknown>,
+                              detailItem: Record<string, unknown>,
+                              identifier: string,
+                              options: GridLayoutColumn
+                            }
+  ) => Observable<GridLayoutColumn>;
 
-  initNewDetailItem$: Observable<((
-      dataMember: string,
-      item: Record<string, unknown>,
-      detailItem: Record<string, unknown>
-  ) => void)|undefined>;
+  detailGridRowValidating: (request: {
+                              mode: EditModes,
+                              item: Record<string, unknown>,
+                              detailItem: Record<string, unknown>,
+                              identifier: string
+                            }
+  ) => Observable<string | undefined>;
+
+  initNewDetailItem: (request: {
+                        dataMember: string,
+                        item: Record<string, unknown>,
+                        detailItem: Record<string, unknown>
+                      }
+  ) => Observable<Record<string, unknown>>;
 }
 
 export type MetaServiceFactory = (lookupService: LookupService) => MetaService;

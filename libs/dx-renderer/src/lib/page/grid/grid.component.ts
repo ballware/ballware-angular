@@ -1,7 +1,7 @@
 import { Component, Inject, Input, OnInit } from '@angular/core';
 import { EntityGridOptions, GridLayout, PageLayoutItem } from '@ballware/meta-model';
 import { MasterdetailService, META_SERVICE, MetaService } from '@ballware/meta-services';
-import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, takeUntil, of } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { EditDetailComponent } from '../../edit';
 import { CommonModule } from '@angular/common';
@@ -12,8 +12,8 @@ import { EntitygridComponent } from '../../datacontainer';
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],
   providers: [
-    { 
-      provide: MasterdetailService, useClass: MasterdetailService 
+    {
+      provide: MasterdetailService, useClass: MasterdetailService
     }
   ],
   imports: [CommonModule, EntitygridComponent, EditDetailComponent],
@@ -41,9 +41,9 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
 
     super();
 
-    this.gridLayout$ = combineLatest([this._layoutIdentifier$, this.metaService.getGridLayout$])
+    this.gridLayout$ = this._layoutIdentifier$
       .pipe(takeUntil(this.destroy$))
-      .pipe(map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined));
+      .pipe(switchMap((layoutIdentifier) => layoutIdentifier ? this.metaService.getGridLayout(layoutIdentifier) : of(undefined)));
   }
 
   ngOnInit(): void {

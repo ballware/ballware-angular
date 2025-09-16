@@ -12,24 +12,24 @@ export class DataSourceService extends WithDestroy() {
     public dataSource$ = new BehaviorSubject<DataSource|undefined>(undefined);
 
     constructor(
-        @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService, 
-        @Inject(META_SERVICE) private metaService: MetaService, 
+        @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService,
+        @Inject(META_SERVICE) private metaService: MetaService,
         @Inject(CRUD_SERVICE) private crudService: CrudService) {
         super();
 
-        combineLatest([this.crudService.queryIdentifier$, this.metaService.query$, this.metaService.editFunction$, this.metaService.headParams$])
+        combineLatest([this.crudService.queryIdentifier$, this.metaService.editFunction$, this.metaService.headParams$])
             .pipe(takeUntil(this.destroy$))
-            .pipe(map(([queryIdentifier, query, editFunction, headParams]) => (queryIdentifier && query && headParams)
-                ? createEditableGridDatasource(() => lastValueFrom(query(queryIdentifier, headParams)
+            .pipe(map(([queryIdentifier, editFunction, headParams]) => (queryIdentifier && headParams)
+                ? createEditableGridDatasource(() => lastValueFrom(this.metaService.query(queryIdentifier, headParams)
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                        
-                        return of([]);              
+
+                        return of([]);
                     }))
                 ), (item) => {
                     if (editFunction) {
                       this.crudService.save({ customFunction: editFunction, item, continueAfterSave: false });
-                    }        
+                    }
 
                     return Promise.resolve(item);
                   })
@@ -40,7 +40,7 @@ export class DataSourceService extends WithDestroy() {
             .pipe(takeUntil(this.destroy$))
             .pipe(withLatestFrom(this.dataSource$))
             .subscribe(([, dataSource]) => {
-                dataSource?.reload();                
+                dataSource?.reload();
             });
     }
 }
