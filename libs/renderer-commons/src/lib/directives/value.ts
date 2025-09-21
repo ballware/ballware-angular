@@ -11,7 +11,7 @@ import { EditItemLivecycle } from "./edititemlivecycle";
 class Value<TValue> implements OnInit {
 
   public dataMember$ = new BehaviorSubject<string|undefined>(undefined);
-  
+
   public currentValue$ = new BehaviorSubject<TValue|undefined>(undefined);
   public notifyValueChange$ = new Subject<void>();
 
@@ -30,7 +30,7 @@ class Value<TValue> implements OnInit {
   ngOnInit(): void {
 
     this.livecicle.registerOption('value', () => this.value, (value) => this.setValueWithoutNotification(value as TValue));
-    
+
     this.livecicle.preparedLayoutItem$
       .pipe(takeUntil(this.destroy.destroy$))
       .subscribe((layoutItem) => {
@@ -51,7 +51,7 @@ class Value<TValue> implements OnInit {
             .subscribe((getValue) => {
               if (getValue && layoutItem?.options?.dataMember) {
                 this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
-      
+
                 combineLatest([this.editService.editorValueChanged$, this.notifyValueChange$])
                   .pipe(takeUntil(this.destroy.destroy$))
                   .subscribe(([editorValueChanged]) => {
@@ -60,7 +60,7 @@ class Value<TValue> implements OnInit {
                     }
                   });
               }
-            });            
+            });
         }
       });
   }
@@ -106,8 +106,10 @@ export class NullableStringValue extends Value<string|null> {
   standalone: true
 })
 export class UnknownArrayValue extends Value<unknown[]> {
+  private defaultArrayValue = [] as unknown[];
+
   constructor() {
-    super(() => [] as unknown[]);
+    super(() => this.defaultArrayValue);
   }
 }
 
