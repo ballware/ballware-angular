@@ -1,6 +1,21 @@
+import { isDevMode, NgZone } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+(async () => {
+  if (isDevMode()) {
+    const { runWithTracing } = await import('./dev-tools');
+    await runWithTracing(async () => {
+      const appRef = await bootstrapApplication(AppComponent, appConfig);
+      if (isDevMode()) {
+        const { installAngularProbes } = await import('./dev-tools');
+        const ngZone = appRef.injector.get(NgZone);
+        installAngularProbes(appRef, ngZone);
+      }
+    });
+    return;
+  }
+
+  await bootstrapApplication(AppComponent, appConfig);
+})();
