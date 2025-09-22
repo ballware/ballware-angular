@@ -1,14 +1,13 @@
 import { EditLayoutItem } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
-import { cloneDeep } from "lodash";
-import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from "rxjs";
+import { BehaviorSubject, Observable, Subject, takeUntil, combineLatest, map } from 'rxjs';
 import { Directive, Inject, Input, OnInit } from "@angular/core";
 import { Destroy } from "./destroy";
 
 @Directive({
   standalone: true
 })
-export class EditItemLivecycle implements OnInit, EditItemRef {  
+export class EditItemLivecycle implements OnInit, EditItemRef {
   @Input() initialLayoutItem!: EditLayoutItem|undefined;
 
   private readonly _optionRegistry = new Array<{ option: string, getter: () => unknown, setter: (value: unknown) => void }>();
@@ -46,7 +45,7 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
       return registeredOption.getter();
     }
 
-    throw new Error(`Unsupported option <${option}>`);                
+    throw new Error(`Unsupported option <${option}>`);
   }
 
   readonly setOption = (option: string, value: unknown) => {
@@ -64,18 +63,14 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
 
   constructor(private destroy: Destroy, @Inject(EDIT_SERVICE) private editService: EditService ) {}
 
-  ngOnInit(): void {        
+  ngOnInit(): void {
     if (this.initialLayoutItem) {
-      combineLatest([this.editService.editorPreparing$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .pipe(map(([editorPreparing]) => {
+      combineLatest([this.editService.editorPreparing$]).pipe(
+        takeUntil(this.destroy.destroy$),
+        map(([editorPreparing]) => {
             if (editorPreparing) {
               if (this.initialLayoutItem?.options?.dataMember) {
-                const preparedLayoutItem = cloneDeep(this.initialLayoutItem);
-
-                editorPreparing({ dataMember: this.initialLayoutItem.options.dataMember, layoutItem: preparedLayoutItem });
-
-                return preparedLayoutItem;
+                return editorPreparing({ dataMember: this.initialLayoutItem.options.dataMember, layoutItem: this.initialLayoutItem });
               } else {
                 return this.initialLayoutItem;
               }

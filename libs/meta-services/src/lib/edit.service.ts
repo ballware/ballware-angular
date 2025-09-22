@@ -15,14 +15,14 @@ export interface EditService extends OnDestroy {
     getValue$: Observable<((request: { dataMember: string }) => unknown)|undefined>;
     setValue$: Observable<((request: { dataMember: string, value: unknown }) => void)|undefined>;
 
-    editorPreparing$: Observable<((request: { dataMember: string, layoutItem: EditLayoutItem }) => void)|undefined>;
+    editorPreparing$: Observable<((request: { dataMember: string, layoutItem: EditLayoutItem }) => EditLayoutItem)|undefined>;
     editorInitialized$: Observable<((request: { dataMember: string, ref: EditItemRef }) => void)|undefined>;
     editorValidating$: Observable<((request: { dataMember: string, ruleIdentifier: string, value: ValueType }) => Observable<boolean>)|undefined>;
     editorValueChanged$: Observable<((request: { dataMember: string, value: ValueType, notify: boolean }) => void)|undefined>;
     editorEntered$: Observable<((request: { dataMember: string }) => void)|undefined>;
     editorEvent$: Observable<((request: { dataMember: string, event: string }) => void)|undefined>;
 
-    detailGridCellPreparing$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => void) | undefined>;
+    detailGridCellPreparing$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn }) => GridLayoutColumn) | undefined>;
     detailGridRowValidating$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => Observable<string|undefined>) | undefined>;
     initNewDetailItem$: Observable<((request: { dataMember: string, detailItem: Record<string, unknown> }) => void) | undefined>;
 

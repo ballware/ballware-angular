@@ -72,7 +72,7 @@ export class DetailCollectionEditing implements OnInit {
 
     private dataMember: string|undefined;
 
-    private detailGridCellPreparing: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, column: GridLayoutColumn) => void) | undefined;
+    private detailGridCellPreparing: ((dataMember: string, detailItem: Record<string, unknown>, identifier: string, column: GridLayoutColumn) => GridLayoutColumn) | undefined;
     private detailGridRowValidating: ((dataMember: string, detailItem: Record<string, unknown>) => Observable<string|undefined>) | undefined;
     private initNewDetailItem: ((dataMember: string, detailItem: Record<string, unknown>) => void) | undefined;
 

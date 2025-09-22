@@ -46,7 +46,7 @@ export interface MetaService extends OnDestroy {
   printAllowed$: Observable<((item: CrudItem) => boolean)|undefined>;
   customFunctionAllowed$: Observable<((customFunction: EntityCustomFunction, item?: CrudItem) => boolean)|undefined>;
 
-  editorPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
+  editorPreparing$: Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => EditLayoutItem)|undefined>;
   editorInitialized$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
   editorEntered$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined>;
   editorValueChanged$: Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined>;
@@ -66,7 +66,7 @@ export interface MetaService extends OnDestroy {
       detailItem: Record<string, unknown>,
       identifier: string,
       options: GridLayoutColumn
-  ) => void)|undefined>;
+  ) => GridLayoutColumn)|undefined>;
 
   detailGridRowValidating$: Observable<((
       mode: EditModes,

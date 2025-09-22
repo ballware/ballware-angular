@@ -483,9 +483,20 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             : undefined)) as Observable<((identifier: string, continueAfterSave: boolean, editUtil: EditUtil, param: Record<string, unknown>, save: (param: Record<string, unknown>) => void, message: (message: string) => void) => void)|undefined>;
 
     readonly editorPreparing$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
-        .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
-            ? (mode, item, layoutItem, identifier) => layoutItem.options && entityMetadata.compiledCustomScripts?.editorPreparing && entityMetadata.compiledCustomScripts?.editorPreparing(mode, item, layoutItem.options, identifier, lookups, this.scriptUtil)
-            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => void)|undefined>;
+        .pipe(
+          map(([entityMetadata, lookups]) => (entityMetadata && lookups)
+            ? (mode, item, layoutItem, identifier) => {
+              if (layoutItem.options && entityMetadata.compiledCustomScripts?.editorPreparing) {
+                const preparedLayoutItem = cloneDeep(layoutItem);
+
+                entityMetadata.compiledCustomScripts?.editorPreparing(mode, item, preparedLayoutItem.options ?? {}, identifier, lookups, this.scriptUtil);
+
+                return preparedLayoutItem;
+              }
+
+              return layoutItem;
+            }
+            : of(undefined))) as Observable<((mode: EditModes, item: Record<string, unknown>, layoutItem: EditLayoutItem, identifier: string) => EditLayoutItem)|undefined>;
 
     readonly editorInitialized$ = combineLatest([this.entityMetadata$, this.lookupService.lookups$])
         .pipe(map(([entityMetadata, lookups]) => (entityMetadata && lookups)
@@ -518,9 +529,20 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
             : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, value: string) => void)|undefined>;
 
     readonly detailGridCellPreparing$ = combineLatest([this.entityMetadata$])
-        .pipe(map(([entityMetadata]) => (entityMetadata)
-            ? (mode, item, detailItem, identifier, options) => entityMetadata.compiledCustomScripts?.detailGridCellPreparing && entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, options, this.scriptUtil)
-            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => void) | undefined>;
+        .pipe(
+          map(([entityMetadata]) => (entityMetadata)
+            ? (mode, item, detailItem, identifier, options) => {
+              if (entityMetadata.compiledCustomScripts?.detailGridCellPreparing) {
+                const preparedOptions = cloneDeep(options);
+
+                entityMetadata.compiledCustomScripts?.detailGridCellPreparing(mode, item as CrudItem, detailItem, identifier, preparedOptions, this.scriptUtil);
+
+                return preparedOptions;
+              }
+
+              return options;
+            }
+            : undefined)) as Observable<((mode: EditModes, item: Record<string, unknown>, detailItem: Record<string, unknown>, identifier: string, options: GridLayoutColumn) => GridLayoutColumn) | undefined>;
 
     readonly detailGridRowValidating$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)

@@ -8,7 +8,7 @@ import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/numb
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep, get, set } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
-import { createLookupDataSource } from "../../utils/datasource";
+import { createLookupDataSource } from "../../utils";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
 import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
@@ -22,7 +22,7 @@ import { I18NextModule } from "angular-i18next";
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
     standalone: true
 })
-export class EntityDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy { 
+export class EntityDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy {
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
     @ViewChild('numberbox', { static: false }) numberbox?: DxNumberBoxComponent;
     @ViewChild('datebox', { static: false }) datebox?: DxDateBoxComponent;
@@ -46,7 +46,7 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
     onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
+        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(META_SERVICE) private metaService: MetaService) {
         super();
     }
@@ -62,7 +62,7 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
     dateValue() {
         return this.value as Date;
     }
-    
+
     multiLookupValue() {
         return this.value as Array<any>;
     }
@@ -108,17 +108,16 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
         if (this.item && this.dataMember) {
             this.value = get(this.item, this.dataMember);
         }
-        
+
         combineLatest([
-            this.lookupService.lookups$, 
-            this.lookupService.getGenericLookupByIdentifier$, 
-            this.metaService.detailGridCellPreparing$,
+            this.lookupService.lookups$,
+            this.lookupService.getGenericLookupByIdentifier$,
             this.metaService.editorValueChanged$])
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing, editorValueChanged]) => {
-                if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing && editorValueChanged) {
+            .subscribe(([lookups, getGenericLookupByIdentifier, editorValueChanged]) => {
+                if (lookups && getGenericLookupByIdentifier && editorValueChanged) {
                     const preparedColumn = cloneDeep(this.column);
-                    
+
                     this.onValueChanged = (e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => {
 
                         const editUtil = {
@@ -133,20 +132,20 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
 
                         editorValueChanged(!this.readonly ? EditModes.EDIT : EditModes.VIEW, this.item, editUtil, this.dataMember, e.value);
                     };
-                    
+
                     this.preparedColumn = preparedColumn;
                     this.prepared = true;
 
                     if (this.preparedColumn.type === 'staticmultilookup') {
-                        this.lookupDatasource = this.preparedColumn.items ?? 
-                            (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember) 
+                        this.lookupDatasource = this.preparedColumn.items ??
+                            (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember)
                                 : (this.preparedColumn.lookupMember ? get(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
-                        
+
                         this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
                         this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
                     } else if (this.preparedColumn.type === 'multilookup') {
                         let lookup: LookupDescriptor|undefined = undefined;
-                        
+
                         if (this.preparedColumn.lookup) {
                             const foundLookup = lookups[this.preparedColumn.lookup];
 
@@ -180,7 +179,7 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
                             }
                         }
                     }
-                }                
+                }
             });
     }
 }
