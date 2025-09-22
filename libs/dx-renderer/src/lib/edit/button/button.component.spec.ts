@@ -11,15 +11,15 @@ describe('EditLayoutButtonComponent', () => {
   let fixture: ComponentFixture<EditLayoutButtonComponent>;
 
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutButtonComponent ],
-      providers: [        
+      providers: [
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -33,8 +33,10 @@ describe('EditLayoutButtonComponent', () => {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -49,12 +51,14 @@ describe('EditLayoutButtonComponent', () => {
     const layoutItem = {
         options: {
             dataMember: 'mockedmember',
-            readonly: false,            
+            readonly: false,
             visible: false
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -62,7 +66,7 @@ describe('EditLayoutButtonComponent', () => {
 
     expect(component.livecycle.getOption('readonly')).toBe(false);
     expect(component.livecycle.getOption('visible')).toBe(false);
-    
+
     component.livecycle.setOption('readonly', true);
     expect(component.livecycle.getOption('readonly')).toBe(true);
 
@@ -73,18 +77,20 @@ describe('EditLayoutButtonComponent', () => {
     expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
 
-  it('should trigger click event', () => {    
+  it('should trigger click event', () => {
     fixture = TestBed.createComponent(EditLayoutButtonComponent);
 
     const layoutItem = {
         options: {
             dataMember: 'mockedmember',
-            readonly: false,            
+            readonly: false,
             visible: true
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

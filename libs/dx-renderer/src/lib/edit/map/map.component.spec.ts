@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutMapComponent } from './map.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
+import { EDIT_SERVICE, SETTINGS_SERVICE } from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { BehaviorSubject } from 'rxjs';
@@ -12,21 +12,21 @@ describe('EditLayoutMapComponent', () => {
   let fixture: ComponentFixture<EditLayoutMapComponent>;
 
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ EditLayoutMapComponent ],      
-      providers: [        
+      imports: [ EditLayoutMapComponent ],
+      providers: [
         {
           provide: SETTINGS_SERVICE,
-          useValue: {  
+          useValue: {
             googlekey$: new BehaviorSubject<string|undefined>('unlicensed')
           }
         },
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -41,8 +41,10 @@ describe('EditLayoutMapComponent', () => {
         dataMember: 'mockedmember'
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -57,18 +59,20 @@ describe('EditLayoutMapComponent', () => {
     const layoutItem = {
       options: {
           dataMember: 'mockedmember',
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
 
-    expect(component.livecycle.getOption('value')).toBe(null);    
+    expect(component.livecycle.getOption('value')).toBe(null);
     expect(component.livecycle.getOption('readonly')).toBe(false);
     expect(component.livecycle.getOption('visible')).toBe(false);
 

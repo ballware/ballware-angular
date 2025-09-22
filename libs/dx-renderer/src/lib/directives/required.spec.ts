@@ -20,29 +20,29 @@ class EditRequiredTestComponent {
 
   constructor(
     public livecycle: EditItemLivecycle) {
-    
+
   }
 }
 
 describe('Required', () => {
   let component: EditRequiredTestComponent;
   let fixture: ComponentFixture<EditRequiredTestComponent>;
-  
+
   const mockedTranslator = jest.fn();
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditRequiredTestComponent ],
-      providers: [      
+      providers: [
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
-        },  
+        },
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -50,15 +50,17 @@ describe('Required', () => {
 
   it('should create with value', () => {
     fixture = TestBed.createComponent(EditRequiredTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember',
             required: true
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

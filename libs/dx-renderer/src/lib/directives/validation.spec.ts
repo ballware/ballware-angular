@@ -18,7 +18,7 @@ import { Required } from './required';
   standalone: true
 })
 class EditValidationTestComponent {
-  
+
   constructor(
     public livecycle: EditItemLivecycle,
     public validation: Validation) {
@@ -28,14 +28,14 @@ class EditValidationTestComponent {
 describe('Validation', () => {
   let component: EditValidationTestComponent;
   let fixture: ComponentFixture<EditValidationTestComponent>;
-  
+
   const mockedTranslator = jest.fn();
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditValidationTestComponent ],
-      providers: [        
+      providers: [
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
@@ -43,7 +43,7 @@ describe('Validation', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -51,14 +51,16 @@ describe('Validation', () => {
 
   it('should create without validation', async () => {
     fixture = TestBed.createComponent(EditValidationTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -76,15 +78,17 @@ describe('Validation', () => {
 
   it('should create with required validation', async () => {
     fixture = TestBed.createComponent(EditValidationTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember',
             required: true
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -104,14 +108,16 @@ describe('Validation', () => {
 
   it('should create with email validation', async () => {
     fixture = TestBed.createComponent(EditValidationTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

@@ -23,13 +23,13 @@ describe('EditLayoutTextareaComponent', () => {
 
   const mockedSpeechRecognitionService = new Mock<SpeechRecognitionService>();
   mockedSpeechRecognitionService.setup(m => m.available).returns(false);
-  
+
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutTextareaComponent ],
-      providers: [    
+      providers: [
         {
           provide: I18NEXT_SERVICE,
           useFactory: () => mockedTranslationService.object()
@@ -37,7 +37,7 @@ describe('EditLayoutTextareaComponent', () => {
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
-        },   
+        },
         {
           provide: RESPONSIVE_SERVICE,
           useFactory: () => mockedResponsiveService.object()
@@ -49,7 +49,7 @@ describe('EditLayoutTextareaComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -63,8 +63,10 @@ describe('EditLayoutTextareaComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -80,12 +82,14 @@ describe('EditLayoutTextareaComponent', () => {
       options: {
           dataMember: 'mockedmember',
           required: false,
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

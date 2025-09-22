@@ -46,15 +46,15 @@ class EditLookupTestComponent implements OnInit {
 describe('Lookup', () => {
   let lookupComponent: EditLookupTestComponent;
   let lookupFixture: ComponentFixture<EditLookupTestComponent>;
-  
+
   const mockedNotificationService = new Mock<NotificationService>();
   const mockedLookupService = mockedLookupServiceContext();
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLookupTestComponent ],
-      providers: [      
+      providers: [
         {
           provide: NOTIFICATION_SERVICE,
           useFactory: () => mockedNotificationService.object()
@@ -62,11 +62,11 @@ describe('Lookup', () => {
         {
           provide: LOOKUP_SERVICE,
           useFactory: () => mockedLookupService.mock.object()
-        }, 
+        },
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -74,7 +74,7 @@ describe('Lookup', () => {
 
   it('should create with lookup descriptor', async () => {
     lookupFixture = TestBed.createComponent(EditLookupTestComponent);
-    
+
     const lookupByIdFn = jest.fn();
     const lookupListFn = jest.fn();
 
@@ -94,12 +94,14 @@ describe('Lookup', () => {
           lookup: 'mockedlookup'
         }
     } as EditLayoutItem;
-    
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
     const lookupList = [{ Id: '1',  Text: 'Item 1' }, { Id: '2',  Text: 'Item 2' }];
 
     lookupListFn.mockReturnValue(new BehaviorSubject(lookupList));
 
-    lookupComponent = lookupFixture.componentInstance;   
+    lookupComponent = lookupFixture.componentInstance;
     expect(lookupComponent).toBeTruthy();
 
     lookupFixture.componentRef.setInput('initialLayoutItem' ,layoutItem);
@@ -113,12 +115,12 @@ describe('Lookup', () => {
 
   it('should create with lookup creator', async () => {
     lookupFixture = TestBed.createComponent(EditLookupTestComponent);
-    
+
     const lookupByIdFn = jest.fn();
     const lookupListFn = jest.fn();
 
     mockedLookupService.lookups$.next({
-      'mockedlookup': (param: string | Array<string>) => ({
+      'mockedlookup': (_: string | Array<string>) => ({
         type: 'lookup',
         store: {
           byIdFunc: lookupByIdFn,
@@ -134,12 +136,14 @@ describe('Lookup', () => {
           lookupParam: 'mockedParam'
         }
     } as EditLayoutItem;
-    
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
     const lookupList = [{ Id: '1',  Text: 'Item 1' }, { Id: '2',  Text: 'Item 2' }];
 
     lookupListFn.mockReturnValue(new BehaviorSubject(lookupList));
 
-    lookupComponent = lookupFixture.componentInstance;   
+    lookupComponent = lookupFixture.componentInstance;
     expect(lookupComponent).toBeTruthy();
 
     lookupFixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -153,17 +157,19 @@ describe('Lookup', () => {
 
   it('should create with static list', async () => {
     lookupFixture = TestBed.createComponent(EditLookupTestComponent);
-    
+
     const lookupList = [{ Value: '1',  Text: 'Item 1' }, { Value: '2',  Text: 'Item 2' }];
-    
+
     const layoutItem = {
         options: {
           dataMember: 'mockedmember',
           items: lookupList
         }
     } as EditLayoutItem;
-    
-    lookupComponent = lookupFixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    lookupComponent = lookupFixture.componentInstance;
     expect(lookupComponent).toBeTruthy();
 
     lookupFixture.componentRef.setInput('initialLayoutItem', layoutItem);

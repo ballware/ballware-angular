@@ -17,10 +17,10 @@ import { mockedEditServiceContext } from '../../test/editservice.spec';
   standalone: true
 })
 class EditLifecycleTestComponent implements OnInit {
-  
+
   constructor(
     private destroy: Destroy,
-    private livecycle: EditItemLivecycle) {    
+    private livecycle: EditItemLivecycle) {
   }
 
   ngOnInit(): void {
@@ -32,23 +32,23 @@ class EditLifecycleTestComponent implements OnInit {
           this.livecycle.onEvent('mockedevent');
         }
       });
-  }  
+  }
 }
 
 describe('WithEditItemLifecycle', () => {
   let component: EditLifecycleTestComponent;
   let fixture: ComponentFixture<EditLifecycleTestComponent>;
-  
+
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLifecycleTestComponent ],
-      providers: [        
+      providers: [
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -56,19 +56,21 @@ describe('WithEditItemLifecycle', () => {
 
   it('should create with lifecycle', () => {
     fixture = TestBed.createComponent(EditLifecycleTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-        
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
-       
+
     expect(mockedEditService.editorPreparing).toBeCalledTimes(1);
     expect(mockedEditService.editorPreparing).toBeCalledWith(expect.objectContaining({ dataMember: 'mockedmember' }));
 
@@ -80,6 +82,6 @@ describe('WithEditItemLifecycle', () => {
 
     expect(mockedEditService.editorEvent).toBeCalledTimes(1);
     expect(mockedEditService.editorEvent).toBeCalledWith(expect.objectContaining({ dataMember: 'mockedmember', event: 'mockedevent' }));
-    
+
   });
 });

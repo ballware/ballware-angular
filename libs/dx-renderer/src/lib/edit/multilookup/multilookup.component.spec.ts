@@ -15,15 +15,15 @@ describe('EditLayoutMultilookupComponent', () => {
   const mockedNotificationService = new Mock<NotificationService>();
   const mockedLookupService = new Mock<LookupService>();
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutMultilookupComponent ],
-      providers: [       
+      providers: [
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
-        }, 
+        },
         {
           provide: NOTIFICATION_SERVICE,
           useFactory: () => mockedNotificationService.object()
@@ -35,7 +35,7 @@ describe('EditLayoutMultilookupComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -50,8 +50,10 @@ describe('EditLayoutMultilookupComponent', () => {
           lookup: 'mockedlookup'
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -65,12 +67,14 @@ describe('EditLayoutMultilookupComponent', () => {
       options: {
           dataMember: 'mockedmember',
           required: false,
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

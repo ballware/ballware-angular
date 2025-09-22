@@ -12,11 +12,11 @@ describe('EditLayoutRichtextComponent', () => {
 
   const mockedTranslator = jest.fn();
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutRichtextComponent ],
-      providers: [        
+      providers: [
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
@@ -24,7 +24,7 @@ describe('EditLayoutRichtextComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -39,8 +39,10 @@ describe('EditLayoutRichtextComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -54,12 +56,14 @@ describe('EditLayoutRichtextComponent', () => {
       options: {
           dataMember: 'mockedmember',
           required: false,
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

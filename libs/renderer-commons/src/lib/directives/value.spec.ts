@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Component, Input, Provider } from '@angular/core';
+import { Component, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE } from '@ballware/meta-services';
 import { Destroy } from './destroy';
@@ -19,24 +19,24 @@ import { StringValue } from './value';
 class EditValueTestComponent {
 
   constructor(
-    public livecycle: EditItemLivecycle, public value: StringValue) {    
+    public livecycle: EditItemLivecycle, public value: StringValue) {
   }
 }
 
 describe('Value', () => {
   let component: EditValueTestComponent;
   let fixture: ComponentFixture<EditValueTestComponent>;
-  
+
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditValueTestComponent ],
-      providers: [        
+      providers: [
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -44,18 +44,19 @@ describe('Value', () => {
 
   it('should create with value', () => {
     fixture = TestBed.createComponent(EditValueTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
 
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
     mockedEditService.getValue.mockReturnValueOnce("initialvalue");
 
     fixture.detectChanges();
@@ -69,7 +70,7 @@ describe('Value', () => {
     expect(component.value.value).toBe("refreshedvalue");
 
     component.value.value = 'changedvalue';
-       
+
     expect(mockedEditService.editorValueChanged).toBeCalledWith({ dataMember: 'mockedmember', value: 'changedvalue', notify: true});
 
     component.value.setValueWithoutNotification('notnotifiedvalue');

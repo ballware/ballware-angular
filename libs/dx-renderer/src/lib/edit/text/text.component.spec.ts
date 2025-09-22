@@ -19,15 +19,15 @@ describe('EditLayoutTextComponent', () => {
 
   const mockedTranslationService = new Mock<ITranslationService>()
     .setup(instance => instance.t(It.IsAny<string>())).returns('mocked text');
-    
+
   const mockedResponsiveService = new Mock<ResponsiveService>()
     .setup(instance => instance.onResize$).returns(of(SCREEN_SIZE.XL));
   const mockedEditService = mockedEditServiceContext();
-          
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutTextComponent ],
-      providers: [        
+      providers: [
         {
           provide: I18NEXT_SERVICE,
           useFactory: () => mockedTranslationService.object()
@@ -43,7 +43,7 @@ describe('EditLayoutTextComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -58,9 +58,11 @@ describe('EditLayoutTextComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
     component = fixture.componentInstance;
-    componentRef = fixture.componentRef;   
+    componentRef = fixture.componentRef;
     expect(component).toBeTruthy();
 
     componentRef.setInput('initialLayoutItem', layoutItem);
@@ -78,8 +80,10 @@ describe('EditLayoutTextComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     expect(component).toBeTruthy();
 
@@ -96,18 +100,20 @@ describe('EditLayoutTextComponent', () => {
       options: {
           dataMember: 'mockedmember',
           required: false,
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     componentRef = fixture.componentRef;
     expect(component).toBeTruthy();
 
     componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
-    
+
     expect(component.livecycle.getOption('value')).toBe("");
     expect(component.livecycle.getOption('required')).toBe(false);
     expect(component.livecycle.getOption('readonly')).toBe(false);
@@ -127,6 +133,6 @@ describe('EditLayoutTextComponent', () => {
 
     expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
     expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
-    
+
   });
 });

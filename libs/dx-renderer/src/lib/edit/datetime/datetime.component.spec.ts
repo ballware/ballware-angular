@@ -16,11 +16,11 @@ describe('EditLayoutDatetimeComponent', () => {
 
   when(mockedTranslator).calledWith('format.date').mockReturnValue('MM/dd/yyyy');
   when(mockedTranslator).calledWith('format.datetime').mockReturnValue('MM/dd/yyyy HH:mm:ss');
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditLayoutDatetimeComponent ],
-      providers: [        
+      providers: [
         {
           provide: TRANSLATOR,
           useValue: mockedTranslator
@@ -28,7 +28,7 @@ describe('EditLayoutDatetimeComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -43,8 +43,10 @@ describe('EditLayoutDatetimeComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -62,8 +64,10 @@ describe('EditLayoutDatetimeComponent', () => {
           dataMember: 'mockedmember',
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
@@ -80,12 +84,14 @@ describe('EditLayoutDatetimeComponent', () => {
       options: {
           dataMember: 'mockedmember',
           required: false,
-          readonly: false,            
+          readonly: false,
           visible: false
       }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
