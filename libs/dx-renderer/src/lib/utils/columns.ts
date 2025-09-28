@@ -72,6 +72,7 @@ export type OptionButtons =
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
+          dataType: 'number',
           format: c.precision
             ? { type: 'fixedPoint', precision: c.precision }
             : null,
