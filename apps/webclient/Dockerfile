@@ -31,7 +31,7 @@ RUN apk update \
     && apk add jq \
     && rm -rf /var/cache/apk/*
 
-COPY --from=build /app/dist/webclient* /var/www
+COPY --from=build /app/dist/webclient/browser* /var/www
 
 COPY --from=build /app/apps/webclient/nginx.conf /etc/nginx/nginx.conf
 # COPY apps/webclient/localhost.pem /etc/nginx/localhost.pem
