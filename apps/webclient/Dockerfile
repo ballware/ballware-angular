@@ -22,7 +22,7 @@ COPY --from=deps /app /app
 COPY . .
 
 RUN YARN_ENABLE_SCRIPTS=true yarn install --immutable --inline-builds
-RUN yarn build
+RUN yarn nx build --configuration=production
 
 FROM base AS final
 

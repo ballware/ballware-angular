@@ -21,16 +21,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
-      - name: 'Install Dependencies'
-        run: yarn install
-      - name: 'Derive appropriate SHAs for base and head for `nx affected` commands'
-        uses: nrwl/nx-set-shas@v3
-      - name: 'Build images'
-        run: INPUT_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} npx nx build --configuration=production --parallel=2
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
