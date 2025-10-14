@@ -19,8 +19,8 @@ import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
 
 export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): EnvironmentProviders {
-  return makeEnvironmentProviders(    
-    [  
+  return makeEnvironmentProviders(
+    [
         {
             provide: IDENTITY_USER_API,
             useFactory: (client: HttpClient) => createKeycloakUserApi(client, serviceBaseUrl),
@@ -30,19 +30,19 @@ export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): Environm
             provide: IDENTITY_ROLE_API,
             useFactory: (client: HttpClient) => createKeycloakRoleApi(client, serviceBaseUrl),
             deps: [ HttpClient ]
-        },      
+        },
     ]);
 }
 
 export function provideMetaBackendRestApi(
-    metaServiceBaseUrl: string, 
+    metaServiceBaseUrl: string,
     documentServiceBaseUrl: string,
     tenantServiceBaseUrl: string,
     mlServiceBaseUrl: string,
     storageServiceBaseUrl: string
     ): EnvironmentProviders {
-    return makeEnvironmentProviders(    
-    [  
+    return makeEnvironmentProviders(
+    [
         {
             provide: META_ATTACHMENT_API_FACTORY,
             useFactory: (client: HttpClient) => (tenant: string, entity: string, owner: string) => createMetaBackendAttachmentApi(client, storageServiceBaseUrl, tenant, entity, owner),
@@ -101,8 +101,8 @@ export function provideDocumentBackendRestApi(
     documentServiceSignonUrl: string,
     documentServiceDesignerUrl: string,
     documentServiceViewerUrl: string): EnvironmentProviders {
-    return makeEnvironmentProviders(    
-    [  
+    return makeEnvironmentProviders(
+    [
         {
             provide: META_DOCUMENT_API,
             useFactory: (client: HttpClient) => createMetaBackendDocumentApi(client, documentServiceBaseUrl, documentServiceSignonUrl, documentServiceDesignerUrl, documentServiceViewerUrl ),
@@ -117,23 +117,26 @@ export function provideDocumentBackendRestApi(
             provide: META_SUBSCRIPTION_API,
             useFactory: (client: HttpClient) => createMetaBackendSubscriptionApi(client, documentServiceBaseUrl),
             deps: [ HttpClient ]
-        },        
+        },
     ]);
 }
-  
-export function provideGenericBackendRestApi(metaServiceBaseUrl: string, 
-    tenantServiceBaseUrl: string, 
-    genericServiceBaseUrl: string, 
+
+export function provideGenericBackendRestApi(
+    identityServiceBaseUrl: string,
+    metaServiceBaseUrl: string,
+    tenantServiceBaseUrl: string,
+    genericServiceBaseUrl: string,
     documentServiceBaseUrl: string,
     mlServiceBaseUrl: string,
     storageServiceBaseUrl: string)
     : EnvironmentProviders {
-    return makeEnvironmentProviders(    
-      [  
+    return makeEnvironmentProviders(
+      [
           {
               provide: GENERIC_ENTITY_API_FACTORY,
-              useFactory: (client: HttpClient) => (entityBaseUrl: string) => createGenericBackendEntityApi(client, 
+              useFactory: (client: HttpClient) => (entityBaseUrl: string) => createGenericBackendEntityApi(client,
                 entityBaseUrl
+                    .replace('{identity}', identityServiceBaseUrl + "/")
                     .replace('{meta}', metaServiceBaseUrl + "/")
                     .replace('{tenant}', tenantServiceBaseUrl + "/")
                     .replace('{generic}', genericServiceBaseUrl + "/")
@@ -144,4 +147,3 @@ export function provideGenericBackendRestApi(metaServiceBaseUrl: string,
           },
       ]);
   }
-  

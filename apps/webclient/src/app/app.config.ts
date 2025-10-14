@@ -46,24 +46,25 @@ export const appConfig: ApplicationConfig = {
         provideRendererCommonsServices(),
         provideDxRenderFactoryComponents({ licenseKey: window.ENV.BALLWARE_DEVEXTREMEKEY }),
         provideDxRenderFactoryRoutes(),
-        provideIdentityKeycloakRestApi(window.ENV.BALLWARE_IDENTITYURL), 
+        provideIdentityKeycloakRestApi(window.ENV.BALLWARE_IDENTITYURL),
         provideMetaBackendRestApi(
-            window.ENV.BALLWARE_METAURL, 
+            window.ENV.BALLWARE_METAURL,
             window.ENV.BALLWARE_DOCUMENTURL,
-            window.ENV.BALLWARE_TENANTURL, 
+            window.ENV.BALLWARE_TENANTURL,
             window.ENV.BALLWARE_MLURL,
-            window.ENV.BALLWARE_STORAGEURL), 
+            window.ENV.BALLWARE_STORAGEURL),
         provideDocumentBackendRestApi(
-            window.ENV.BALLWARE_DOCUMENTURL, 
+            window.ENV.BALLWARE_DOCUMENTURL,
             window.ENV.BALLWARE_DOCUMENT_SIGNON_URL,
             window.ENV.BALLWARE_DOCUMENT_DESIGNER_URL,
             window.ENV.BALLWARE_DOCUMENT_VIEWER_URL),
         provideGenericBackendRestApi(
-            window.ENV.BALLWARE_METAURL, 
-            window.ENV.BALLWARE_TENANTURL, 
-            window.ENV.BALLWARE_GENERICURL, 
-            window.ENV.BALLWARE_DOCUMENTURL, 
+            window.ENV.BALLWARE_IDENTITYURL,
+            window.ENV.BALLWARE_METAURL,
+            window.ENV.BALLWARE_TENANTURL,
+            window.ENV.BALLWARE_GENERICURL,
+            window.ENV.BALLWARE_DOCUMENTURL,
             window.ENV.BALLWARE_MLURL,
-            window.ENV.BALLWARE_STORAGEURL)        
+            window.ENV.BALLWARE_STORAGEURL)
     ]
 };
