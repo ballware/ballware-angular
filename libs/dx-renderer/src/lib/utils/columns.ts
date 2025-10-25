@@ -228,8 +228,9 @@ export type OptionButtons =
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
-          cellTemplate: editMode === 'instant' && c.editable ? 'dynamicedit' : 'dynamic',
+          cellTemplate: editMode === 'instant' && !c.editable ? 'dynamic' : null,
           editCellTemplate: 'dynamicedit',
+          showEditorAlways: editMode === 'instant' && c.editable
         } as ColumnType;
       }
       case 'popup': {
