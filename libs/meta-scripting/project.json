@@ -3,6 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/meta-scripting/src",
   "projectType": "library",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",
@@ -32,6 +33,5 @@
         "jestConfig": "libs/meta-scripting/jest.config.ts"
       }
     }
-  },
-  "tags": []
+  }
 }
