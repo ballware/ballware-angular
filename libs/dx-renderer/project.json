@@ -39,10 +39,7 @@
         "port": 4400,
         "configDir": "libs/dx-renderer/.storybook",
         "browserTarget": "dx-renderer:build-storybook",
-        "compodoc": false,
-        "https": true,
-        "sslKey": "localhost-key.pem",
-        "sslCert": "localhost.pem"
+        "compodoc": false
       },
       "configurations": {
         "ci": {
