@@ -5,13 +5,18 @@ import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
 import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/number_box";
+import { ValueChangedEvent as LookupValueChangedEvent } from "devextreme/ui/select_box";
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { get } from "lodash";
 import { combineLatest, takeUntil } from "rxjs";
 import { createLookupDataSource } from "../../utils";
 import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
-import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
+import {
+  DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule,
+  DxSelectBoxComponent,
+  DxSelectBoxModule, DxTagBoxComponent, DxTagBoxModule, DxValidatorModule
+} from 'devextreme-angular';
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
 import { I18NextModule } from "angular-i18next";
 import { DetailCollectionEditing } from "../../directives";
@@ -20,7 +25,7 @@ import { DetailCollectionEditing } from "../../directives";
     selector: 'ballware-detail-dynamic-column',
     templateUrl: './detaildynamiccolumn.component.html',
     styleUrls: [],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
+  imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule],
     standalone: true
 })
 export class DetailDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy, AfterViewInit {
@@ -30,6 +35,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     @ViewChild('datetimebox', { static: false }) datetimebox?: DxDateBoxComponent;
     @ViewChild('statictagbox', { static: false }) statictagbox?: DxTagBoxComponent;
     @ViewChild('tagbox', { static: false }) tagbox?: DxTagBoxComponent;
+    @ViewChild('selectbox', { static: false }) selectbox?: DxSelectBoxComponent;
 
     @Input() dataMember!: string;
     @Input() identifier!: string;
@@ -46,7 +52,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
 
-    onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
+    onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|LookupValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
@@ -65,6 +71,10 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
     dateValue() {
         return this.value as Date;
+    }
+
+    lookupValue() {
+        return this.value as any;
     }
 
     multiLookupValue() {
@@ -132,7 +142,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
                     this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
                     this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
-                  } else if (this.preparedColumn.type === 'multilookup') {
+                  } else if (this.preparedColumn.type === 'pickvalue' || this.preparedColumn.type === 'lookup' || this.preparedColumn.type === 'multilookup') {
                     let lookup: LookupDescriptor | undefined = undefined;
 
                     if (this.preparedColumn.lookup) {
@@ -266,6 +276,25 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     }
                 }
                 break;
+            case 'lookup':
+            case 'pickvalue':
+              if (this.selectbox?.instance) {
+                const editorOptions = this.selectbox.instance.option();
+
+                this.editing.onCustomEditorPreparing({
+                  row: this.detailItem,
+                  rowIndex: this.detailItemIndex,
+                  dataField: this.identifier,
+                  column: this.preparedColumn,
+                  editorOptions: editorOptions,
+                  component: this.selectbox.instance
+                });
+
+                if (editorOptions) {
+                  this.selectbox.instance.option(editorOptions);
+                }
+              }
+              break;
             case 'multilookup':
                 if (this.tagbox?.instance) {
                     const editorOptions = this.tagbox.instance.option();
@@ -282,8 +311,6 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     if (editorOptions) {
                         this.tagbox.instance.option(editorOptions);
                     }
-
-                    break;
                 }
                 break;
         }
