@@ -12956,6 +12956,7 @@ __metadata:
     ng-packagr: "npm:18.2.1"
     ng-process-env: "npm:^16.0.6"
     nx: "npm:22.0.1"
+    playwright: "npm:^1.56.1"
     postcss: "npm:^8.4.5"
     postcss-import: "npm:~14.1.0"
     postcss-preset-env: "npm:~7.5.0"
@@ -24119,6 +24120,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.56.1":
+  version: 1.56.1
+  resolution: "playwright-core@npm:1.56.1"
+  bin:
+    playwright-core: cli.js
+  checksum: ffd40142b99c68678b387445d5b42f1fee4ab0b65d983058c37f342e5629f9cdbdac0506ea80a0dfd41a8f9f13345bad54e9a8c35826ef66dc765f4eb3db8da7
+  languageName: node
+  linkType: hard
+
 "playwright@npm:^1.14.0":
   version: 1.40.1
   resolution: "playwright@npm:1.40.1"
@@ -24131,6 +24141,21 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 5dae164d1f69162da8d7eee52da651296fb885c76a8b36049f216975c751a0a826ff05795a1c0902dc0bd193fe606ae17d5def655f4cbcccb8d8b71afb74b950
+  languageName: node
+  linkType: hard
+
+"playwright@npm:^1.56.1":
+  version: 1.56.1
+  resolution: "playwright@npm:1.56.1"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.56.1"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 8e9965aede86df0f4722063385748498977b219630a40a10d1b82b8bd8d4d4e9b6b65ecbfa024331a30800163161aca292fb6dd7446c531a1ad25f4155625ab4
   languageName: node
   linkType: hard
 
