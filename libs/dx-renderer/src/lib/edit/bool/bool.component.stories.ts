@@ -7,6 +7,7 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-service
 import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
+import { expect, within } from '@storybook/test';
 
 const meta: Meta<EditLayoutBoolComponent> = {
   title: 'DX Renderer/Edit/Bool',
@@ -68,6 +69,17 @@ export const Default: Story = {
       validation: { validationRules$: of([]) },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Checkbox should be visible
+    const checkbox = canvas.getByRole('checkbox', { hidden: true });
+    await expect(checkbox).toBeTruthy();
+
+    // Test: Label should contain correct text
+    const label = canvas.getByText('Active');
+    await expect(label).toBeTruthy();
+  },
 };
 
 export const Checked: Story = {
@@ -85,6 +97,17 @@ export const Checked: Story = {
       validation: { validationRules$: of([]) },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Checkbox should be checked
+    const checkboxContainer = canvas.getByText('Enabled').parentElement?.parentElement;
+    await expect(checkboxContainer).toBeTruthy();
+
+    // Verify the checkbox has checked class
+    const dxCheckbox = canvasElement.querySelector('.dx-checkbox-checked');
+    await expect(dxCheckbox).toBeTruthy();
+  },
 };
 
 export const Readonly: Story = {
@@ -102,6 +125,13 @@ export const Readonly: Story = {
       validation: { validationRules$: of([]) },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Checkbox should be in readonly state
+    const readonlyCheckbox = canvasElement.querySelector('.dx-state-readonly');
+    await expect(readonlyCheckbox).toBeTruthy();
+  },
 };
 
 export const ReadonlyUnchecked: Story = {

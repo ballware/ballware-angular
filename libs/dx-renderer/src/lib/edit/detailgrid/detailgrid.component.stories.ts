@@ -10,6 +10,7 @@ import { of } from 'rxjs';
 import { importProvidersFrom } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 import { I18N_PROVIDERS } from '../../i18n/i18n';
+import { expect, within, waitFor } from '@storybook/test';
 
 const meta: Meta<EditLayoutDetailGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',
@@ -110,6 +111,30 @@ export const Default: Story = {
       },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    const grid = canvasElement.querySelector('.dx-datagrid');
+    await expect(grid).toBeTruthy();
+
+    // Test: Caption should be visible
+    const caption = canvas.getByText('Items');
+    await expect(caption).toBeTruthy();
+
+    // Wait for data rows to be rendered (DevExtreme needs time to render)
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(3);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Column headers should exist
+    const nameHeader = canvas.getByText('Name');
+    await expect(nameHeader).toBeTruthy();
+  },
 };
 
 export const Empty: Story = {
@@ -156,6 +181,17 @@ export const Empty: Story = {
       },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    const grid = canvasElement.querySelector('.dx-datagrid');
+    await expect(grid).toBeTruthy();
+
+    // Test: No data message or empty grid
+    const rows = canvasElement.querySelectorAll('.dx-data-row');
+    await expect(rows.length).toBe(0);
+  },
 };
 
 export const Readonly: Story = {

@@ -7,6 +7,7 @@ import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
 import { of } from 'rxjs';
+import { expect, within, userEvent } from '@storybook/test';
 
 const meta: Meta<EditLayoutButtonComponent> = {
   title: 'DX Renderer/Edit/Button',
@@ -66,6 +67,17 @@ export const Default: Story = {
       readonly: { readonly$: of(false) },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Button should be visible with correct text
+    const button = canvas.getByRole('button');
+    await expect(button).toBeTruthy();
+    await expect(button.textContent).toContain('Click Me');
+
+    // Test: Button should be clickable
+    await userEvent.click(button);
+  },
 };
 
 export const Disabled: Story = {
@@ -81,6 +93,13 @@ export const Disabled: Story = {
       readonly: { readonly$: of(true) },
     },
   }),
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Button should be disabled
+    const button = canvas.getByRole('button');
+    await expect(button).toHaveAttribute('aria-disabled', 'true');
+  },
 };
 
 export const LongText: Story = {
