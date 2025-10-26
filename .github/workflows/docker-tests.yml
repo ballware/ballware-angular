@@ -38,7 +38,6 @@ jobs:
         uses: dorny/test-reporter@v2
         if: (!cancelled())
         with:
-          artifact: 'unit-test-results'
           name: 'Unit Test Results'
           path: test_results/**/*.xml
           reporter: jest-junit
@@ -46,7 +45,6 @@ jobs:
         uses: dorny/test-reporter@v2
         if: (!cancelled())
         with:
-          artifact: 'playwright-test-results'
           name: 'Playwright Test Results'
           path: junit.xml
           reporter: jest-junit
