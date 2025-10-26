@@ -4,20 +4,20 @@
   "projectType": "library",
   "sourceRoot": "libs/meta-services/src",
   "prefix": "ballware",
+  "tags": [],
   "targets": {
     "build": {
       "executor": "@nx/angular:package",
       "outputs": ["{workspaceRoot}/dist/libs/meta-services"],
       "options": {
-        "project": "libs/meta-services/ng-package.json"
+        "project": "libs/meta-services/ng-package.json",
+        "tsConfig": "libs/meta-services/tsconfig.lib.json"
       },
       "configurations": {
         "production": {
           "tsConfig": "libs/meta-services/tsconfig.lib.prod.json"
         },
-        "development": {
-          "tsConfig": "libs/meta-services/tsconfig.lib.json"
-        }
+        "development": {}
       },
       "defaultConfiguration": "production"
     },
@@ -26,12 +26,12 @@
       "outputs": ["{workspaceRoot}/coverage/libs/meta-services"],
       "options": {
         "jestConfig": "libs/meta-services/jest.config.ts",
-        "coverageReporters": ["lcov"]
+        "coverageReporters": ["lcov"],
+        "tsConfig": "libs/meta-services/tsconfig.spec.json"
       }
     },
     "lint": {
       "executor": "@nx/eslint:lint"
     }
-  },
-  "tags": []
+  }
 }
