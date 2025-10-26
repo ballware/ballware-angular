@@ -34,13 +34,20 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: yarn nx test-storybook dx-renderer -- --junit --coverage --coverageDirectory=coverage/storybook
-      - name: Upload Test Reports
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Upload Unit Test Reports
+        uses: dorny/test-reporter@v2
         if: (!cancelled())
         with:
-          files: |
-            junit.xml
-            test_results/**/*.xml
+          name: 'Unit Test Results'
+          path: test_results/**/*.xml
+          reporter: jest-junit
+      - name: Upload Playwright Test Reports
+        uses: dorny/test-reporter@v2
+        if: (!cancelled())
+        with:
+          name: 'Playwright Test Results'
+          path: junit.xml
+          reporter: jest-junit
       - name: Merge coverage reports
         run: node ./tools/scripts/coverageMerger.js
       - name: SonarCloud Scan
