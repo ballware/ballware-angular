@@ -10,7 +10,7 @@ import { of } from 'rxjs';
 import { importProvidersFrom } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 import { I18N_PROVIDERS } from '../../i18n/i18n';
-import { expect, within, waitFor } from '@storybook/test';
+import { expect, within, waitFor } from 'storybook/test';
 
 const meta: Meta<EditLayoutDetailGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',

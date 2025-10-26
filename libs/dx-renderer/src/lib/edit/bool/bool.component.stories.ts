@@ -7,7 +7,7 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-service
 import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
-import { expect, within } from '@storybook/test';
+import { expect, within } from 'storybook/test';
 
 const meta: Meta<EditLayoutBoolComponent> = {
   title: 'DX Renderer/Edit/Bool',

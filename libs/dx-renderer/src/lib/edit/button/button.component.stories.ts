@@ -7,7 +7,7 @@ import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
 import { of } from 'rxjs';
-import { expect, within, userEvent } from '@storybook/test';
+import { expect, within, userEvent } from 'storybook/test';
 
 const meta: Meta<EditLayoutButtonComponent> = {
   title: 'DX Renderer/Edit/Button',
