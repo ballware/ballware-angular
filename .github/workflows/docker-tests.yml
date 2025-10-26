@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  docker:
+  test-and-analyze:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,7 +23,7 @@ jobs:
       - name: 'Install Dependencies'
         run: yarn install --frozen-lockfile
       - name: Test and coverage
-        run: yarn test
+        run: yarn nx run-many --target test --junit --coverage --coverageReporters=lcov --ci
       - name: Build Storybook
         run: yarn nx run dx-renderer:build-storybook --configuration=ci
       - name: Start Storybook
@@ -34,13 +34,15 @@ jobs:
         run: npx playwright install --with-deps
       - name: Run Playwright tests
         run: yarn nx test-storybook dx-renderer -- --junit --coverage --coverageDirectory=coverage/storybook
-      - name: Test Report (JUnit)
-        uses: dorny/test-reporter@v1
-        if: always()
+      - name: Upload Test Reports
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: (!cancelled())
         with:
-          name: Storybook Tests
-          path: junit.xml
-          reporter: jest-junit
+          files: |
+            junit.xml
+            test_results/**/*.xml
+      - name: Merge coverage reports
+        run: node ./tools/scripts/coverageMerger.js
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:

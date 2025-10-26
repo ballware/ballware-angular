@@ -5,6 +5,9 @@ import type { StorybookConfig } from '@storybook/angular';
 const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
+  core: {
+    disableTelemetry: true
+  },
   stories: ['../**/*.stories.@(js|jsx|ts|tsx|mdx)'],
   addons: [
     getAbsolutePath("@storybook/addon-coverage"),
