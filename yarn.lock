@@ -3708,7 +3708,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.20.6, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
+"@babel/runtime@npm:^7.12.1, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.22.6, @babel/runtime@npm:^7.23.2, @babel/runtime@npm:^7.28.4, @babel/runtime@npm:^7.8.4, @babel/runtime@npm:^7.9.2":
   version: 7.28.4
   resolution: "@babel/runtime@npm:7.28.4"
   checksum: 792ce7af9750fb9b93879cc9d1db175701c4689da890e6ced242ea0207c9da411ccf16dc04e689cc01158b28d7898c40d75598f4559109f761c12ce01e959bf7
@@ -11143,18 +11143,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"angular-i18next@npm:^17.0.1":
-  version: 17.0.1
-  resolution: "angular-i18next@npm:17.0.1"
+"angular-i18next@npm:^18.0.0":
+  version: 18.0.0
+  resolution: "angular-i18next@npm:18.0.0"
   dependencies:
     tslib: "npm:^2.2.0"
   peerDependencies:
-    "@angular/common": ">=17.0.0 <18.0.0"
-    "@angular/core": ">=17.0.0 <18.0.0"
-    "@angular/platform-browser": ">=17.0.0 <18.0.0"
+    "@angular/common": ">=18.0.0 <19.0.0"
+    "@angular/core": ">=18.0.0 <19.0.0"
+    "@angular/platform-browser": ">=18.0.0 <19.0.0"
     i18next: ">=23.0.0 <24.0.0"
     rxjs: ">=6.6.0 <8.0.0"
-  checksum: dbb21665881ab9b155ecbe30c66e05cba265f07a5bdb4cfe694f31e45d2356176215a7ed590dc390c53d37258e71f2dde35c68ac95ab91ee783aea5711b166f1
+  checksum: 77d5e37a13eb7dceef1eda282de8bafc3e0f57ffc554ee2322bcb296df5811ca921ef5ae674f6d3b7c8288dcdd34c8d35d382dc7d081fe8f865212fd680f3a3a
   languageName: node
   linkType: hard
 
@@ -12075,7 +12075,7 @@ __metadata:
     "@zxing/browser": "npm:^0.1.5"
     "@zxing/library": "npm:^0.21.3"
     "@zxing/ngx-scanner": "npm:^18.0.1"
-    angular-i18next: "npm:^17.0.1"
+    angular-i18next: "npm:^18.0.0"
     angular-oauth2-oidc: "npm:^17.0.1"
     autoprefixer: "npm:^10.4.0"
     axe-playwright: "npm:^2.2.2"
@@ -12094,7 +12094,7 @@ __metadata:
     exceljs: "npm:^4.4.0"
     file-saver: "npm:^2.0.5"
     html-webpack-plugin: "npm:^5.6.4"
-    i18next: "npm:^22.5.1"
+    i18next: "npm:^23.16.8"
     jest: "npm:^29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
     jest-preset-angular: "npm:14.6.2"
@@ -17880,12 +17880,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:^22.5.1":
-  version: 22.5.1
-  resolution: "i18next@npm:22.5.1"
+"i18next@npm:^23.16.8":
+  version: 23.16.8
+  resolution: "i18next@npm:23.16.8"
   dependencies:
-    "@babel/runtime": "npm:^7.20.6"
-  checksum: a284f8d805ebad77114a830e60d5c59485a7f4d45179761f877249b63035572cff4103e5b4702669dff1a0e03b4e8b6df377bc871935f8215e43fd97e8e9e910
+    "@babel/runtime": "npm:^7.23.2"
+  checksum: 57d249191e8a39bbbbe190cfa2e2bb651d0198e14444fe80453d3df8d02927de3c147c77724e9ae6c72fa241898cd761e3fdcd55d053db373471f1ac084bf345
   languageName: node
   linkType: hard
 
