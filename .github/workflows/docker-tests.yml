@@ -21,11 +21,13 @@ jobs:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - name: 'Install Dependencies'
-        run: yarn install
+        run: yarn install --frozen-lockfile
       - name: Test and coverage
         run: yarn test
+      - name: Build Storybook
+        run: yarn nx run dx-renderer:build-storybook --configuration=ci
       - name: Start Storybook
-        run: yarn nx static-storybook dx-renderer &
+        run: npx http-server dist/storybook/dx-renderer -p 4200 -c-1 &
       - name: Wait for Storybook
         run: npx wait-on http://localhost:4200
       - name: Install Playwright browsers
