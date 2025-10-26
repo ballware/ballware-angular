@@ -2,6 +2,16 @@ const nxPreset = require('@nx/jest/preset').default;
 
 module.exports = {
   ...nxPreset,
+  reporters: [
+    'default',
+    [
+      'jest-junit',
+      {
+        outputDirectory: `${process.env.NX_WORKSPACE_ROOT}/test_results`,
+        outputName: `${process.env['NX_TASK_TARGET_PROJECT']}.junit.xml`
+      }
+    ]
+  ]
   /* TODO: Update to latest Jest snapshotFormat
    * By default Nx has kept the older style of Jest Snapshot formats
    * to prevent breaking of any existing tests with snapshots.
