@@ -6,7 +6,10 @@ const require = createRequire(import.meta.url);
 
 const config: StorybookConfig = {
   stories: ['../**/*.stories.@(js|jsx|ts|tsx|mdx)'],
-  addons: [getAbsolutePath("@storybook/addon-docs")],
+  addons: [
+    getAbsolutePath("@storybook/addon-coverage"),
+    getAbsolutePath("@storybook/addon-docs")
+  ],
   framework: {
     name: getAbsolutePath("@storybook/angular"),
     options: {},

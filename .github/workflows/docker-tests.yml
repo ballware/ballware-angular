@@ -33,7 +33,14 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: yarn nx test-storybook dx-renderer
+        run: yarn nx test-storybook dx-renderer -- --junit --coverage --coverageDirectory=coverage/storybook
+      - name: Test Report (JUnit)
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Storybook Tests
+          path: junit.xml
+          reporter: jest-junit
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v4.2.1
         env:

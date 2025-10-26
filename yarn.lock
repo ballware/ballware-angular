@@ -5953,7 +5953,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@istanbuljs/load-nyc-config@npm:^1.0.0":
+"@istanbuljs/load-nyc-config@npm:^1.0.0, @istanbuljs/load-nyc-config@npm:^1.1.0":
   version: 1.1.0
   resolution: "@istanbuljs/load-nyc-config@npm:1.1.0"
   dependencies:
@@ -6669,6 +6669,19 @@ __metadata:
     "@jridgewell/resolve-uri": "npm:^3.1.0"
     "@jridgewell/sourcemap-codec": "npm:^1.4.14"
   checksum: 3d1ce6ebc69df9682a5a8896b414c6537e428a1d68b02fcc8363b04284a8ca0df04d0ee3013132252ab14f2527bc13bea6526a912ecb5658f0e39fd2860b4df4
+  languageName: node
+  linkType: hard
+
+"@jsdevtools/coverage-istanbul-loader@npm:^3.0.5":
+  version: 3.0.5
+  resolution: "@jsdevtools/coverage-istanbul-loader@npm:3.0.5"
+  dependencies:
+    convert-source-map: "npm:^1.7.0"
+    istanbul-lib-instrument: "npm:^4.0.3"
+    loader-utils: "npm:^2.0.0"
+    merge-source-map: "npm:^1.1.0"
+    schema-utils: "npm:^2.7.0"
+  checksum: 68e885163bada885bcaf7866437072b60d622698228c88919b11c8b9f86fbeae9d8777a32f18638b57b9a745b7343404c55f7e44a0db08218ec7c80c2db0bf9d
   languageName: node
   linkType: hard
 
@@ -9210,6 +9223,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/addon-coverage@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@storybook/addon-coverage@npm:2.0.0"
+  dependencies:
+    "@istanbuljs/load-nyc-config": "npm:^1.1.0"
+    "@jsdevtools/coverage-istanbul-loader": "npm:^3.0.5"
+    "@types/istanbul-lib-coverage": "npm:^2.0.4"
+    convert-source-map: "npm:^2.0.0"
+    espree: "npm:^9.6.1"
+    istanbul-lib-instrument: "npm:^6.0.1"
+    test-exclude: "npm:^6.0.0"
+    vite-plugin-istanbul: "npm:^6.0.2"
+  checksum: a471e34e7dc11b099ac60bdee90966442da0acf03c36029206b2dbf050990f4acf297fb77e0aae0495d34538743dbb2f3e41e10877467fa287d77e415c0411d8
+  languageName: node
+  linkType: hard
+
 "@storybook/addon-docs@npm:9.1.15":
   version: 9.1.15
   resolution: "@storybook/addon-docs@npm:9.1.15"
@@ -10250,7 +10279,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/istanbul-lib-coverage@npm:^2.0.6":
+"@types/istanbul-lib-coverage@npm:^2.0.4, @types/istanbul-lib-coverage@npm:^2.0.6":
   version: 2.0.6
   resolution: "@types/istanbul-lib-coverage@npm:2.0.6"
   checksum: 3948088654f3eeb45363f1db158354fb013b362dba2a5c2c18c559484d5eb9f6fd85b23d66c0a7c2fcfab7308d0a585b14dadaca6cc8bf89ebfdc7f8f5102fb7
@@ -10338,7 +10367,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/json-schema@npm:^7.0.15":
+"@types/json-schema@npm:^7.0.15, @types/json-schema@npm:^7.0.5":
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: a996a745e6c5d60292f36731dd41341339d4eeed8180bb09226e5c8d23759067692b1d88e5d91d72ee83dfc00d3aca8e7bd43ea120516c17922cbcb7c3e252db
@@ -12942,6 +12971,7 @@ __metadata:
     "@nx/web": "npm:22.0.1"
     "@nx/workspace": "npm:22.0.1"
     "@schematics/angular": "npm:18.2.9"
+    "@storybook/addon-coverage": "npm:^2.0.0"
     "@storybook/addon-docs": "npm:9.1.15"
     "@storybook/angular": "npm:9.1.9"
     "@storybook/jest": "npm:0.2.3"
@@ -16865,6 +16895,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"espree@npm:^10.0.1":
+  version: 10.4.0
+  resolution: "espree@npm:10.4.0"
+  dependencies:
+    acorn: "npm:^8.15.0"
+    acorn-jsx: "npm:^5.3.2"
+    eslint-visitor-keys: "npm:^4.2.1"
+  checksum: c63fe06131c26c8157b4083313cb02a9a54720a08e21543300e55288c40e06c3fc284bdecf108d3a1372c5934a0a88644c98714f38b6ae8ed272b40d9ea08d6b
+  languageName: node
+  linkType: hard
+
 "espree@npm:^9.0.0, espree@npm:^9.6.0, espree@npm:^9.6.1":
   version: 9.6.1
   resolution: "espree@npm:9.6.1"
@@ -19772,7 +19813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-instrument@npm:6.0.3, istanbul-lib-instrument@npm:^6.0.2":
+"istanbul-lib-instrument@npm:6.0.3, istanbul-lib-instrument@npm:^6.0.1, istanbul-lib-instrument@npm:^6.0.2":
   version: 6.0.3
   resolution: "istanbul-lib-instrument@npm:6.0.3"
   dependencies:
@@ -19785,7 +19826,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"istanbul-lib-instrument@npm:^4.0.0":
+"istanbul-lib-instrument@npm:^4.0.0, istanbul-lib-instrument@npm:^4.0.3":
   version: 4.0.3
   resolution: "istanbul-lib-instrument@npm:4.0.3"
   dependencies:
@@ -22291,6 +22332,15 @@ __metadata:
   version: 1.0.3
   resolution: "merge-descriptors@npm:1.0.3"
   checksum: 866b7094afd9293b5ea5dcd82d71f80e51514bed33b4c4e9f516795dc366612a4cbb4dc94356e943a8a6914889a914530badff27f397191b9b75cda20b6bae93
+  languageName: node
+  linkType: hard
+
+"merge-source-map@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "merge-source-map@npm:1.1.0"
+  dependencies:
+    source-map: "npm:^0.6.1"
+  checksum: ac0e0192c9c7e30056c5baa939434c0d1015faa5c7ce7936ad77600f1752c03099134cb33c50f1bb32ec25350e191ca2392c6b76b1eaca89c7c989e42403655f
   languageName: node
   linkType: hard
 
@@ -26826,6 +26876,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"schema-utils@npm:^2.7.0":
+  version: 2.7.1
+  resolution: "schema-utils@npm:2.7.1"
+  dependencies:
+    "@types/json-schema": "npm:^7.0.5"
+    ajv: "npm:^6.12.4"
+    ajv-keywords: "npm:^3.5.2"
+  checksum: f484f34464edd8758712d5d3ba25a306e367dac988aecaf4ce112e99baae73f33a807b5cf869240bb6648c80720b36af2d7d72be3a27faa49a2d4fc63fa3f85f
+  languageName: node
+  linkType: hard
+
 "schema-utils@npm:^3.1.0, schema-utils@npm:^3.1.1":
   version: 3.1.1
   resolution: "schema-utils@npm:3.1.1"
@@ -27530,6 +27591,13 @@ __metadata:
   version: 0.7.4
   resolution: "source-map@npm:0.7.4"
   checksum: dc0cf3768fe23c345ea8760487f8c97ef6fca8a73c83cd7c9bf2fde8bc2c34adb9c0824d6feb14bc4f9e37fb522e18af621543f1289038a66ac7586da29aa7dc
+  languageName: node
+  linkType: hard
+
+"source-map@npm:^0.7.4":
+  version: 0.7.6
+  resolution: "source-map@npm:0.7.6"
+  checksum: 59f6f05538539b274ba771d2e9e32f6c65451982510564438e048bc1352f019c6efcdc6dd07909b1968144941c14015c2c7d4369fb7c4d7d53ae769716dcc16c
   languageName: node
   linkType: hard
 
@@ -29460,6 +29528,22 @@ __metadata:
     core-util-is: "npm:1.0.2"
     extsprintf: "npm:^1.2.0"
   checksum: 37ccdf8542b5863c525128908ac80f2b476eed36a32cb944de930ca1e2e78584cc435c4b9b4c68d0fc13a47b45ff364b4be43aa74f8804f9050140f660fb660d
+  languageName: node
+  linkType: hard
+
+"vite-plugin-istanbul@npm:^6.0.2":
+  version: 6.0.2
+  resolution: "vite-plugin-istanbul@npm:6.0.2"
+  dependencies:
+    "@istanbuljs/load-nyc-config": "npm:^1.1.0"
+    espree: "npm:^10.0.1"
+    istanbul-lib-instrument: "npm:^6.0.2"
+    picocolors: "npm:^1.0.0"
+    source-map: "npm:^0.7.4"
+    test-exclude: "npm:^6.0.0"
+  peerDependencies:
+    vite: ">=4 <=6"
+  checksum: 120d84cd44af99ec7cce298768d8504ad4481439322d3ec724d7e8313e87fc5b214cbeaf827ba94fa145bb2367067b6f1d65c7387e30cced43658df9f7fc5fe8
   languageName: node
   linkType: hard
 
