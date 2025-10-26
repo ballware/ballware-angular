@@ -1,0 +1,39 @@
+name: Testing and code analysis
+
+on:
+  push:
+    branches: ['main', 'develop', 'feature/*', 'bugfix/*']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: 'Install Dependencies'
+        run: yarn install
+      - name: Test and coverage
+        run: yarn test
+      - name: Start Storybook
+        run: yarn nx static-storybook dx-renderer &
+      - name: Wait for Storybook
+        run: npx wait-on http://localhost:4200
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: yarn nx test-storybook dx-renderer
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
