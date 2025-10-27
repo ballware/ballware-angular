@@ -12,6 +12,7 @@ export const createMockedEditService = (options?: {
   readonly?: boolean;
   item?: Record<string, unknown>;
   entity?: string;
+  overrides?: Partial<EditService>
 }) => {
   const mode$ = new BehaviorSubject<EditModes | undefined>(options?.mode ?? EditModes.CREATE);
   const readonly$ = new BehaviorSubject<boolean | undefined>(options?.readonly ?? false);
@@ -56,7 +57,7 @@ export const createMockedEditService = (options?: {
 
   const detailGridRowValidating = (_request: any) => of(undefined);
 
-  const initNewDetailItem = (_request: any) => {
+  const initNewDetailItem = (_request: { dataMember: string, detailItem: Record<string, unknown> }) => {
     // Mock implementation
   };
 
@@ -89,20 +90,20 @@ export const createMockedEditService = (options?: {
     .setup(instance => instance.readonly$).returns(readonly$)
     .setup(instance => instance.getValue$).returns(new BehaviorSubject(getValue))
     .setup(instance => instance.setValue$).returns(new BehaviorSubject(setValue))
-    .setup(instance => instance.editorPreparing$).returns(new BehaviorSubject(editorPreparing))
-    .setup(instance => instance.editorInitialized$).returns(new BehaviorSubject(editorInitialized))
-    .setup(instance => instance.editorEntered$).returns(new BehaviorSubject(editorEntered))
-    .setup(instance => instance.editorEvent$).returns(new BehaviorSubject(editorEvent))
-    .setup(instance => instance.editorValueChanged$).returns(new BehaviorSubject(editorValueChanged))
-    .setup(instance => instance.editorValidating$).returns(new BehaviorSubject(editorValidating))
-    .setup(instance => instance.detailGridCellPreparing$).returns(new BehaviorSubject(detailGridCellPreparing))
-    .setup(instance => instance.detailGridRowValidating$).returns(new BehaviorSubject(detailGridRowValidating))
-    .setup(instance => instance.initNewDetailItem$).returns(new BehaviorSubject(initNewDetailItem))
-    .setup(instance => instance.detailEditorInitialized$).returns(new BehaviorSubject(detailEditorInitialized))
-    .setup(instance => instance.detailEditorValidating$).returns(new BehaviorSubject(detailEditorValidating))
-    .setup(instance => instance.detailEditorEntered$).returns(new BehaviorSubject(detailEditorEntered))
-    .setup(instance => instance.detailEditorEvent$).returns(new BehaviorSubject(detailEditorEvent))
-    .setup(instance => instance.detailEditorValueChanged$).returns(new BehaviorSubject(detailEditorValueChanged))
+    .setup(instance => instance.editorPreparing$).returns(options?.overrides?.editorPreparing$ ?? new BehaviorSubject(editorPreparing))
+    .setup(instance => instance.editorInitialized$).returns(options?.overrides?.editorInitialized$ ?? new BehaviorSubject(editorInitialized))
+    .setup(instance => instance.editorEntered$).returns(options?.overrides?.editorEntered$ ?? new BehaviorSubject(editorEntered))
+    .setup(instance => instance.editorEvent$).returns(options?.overrides?.editorEvent$ ?? new BehaviorSubject(editorEvent))
+    .setup(instance => instance.editorValueChanged$).returns(options?.overrides?.editorValueChanged$ ?? new BehaviorSubject(editorValueChanged))
+    .setup(instance => instance.editorValidating$).returns(options?.overrides?.editorValidating$ ?? new BehaviorSubject(editorValidating))
+    .setup(instance => instance.detailGridCellPreparing$).returns(options?.overrides?.detailGridCellPreparing$ ?? new BehaviorSubject(detailGridCellPreparing))
+    .setup(instance => instance.detailGridRowValidating$).returns(options?.overrides?.detailGridRowValidating$ ?? new BehaviorSubject(detailGridRowValidating))
+    .setup(instance => instance.initNewDetailItem$).returns(options?.overrides?.initNewDetailItem$ ?? new BehaviorSubject(initNewDetailItem))
+    .setup(instance => instance.detailEditorInitialized$).returns(options?.overrides?.detailEditorInitialized$ ?? new BehaviorSubject(detailEditorInitialized))
+    .setup(instance => instance.detailEditorValidating$).returns(options?.overrides?.detailEditorValidating$ ?? new BehaviorSubject(detailEditorValidating))
+    .setup(instance => instance.detailEditorEntered$).returns(options?.overrides?.detailEditorEntered$ ?? new BehaviorSubject(detailEditorEntered))
+    .setup(instance => instance.detailEditorEvent$).returns(options?.overrides?.detailEditorEvent$ ?? new BehaviorSubject(detailEditorEvent))
+    .setup(instance => instance.detailEditorValueChanged$).returns(options?.overrides?.detailEditorValueChanged$ ?? new BehaviorSubject(detailEditorValueChanged))
     .setup(instance => instance.validator$).returns(new BehaviorSubject(validator))
     .setup(instance => instance.setIdentifier(It.IsAny())).returns(undefined)
     .setup(instance => instance.setMode(It.IsAny())).returns(undefined)

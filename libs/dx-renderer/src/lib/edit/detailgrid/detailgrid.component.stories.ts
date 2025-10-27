@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/angular';
+import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
 import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutDetailGridComponent } from './detailgrid.component';
@@ -6,11 +6,13 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-service
 import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
-import { of } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { importProvidersFrom } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 import { I18N_PROVIDERS } from '../../i18n/i18n';
 import { expect, within, waitFor } from 'storybook/test';
+import { EditLayoutItemOptions, GridLayoutColumn } from '@ballware/meta-model';
+import { DetailCollectionEditingOptions } from '../../directives';
 
 const meta: Meta<EditLayoutDetailGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',
@@ -49,15 +51,15 @@ type Story = StoryObj<EditLayoutDetailGridComponent>;
 const createDetailGridLayoutItem = (
   dataMember: string,
   caption: string,
-  columns: any[],
-  options: Record<string, unknown> = {}
+  itemOptions: DetailCollectionEditingOptions,
+  additionalOptions?: Partial<EditLayoutItemOptions>
 ) => ({
   type: 'detailgrid',
   options: {
     dataMember,
     caption,
-    columns,
-    ...options,
+    itemoptions: itemOptions,
+    ...additionalOptions
   },
 });
 
@@ -70,11 +72,13 @@ export const Default: Story = {
         layoutItem: createDetailGridLayoutItem(
           'items',
           'Items',
-          [
-            { dataField: 'name', caption: 'Name', dataType: 'string' },
-            { dataField: 'quantity', caption: 'Quantity', dataType: 'number' },
-            { dataField: 'price', caption: 'Price', dataType: 'number' },
-          ]
+          {
+            columns: [
+              { dataMember: 'name', caption: 'Name', type: 'string' },
+              { dataMember: 'quantity', caption: 'Quantity', type: 'number' },
+              { dataMember: 'price', caption: 'Price', type: 'number' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -146,10 +150,12 @@ export const Empty: Story = {
         layoutItem: createDetailGridLayoutItem(
           'emptyItems',
           'Empty Grid',
-          [
-            { dataField: 'name', caption: 'Name', dataType: 'string' },
-            { dataField: 'description', caption: 'Description', dataType: 'string' },
-          ]
+          {
+            columns: [
+              { dataMember: 'name', caption: 'Name', type: 'string' },
+              { dataMember: 'description', caption: 'Description', type: 'string' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -203,11 +209,13 @@ export const Readonly: Story = {
         layoutItem: createDetailGridLayoutItem(
           'readonlyItems',
           'Readonly Grid',
-          [
-            { dataField: 'id', caption: 'ID', dataType: 'number' },
-            { dataField: 'status', caption: 'Status', dataType: 'string' },
-            { dataField: 'date', caption: 'Date', dataType: 'date' },
-          ]
+          {
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'status', caption: 'Status', type: 'string' },
+              { dataMember: 'date', caption: 'Date', type: 'date' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -255,11 +263,13 @@ export const RowEditMode: Story = {
         layoutItem: createDetailGridLayoutItem(
           'rowEditItems',
           'Row Edit Mode',
-          [
-            { dataField: 'product', caption: 'Product', dataType: 'string' },
-            { dataField: 'category', caption: 'Category', dataType: 'string' },
-            { dataField: 'stock', caption: 'Stock', dataType: 'number' },
-          ]
+          {
+            columns: [
+              { dataMember: 'product', caption: 'Product', type: 'string' },
+              { dataMember: 'category', caption: 'Category', type: 'string' },
+              { dataMember: 'stock', caption: 'Stock', type: 'number' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -307,14 +317,16 @@ export const ManyColumns: Story = {
         layoutItem: createDetailGridLayoutItem(
           'manyColumnsItems',
           'Grid with Many Columns',
-          [
-            { dataField: 'col1', caption: 'Column 1', dataType: 'string' },
-            { dataField: 'col2', caption: 'Column 2', dataType: 'string' },
-            { dataField: 'col3', caption: 'Column 3', dataType: 'number' },
-            { dataField: 'col4', caption: 'Column 4', dataType: 'number' },
-            { dataField: 'col5', caption: 'Column 5', dataType: 'boolean' },
-            { dataField: 'col6', caption: 'Column 6', dataType: 'date' },
-          ]
+          {
+            columns: [
+              { dataMember: 'col1', caption: 'Column 1', type: 'string' },
+              { dataMember: 'col2', caption: 'Column 2', type: 'string' },
+              { dataMember: 'col3', caption: 'Column 3', type: 'number' },
+              { dataMember: 'col4', caption: 'Column 4', type: 'number' },
+              { dataMember: 'col5', caption: 'Column 5', type: 'boolean' },
+              { dataMember: 'col6', caption: 'Column 6', type: 'date' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -330,12 +342,12 @@ export const ManyColumns: Story = {
       },
       editing: {
         columns: [
-          { dataField: 'col1', caption: 'Column 1', dataType: 'string' },
-          { dataField: 'col2', caption: 'Column 2', dataType: 'string' },
-          { dataField: 'col3', caption: 'Column 3', dataType: 'number' },
-          { dataField: 'col4', caption: 'Column 4', dataType: 'number' },
-          { dataField: 'col5', caption: 'Column 5', dataType: 'boolean' },
-          { dataField: 'col6', caption: 'Column 6', dataType: 'date' },
+          { dataMember: 'col1', caption: 'Column 1', type: 'string' },
+          { dataMember: 'col2', caption: 'Column 2', type: 'string' },
+          { dataMember: 'col3', caption: 'Column 3', type: 'number' },
+          { dataMember: 'col4', caption: 'Column 4', type: 'number' },
+          { dataMember: 'col5', caption: 'Column 5', type: 'boolean' },
+          { dataMember: 'col6', caption: 'Column 6', type: 'date' },
         ],
         height: 450,
         editMode: 'cell',
@@ -365,9 +377,11 @@ export const Hidden: Story = {
         layoutItem: createDetailGridLayoutItem(
           'hiddenItems',
           'Hidden Grid',
-          [
-            { dataField: 'field1', caption: 'Field 1', dataType: 'string' },
-          ]
+          {
+            columns: [
+              { dataMember: 'field1', caption: 'Field 1', type: 'string' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -379,7 +393,7 @@ export const Hidden: Story = {
       },
       editing: {
         columns: [
-          { dataField: 'field1', caption: 'Field 1', dataType: 'string' },
+          { dataMember: 'field1', caption: 'Field 1', type: 'string' },
         ],
         height: 300,
         editMode: 'cell',
@@ -409,11 +423,13 @@ export const WithLargeDataset: Story = {
         layoutItem: createDetailGridLayoutItem(
           'largeDataset',
           'Large Dataset Grid',
-          [
-            { dataField: 'id', caption: 'ID', dataType: 'number' },
-            { dataField: 'name', caption: 'Name', dataType: 'string' },
-            { dataField: 'value', caption: 'Value', dataType: 'number' },
-          ]
+          {
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string' },
+              { dataMember: 'value', caption: 'Value', type: 'number' },
+            ]
+          }
         ),
         onEntered: () => console.log('Field entered'),
       },
@@ -452,3 +468,58 @@ export const WithLargeDataset: Story = {
   }),
 };
 
+export const RowEditing: Story = {
+  render: (args) => {
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['value'] = 0;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Dynamic Item 1', value: 100 },
+        { id: 2, name: 'Dynamic Item 2', value: 200 },
+        { id: 3, name: 'Dynamic Item 3', value: 300 },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Row editing',
+          {
+            editMode: 'row',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  }
+
+
+
+};
