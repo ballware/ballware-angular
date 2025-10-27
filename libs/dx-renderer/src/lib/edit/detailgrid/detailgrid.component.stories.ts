@@ -10,7 +10,7 @@ import { BehaviorSubject, of } from 'rxjs';
 import { importProvidersFrom } from '@angular/core';
 import { I18NextModule } from 'angular-i18next';
 import { I18N_PROVIDERS } from '../../i18n/i18n';
-import { expect, within, waitFor } from 'storybook/test';
+import { expect, within, waitFor, userEvent } from 'storybook/test';
 import { EditLayoutItemOptions, GridLayoutColumn } from '@ballware/meta-model';
 import { DetailCollectionEditingOptions } from '../../directives';
 
@@ -518,8 +518,156 @@ export const RowEditing: Story = {
       ]
     }
     };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Warte darauf, dass das Grid vollständig geladen ist
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('.dx-datagrid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test 1: Überprüfe initiale Daten
+    await waitFor(
+      async () => {
+        const dataRows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(dataRows.length).toBe(3);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test 2: Add-Funktionalität - Klicke auf "Add Row" Button
+    const addButton = canvasElement.querySelector('.dx-datagrid-addrow-button') as HTMLElement;
+    await expect(addButton).toBeTruthy();
+
+    await userEvent.click(addButton);
+
+    // Warte darauf, dass die neue Zeile im Edit-Modus erscheint
+    await waitFor(
+      async () => {
+        const editRow = canvasElement.querySelector('.dx-row-inserted');
+        await expect(editRow).toBeTruthy();
+      },
+      { timeout: 3000 }
+    );
+
+    // Finde die Input-Felder in der neuen Zeile
+    const editRow = canvasElement.querySelector('.dx-row-inserted');
+    await expect(editRow).toBeTruthy();
+
+    // Überprüfe, dass die Felder mit Initialwerten gefüllt sind
+    const nameInput = editRow?.querySelector('input[name*="name"]') as HTMLInputElement;
+    if (nameInput) {
+      await expect(nameInput.value).toBe('New item');
+    }
+
+    // Speichere die neue Zeile
+    const saveButton = canvasElement.querySelector('.dx-link-save') as HTMLElement;
+    if (saveButton) {
+      await userEvent.click(saveButton);
+
+      // Warte darauf, dass die Zeile gespeichert wurde
+      await waitFor(
+        async () => {
+          const dataRows = canvasElement.querySelectorAll('.dx-data-row');
+          await expect(dataRows.length).toBe(4);
+        },
+        { timeout: 3000 }
+      );
+    }
+
+    // Test 3: Update-Funktionalität - Doppelklick auf eine Zeile zum Bearbeiten
+    const firstDataRow = canvasElement.querySelector('.dx-data-row') as HTMLElement;
+    await expect(firstDataRow).toBeTruthy();
+
+    // Klicke auf Edit-Button in der ersten Zeile
+    const editButton = firstDataRow?.querySelector('.dx-link-edit') as HTMLElement;
+    if (editButton) {
+      await userEvent.click(editButton);
+
+      // Warte darauf, dass die Zeile in den Edit-Modus wechselt
+      await waitFor(
+        async () => {
+          const editingRow = canvasElement.querySelector('.dx-edit-row');
+          await expect(editingRow).toBeTruthy();
+        },
+        { timeout: 3000 }
+      );
+
+      // Finde das Name-Input-Feld und ändere den Wert
+      const editingRow = canvasElement.querySelector('.dx-edit-row');
+      const nameInputField = editingRow?.querySelector('input[name*="name"]') as HTMLInputElement;
+
+      if (nameInputField) {
+        await userEvent.clear(nameInputField);
+        await userEvent.type(nameInputField, 'Updated Item 1');
+
+        // Speichere die Änderungen
+        const updateSaveButton = canvasElement.querySelector('.dx-link-save') as HTMLElement;
+        if (updateSaveButton) {
+          await userEvent.click(updateSaveButton);
+
+          // Warte darauf, dass die Änderungen gespeichert wurden
+          await waitFor(
+            async () => {
+              const updatedCell = canvas.queryByText('Updated Item 1');
+              await expect(updatedCell).toBeTruthy();
+            },
+            { timeout: 3000 }
+          );
+        }
+      }
+    }
+
+    // Test 4: Delete-Funktionalität - Lösche eine Zeile
+    await waitFor(
+      async () => {
+        const dataRows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(dataRows.length).toBeGreaterThan(0);
+      },
+      { timeout: 2000 }
+    );
+
+    const rowToDelete = canvasElement.querySelector('.dx-data-row:nth-child(2)') as HTMLElement;
+    await expect(rowToDelete).toBeTruthy();
+
+    // Klicke auf Delete-Button
+    const deleteButton = rowToDelete?.querySelector('.dx-link-delete') as HTMLElement;
+    if (deleteButton) {
+      await userEvent.click(deleteButton);
+
+      // Warte auf Bestätigungsdialog und klicke auf "Yes"
+      await waitFor(
+        async () => {
+          const confirmDialog = document.querySelector('.dx-dialog-root, .dx-overlay-content');
+          await expect(confirmDialog).toBeTruthy();
+        },
+        { timeout: 2000 }
+      );
+
+      // Finde und klicke auf Yes-Button im Dialog
+      const yesButton = document.querySelector('.dx-dialog-button.dx-button:first-child, .dx-dialog-button:first-child') as HTMLElement;
+      if (yesButton) {
+        await userEvent.click(yesButton);
+      }
+
+      // Warte darauf, dass die Zeile gelöscht wurde
+      await waitFor(
+        async () => {
+          // Überprüfe, dass die Anzahl der Zeilen reduziert wurde
+          const remainingRows = canvasElement.querySelectorAll('.dx-data-row');
+          await expect(remainingRows.length).toBeLessThan(4);
+        },
+        { timeout: 3000 }
+      );
+    }
+
+    // Finale Überprüfung: Grid sollte noch funktionsfähig sein
+    const finalGrid = canvasElement.querySelector('.dx-datagrid');
+    await expect(finalGrid).toBeTruthy();
   }
-
-
-
 };
