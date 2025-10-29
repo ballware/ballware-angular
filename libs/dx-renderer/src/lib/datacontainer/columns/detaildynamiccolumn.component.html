@@ -1,6 +1,12 @@
+<dx-text-box *ngIf="preparedColumn && 'string' === preparedColumn.type"
+    #textbox
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="stringValue()">
+</dx-text-box>
 <dx-check-box *ngIf="preparedColumn && 'bool' === preparedColumn.type"
     #checkbox
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="boolValue()">
 </dx-check-box>
@@ -9,7 +15,7 @@
     dataType="number"
     [format]='preparedColumn.precision ? { type: "fixedPoint", precision: preparedColumn.precision } : undefined'
     [showSpinButtons]='true'
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="numberValue()">
 </dx-number-box>
@@ -17,7 +23,7 @@
     #datebox
     type="date"
     [displayFormat]="'format.date' | i18next"
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="dateValue()">
 </dx-date-box>
@@ -25,22 +31,23 @@
     #datetimebox
     type="datetime"
     [displayFormat]="'format.datetime' | i18next"
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="dateValue()">
 </dx-date-box>
 <dx-select-box *ngIf="preparedColumn && ('lookup' === preparedColumn.type || 'pickvalue' === preparedColumn.type)"
     #selectbox
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="lookupValue()"
     [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Text'"
-    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Value'">
+    [displayExpr]="lookupDisplayExpr ?? preparedColumn.displayExpr ?? 'Text'"
+    [valueExpr]="lookupValueExpr ?? preparedColumn.valueExpr ?? 'Value'"
+    [showClearButton]="true">
 </dx-select-box>
 <dx-tag-box *ngIf="preparedColumn && 'staticmultilookup' === preparedColumn.type"
     #statictagbox
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="multiLookupValue()"
     [dataSource]="lookupDatasource ?? null"
@@ -49,15 +56,15 @@
 </dx-tag-box>
 <dx-tag-box *ngIf="preparedColumn && 'multilookup' === preparedColumn.type"
     #tagbox
-    [readOnly]="readonly"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="multiLookupValue()"
     [dataSource]="lookupDatasource ?? null"
     [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Name'"
-    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'"
-></dx-tag-box>
+    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'">
+</dx-tag-box>
 <ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
     [column]="preparedColumn"
-    [readOnly]="false"
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     [item]="detailItem">
 </ballware-edit-detaileditpopup>

@@ -1,18 +1,17 @@
-import { argsToTemplate, Meta, StoryObj } from '@storybook/angular';
-import { applicationConfig, moduleMetadata } from '@storybook/angular';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { EditLayoutDetailGridComponent } from './detailgrid.component';
-import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
-import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
-import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
-import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
-import { BehaviorSubject, of } from 'rxjs';
 import { importProvidersFrom } from '@angular/core';
+import { provideAnimations } from '@angular/platform-browser/animations';
+import { EditLayoutItemOptions } from '@ballware/meta-model';
+import { EDIT_SERVICE, LOOKUP_SERVICE, LookupDescriptor, TRANSLATOR } from '@ballware/meta-services';
+import { applicationConfig, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { I18NextModule } from 'angular-i18next';
-import { I18N_PROVIDERS } from '../../i18n/i18n';
-import { expect, within, waitFor, userEvent } from 'storybook/test';
-import { EditLayoutItemOptions, GridLayoutColumn } from '@ballware/meta-model';
+import { BehaviorSubject, of } from 'rxjs';
+import { expect, waitFor, within } from 'storybook/test';
+import { createMockedEditService } from '../../../../.storybook/helper/edit.service.mock';
+import { createMockedLookupService } from '../../../../.storybook/helper/lookup.service.mock';
+import { createSimpleTranslator } from '../../../../.storybook/helper/translator.mock';
 import { DetailCollectionEditingOptions } from '../../directives';
+import { I18N_PROVIDERS } from '../../i18n/i18n';
+import { EditLayoutDetailGridComponent } from './detailgrid.component';
 
 const meta: Meta<EditLayoutDetailGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',
@@ -471,21 +470,53 @@ export const WithLargeDataset: Story = {
 export const RowEditing: Story = {
   render: (args) => {
 
+    const simpleLookupValues = [ 
+      { value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', text: 'Value 1' }, 
+      { value: '33acc2c2-e69f-48f2-871b-77377f01a34d', text: 'Value 2' },
+      { value: '938877a7-db27-4ab7-be75-713239d8a247', text: 'Value 3' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        simpleLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(simpleLookupValues),
+            byIdFunc: (id) => of(simpleLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
     const mockEditService = createMockedEditService({
       overrides: {
         initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
           detailItem['id'] = 0;
           detailItem['name'] = 'New item';
           detailItem['value'] = 0;
-        })
-      }
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          if (dataMember === 'items' && identifier === 'dynamic_lookup_value') {
+            options.type = 'lookup';
+            options.lookup = 'simpleLookup';
+            options.displayExpr = 'text';
+            options.valueExpr = 'value';
+            options.editable = detailItem['id'] === 2
+          }
+
+          return options;
+        }) 
+      }      
     });
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100 },
-        { id: 2, name: 'Dynamic Item 2', value: 200 },
-        { id: 3, name: 'Dynamic Item 3', value: 300 },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
       ]
     });
 
@@ -504,6 +535,8 @@ export const RowEditing: Story = {
               { dataMember: 'id', caption: 'ID', type: 'number' },
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+              { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
             ],
           }
         )
@@ -512,6 +545,10 @@ export const RowEditing: Story = {
       applicationConfig: {
       providers: [
         {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
           provide: EDIT_SERVICE,
           useValue: mockEditService.service
         }
@@ -519,155 +556,279 @@ export const RowEditing: Story = {
     }
     };
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+};
 
-    // Warte darauf, dass das Grid vollständig geladen ist
-    await waitFor(
-      async () => {
-        const grid = canvasElement.querySelector('.dx-datagrid');
-        await expect(grid).toBeTruthy();
+export const RowEditingGlobalReadonly: Story = {
+  render: (args) => {
+
+    const simpleLookupValues = [ 
+      { value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', text: 'Value 1' }, 
+      { value: '33acc2c2-e69f-48f2-871b-77377f01a34d', text: 'Value 2' },
+      { value: '938877a7-db27-4ab7-be75-713239d8a247', text: 'Value 3' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        simpleLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(simpleLookupValues),
+            byIdFunc: (id) => of(simpleLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
+    const mockEditService = createMockedEditService({
+      readonly: true,
+      overrides: {        
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['value'] = 0;
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          if (dataMember === 'items' && identifier === 'dynamic_lookup_value') {
+            options.type = 'lookup';
+            options.lookup = 'simpleLookup';
+            options.displayExpr = 'text';
+            options.valueExpr = 'value';
+            options.editable = detailItem['id'] === 2
+          }
+
+          return options;
+        }) 
+      }      
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Row editing',
+          {
+            editMode: 'row',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+              { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+            ],
+          }
+        )
       },
-      { timeout: 5000 }
-    );
-
-    // Test 1: Überprüfe initiale Daten
-    await waitFor(
-      async () => {
-        const dataRows = canvasElement.querySelectorAll('.dx-data-row');
-        await expect(dataRows.length).toBe(3);
-      },
-      { timeout: 5000 }
-    );
-
-    // Test 2: Add-Funktionalität - Klicke auf "Add Row" Button
-    const addButton = canvasElement.querySelector('.dx-datagrid-addrow-button') as HTMLElement;
-    await expect(addButton).toBeTruthy();
-
-    await userEvent.click(addButton);
-
-    // Warte darauf, dass die neue Zeile im Edit-Modus erscheint
-    await waitFor(
-      async () => {
-        const editRow = canvasElement.querySelector('.dx-row-inserted');
-        await expect(editRow).toBeTruthy();
-      },
-      { timeout: 3000 }
-    );
-
-    // Finde die Input-Felder in der neuen Zeile
-    const editRow = canvasElement.querySelector('.dx-row-inserted');
-    await expect(editRow).toBeTruthy();
-
-    // Überprüfe, dass die Felder mit Initialwerten gefüllt sind
-    const nameInput = editRow?.querySelector('input[name*="name"]') as HTMLInputElement;
-    if (nameInput) {
-      await expect(nameInput.value).toBe('New item');
-    }
-
-    // Speichere die neue Zeile
-    const saveButton = canvasElement.querySelector('.dx-link-save') as HTMLElement;
-    if (saveButton) {
-      await userEvent.click(saveButton);
-
-      // Warte darauf, dass die Zeile gespeichert wurde
-      await waitFor(
-        async () => {
-          const dataRows = canvasElement.querySelectorAll('.dx-data-row');
-          await expect(dataRows.length).toBe(4);
+      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
         },
-        { timeout: 3000 }
-      );
-    }
-
-    // Test 3: Update-Funktionalität - Doppelklick auf eine Zeile zum Bearbeiten
-    const firstDataRow = canvasElement.querySelector('.dx-data-row') as HTMLElement;
-    await expect(firstDataRow).toBeTruthy();
-
-    // Klicke auf Edit-Button in der ersten Zeile
-    const editButton = firstDataRow?.querySelector('.dx-link-edit') as HTMLElement;
-    if (editButton) {
-      await userEvent.click(editButton);
-
-      // Warte darauf, dass die Zeile in den Edit-Modus wechselt
-      await waitFor(
-        async () => {
-          const editingRow = canvasElement.querySelector('.dx-edit-row');
-          await expect(editingRow).toBeTruthy();
-        },
-        { timeout: 3000 }
-      );
-
-      // Finde das Name-Input-Feld und ändere den Wert
-      const editingRow = canvasElement.querySelector('.dx-edit-row');
-      const nameInputField = editingRow?.querySelector('input[name*="name"]') as HTMLInputElement;
-
-      if (nameInputField) {
-        await userEvent.clear(nameInputField);
-        await userEvent.type(nameInputField, 'Updated Item 1');
-
-        // Speichere die Änderungen
-        const updateSaveButton = canvasElement.querySelector('.dx-link-save') as HTMLElement;
-        if (updateSaveButton) {
-          await userEvent.click(updateSaveButton);
-
-          // Warte darauf, dass die Änderungen gespeichert wurden
-          await waitFor(
-            async () => {
-              const updatedCell = canvas.queryByText('Updated Item 1');
-              await expect(updatedCell).toBeTruthy();
-            },
-            { timeout: 3000 }
-          );
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
         }
-      }
+      ]
     }
+    };
+  },
+};
 
-    // Test 4: Delete-Funktionalität - Lösche eine Zeile
-    await waitFor(
-      async () => {
-        const dataRows = canvasElement.querySelectorAll('.dx-data-row');
-        await expect(dataRows.length).toBeGreaterThan(0);
+export const InstantEditing: Story = {
+  render: (args) => {
+
+    const simpleLookupValues = [ 
+      { value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', text: 'Value 1' }, 
+      { value: '33acc2c2-e69f-48f2-871b-77377f01a34d', text: 'Value 2' },
+      { value: '938877a7-db27-4ab7-be75-713239d8a247', text: 'Value 3' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        simpleLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(simpleLookupValues),
+            byIdFunc: (id) => of(simpleLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['value'] = 0;
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          if (dataMember === 'items' && identifier === 'dynamic_lookup_value') {
+            options.type = 'lookup';
+            options.lookup = 'simpleLookup';
+            options.displayExpr = 'text';
+            options.valueExpr = 'value';
+            options.editable = detailItem['id'] === 2
+          }
+
+          return options;
+        }) 
+      }      
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Row editing',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+              { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+            ],
+          }
+        )
       },
-      { timeout: 2000 }
-    );
-
-    const rowToDelete = canvasElement.querySelector('.dx-data-row:nth-child(2)') as HTMLElement;
-    await expect(rowToDelete).toBeTruthy();
-
-    // Klicke auf Delete-Button
-    const deleteButton = rowToDelete?.querySelector('.dx-link-delete') as HTMLElement;
-    if (deleteButton) {
-      await userEvent.click(deleteButton);
-
-      // Warte auf Bestätigungsdialog und klicke auf "Yes"
-      await waitFor(
-        async () => {
-          const confirmDialog = document.querySelector('.dx-dialog-root, .dx-overlay-content');
-          await expect(confirmDialog).toBeTruthy();
+      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
         },
-        { timeout: 2000 }
-      );
-
-      // Finde und klicke auf Yes-Button im Dialog
-      const yesButton = document.querySelector('.dx-dialog-button.dx-button:first-child, .dx-dialog-button:first-child') as HTMLElement;
-      if (yesButton) {
-        await userEvent.click(yesButton);
-      }
-
-      // Warte darauf, dass die Zeile gelöscht wurde
-      await waitFor(
-        async () => {
-          // Überprüfe, dass die Anzahl der Zeilen reduziert wurde
-          const remainingRows = canvasElement.querySelectorAll('.dx-data-row');
-          await expect(remainingRows.length).toBeLessThan(4);
-        },
-        { timeout: 3000 }
-      );
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
     }
+    };
+  },
+};
 
-    // Finale Überprüfung: Grid sollte noch funktionsfähig sein
-    const finalGrid = canvasElement.querySelector('.dx-datagrid');
-    await expect(finalGrid).toBeTruthy();
-  }
+export const InstantEditingGlobalReadonly: Story = {
+  render: (args) => {
+
+    const simpleLookupValues = [ 
+      { value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', text: 'Value 1' }, 
+      { value: '33acc2c2-e69f-48f2-871b-77377f01a34d', text: 'Value 2' },
+      { value: '938877a7-db27-4ab7-be75-713239d8a247', text: 'Value 3' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        simpleLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(simpleLookupValues),
+            byIdFunc: (id) => of(simpleLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
+    const mockEditService = createMockedEditService({
+      readonly: true,
+      overrides: {        
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['value'] = 0;
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          if (dataMember === 'items' && identifier === 'dynamic_lookup_value') {
+            options.type = 'lookup';
+            options.lookup = 'simpleLookup';
+            options.displayExpr = 'text';
+            options.valueExpr = 'value';
+            options.editable = detailItem['id'] === 2
+          }
+
+          return options;
+        }) 
+      }      
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Row editing',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+              { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
 };

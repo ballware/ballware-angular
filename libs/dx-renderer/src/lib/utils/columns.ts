@@ -1,15 +1,14 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
 import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from "@ballware/meta-services";
+import { AsyncRule } from 'devextreme-angular/common';
+import { RequiredRule, ValidationCallbackData } from 'devextreme/common';
+import { DxElement } from "devextreme/core/element";
 import { dxEvent } from "devextreme/events";
 import { Column as DataGridColumn, ColumnCellTemplateData as DataGridColumnCellTemplateData } from "devextreme/ui/data_grid";
 import { Column as TreeListColumn, ColumnCellTemplateData as TreeListColumnCellTemplateData } from "devextreme/ui/tree_list";
-import { cloneDeep } from "lodash";
-import { get } from "lodash";
-import { createLookupDataSource } from "./datasource";
-import { DxElement } from "devextreme/core/element";
+import { cloneDeep, get } from "lodash";
 import { firstValueFrom, Observable } from 'rxjs';
-import { AsyncRule } from 'devextreme-angular/common';
-import { ValidationCallbackData } from 'devextreme/common';
+import { createLookupDataSource } from "./datasource";
 
 export type OptionButtons =
   | 'add'
@@ -34,7 +33,7 @@ export type OptionButtons =
   ) {
     let type = c.type;
 
-    if (editMode === 'instant' && c.editable && type != 'staticmultilookup' && type !== 'dynamic' && type !== 'popup') {
+    if (editMode === 'instant' && c.editable && type !== 'popup') {
       type = 'dynamic';
     }
 
@@ -49,6 +48,12 @@ export type OptionButtons =
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       case 'bool':
         return {
@@ -61,6 +66,12 @@ export type OptionButtons =
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           dataType: 'boolean',
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       case 'number':
         return {
@@ -77,6 +88,12 @@ export type OptionButtons =
             ? { type: 'fixedPoint', precision: c.precision }
             : null,
           editorOptions: { showSpinButtons: true },
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       case 'date':
         return {
@@ -90,6 +107,12 @@ export type OptionButtons =
           sortOrder: c.sorting,
           dataType: 'date',
           format: t('format.date'),
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       case 'datetime':
         return {
@@ -103,6 +126,12 @@ export type OptionButtons =
           sortOrder: c.sorting,
           dataType: 'datetime',
           format: t('format.datetime'),
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       case 'lookup':
       case 'pickvalue': {
@@ -129,7 +158,16 @@ export type OptionButtons =
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
-          sortOrder: c.sorting,
+          sortOrder: c.sorting,          
+          editorOptions: {
+            showClearButton: true,
+          },         
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
           lookup: {
             dataSource: dataSource?.store(),
             displayExpr: lookup?.displayMember,
@@ -168,6 +206,12 @@ export type OptionButtons =
             valueExpr: lookup?.valueMember,
           },
           editorOptions: c,
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
           cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : (cellElement: DxElement, cellInfo: DataGridColumnCellTemplateData | TreeListColumnCellTemplateData) => {
             const noBreakSpace = '\u00A0';
             const cellLookup = cellInfo.column?.lookup;
@@ -180,7 +224,7 @@ export type OptionButtons =
             cellElement.textContent = text || noBreakSpace;
             cellElement.title = text;
           },
-          editCellTemplate: 'staticedit',
+          editCellTemplate: 'dynamic',
         } as ColumnType;
       }
       case 'staticlookup': {
@@ -199,7 +243,13 @@ export type OptionButtons =
             dataSource: items,
             displayExpr: c.displayExpr ?? 'Text',
             valueExpr: c.valueExpr ?? 'Value',
-          }
+          },
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       }
       case 'staticmultilookup': {
@@ -213,8 +263,8 @@ export type OptionButtons =
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
-          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : 'static',
-          editCellTemplate: 'staticedit',
+          editCellTemplate: 'dynamic',
+          showEditorAlways: true
         } as ColumnType;
       }
       case 'dynamic': {
@@ -224,13 +274,11 @@ export type OptionButtons =
           width: c.width,
           fixed: !!c.fixedPosition,
           fixedPosition: c.fixedPosition,
-          allowEditing: (editMode === 'row' && c.editable) ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           editorOptions: c,
-          cellTemplate: editMode === 'instant' && !c.editable ? 'dynamic' : null,
-          editCellTemplate: 'dynamicedit',
-          showEditorAlways: editMode === 'instant' && c.editable
+          editCellTemplate: 'dynamic',
+          showEditorAlways: true
         } as ColumnType;
       }
       case 'popup': {
@@ -257,6 +305,12 @@ export type OptionButtons =
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
           sortOrder: c.sorting,
+          validationRules: c.required ? [
+            {
+              type: 'required',
+              message: t('validation.messages.required', { label: c.caption })
+            } as RequiredRule
+          ] : [],
         } as ColumnType;
       }
     }
