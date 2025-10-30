@@ -25,6 +25,7 @@ import { DetailCollectionEditing } from "../../directives";
 import { createLookupDataSource } from "../../utils";
 import { WithDestroy } from "../../utils/withdestroy";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
+import { compileSetter } from 'devextreme/utils';
 
 @Component({
     selector: 'ballware-detail-dynamic-column',
@@ -47,7 +48,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     @Input() cell!: DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData;
     @Input() item!: Record<string, unknown>;
     @Input() dataMember!: string;
-    
+
     identifier!: string;
     column!: GridLayoutColumn;
     detailItem!: Record<string, unknown>;
@@ -59,9 +60,14 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     lookupDatasource: DataSource|object[]|undefined;
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
+    acceptCustomValue: boolean|undefined;
+    lookup: LookupDescriptor|undefined;
 
-    public requiredValidation$ = new BehaviorSubject<boolean>(false);    
-    
+    private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
+    private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
+
+    public requiredValidation$ = new BehaviorSubject<boolean>(false);
+
     public validationRules$: Observable<Array<ValidationRule>>|undefined;
 
     onValueChanged: ((e: TextValueChangedEvent|BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|LookupValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
@@ -69,7 +75,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     constructor(
         @Inject(TRANSLATOR) private translator: Translator,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(EDIT_SERVICE) private editService: EditService,           
+        @Inject(EDIT_SERVICE) private editService: EditService,
         private destroy: Destroy,
         public readonly: Readonly,
         private editing: DetailCollectionEditing) {
@@ -186,15 +192,17 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     detailItem: this.detailItem,
                     identifier: this.identifier,
                     options: cloneDeep(this.column)
-                  });                    
+                  });
+
+                  this.acceptCustomValue = this.preparedColumn.acceptCustomValue ?? false;
 
                   this.onValueChanged = (e) => {
-                    this.cell.setValue(e.value);                    
+                    this.cell.setValue(e.value);
 
                     if (this.editing.detailEditorValueChanged) {
                         this.editing.detailEditorValueChanged(this.dataMember, this.detailItemIndex, this.detailItem, this.identifier, e.value, true);
                     }
-                  }; 
+                  };
 
                   this.requiredValidation$.next(this.preparedColumn.required ?? false);
 
@@ -208,7 +216,6 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
                     this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
                   } else if (this.preparedColumn.type === 'pickvalue' || this.preparedColumn.type === 'lookup' || this.preparedColumn.type === 'multilookup') {
-                    let lookup: LookupDescriptor | undefined = undefined;
 
                     if (this.preparedColumn.lookup) {
                       const foundLookup = lookups[this.preparedColumn.lookup];
@@ -216,28 +223,38 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                       if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
                         const dynamicLookupParam = (get(this.item, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
 
-                        lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
+                        this.lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
                       } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
                         const dynamicPickvalueEntity = (get(this.item, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
                         const dynamicPickvalueField = (get(this.item, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
 
-                        lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
+                        this.lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
                       } else if (foundLookup as LookupDescriptor) {
-                        lookup = foundLookup as LookupDescriptor;
+                        this.lookup = foundLookup as LookupDescriptor;
                       }
 
-                      if (!lookup) {
-                        lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
+                      if (!this.lookup) {
+                        this.lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
                       }
 
-                      if (lookup) {
+                      if (this.lookup) {
                         this.lookupDatasource = createLookupDataSource(
-                          (lookup.store as LookupStoreDescriptor).listFunc,
-                          (lookup.store as LookupStoreDescriptor).byIdFunc
+                          (this.lookup.store as LookupStoreDescriptor).listFunc,
+                          (this.lookup.store as LookupStoreDescriptor).byIdFunc
                         );
 
-                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? lookup.valueMember ?? 'Id';
-                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? lookup.displayMember ?? 'Name';
+                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? this.lookup.valueMember ?? 'Id';
+                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? this.lookup.displayMember ?? 'Name';
+
+                        if (this.lookup.type !== 'autocomplete') {
+                          const keyValueSetter = compileSetter(this.lookupValueExpr ?? (this.lookup as LookupDescriptor)?.valueMember ?? this.lookupDatasource?.key() ?? 'Id');
+
+                          this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
+
+                          const displayValueSetter = compileSetter(this.lookupDisplayExpr ?? (this.lookup as LookupDescriptor)?.displayMember ?? 'Name');
+
+                          this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
+                        }
                       } else {
                         this.lookupDatasource = undefined;
                       }
@@ -249,6 +266,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
     ngAfterViewInit(): void {
 
+      /*
         switch (this.preparedColumn?.type) {
             case 'string':
                 if (this.textbox?.instance){
@@ -398,5 +416,27 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                 }
                 break;
         }
+
+       */
     }
+
+  public onCustomItemCreating(event: any) {
+    if (!this.acceptCustomValue) {
+      event.cancel = true;
+      return;
+    }
+
+    if (this.lookup?.type === 'autocomplete') {
+      event.customItem = event.text;
+    } else {
+      const customValue = {
+
+      };
+
+      this._lookupItemKeyValueSetter?.(customValue, event.text);
+      this._lookupItemDisplayValueSetter?.(customValue, event.text);
+
+      event.customItem = customValue;
+    }
+  }
 }

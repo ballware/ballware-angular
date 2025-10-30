@@ -43,7 +43,9 @@
     [dataSource]="lookupDatasource ?? null"
     [displayExpr]="lookupDisplayExpr ?? preparedColumn.displayExpr ?? 'Text'"
     [valueExpr]="lookupValueExpr ?? preparedColumn.valueExpr ?? 'Value'"
-    [showClearButton]="true">
+    [showClearButton]="true"
+    [acceptCustomValue]="acceptCustomValue ?? false"
+    (onCustomItemCreating)="onCustomItemCreating($event)">
 </dx-select-box>
 <dx-tag-box *ngIf="preparedColumn && 'staticmultilookup' === preparedColumn.type"
     #statictagbox
@@ -61,7 +63,9 @@
     [value]="multiLookupValue()"
     [dataSource]="lookupDatasource ?? null"
     [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Name'"
-    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'">
+    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'"
+    [acceptCustomValue]="acceptCustomValue ?? false"
+    (onCustomItemCreating)="onCustomItemCreating($event)">
 </dx-tag-box>
 <ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
     [column]="preparedColumn"
