@@ -20,12 +20,9 @@
         [(editRowKey)]="editing.gridEditRowKey"
         [(changes)]="editing.gridEditChanges">
     </dxo-editing>
-    <div *dxTemplate="let cell of 'dynamic'">
-        <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>
-    <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>
+  <div *dxTemplate="let cellInfo of 'dynamic'">
+    <ballware-detail-dynamic-column [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [cell]="cellInfo"></ballware-detail-dynamic-column>
+  </div>
 </dx-tree-list>
 <dx-validator [adapter]="editing.validationAdapterConfig">
     <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>

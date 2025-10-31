@@ -14,7 +14,7 @@
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// ensure Anular opens at localhost and not 127.0.0.1
-	"forwardPorts": [3000, "localhost:3000"],
+	"forwardPorts": [3000, 4200],
 	"postCreateCommand": "yarn install && npx cypress install",
 	"containerEnv": {
 		"NODE_OPTIONS": "--max-old-space-size=16384"

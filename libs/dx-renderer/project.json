@@ -36,6 +36,7 @@
     "storybook": {
       "executor": "@storybook/angular:start-storybook",
       "options": {
+        "host": "0.0.0.0",
         "port": 4200,
         "configDir": "libs/dx-renderer/.storybook",
         "browserTarget": "dx-renderer:build-storybook",

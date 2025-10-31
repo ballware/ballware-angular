@@ -1,14 +1,14 @@
 import { Directive, Inject, OnInit } from "@angular/core";
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { Destroy, EditItemLivecycle, UnknownArrayValue, Readonly } from "@ballware/renderer-commons";
+import { Destroy, EditItemLivecycle, Readonly, UnknownArrayValue } from "@ballware/renderer-commons";
 
-import { Column as DataGridColumn, DataChange as DataGridDataChange, ToolbarPreparingEvent as DataGridToolbarPreparingEvent, EditorPreparingEvent as DataGridEditorPreparingEvent, RowClickEvent as DataGridRowClickEvent, InitNewRowEvent as DataGridInitNewRowEvent } from "devextreme/ui/data_grid";
-import { Column as TreeListColumn, DataChange as TreeListDataChange, ToolbarPreparingEvent as TreeListToolbarPreparingEvent, EditorPreparingEvent as TreeListEditorPreparingEvent, RowClickEvent as TreelistRowClickEvent, InitNewRowEvent as TreeListInitNewRowEvent } from "devextreme/ui/tree_list";
-import { Item as ToolbarItem } from "devextreme/ui/toolbar";
-import { combineLatest, Observable, of, takeUntil } from 'rxjs';
-import { createColumnConfiguration } from "../utils";
 import { CrudItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { ValidationCallbackData } from 'devextreme/common';
+import { Column as DataGridColumn, DataChange as DataGridDataChange, EditorPreparingEvent as DataGridEditorPreparingEvent, InitNewRowEvent as DataGridInitNewRowEvent, RowClickEvent as DataGridRowClickEvent, ToolbarPreparingEvent as DataGridToolbarPreparingEvent } from "devextreme/ui/data_grid";
+import { Item as ToolbarItem } from "devextreme/ui/toolbar";
+import { Column as TreeListColumn, DataChange as TreeListDataChange, EditorPreparingEvent as TreeListEditorPreparingEvent, InitNewRowEvent as TreeListInitNewRowEvent, RowClickEvent as TreelistRowClickEvent, ToolbarPreparingEvent as TreeListToolbarPreparingEvent } from "devextreme/ui/tree_list";
+import { combineLatest, Observable, of, takeUntil } from 'rxjs';
+import { createColumnConfiguration } from "../utils";
 
 type ColumnType = DataGridColumn | TreeListColumn;
 
@@ -78,7 +78,7 @@ export class DetailCollectionEditing implements OnInit {
 
     private detailEditorInitialized: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, component: EditItemRef) => void)|undefined;
     private detailEditorValidating: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => Observable<boolean>)|undefined;
-    private detailEditorValueChanged: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
+    public detailEditorValueChanged: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
     private detailEditorEntered: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string) => void)|undefined;
     private detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
 
