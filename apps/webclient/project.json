@@ -101,7 +101,7 @@
       "defaultConfiguration": "development",
       "options": {
         "buildTarget": "webclient:build",
-        "host": "localhost",
+        "host": "0.0.0.0",
         "port": 3000,
         "ssl": true,
         "sslKey": "localhost+2-key.pem",

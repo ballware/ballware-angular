@@ -1,68 +1,86 @@
-import { Component, Inject, Input, OnInit, Provider } from "@angular/core";
+import {
+  Component,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Provider,
+} from '@angular/core';
 import { PageLayoutItem, StatisticOptions } from "@ballware/meta-model";
 import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from "@ballware/meta-services";
-import { nanoid } from "nanoid";
 import { Observable, map, takeUntil } from "rxjs";
 import { WithDestroy } from "../../utils/withdestroy";
 import { StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent } from "../../statistic";
 import { CommonModule } from "@angular/common";
+import { Breadcrumb, Destroy } from '@ballware/renderer-commons';
 
 @Component({
-    selector: 'ballware-page-statistic',
-    templateUrl: './statistic.component.html',
-    styleUrls: ['./statistic.component.scss'],
-    providers: [
-      { 
-        provide: STATISTIC_SERVICE, 
-        useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-        deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]  
-      } as Provider,
-    ],
-    imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
-    standalone: true
-  })
-  export class PageLayoutStatisticComponent extends WithDestroy() implements OnInit { 
-    
-    @Input() layoutItem!: PageLayoutItem;
+  selector: 'ballware-page-statistic',
+  templateUrl: './statistic.component.html',
+  styleUrls: ['./statistic.component.scss'],
+  providers: [
+    {
+      provide: STATISTIC_SERVICE,
+      useFactory: (
+        serviceFactory: StatisticServiceFactory,
+        lookupService: LookupService
+      ) => serviceFactory(lookupService),
+      deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE],
+    } as Provider,
+  ],
+  imports: [
+    CommonModule,
+    StatisticChartComponent,
+    StatisticMapComponent,
+    StatisticPivotgridComponent,
+  ],
+  hostDirectives: [Breadcrumb, Destroy],
+  standalone: true,
+})
+export class PageLayoutStatisticComponent implements OnInit, OnDestroy
+{
+  @Input() layoutItem!: PageLayoutItem;
 
-    type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
-    
-    constructor(
-      @Inject(PAGE_SERVICE) private pageService: PageService, 
-      @Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
-      super();
+  type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
 
-      this.type$ = this.statisticService.layout$.pipe(map((layout) => layout?.type));
-      
-      this.pageService.customParam$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((customParam) => {
-          this.statisticService.setCustomParam(customParam);
-        });    
-    
-      this.pageService.headParams$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((headParams) => {
-            if (headParams) {
-              this.statisticService.setHeadParams(headParams);
-            }
-        });
+  constructor(
+    @Inject(PAGE_SERVICE) private pageService: PageService,
+    @Inject(STATISTIC_SERVICE) private statisticService: StatisticService,
+    private breadcrumb: Breadcrumb,
+    private destroy: Destroy,
+  ) {
+    this.type$ = this.statisticService.layout$.pipe(
+      map((layout) => layout?.type)
+    );
+
+    this.pageService.customParam$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((customParam) => {
+        this.statisticService.setCustomParam(customParam);
+      });
+
+    this.pageService.headParams$
+      .pipe(takeUntil(this.destroy.destroy$))
+      .subscribe((headParams) => {
+        if (headParams) {
+          this.statisticService.setHeadParams(headParams);
+        }
+      });
   }
 
   ngOnInit(): void {
-    
-    let identifier = (this.layoutItem?.options?.itemoptions as StatisticOptions)?.identifier;
+    const statisticOptions = this.layoutItem.options
+      ?.itemoptions as StatisticOptions;
 
-    if (!identifier) {
-      identifier = nanoid(11);
-    }
+    if (statisticOptions?.statistic) {
+      this.breadcrumb.setIdentifier(statisticOptions?.statistic);
+      this.statisticService.setIdentifier(this.breadcrumb.pathString);
 
-    if (identifier) {
-      this.statisticService.setIdentifier(identifier);
+      this.statisticService.setStatistic(statisticOptions?.statistic);
     }
+  }
 
-    if (this.layoutItem.options?.itemoptions) {
-      this.statisticService.setStatistic((this.layoutItem.options.itemoptions as StatisticOptions).statistic);
-    }
-  } 
-}  
+  ngOnDestroy() {
+    this.statisticService.ngOnDestroy();
+  }
+}

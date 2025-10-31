@@ -1,11 +1,11 @@
 import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
 import { EditLayout, EditUtil } from '@ballware/meta-model';
 import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
-import { nanoid } from 'nanoid';
 import { Subject, takeUntil, withLatestFrom } from 'rxjs';
 import { WithDestroy } from '../../utils/withdestroy';
 import { DxPopupModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { Breadcrumb } from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-crud-dialog',
@@ -19,6 +19,7 @@ import { CommonModule } from '@angular/common';
     } as Provider
   ],
   imports: [CommonModule, DxPopupModule],
+  hostDirectives: [Breadcrumb],
   standalone: true
 })
 export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDestroy {
@@ -40,7 +41,9 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   constructor(
     @Inject(TRANSLATOR) private translator: Translator,
-    @Inject(EDIT_SERVICE) private editService: EditService) {
+    @Inject(EDIT_SERVICE) private editService: EditService,
+    private breadcrumb: Breadcrumb) {
+
 
     super();
 
@@ -77,7 +80,8 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
 
   ngOnInit(): void {
       if (this.mode && this.entity && this.item && this.editLayout) {
-        this.editService.setIdentifier(nanoid(11));
+        this.breadcrumb.setIdentifier("dialog")
+        this.editService.setIdentifier(this.breadcrumb.pathString);
         this.editService.setMode(this.mode);
         this.editService.setEntity(this.entity);
         this.editService.setItem(this.item as Record<string, unknown>);

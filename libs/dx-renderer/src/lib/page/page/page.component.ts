@@ -6,27 +6,29 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { ToolbarComponent } from '../../toolbar';
 import { PageLayoutComponent } from '../layout/layout.component';
 import { CommonModule } from '@angular/common';
+import { Breadcrumb } from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-page',
   templateUrl: './page.component.html',
   styleUrls: ['./page.component.scss'],
-  providers: [    
-    { 
-      provide: LOOKUP_SERVICE, 
+  providers: [
+    {
+      provide: LOOKUP_SERVICE,
       useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]  
+      deps: [LOOKUP_SERVICE_FACTORY]
     } as Provider,
-    { 
-      provide: PAGE_SERVICE, 
+    {
+      provide: PAGE_SERVICE,
       useFactory: (serviceFactory: PageServiceFactory, router: Router, lookupService: LookupService) => serviceFactory(router, lookupService),
-      deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]  
+      deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]
     } as Provider
   ],
   imports: [CommonModule, ToolbarComponent, PageLayoutComponent],
+  hostDirectives: [Breadcrumb],
   standalone: true
 })
-export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges {  
+export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges {
   @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
@@ -34,28 +36,30 @@ export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges
   public fullscreenDialogs$: Observable<boolean>;
 
   @Input() id!: string;
-  @Input() page!: string; 
+  @Input() page!: string;
 
   constructor(
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
-    @Inject(PAGE_SERVICE) private pageService: PageService, 
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService) {
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
+    @Inject(PAGE_SERVICE) private pageService: PageService,
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+    private breadcrumb: Breadcrumb) {
     super();
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$
       .pipe(takeUntil(this.destroy$))
       .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
   }
-  
+
   override ngOnDestroy(): void {
     super.ngOnDestroy();
-    
+
     this.pageService.ngOnDestroy();
     this.lookupService.ngOnDestroy();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['id']) {
+      this.breadcrumb.setIdentifier(changes['id'].currentValue);
       this.pageService.setPageUrl(changes['id'].currentValue);
     }
 
@@ -63,5 +67,5 @@ export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges
       this.pageService.setPageQuery(changes['page'].currentValue);
     }
   }
-  
+
 }
