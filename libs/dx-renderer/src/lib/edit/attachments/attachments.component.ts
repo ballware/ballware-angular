@@ -27,8 +27,8 @@ import {
             deps: [ATTACHMENT_SERVICE_FACTORY]
         } as Provider,
     ],
-    imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule],
-    hostDirectives: [Breadcrumb, Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
+    imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule, Breadcrumb],
+    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
     standalone: true
   })
   export class EditLayoutAttachmentsComponent implements OnInit, OnDestroy {

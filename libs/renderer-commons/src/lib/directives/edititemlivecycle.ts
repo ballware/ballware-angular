@@ -3,8 +3,10 @@ import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services"
 import { BehaviorSubject, Observable, Subject, takeUntil, combineLatest, map } from 'rxjs';
 import { Directive, Inject, Input, OnInit } from "@angular/core";
 import { Destroy } from "./destroy";
+import { Breadcrumb } from './breadcrumb';
 
 @Directive({
+  hostDirectives: [Breadcrumb],
   standalone: true
 })
 export class EditItemLivecycle implements OnInit, EditItemRef {
@@ -61,7 +63,7 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
     throw new Error(`Unsupported option <${option}>`);
   }
 
-  constructor(private destroy: Destroy, @Inject(EDIT_SERVICE) private editService: EditService ) {}
+  constructor(private destroy: Destroy, @Inject(EDIT_SERVICE) private editService: EditService, private breadcrumb: Breadcrumb ) {}
 
   ngOnInit(): void {
     if (this.initialLayoutItem) {
@@ -86,6 +88,7 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
         .subscribe(([layoutItem, editorInitialized]) => {
           if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
             editorInitialized({ dataMember: layoutItem.options.dataMember, ref: this });
+            this.breadcrumb.setIdentifier(layoutItem.options?.dataMember);
           }
 
           this.layoutItem = layoutItem;

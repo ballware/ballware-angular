@@ -61,7 +61,7 @@ interface EntityGridItemOptions {
     }
   ],
   imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
-  hostDirectives: [Breadcrumb, Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
+  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
   standalone: true
 })
 export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
