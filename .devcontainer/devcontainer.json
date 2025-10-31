@@ -3,20 +3,24 @@
 {
 	"name": "Node.js & TypeScript",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/typescript-node:0-18",
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:20-bookworm",
+
+	"workspaceMount": "source=${localWorkspaceFolderBasename}-ws,target=/workspaces/${localWorkspaceFolderBasename},type=volume",
+  	"workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+	"remoteUser": "node",
+
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		// add linux packages for Cypress to work
-		"ghcr.io/rocker-org/devcontainer-features/apt-packages:1": {
-			"packages": "libgtk2.0-0,libgtk-3-0,libgbm-dev,libnotify-dev,libgconf-2-4,libnss3,libxss1,libasound2,libxtst6,xauth,xvfb"
-		},
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {}
 	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// ensure Anular opens at localhost and not 127.0.0.1
-	"forwardPorts": [3000, 4200],
-	"postCreateCommand": "yarn install && npx cypress install",
+	"forwardPorts": [3000, "localhost:3000", 4200, "localhost:4200"],
+	"postCreateCommand": "bash -lc 'sudo chown -R $(id -u):$(id -g) . && shopt -s dotglob && if [ -z \"$(ls -A .)\" ]; then git clone --depth 1 \"$REPO_URL\" .; fi && yarn install'",
+
 	"containerEnv": {
+		"REPO_URL": "https://github.com/ballware/ballware-angular.git",
 		"NODE_OPTIONS": "--max-old-space-size=16384"
 	},
 	// Configure tool-specific properties.
