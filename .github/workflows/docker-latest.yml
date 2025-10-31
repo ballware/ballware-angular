@@ -28,19 +28,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v3
-        with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
-      - name: 'Install Dependencies'
-        run: yarn install
-      - name: Test and coverage
-        run: yarn test
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v4.2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:

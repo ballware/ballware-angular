@@ -1,43 +1,58 @@
+import { CommonModule } from "@angular/common";
 import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
 import { GridLayoutColumn } from "@ballware/meta-model";
-import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService, PickvalueCreator } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, PickvalueCreator, Translator, TRANSLATOR } from "@ballware/meta-services";
+import { Destroy, Readonly } from "@ballware/renderer-commons";
+import { I18NextModule } from "angular-i18next";
+import {
+    DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule,
+    DxSelectBoxComponent,
+    DxSelectBoxModule, DxTagBoxComponent, DxTagBoxModule, DxTextBoxComponent, DxTextBoxModule, DxValidatorModule
+} from 'devextreme-angular';
+import { RequiredRule, ValidationRule } from "devextreme/common";
 import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
+import { ColumnEditCellTemplateData as DataGridColumnEditCellTemplateData } from 'devextreme/ui/data_grid';
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
 import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/number_box";
+import { ValueChangedEvent as LookupValueChangedEvent } from "devextreme/ui/select_box";
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
-import { get } from "lodash";
-import { combineLatest, takeUntil } from "rxjs";
+import { ValueChangedEvent as TextValueChangedEvent } from "devextreme/ui/text_box";
+import { ColumnEditCellTemplateData as TreeListColumnEditCellTemplateData } from 'devextreme/ui/tree_list';
+import { cloneDeep, get } from "lodash";
+import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from "rxjs";
+import { DetailCollectionEditing } from "../../directives";
 import { createLookupDataSource } from "../../utils";
 import { WithDestroy } from "../../utils/withdestroy";
-import { CommonModule } from "@angular/common";
-import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
-import { I18NextModule } from "angular-i18next";
-import { DetailCollectionEditing } from "../../directives";
+import { compileSetter } from 'devextreme/utils';
 
 @Component({
     selector: 'ballware-detail-dynamic-column',
     templateUrl: './detaildynamiccolumn.component.html',
-    styleUrls: [],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
+    styleUrls: ['./detaildynamiccolumn.component.scss'],
+    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule],
+    hostDirectives: [Destroy],
     standalone: true
 })
 export class DetailDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('textbox', { static: false }) textbox?: DxTextBoxComponent;
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
     @ViewChild('numberbox', { static: false }) numberbox?: DxNumberBoxComponent;
     @ViewChild('datebox', { static: false }) datebox?: DxDateBoxComponent;
     @ViewChild('datetimebox', { static: false }) datetimebox?: DxDateBoxComponent;
     @ViewChild('statictagbox', { static: false }) statictagbox?: DxTagBoxComponent;
     @ViewChild('tagbox', { static: false }) tagbox?: DxTagBoxComponent;
+    @ViewChild('selectbox', { static: false }) selectbox?: DxSelectBoxComponent;
 
-    @Input() dataMember!: string;
-    @Input() identifier!: string;
-    @Input() column!: GridLayoutColumn;
+    @Input() cell!: DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData;
     @Input() item!: Record<string, unknown>;
-    @Input() detailItem!: Record<string, unknown>;
-    @Input() detailItemIndex!: number;
-    @Input() readonly!: boolean;
+    @Input() dataMember!: string;
+
+    identifier!: string;
+    column!: GridLayoutColumn;
+    detailItem!: Record<string, unknown>;
+    detailItemIndex!: number;
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
@@ -45,14 +60,30 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
     lookupDatasource: DataSource|object[]|undefined;
     lookupValueExpr: string|undefined;
     lookupDisplayExpr: string|undefined;
+    acceptCustomValue: boolean|undefined;
+    lookup: LookupDescriptor|undefined;
 
-    onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
+    private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
+    private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
+
+    public requiredValidation$ = new BehaviorSubject<boolean>(false);
+
+    public validationRules$: Observable<Array<ValidationRule>>|undefined;
+
+    onValueChanged: ((e: TextValueChangedEvent|BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|LookupValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
+        @Inject(TRANSLATOR) private translator: Translator,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(META_SERVICE) private metaService: MetaService,
+        @Inject(EDIT_SERVICE) private editService: EditService,
+        private destroy: Destroy,
+        public readonly: Readonly,
         private editing: DetailCollectionEditing) {
         super();
+    }
+
+    stringValue() {
+        return this.value as string;
     }
 
     boolValue() {
@@ -67,12 +98,18 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
         return this.value as Date;
     }
 
+    lookupValue() {
+        return this.value as any;
+    }
+
     multiLookupValue() {
         return this.value as Array<any>;
     }
 
     getEditorOption(option: string): unknown {
         switch (this.preparedColumn?.type) {
+            case 'string':
+                return this.textbox?.instance.option(option);
             case 'bool':
                 return this.checkbox?.instance.option(option);
             case 'number':
@@ -92,6 +129,8 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
     setEditorOption(option: string, value: unknown) {
         switch (this.preparedColumn?.type) {
+            case 'string':
+                return this.textbox?.instance.option(option, value);
             case 'bool':
                 return this.checkbox?.instance.option(option, value);
             case 'number':
@@ -109,6 +148,34 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
     ngOnInit(): void {
 
+        this.validationRules$ = combineLatest([this.requiredValidation$])
+            .pipe(takeUntil(this.destroy.destroy$))
+            .pipe(map(([required]) => {
+                const validationRules = [] as ValidationRule[];
+
+                if (required) {
+                    validationRules.push({
+                        type: 'required',
+                        message: this.translator('validation.messages.required', { label: this.preparedColumn?.caption })
+                    } as RequiredRule);
+                }
+
+                return validationRules;
+            }));
+
+        this.validationRules$.pipe(
+            takeUntil(this.destroy.destroy$)
+        ).subscribe((rules) => {
+           this.cell.column.validationRules = rules;
+        });
+
+        if (this.cell) {
+            this.identifier = this.cell.column.editorOptions.dataMember;
+            this.detailItem = this.cell.data;
+            this.detailItemIndex = this.cell.rowIndex;
+            this.column = this.cell.column.editorOptions;
+        }
+
         if (this.detailItem && this.identifier) {
             this.value = get(this.detailItem, this.identifier);
         }
@@ -116,12 +183,28 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
         combineLatest([
             this.lookupService.lookups$,
             this.lookupService.getGenericLookupByIdentifier$,
-            this.metaService.detailGridCellPreparing$,
-            this.metaService.editorValueChanged$])
+            this.editService.detailGridCellPreparing$])
             .pipe(takeUntil(this.destroy$))
-            .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing, editorValueChanged]) => {
-                if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing && editorValueChanged) {
-                  this.preparedColumn = detailGridCellPreparing(!this.readonly ? EditModes.EDIT : EditModes.VIEW, this.item, this.detailItem, this.identifier, this.column);
+            .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing]) => {
+                if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing) {
+                  this.preparedColumn = detailGridCellPreparing({
+                    dataMember: this.dataMember,
+                    detailItem: this.detailItem,
+                    identifier: this.identifier,
+                    options: cloneDeep(this.column)
+                  });
+
+                  this.acceptCustomValue = this.preparedColumn.acceptCustomValue ?? false;
+
+                  this.onValueChanged = (e) => {
+                    this.cell.setValue(e.value);
+
+                    if (this.editing.detailEditorValueChanged) {
+                        this.editing.detailEditorValueChanged(this.dataMember, this.detailItemIndex, this.detailItem, this.identifier, e.value, true);
+                    }
+                  };
+
+                  this.requiredValidation$.next(this.preparedColumn.required ?? false);
 
                   this.prepared = true;
 
@@ -132,8 +215,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
                     this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
                     this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
-                  } else if (this.preparedColumn.type === 'multilookup') {
-                    let lookup: LookupDescriptor | undefined = undefined;
+                  } else if (this.preparedColumn.type === 'pickvalue' || this.preparedColumn.type === 'lookup' || this.preparedColumn.type === 'multilookup') {
 
                     if (this.preparedColumn.lookup) {
                       const foundLookup = lookups[this.preparedColumn.lookup];
@@ -141,28 +223,38 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                       if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
                         const dynamicLookupParam = (get(this.item, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
 
-                        lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
+                        this.lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
                       } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
                         const dynamicPickvalueEntity = (get(this.item, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
                         const dynamicPickvalueField = (get(this.item, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
 
-                        lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
+                        this.lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
                       } else if (foundLookup as LookupDescriptor) {
-                        lookup = foundLookup as LookupDescriptor;
+                        this.lookup = foundLookup as LookupDescriptor;
                       }
 
-                      if (!lookup) {
-                        lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
+                      if (!this.lookup) {
+                        this.lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
                       }
 
-                      if (lookup) {
+                      if (this.lookup) {
                         this.lookupDatasource = createLookupDataSource(
-                          (lookup.store as LookupStoreDescriptor).listFunc,
-                          (lookup.store as LookupStoreDescriptor).byIdFunc
+                          (this.lookup.store as LookupStoreDescriptor).listFunc,
+                          (this.lookup.store as LookupStoreDescriptor).byIdFunc
                         );
 
-                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? lookup.valueMember ?? 'Id';
-                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? lookup.displayMember ?? 'Name';
+                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? this.lookup.valueMember ?? 'Id';
+                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? this.lookup.displayMember ?? 'Name';
+
+                        if (this.lookup.type !== 'autocomplete') {
+                          const keyValueSetter = compileSetter(this.lookupValueExpr ?? (this.lookup as LookupDescriptor)?.valueMember ?? this.lookupDatasource?.key() ?? 'Id');
+
+                          this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
+
+                          const displayValueSetter = compileSetter(this.lookupDisplayExpr ?? (this.lookup as LookupDescriptor)?.displayMember ?? 'Name');
+
+                          this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
+                        }
                       } else {
                         this.lookupDatasource = undefined;
                       }
@@ -174,7 +266,27 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
 
     ngAfterViewInit(): void {
 
+      /*
         switch (this.preparedColumn?.type) {
+            case 'string':
+                if (this.textbox?.instance){
+
+                    const editorOptions = this.textbox.instance.option();
+
+                    this.editing.onCustomEditorPreparing({
+                        row: this.detailItem,
+                        rowIndex: this.detailItemIndex,
+                        dataField: this.identifier,
+                        column: this.preparedColumn,
+                        editorOptions: editorOptions,
+                        component: this.textbox.instance
+                    });
+
+                    if (editorOptions) {
+                        this.textbox.instance.option(editorOptions);
+                    }
+                }
+                break;
             case 'bool':
                 if (this.checkbox?.instance){
 
@@ -266,6 +378,25 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     }
                 }
                 break;
+            case 'lookup':
+            case 'pickvalue':
+              if (this.selectbox?.instance) {
+                const editorOptions = this.selectbox.instance.option();
+
+                this.editing.onCustomEditorPreparing({
+                  row: this.detailItem,
+                  rowIndex: this.detailItemIndex,
+                  dataField: this.identifier,
+                  column: this.preparedColumn,
+                  editorOptions: editorOptions,
+                  component: this.selectbox.instance
+                });
+
+                if (editorOptions) {
+                  this.selectbox.instance.option(editorOptions);
+                }
+              }
+              break;
             case 'multilookup':
                 if (this.tagbox?.instance) {
                     const editorOptions = this.tagbox.instance.option();
@@ -282,10 +413,30 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                     if (editorOptions) {
                         this.tagbox.instance.option(editorOptions);
                     }
-
-                    break;
                 }
                 break;
         }
+
+       */
     }
+
+  public onCustomItemCreating(event: any) {
+    if (!this.acceptCustomValue) {
+      event.cancel = true;
+      return;
+    }
+
+    if (this.lookup?.type === 'autocomplete') {
+      event.customItem = event.text;
+    } else {
+      const customValue = {
+
+      };
+
+      this._lookupItemKeyValueSetter?.(customValue, event.text);
+      this._lookupItemDisplayValueSetter?.(customValue, event.text);
+
+      event.customItem = customValue;
+    }
+  }
 }

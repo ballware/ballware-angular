@@ -3,8 +3,10 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';
 
+declare let window :any;
+
 (async () => {
-  if (isDevMode()) {
+  if (isDevMode() && window.ENV.NG_TRACING === 1) {
     const { runWithTracing } = await import('./dev-tools');
     await runWithTracing(async () => {
       const appRef = await bootstrapApplication(AppComponent, appConfig);

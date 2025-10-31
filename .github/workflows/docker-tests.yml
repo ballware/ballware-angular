@@ -1,0 +1,57 @@
+name: Testing and code analysis
+
+on:
+  push:
+    branches: ['main', 'develop', 'feature/*', 'bugfix/*']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: 'Install Dependencies'
+        run: yarn install --frozen-lockfile
+      - name: Test and coverage
+        run: yarn nx run-many --target test --junit --coverage --coverageReporters=lcov --ci
+      - name: Build Storybook
+        run: yarn nx run dx-renderer:build-storybook --configuration=ci
+      - name: Start Storybook
+        run: npx http-server dist/storybook/dx-renderer -p 4200 -c-1 &
+      - name: Wait for Storybook
+        run: npx wait-on http://localhost:4200
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+      - name: Run Playwright tests
+        run: yarn nx test-storybook dx-renderer -- --junit --coverage --coverageDirectory=coverage/storybook
+      - name: Upload Unit Test Reports
+        uses: dorny/test-reporter@v2
+        if: (!cancelled())
+        with:
+          name: 'Unit Test Results'
+          path: test_results/**/*.xml
+          reporter: jest-junit
+      - name: Upload Playwright Test Reports
+        uses: dorny/test-reporter@v2
+        if: (!cancelled())
+        with:
+          name: 'Playwright Test Results'
+          path: junit.xml
+          reporter: jest-junit
+      - name: Merge coverage reports
+        run: node ./tools/scripts/coverageMerger.js
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v4.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

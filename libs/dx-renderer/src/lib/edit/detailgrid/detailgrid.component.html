@@ -13,22 +13,13 @@
     (onInitNewRow)="editing.onInitNewRow($event)">
     <dxo-editing [mode]="editing.editMode === 'row' ? 'row' : 'cell'" [useIcons]="true"
         [allowAdding]="editing.allowAdd"
-        [allowUpdating]="editing.editMode === 'row' && editing.allowUpdate"
+        [allowUpdating]="editing.allowUpdate"
         [allowDeleting]="editing.allowDelete"
         [(editRowKey)]="editing.gridEditRowKey"
         [(changes)]="editing.gridEditChanges">
     </dxo-editing>
-    <div *dxTemplate="let cell of 'static'">
-        <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>
-    <div *dxTemplate="let cell of 'staticedit'">
-        <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>
-    <div *dxTemplate="let cell of 'dynamic'">
-        <ballware-detail-dynamic-column [readonly]="true" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
-    </div>
-    <div *dxTemplate="let cell of 'dynamicedit'">
-        <ballware-detail-dynamic-column [readonly]="!editing.allowUpdate" [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [identifier]="cell.column.editorOptions.dataMember" [detailItem]="cell.data" [detailItemIndex]="cell.rowIndex" [column]="cell.column.editorOptions" ></ballware-detail-dynamic-column>
+    <div *dxTemplate="let cellInfo of 'dynamic'">
+        <ballware-detail-dynamic-column [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [cell]="cellInfo"></ballware-detail-dynamic-column>
     </div>
 </dx-data-grid>
 <dx-validator [adapter]="editing.validationAdapterConfig">
