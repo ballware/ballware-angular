@@ -1,6 +1,6 @@
 {
   "name": "@ballware/renderer-commons",
-  "version": "8.9.0",
+  "version": "9.4.1-0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

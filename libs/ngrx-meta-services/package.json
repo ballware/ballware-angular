@@ -1,6 +1,6 @@
 {
   "name": "@ballware/ngrx-meta-services",
-  "version": "0.0.1",
+  "version": "9.4.1-0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
