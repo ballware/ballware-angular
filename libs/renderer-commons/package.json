@@ -1,6 +1,9 @@
 {
   "name": "@ballware/renderer-commons",
   "version": "8.9.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
     "@angular/common": "^14.2.0",
     "@angular/core": "^14.2.0"

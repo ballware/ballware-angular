@@ -1,6 +1,9 @@
 {
   "name": "@ballware/meta-scripting",
   "version": "9.4.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },

@@ -89,6 +89,10 @@
       "meta-model",
       "meta-scripting",
       "meta-services",
+      "rest-meta-api",
+      "common-meta-services",
+      "ngrx-meta-services",
+      "renderer-commons",
       "dx-renderer",
       "webclient"
     ],
@@ -97,6 +101,11 @@
         "createRelease": "github",
         "file": false
       }
+    },
+    "git": {
+      "tag": true,
+      "commit": true,
+      "push": true
     }
   }
 }

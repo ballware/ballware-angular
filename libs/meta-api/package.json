@@ -1,6 +1,9 @@
 {
   "name": "@ballware/meta-api",
   "version": "9.4.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
     "@angular/common": "^14.2.0",
     "@angular/core": "^14.2.0"

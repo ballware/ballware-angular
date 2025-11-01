@@ -1,6 +1,9 @@
 {
   "name": "@ballware/dx-renderer",
   "version": "9.4.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "peerDependencies": {
     "@angular/common": "^16.1.0",
     "@angular/core": "^16.1.0"
