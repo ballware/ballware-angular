@@ -1,8 +1,5 @@
 {
   "name": "@ballware/meta-model",
   "version": "9.4.1-1",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "type": "commonjs"
 }
