@@ -38,8 +38,7 @@ export const createMockedLookupService = (options?: {
     .setup(instance => instance.lookups$).returns(lookups$)
     .setup(instance => instance.getGenericLookupByIdentifier$).returns(getGenericLookupByIdentifier$)
     .setup(instance => instance.setIdentifier(It.IsAny())).returns(undefined)
-    .setup(instance => instance.requestLookups(It.IsAny())).returns(undefined)
-    .setup(instance => instance.ngOnDestroy()).returns(undefined);
+    .setup(instance => instance.requestLookups(It.IsAny())).returns(undefined);
 
   return {
     mock,

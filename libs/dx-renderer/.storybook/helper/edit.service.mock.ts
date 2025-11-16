@@ -113,8 +113,7 @@ export const createMockedEditService = (options?: {
     .setup(instance => instance.setApply(It.IsAny())).returns(undefined)
     .setup(instance => instance.setCancel(It.IsAny())).returns(undefined)
     .setup(instance => instance.setValidator(It.IsAny())).returns(undefined)
-    .setup(instance => instance.editUtil()).returns({} as any)
-    .setup(instance => instance.ngOnDestroy()).returns(undefined);
+    .setup(instance => instance.editUtil()).returns({} as any);
 
   return {
     mock,
