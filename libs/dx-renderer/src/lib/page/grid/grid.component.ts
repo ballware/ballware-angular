@@ -6,17 +6,19 @@ import { WithDestroy } from '../../utils/withdestroy';
 import { EditDetailComponent } from '../../edit';
 import { CommonModule } from '@angular/common';
 import { EntitygridComponent } from '../../datacontainer';
+import { Breadcrumb } from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-page-grid',
   templateUrl: './grid.component.html',
   styleUrls: ['./grid.component.scss'],
   providers: [
-    { 
-      provide: MasterdetailService, useClass: MasterdetailService 
+    {
+      provide: MasterdetailService, useClass: MasterdetailService
     }
   ],
   imports: [CommonModule, EntitygridComponent, EditDetailComponent],
+  hostDirectives: [ Breadcrumb ],
   standalone: true
 })
 export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
@@ -37,7 +39,9 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
 
   public gridLayout$: Observable<GridLayout|undefined>;
 
-  constructor(@Inject(META_SERVICE) private metaService: MetaService) {
+  constructor(
+    @Inject(META_SERVICE) private metaService: MetaService,
+    private breadcrumb: Breadcrumb) {
 
     super();
 
@@ -47,6 +51,7 @@ export class PageLayoutGridComponent extends WithDestroy() implements OnInit {
   }
 
   ngOnInit(): void {
+    this.breadcrumb.setIdentifier('grid');
     this._storageIdentifier$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.identifier);
     this._layoutIdentifier$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.layout ?? 'primary');
     this._height$.next((this.layoutItem?.options?.itemoptions as EntityGridOptions)?.height ?? '100%');

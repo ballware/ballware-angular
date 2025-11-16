@@ -12105,7 +12105,6 @@ __metadata:
     lodash: "npm:^4.17.21"
     moment: "npm:^2.30.1"
     moq.ts: "npm:10.1.0"
-    nanoid: "npm:^5.1.6"
     ng-packagr: "npm:18.2.1"
     nx: "npm:22.0.1"
     playwright: "npm:^1.56.1"
@@ -21712,15 +21711,6 @@ __metadata:
   bin:
     nanoid: bin/nanoid.cjs
   checksum: e3fb661aa083454f40500473bb69eedb85dc160e763150b9a2c567c7e9ff560ce028a9f833123b618a6ea742e311138b591910e795614a629029e86e180660f3
-  languageName: node
-  linkType: hard
-
-"nanoid@npm:^5.1.6":
-  version: 5.1.6
-  resolution: "nanoid@npm:5.1.6"
-  bin:
-    nanoid: bin/nanoid.js
-  checksum: 27b5b055ad8332cf4f0f9f6e2a494aa7e5ded89df4cab8c8490d4eabefe72c4423971d2745d22002868b1d50576a5e42b7b05214733b19f576382323282dd26e
   languageName: node
   linkType: hard
 

@@ -1,36 +1,49 @@
-import { AfterViewInit, Component, Inject, Input, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  Inject,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
 import { CRUD_SERVICE, CrudService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
 import { BehaviorSubject, Observable, combineLatest, takeUntil } from 'rxjs';
 import { get } from 'lodash';
-import { DataSourceService } from '../../utils/datasource.service';
+import { DataSourceService } from '../../utils';
 import { WithDestroy } from '../../utils/withdestroy';
 import { CommonModule } from '@angular/common';
+import { Breadcrumb } from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-page-map',
   templateUrl: './map.component.html',
   styleUrls: [],
   imports: [CommonModule, DxMapModule],
-  standalone: true
+  hostDirectives: [Breadcrumb],
+  standalone: true,
 })
-export class PageLayoutMapComponent extends WithDestroy() implements AfterViewInit {
-
+export class PageLayoutMapComponent
+  extends WithDestroy()
+  implements OnInit, AfterViewInit
+{
   @Input() layoutItem?: PageLayoutItem;
 
   @ViewChild('map', { static: false }) map?: DxMapComponent;
 
-  public googlekey$: Observable<string|undefined>;
+  public googlekey$: Observable<string | undefined>;
 
   public markers$ = new BehaviorSubject<any[]>([]);
 
-  private mouseTarget: Element|undefined|null;
+  private mouseTarget: Element | undefined | null;
 
   constructor(
-    @Inject(SETTINGS_SERVICE) private settingsService: SettingsService, 
-    @Inject(CRUD_SERVICE) private crudService: CrudService, 
-    private dataSourceService: DataSourceService) {
+    @Inject(SETTINGS_SERVICE) private settingsService: SettingsService,
+    @Inject(CRUD_SERVICE) private crudService: CrudService,
+    private breadcrumb: Breadcrumb,
+    private dataSourceService: DataSourceService
+  ) {
     super();
 
     this.onMapMouseMove = this.onMapMouseMove.bind(this);
@@ -39,23 +52,30 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
     this.googlekey$ = this.settingsService.googlekey$;
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit() {
+    this.breadcrumb.setIdentifier('map');
+  }
 
-    this.map?.instance.element().addEventListener('mousemove', this.onMapMouseMove);
+  ngAfterViewInit(): void {
+    this.map?.instance
+      .element()
+      .addEventListener('mousemove', this.onMapMouseMove);
 
     combineLatest([this.dataSourceService.dataSource$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([dataSource]) => {
-        const locationMember = (this.layoutItem?.options?.itemoptions as EntityMapOptions)?.locationMember;
+        const locationMember = (
+          this.layoutItem?.options?.itemoptions as EntityMapOptions
+        )?.locationMember;
 
         if (dataSource && locationMember) {
-
           dataSource.on('changed', () => {
-
-            this.markers$.next(dataSource.items()?.map(item => ({
-              location: get(item, locationMember),
-              onClick: () => this.onMarkerClicked(item)
-            })));            
+            this.markers$.next(
+              dataSource.items()?.map((item) => ({
+                location: get(item, locationMember),
+                onClick: () => this.onMarkerClicked(item),
+              }))
+            );
           });
 
           dataSource.load();
@@ -69,9 +89,11 @@ export class PageLayoutMapComponent extends WithDestroy() implements AfterViewIn
 
   public onMarkerClicked(item: CrudItem) {
     if (this.mouseTarget) {
-      
-
-      this.crudService.selectOptions({ item, target: this.mouseTarget, defaultEditLayout: 'primary' });
+      this.crudService.selectOptions({
+        item,
+        target: this.mouseTarget,
+        defaultEditLayout: 'primary',
+      });
     }
   }
 }

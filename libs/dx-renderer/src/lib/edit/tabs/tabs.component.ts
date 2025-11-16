@@ -4,13 +4,19 @@ import { takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { DxTabPanelModule } from 'devextreme-angular';
 import { EditLayoutContainerComponent } from '../layout/container.component';
-import { Destroy, EditItemLivecycle, NumberValue, Visible } from '@ballware/renderer-commons';
+import {
+  Breadcrumb,
+  Destroy,
+  EditItemLivecycle,
+  NumberValue,
+  Visible,
+} from '@ballware/renderer-commons';
 
 @Component({
   selector: 'ballware-edit-tabs',
   templateUrl: './tabs.component.html',
   styleUrls: [],
-  imports: [CommonModule, DxTabPanelModule, forwardRef(() => EditLayoutContainerComponent)],
+  imports: [CommonModule, DxTabPanelModule, Breadcrumb, forwardRef(() => EditLayoutContainerComponent)],
   hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Visible],
   standalone: true
 })
@@ -19,7 +25,7 @@ export class EditLayoutTabsComponent implements OnInit {
   private _height: string|undefined;
   private _width: string|undefined;
   private _panels: EditLayoutItem[] = [];
-    
+
   get panels() { return this._panels; }
   get height() { return this._height; }
   get width() { return this._width; }
@@ -28,8 +34,11 @@ export class EditLayoutTabsComponent implements OnInit {
     public destroy: Destroy,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
-    public value: NumberValue
-  ) {}
+    public value: NumberValue,
+    private breadcrumb: Breadcrumb,
+  ) {
+    this.breadcrumb.setIdentifier("tabs");
+  }
 
   ngOnInit(): void {
     this.livecycle.preparedLayoutItem$
