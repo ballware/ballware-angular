@@ -1,4 +1,4 @@
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface AttachmentRemoveDialog {
