@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE } from '@ballware/meta-services';
-import { Destroy } from './destroy';
 import { EditItemLivecycle } from './edititemlivecycle';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { StringValue } from './value';
@@ -13,7 +12,7 @@ import { StringValue } from './value';
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue],
   standalone: true
 })
 class EditValueTestComponent {

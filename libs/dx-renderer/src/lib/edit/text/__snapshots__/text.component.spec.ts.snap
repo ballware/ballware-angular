@@ -3,11 +3,13 @@
 exports[`EditLayoutTextComponent should create mail 1`] = `
 <ballware-edit-text
   allowScanner="false"
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
   onScannerCancel={[Function Function]}
   onScannerClicked={[Function Function]}
+  onScannerHidden={[Function Function]}
+  onScannerValueChanged={[Function Function]}
   readonly={[Function Readonly]}
   responsiveService={[Function ]}
   showScanner="false"
@@ -83,11 +85,13 @@ exports[`EditLayoutTextComponent should create mail 1`] = `
 exports[`EditLayoutTextComponent should create text 1`] = `
 <ballware-edit-text
   allowScanner="false"
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   fullscreenDialogs$={[Function Observable]}
   livecycle={[Function EditItemLivecycle]}
   onScannerCancel={[Function Function]}
   onScannerClicked={[Function Function]}
+  onScannerHidden={[Function Function]}
+  onScannerValueChanged={[Function Function]}
   readonly={[Function Readonly]}
   responsiveService={[Function ]}
   showScanner="false"

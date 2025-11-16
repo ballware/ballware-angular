@@ -1,13 +1,14 @@
-import { Directive, Inject, OnInit } from "@angular/core";
+import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { Destroy, EditItemLivecycle, Readonly, UnknownArrayValue } from "@ballware/renderer-commons";
+import { EditItemLivecycle, Readonly, UnknownArrayValue } from "@ballware/renderer-commons";
 
 import { CrudItem, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { ValidationCallbackData } from 'devextreme/common';
 import { Column as DataGridColumn, DataChange as DataGridDataChange, EditorPreparingEvent as DataGridEditorPreparingEvent, InitNewRowEvent as DataGridInitNewRowEvent, RowClickEvent as DataGridRowClickEvent, ToolbarPreparingEvent as DataGridToolbarPreparingEvent } from "devextreme/ui/data_grid";
 import { Item as ToolbarItem } from "devextreme/ui/toolbar";
 import { Column as TreeListColumn, DataChange as TreeListDataChange, EditorPreparingEvent as TreeListEditorPreparingEvent, InitNewRowEvent as TreeListInitNewRowEvent, RowClickEvent as TreelistRowClickEvent, ToolbarPreparingEvent as TreeListToolbarPreparingEvent } from "devextreme/ui/tree_list";
-import { combineLatest, Observable, of, takeUntil } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { createColumnConfiguration } from "../utils";
 
 type ColumnType = DataGridColumn | TreeListColumn;
@@ -86,7 +87,7 @@ export class DetailCollectionEditing implements OnInit {
         @Inject(TRANSLATOR) private translator: Translator,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(EDIT_SERVICE) private editService: EditService,
-        private destroy: Destroy,
+        private destroy: DestroyRef,
         private livecycle: EditItemLivecycle,
         private readonly: Readonly,
         private value: UnknownArrayValue
@@ -121,7 +122,7 @@ export class DetailCollectionEditing implements OnInit {
             this.editService.detailEditorEntered$,
             this.editService.detailEditorEvent$,
             this.editService.detailEditorValueChanged$])
-            .pipe(takeUntil(this.destroy.destroy$))
+            .pipe(takeUntilDestroyed(this.destroy))
             .subscribe(([layoutItem, readonly, mode, item, lookups,
                 detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
                 if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups
@@ -179,72 +180,6 @@ export class DetailCollectionEditing implements OnInit {
               },
             },
           } as ToolbarItem)
-        }
-      }
-
-      public onCustomEditorPreparing(e: {
-        row: Record<string, unknown>,
-        rowIndex: number,
-        dataField: string,
-        column: GridLayoutColumn,
-        editorOptions: any,
-        component: EditComponentWithOptions
-      }) {
-        if (e.row && e.dataField) {
-          const defaultValueChanged = e.editorOptions.onValueChanged;
-          const defaultFocusIn = e.editorOptions.onFocusIn;
-          const defaultFocusOut = e.editorOptions.onFocusOut;
-
-          e.editorOptions.onValueChanged = (args: {
-            value: CrudItem | ValueType;
-          }) => {
-            if (defaultValueChanged) defaultValueChanged(args);
-
-            if (
-              this.dataMember &&
-              this.detailEditorValueChanged &&
-              e.row &&
-              e.dataField
-            ) {
-              this.detailEditorValueChanged(
-                this.dataMember,
-                e.rowIndex,
-                e.row,
-                e.dataField,
-                args.value,
-                true
-              );
-            }
-          };
-
-          e.editorOptions.onFocusIn = (args: unknown) => {
-            if (defaultFocusIn) defaultFocusIn(args);
-
-            if (this.dataMember && this.detailEditorEntered && e.row && e.dataField) {
-              this.detailEditorEntered(this.dataMember, e.rowIndex, e.row, e.dataField);
-            }
-          };
-
-          e.editorOptions.onFocusOut = (args: unknown) => {
-            if (defaultFocusOut) defaultFocusOut(args);
-
-            //if (this.grid?.instance.hasEditData()) {
-            //  this.grid?.instance.saveEditData();
-            //}
-          }
-
-
-          if (this.dataMember && this.detailEditorInitialized && e.row && e.dataField) {
-            this.detailEditorInitialized(
-              this.dataMember,
-              e.rowIndex,
-              e.row,
-              e.dataField,
-              componentToEditItemRef(e.component)
-            );
-          }
-
-          e.editorOptions.valueChangeEvent = 'blur change focusout';
         }
       }
 

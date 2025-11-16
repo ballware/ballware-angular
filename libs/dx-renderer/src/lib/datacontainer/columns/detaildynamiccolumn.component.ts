@@ -1,8 +1,16 @@
 import { CommonModule } from "@angular/common";
-import { AfterViewInit, Component, Inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GridLayoutColumn } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, PickvalueCreator, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { Destroy, Readonly } from "@ballware/renderer-commons";
+import { Readonly } from "@ballware/renderer-commons";
 import { I18NextModule } from "angular-i18next";
 import {
     DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule,
@@ -20,10 +28,9 @@ import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui
 import { ValueChangedEvent as TextValueChangedEvent } from "devextreme/ui/text_box";
 import { ColumnEditCellTemplateData as TreeListColumnEditCellTemplateData } from 'devextreme/ui/tree_list';
 import { cloneDeep, get } from "lodash";
-import { BehaviorSubject, combineLatest, map, Observable, takeUntil } from "rxjs";
+import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
 import { DetailCollectionEditing } from "../../directives";
 import { createLookupDataSource } from "../../utils";
-import { WithDestroy } from "../../utils/withdestroy";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
 import { compileSetter } from 'devextreme/utils';
 
@@ -32,10 +39,9 @@ import { compileSetter } from 'devextreme/utils';
     templateUrl: './detaildynamiccolumn.component.html',
     styleUrls: ['./detaildynamiccolumn.component.scss'],
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule],
-    hostDirectives: [Destroy],
     standalone: true
 })
-export class DetailDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy, AfterViewInit {
+export class DetailDynamicColumnComponent implements OnInit {
     @ViewChild('textbox', { static: false }) textbox?: DxTextBoxComponent;
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
     @ViewChild('numberbox', { static: false }) numberbox?: DxNumberBoxComponent;
@@ -76,10 +82,9 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
         @Inject(TRANSLATOR) private translator: Translator,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(EDIT_SERVICE) private editService: EditService,
-        private destroy: Destroy,
+        private destroy: DestroyRef,
         public readonly: Readonly,
         private editing: DetailCollectionEditing) {
-        super();
     }
 
     stringValue() {
@@ -106,51 +111,11 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
         return this.value as Array<any>;
     }
 
-    getEditorOption(option: string): unknown {
-        switch (this.preparedColumn?.type) {
-            case 'string':
-                return this.textbox?.instance.option(option);
-            case 'bool':
-                return this.checkbox?.instance.option(option);
-            case 'number':
-                return this.numberbox?.instance.option(option);
-            case 'date':
-                return this.datebox?.instance.option(option);
-            case 'datetime':
-                return this.datetimebox?.instance.option(option);
-            case 'staticmultilookup':
-                return this.statictagbox?.instance.option(option);
-            case 'multilookup':
-                return this.tagbox?.instance.option(option);
-        }
-
-        return undefined;
-    }
-
-    setEditorOption(option: string, value: unknown) {
-        switch (this.preparedColumn?.type) {
-            case 'string':
-                return this.textbox?.instance.option(option, value);
-            case 'bool':
-                return this.checkbox?.instance.option(option, value);
-            case 'number':
-                return this.numberbox?.instance.option(option, value);
-            case 'date':
-                return this.datebox?.instance.option(option, value);
-            case 'datetime':
-                return this.datetimebox?.instance.option(option, value);
-            case 'staticmultilookup':
-                return this.statictagbox?.instance.option(option, value);
-            case 'multilookup':
-                return this.tagbox?.instance.option(option, value);
-        }
-    }
-
     ngOnInit(): void {
 
-        this.validationRules$ = combineLatest([this.requiredValidation$])
-            .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(map(([required]) => {
+        this.validationRules$ = combineLatest([this.requiredValidation$]).pipe(
+            takeUntilDestroyed(this.destroy),
+            map(([required]) => {
                 const validationRules = [] as ValidationRule[];
 
                 if (required) {
@@ -161,10 +126,11 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                 }
 
                 return validationRules;
-            }));
+            })
+        );
 
         this.validationRules$.pipe(
-            takeUntil(this.destroy.destroy$)
+          takeUntilDestroyed(this.destroy),
         ).subscribe((rules) => {
            this.cell.column.validationRules = rules;
         });
@@ -184,7 +150,7 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
             this.lookupService.lookups$,
             this.lookupService.getGenericLookupByIdentifier$,
             this.editService.detailGridCellPreparing$])
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntilDestroyed(this.destroy))
             .subscribe(([lookups, getGenericLookupByIdentifier, detailGridCellPreparing]) => {
                 if (lookups && getGenericLookupByIdentifier && detailGridCellPreparing) {
                   this.preparedColumn = detailGridCellPreparing({
@@ -262,162 +228,6 @@ export class DetailDynamicColumnComponent extends WithDestroy() implements OnIni
                   }
                 }
             });
-    }
-
-    ngAfterViewInit(): void {
-
-      /*
-        switch (this.preparedColumn?.type) {
-            case 'string':
-                if (this.textbox?.instance){
-
-                    const editorOptions = this.textbox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.textbox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.textbox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'bool':
-                if (this.checkbox?.instance){
-
-                    const editorOptions = this.checkbox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.checkbox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.checkbox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'number':
-                if (this.numberbox?.instance) {
-                    const editorOptions = this.numberbox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.numberbox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.numberbox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'date':
-                if (this.datebox?.instance) {
-                    const editorOptions = this.datebox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.datebox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.datebox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'datetime':
-                if (this.datetimebox?.instance) {
-                    const editorOptions = this.datetimebox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.datetimebox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.datetimebox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'staticmultilookup':
-                if (this.statictagbox?.instance) {
-                    const editorOptions = this.statictagbox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.statictagbox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.statictagbox.instance.option(editorOptions);
-                    }
-                }
-                break;
-            case 'lookup':
-            case 'pickvalue':
-              if (this.selectbox?.instance) {
-                const editorOptions = this.selectbox.instance.option();
-
-                this.editing.onCustomEditorPreparing({
-                  row: this.detailItem,
-                  rowIndex: this.detailItemIndex,
-                  dataField: this.identifier,
-                  column: this.preparedColumn,
-                  editorOptions: editorOptions,
-                  component: this.selectbox.instance
-                });
-
-                if (editorOptions) {
-                  this.selectbox.instance.option(editorOptions);
-                }
-              }
-              break;
-            case 'multilookup':
-                if (this.tagbox?.instance) {
-                    const editorOptions = this.tagbox.instance.option();
-
-                    this.editing.onCustomEditorPreparing({
-                        row: this.detailItem,
-                        rowIndex: this.detailItemIndex,
-                        dataField: this.identifier,
-                        column: this.preparedColumn,
-                        editorOptions: editorOptions,
-                        component: this.tagbox.instance
-                    });
-
-                    if (editorOptions) {
-                        this.tagbox.instance.option(editorOptions);
-                    }
-                }
-                break;
-        }
-
-       */
     }
 
   public onCustomItemCreating(event: any) {

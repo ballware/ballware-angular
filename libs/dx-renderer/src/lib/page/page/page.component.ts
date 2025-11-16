@@ -1,12 +1,22 @@
-import { Component, HostBinding, Inject, Input, OnChanges, OnDestroy, Provider, SimpleChanges } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  HostBinding,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Provider,
+  SimpleChanges,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PAGE_SERVICE, PAGE_SERVICE_FACTORY, PageService, PageServiceFactory, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
-import { Observable, map, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { Observable, map } from 'rxjs';
 import { ToolbarComponent } from '../../toolbar';
 import { PageLayoutComponent } from '../layout/layout.component';
 import { CommonModule } from '@angular/common';
 import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page',
@@ -28,7 +38,7 @@ import { Breadcrumb } from '@ballware/renderer-commons';
   hostDirectives: [Breadcrumb],
   standalone: true
 })
-export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges {
+export class PageComponent implements OnDestroy, OnChanges {
   @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
@@ -39,20 +49,19 @@ export class PageComponent extends WithDestroy() implements OnDestroy, OnChanges
   @Input() page!: string;
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
     @Inject(PAGE_SERVICE) private pageService: PageService,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     private breadcrumb: Breadcrumb) {
-    super();
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => screenSize <= SCREEN_SIZE.SM)
+    );
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
-
+  ngOnDestroy(): void {
     this.pageService.ngOnDestroy();
     this.lookupService.ngOnDestroy();
   }

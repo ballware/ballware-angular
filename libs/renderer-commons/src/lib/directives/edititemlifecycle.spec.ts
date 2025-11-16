@@ -1,37 +1,36 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Component, OnInit, Provider } from '@angular/core';
+import { Component, DestroyRef, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE } from '@ballware/meta-services';
-import { takeUntil } from 'rxjs';
-import { Destroy } from './destroy';
 import { EditItemLivecycle } from './edititemlivecycle';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'lib-edit-lifecycle-test',
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }],
   standalone: true
 })
 class EditLifecycleTestComponent implements OnInit {
 
   constructor(
-    private destroy: Destroy,
+    private destroy: DestroyRef,
     private livecycle: EditItemLivecycle) {
   }
 
   ngOnInit(): void {
-    this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((layoutItem) => {
-        if (layoutItem) {
-          this.livecycle.onEntered();
-          this.livecycle.onEvent('mockedevent');
-        }
-      });
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      if (layoutItem) {
+        this.livecycle.onEntered();
+        this.livecycle.onEvent('mockedevent');
+      }
+    });
   }
 }
 

@@ -1,12 +1,20 @@
-import { Component, EventEmitter, Inject, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  Input,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, TRANSLATOR, Translator } from '@ballware/meta-services';
 import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom, of } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
 import { ApplicationAccountMenuComponent } from '../account/menu.component';
 import { ApplicationDocumentationComponent } from "../documentation/documentation.component";
 import { DxButtonModule, DxPopupModule, DxToolbarModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
 import { I18NextModule } from 'angular-i18next';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-application-header',
@@ -15,7 +23,7 @@ import { I18NextModule } from 'angular-i18next';
   imports: [CommonModule, I18NextModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule],
   standalone: true
 })
-export class ApplicationHeaderComponent extends WithDestroy() {
+export class ApplicationHeaderComponent {
   @ViewChild('accountMenu', { static: false }) accountMenu?: ApplicationAccountMenuComponent;
 
   @Output() menuToggle = new EventEmitter<boolean>();
@@ -38,53 +46,57 @@ export class ApplicationHeaderComponent extends WithDestroy() {
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
     @Inject(IDENTITY_SERVICE) private identityService: IdentityService,
     @Inject(TENANT_SERVICE) private tenantService: TenantService,
     @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
-    super();
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => screenSize <= SCREEN_SIZE.SM)
+    );
 
     this.tenantTitle$ = this.tenantService.title$;
     this.pageTitle$ = this.toolbarService.title$;
 
     this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
 
-    this.sessionExpirationVisible$ = this.identityService.sessionExpiration$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((sessionExpiration) => !!sessionExpiration));
+    this.sessionExpirationVisible$ = this.identityService.sessionExpiration$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((sessionExpiration) => !!sessionExpiration)
+    );
 
-    this.identityService.accessTokenAutoRefresh$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((autoRefresh) => {
-        if (!autoRefresh) {
-          this.tokenExpiration$ = interval(1000).pipe(
-            withLatestFrom(this.identityService.accessTokenExpiration$),
-            tap(([, sessionExpiration]) => {
-              if (sessionExpiration && (sessionExpiration < new Date())) {
-                this.identityService.expired();
-              }
-            }),
-            takeWhile(([, sessionExpiration ]) => (sessionExpiration) ? (new Date() < sessionExpiration) : true),
-            map(([, sessionExpiration]) => (sessionExpiration) ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
-            map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
-        } else {
-          this.tokenExpiration$ = of(undefined);
-        }
-      });
+    this.identityService.accessTokenAutoRefresh$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((autoRefresh) => {
+      if (!autoRefresh) {
+        this.tokenExpiration$ = interval(1000).pipe(
+          withLatestFrom(this.identityService.accessTokenExpiration$),
+          tap(([, sessionExpiration]) => {
+            if (sessionExpiration && (sessionExpiration < new Date())) {
+              this.identityService.expired();
+            }
+          }),
+          takeWhile(([, sessionExpiration ]) => (sessionExpiration) ? (new Date() < sessionExpiration) : true),
+          map(([, sessionExpiration]) => (sessionExpiration) ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
+          map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
+      } else {
+        this.tokenExpiration$ = of(undefined);
+      }
+    });
 
-    this.sessionExpiration$ = interval(1000).pipe(withLatestFrom(this.identityService.sessionExpiration$))
-      .pipe(tap(([, sessionExpiration]) => {
+    this.sessionExpiration$ = interval(1000).pipe(
+      withLatestFrom(this.identityService.sessionExpiration$),
+      tap(([, sessionExpiration]) => {
         if (sessionExpiration && (sessionExpiration < new Date())) {
             this.identityService.expired();
         }
-      }))
-      .pipe(takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true))
-      .pipe(map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)))
-      .pipe(map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
+      }),
+      takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true),
+      map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
+      map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : '')
+    );
   }
 
   toggleMenu = () => {

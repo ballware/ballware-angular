@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { CrudItem, EditUtil, EntityCustomFunction, GridLayout, ValueType } from '@ballware/meta-model';
 import { CRUD_SERVICE, CrudService, EditModes, MasterdetailService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DxDataGridComponent, DxDataGridModule, DxPopupModule } from 'devextreme-angular';
@@ -9,13 +9,13 @@ import { Column, EditingStartEvent, EditorPreparingEvent, ExportingEvent, RowDbl
 import { Item } from 'devextreme/ui/toolbar';
 import { Workbook } from 'exceljs';
 import saveAs from 'file-saver';
-import { combineLatest, map, Observable, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { combineLatest, map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
 import { I18NextModule } from 'angular-i18next';
 import { BarcodeScannerComponent } from '../../edit';
 import { EntityDynamicColumnComponent } from '../columns/entitydynamiccolumn.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface EditComponentWithOptions {
   /**
@@ -48,7 +48,7 @@ export interface DatagridSummary {
   imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent, EntityDynamicColumnComponent],
   standalone: true
 })
-export class DatagridComponent extends WithDestroy() implements OnInit {
+export class DatagridComponent implements OnInit {
 
   @ViewChild('grid', { static: false }) grid?: DxDataGridComponent;
 
@@ -81,13 +81,13 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
       data: CrudItem
     }) => boolean;
 
-  private displayName?: string;  
+  private displayName?: string;
   private editAllowed: ((item: CrudItem) => boolean)|undefined;
   private editorEntered: ((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string) => void)|undefined;
   private editorValueChanged: ((mode: EditModes, item: Record<string, unknown>, editUtil: EditUtil, identifier: string, value: ValueType) => void)|undefined;
 
   private gridSelection?: dxButton;
-  
+
   public selectedRowKeys: string[] = [];
   public selectedRowData: CrudItem[] = [];
 
@@ -95,36 +95,43 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
   public showSearchByScanner = false;
 
   public fullscreenDialogs$: Observable<boolean>;
-  
+
   constructor(
+    private destroy: DestroyRef,
     @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService,
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private masterDetailService: MasterdetailService,
     @Inject(TRANSLATOR) private translator: Translator) {
-    super();
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-          .pipe(takeUntil(this.destroy$))
-          .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => screenSize <= SCREEN_SIZE.SM)
+    );
 
     this.customizeColumns = this.customizeColumns.bind(this);
     this.onSearchByScannerCancel = this.onSearchByScannerCancel.bind(this);
   }
 
   ngOnInit(): void {
-    combineLatest([this.metaService.editorEntered$, this.metaService.editorValueChanged$, this.metaService.editFunction$, this.metaService.customFunctionAllowed$, this.metaService.entity$, this.metaService.displayName$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([editorEntered, editorValueChanged, editFunction, customFunctionAllowed, entity, displayName]) => {
-        if (editorEntered && editorValueChanged && customFunctionAllowed && entity && displayName) {
-          this.masterDetailService.entity$.next(entity);
-          this.displayName = displayName;
-          this.editAllowed = (item) => editFunction ? customFunctionAllowed(editFunction, item) : false;
-          this.editorEntered = editorEntered;
-          this.editorValueChanged = editorValueChanged;
-          this.initialized = true;
-        }
-      });
+    combineLatest([
+      this.metaService.editorEntered$,
+      this.metaService.editorValueChanged$,
+      this.metaService.editFunction$,
+      this.metaService.customFunctionAllowed$,
+      this.metaService.entity$,
+      this.metaService.displayName$]).pipe(
+        takeUntilDestroyed(this.destroy)
+    ).subscribe(([editorEntered, editorValueChanged, editFunction, customFunctionAllowed, entity, displayName]) => {
+      if (editorEntered && editorValueChanged && customFunctionAllowed && entity && displayName) {
+        this.masterDetailService.entity$.next(entity);
+        this.displayName = displayName;
+        this.editAllowed = (item) => editFunction ? customFunctionAllowed(editFunction, item) : false;
+        this.editorEntered = editorEntered;
+        this.editorValueChanged = editorValueChanged;
+        this.initialized = true;
+      }
+    });
   }
 
   public get style(): string {
@@ -133,7 +140,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
   public editingStart(e: EditingStartEvent) {
     e.cancel = !e.data || !this.editAllowed || !this.editAllowed(e.data);
-    
+
     if (!e.cancel && e.column) {
       const column = this.layout?.columns.find(c => c.dataMember === e.column?.dataField);
 
@@ -215,7 +222,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
   public toolbarPreparing(e: ToolbarPreparingEvent) {
 
-    if (this.searchByScanner && e.toolbarOptions?.items) { 
+    if (this.searchByScanner && e.toolbarOptions?.items) {
       e.toolbarOptions.items.unshift({
         locateInMenu: 'auto',
         location: 'after',
@@ -439,7 +446,7 @@ export class DatagridComponent extends WithDestroy() implements OnInit {
 
     });
 
-    e.cancel = true;  
+    e.cancel = true;
   }
 
   public onSelectAllClick() {

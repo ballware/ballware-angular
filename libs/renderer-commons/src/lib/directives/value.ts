@@ -1,9 +1,9 @@
 import { ValueType } from "@ballware/meta-model";
-import { EDIT_SERVICE, EditService } from "@ballware/meta-services";
-import { BehaviorSubject, Subject, combineLatest, takeUntil, withLatestFrom } from "rxjs";
-import { Directive, inject, OnInit } from "@angular/core";
-import { Destroy } from "./destroy";
+import { EDIT_SERVICE } from "@ballware/meta-services";
+import { BehaviorSubject, Subject, combineLatest, withLatestFrom } from "rxjs";
+import { DestroyRef, Directive, inject, OnInit } from '@angular/core';
 import { EditItemLivecycle } from "./edititemlivecycle";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   standalone: true
@@ -17,52 +17,49 @@ class Value<TValue> implements OnInit {
 
   public refreshValueTrigger$ = new Subject<void>();
 
-  private destroy: Destroy;
-  private livecicle: EditItemLivecycle;
-  private editService: EditService;
+  private livecycle = inject(EditItemLivecycle);
+  private editService = inject(EDIT_SERVICE);
 
-  constructor(private defaultValue: () => TValue) {
-    this.destroy = inject(Destroy);
-    this.livecicle = inject(EditItemLivecycle);
-    this.editService = inject(EDIT_SERVICE);
-  }
+  private destroy = inject(DestroyRef);
+
+  constructor(private defaultValue: () => TValue) {}
 
   ngOnInit(): void {
 
-    this.livecicle.registerOption('value', () => this.value, (value) => this.setValueWithoutNotification(value as TValue));
+    this.livecycle.registerOption('value', () => this.value, (value) => this.setValueWithoutNotification(value as TValue));
 
-    this.livecicle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((layoutItem) => {
-        if (layoutItem) {
-          this.dataMember$.next(layoutItem.options?.dataMember);
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      if (layoutItem) {
+        this.dataMember$.next(layoutItem.options?.dataMember);
 
-          this.refreshValueTrigger$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(withLatestFrom(this.editService.getValue$))
-            .subscribe(([, getValue]) => {
-              if (getValue && layoutItem?.options?.dataMember) {
-                this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
+        this.refreshValueTrigger$.pipe(
+          takeUntilDestroyed(this.destroy),
+          withLatestFrom(this.editService.getValue$)
+        ).subscribe(([, getValue]) => {
+          if (getValue && layoutItem?.options?.dataMember) {
+            this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
+          }
+        });
+
+        this.editService.getValue$.pipe(
+          takeUntilDestroyed(this.destroy)
+        ).subscribe((getValue) => {
+          if (getValue && layoutItem?.options?.dataMember) {
+            this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
+
+            combineLatest([this.editService.editorValueChanged$, this.notifyValueChange$]).pipe(
+              takeUntilDestroyed(this.destroy)
+            ).subscribe(([editorValueChanged]) => {
+              if (editorValueChanged && layoutItem?.options?.dataMember) {
+                editorValueChanged({ dataMember: layoutItem.options.dataMember, value: this.currentValue$.getValue() as ValueType, notify: true });
               }
             });
-
-          this.editService.getValue$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .subscribe((getValue) => {
-              if (getValue && layoutItem?.options?.dataMember) {
-                this.currentValue$.next(getValue({ dataMember: layoutItem?.options?.dataMember }) as TValue);
-
-                combineLatest([this.editService.editorValueChanged$, this.notifyValueChange$])
-                  .pipe(takeUntil(this.destroy.destroy$))
-                  .subscribe(([editorValueChanged]) => {
-                    if (editorValueChanged && layoutItem?.options?.dataMember) {
-                      editorValueChanged({ dataMember: layoutItem.options.dataMember, value: this.currentValue$.getValue() as ValueType, notify: true });
-                    }
-                  });
-              }
-            });
-        }
-      });
+          }
+        });
+      }
+    });
   }
 
   public refreshValue() {

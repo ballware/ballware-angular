@@ -3,7 +3,7 @@ import { DxDataGridComponent, DxToolbarModule, DxTreeListModule, DxValidatorModu
 import { Column } from "devextreme/ui/tree_list";
 import { CommonModule } from "@angular/common";
 import { EditLayoutJsonComponent } from "../json/json.component";
-import { Destroy, EditItemLivecycle, UnknownArrayValue, Readonly, Visible } from "@ballware/renderer-commons";
+import { EditItemLivecycle, UnknownArrayValue, Readonly, Visible } from "@ballware/renderer-commons";
 import { DetailCollectionEditing } from "../../directives";
 import { ValidationCallbackData } from "devextreme/common";
 import { I18NextModule } from "angular-i18next";
@@ -14,7 +14,7 @@ import { DetailDynamicColumnComponent } from "../../datacontainer";
     templateUrl: './detailtree.component.html',
     styleUrls: [],
     imports: [CommonModule, I18NextModule, DxToolbarModule, DxTreeListModule, DxValidatorModule, DetailDynamicColumnComponent, EditLayoutJsonComponent],
-    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing],
     standalone: true
 })
 export class EditLayoutDetailTreeComponent {
@@ -25,8 +25,7 @@ export class EditLayoutDetailTreeComponent {
       return this.editing.columns as Column[];
     }
 
-    constructor(        
-        public destroy: Destroy,
+    constructor(
         public livecycle: EditItemLivecycle,
         public readonly: Readonly,
         public value: UnknownArrayValue,
@@ -34,7 +33,7 @@ export class EditLayoutDetailTreeComponent {
         public editing: DetailCollectionEditing
       ) {
     }
-    
+
     public onGridValidateNotEditing(options: ValidationCallbackData) {
 
       if (this.grid?.instance.hasEditData()) {
@@ -44,6 +43,6 @@ export class EditLayoutDetailTreeComponent {
       }
 
       return !this.grid?.instance.hasEditData();
-    } 
+    }
 
 }

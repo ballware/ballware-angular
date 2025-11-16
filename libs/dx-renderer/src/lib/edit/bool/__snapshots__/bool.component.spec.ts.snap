@@ -2,7 +2,6 @@
 
 exports[`EditLayoutBoolComponent should create 1`] = `
 <ballware-edit-bool
-  destroy={[Function Destroy]}
   livecycle={[Function EditItemLivecycle]}
   readonly={[Function Readonly]}
   validation={[Function Validation]}

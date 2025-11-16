@@ -5,7 +5,7 @@ import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, TRANSLATOR } from '@ballware/meta-services';
 import { firstValueFrom } from 'rxjs';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
-import { Destroy, EditItemLivecycle } from '@ballware/renderer-commons';
+import { EditItemLivecycle } from '@ballware/renderer-commons';
 import { Validation } from './validation';
 import { Required } from './required';
 
@@ -14,7 +14,7 @@ import { Required } from './required';
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required],
   standalone: true
 })
 class EditValidationTestComponent {

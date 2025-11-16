@@ -1,15 +1,22 @@
-import { Component, Inject, Input, OnInit, TemplateRef } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnInit,
+  TemplateRef,
+} from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
 import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
 import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
-import { BehaviorSubject, Observable, Subject, combineLatest, map, takeUntil } from 'rxjs';
-import { createColumnConfiguration } from '../../utils/columns';
-import { DataSourceService } from '../../utils/datasource.service';
-import { WithDestroy } from '../../utils/withdestroy';
+import { BehaviorSubject, Observable, Subject, combineLatest, map } from 'rxjs';
+import { createColumnConfiguration } from '../../utils';
+import { DataSourceService } from '../../utils';
 import { DatagridComponent, DatagridSummary } from '../datagrid/datagrid.component';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 const createSummaryConfiguration = (gridLayout: GridLayout) => {
   return {
@@ -41,7 +48,7 @@ const createSummaryConfiguration = (gridLayout: GridLayout) => {
   imports: [CommonModule, DatagridComponent],
   standalone: true
 })
-export class EntitygridComponent extends WithDestroy() implements OnInit {
+export class EntitygridComponent implements OnInit {
 
   @Input() visible!: boolean|null;
   @Input() gridLayout?: GridLayout;
@@ -81,6 +88,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   }
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
@@ -88,40 +96,48 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
     @Inject(TRANSLATOR) private translator: Translator,
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
 
-    super();
-
     this.isMasterDetailExpandable = this.isMasterDetailExpandable.bind(this);
 
-    this.mode$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small'))));
+    this.mode$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')))
+    );
 
-    this.exportFileName$ = this.metaService.displayName$
-      .pipe(map((displayName) => `${displayName}_${moment().format('YYYYMMDD')}`));
+    this.exportFileName$ = this.metaService.displayName$.pipe(
+      map((displayName) => `${displayName}_${moment().format('YYYYMMDD')}`)
+    );
 
     this.headCustomFunctions$ = this.crudService.headCustomFunctions$;
 
-    this.showAdd$ = this.crudService.addMenuItems$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((addMenuItems) => (addMenuItems ?? []).length > 0));
+    this.showAdd$ = this.crudService.addMenuItems$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((addMenuItems) => (addMenuItems ?? []).length > 0)
+    );
 
-    this.showPrint$ = combineLatest([this.metaService.entityDocuments$, this._gridLayout$])
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map(([entityDocuments, gridLayout]) => (entityDocuments && gridLayout && gridLayout.allowMultiselect && entityDocuments.length > 0) ?? false));
+    this.showPrint$ = combineLatest([this.metaService.entityDocuments$, this._gridLayout$]).pipe(
+      takeUntilDestroyed(this.destroy),
+      map(([entityDocuments, gridLayout]) => (entityDocuments && gridLayout && gridLayout.allowMultiselect && entityDocuments.length > 0) ?? false)
+    );
 
-    this.showExport$ = this.crudService.exportMenuItems$
-      .pipe(map((exportMenuItems) => (exportMenuItems ?? []).length > 0));
+    this.showExport$ = this.crudService.exportMenuItems$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((exportMenuItems) => (exportMenuItems ?? []).length > 0)
+    );
 
-    this.showImport$ = this.crudService.importMenuItems$
-      .pipe(map((importMenuItems) => (importMenuItems ?? []).length > 0));
+    this.showImport$ = this.crudService.importMenuItems$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((importMenuItems) => (importMenuItems ?? []).length > 0)
+    );
 
-    this.showSearchScanner$ = this._gridLayout$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((gridLayout) => gridLayout?.allowSearchByBarcode ?? false));
+    this.showSearchScanner$ = this._gridLayout$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((gridLayout) => gridLayout?.allowSearchByBarcode ?? false)
+    );
 
-    this.editLayoutIdentifier$ = this._gridLayout$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((gridLayout) => gridLayout?.editLayout ?? gridLayout?.identifier ?? 'primary'));
+    this.editLayoutIdentifier$ = this._gridLayout$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((gridLayout) => gridLayout?.editLayout ?? gridLayout?.identifier ?? 'primary')
+    );
 
     this.columns$ = combineLatest([
       this.responsiveService.onResize$,
@@ -131,42 +147,45 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
       this.lookupService.lookups$,
       this.crudService.functionAllowed$,
       this.crudService.functionExecute$
-    ])
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
+    ]).pipe(
+      takeUntilDestroyed(this.destroy),
+      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
         (key, options) => this.translator(key, options),
         gridLayout?.columns ?? [],
         lookups,
-        headParams,        
+        headParams,
         (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')),
         'row',
         (button, data, target) => buttonClicked(button, editLayoutIdentifier, data, target),
-        buttonAllowed) : undefined));
+        buttonAllowed) : undefined)
+    );
 
-    this.summary$ = this._gridLayout$.pipe(map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined));
+    this.summary$ = this._gridLayout$.pipe(
+      map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined)
+    );
 
     this.dataSource$ = this.dataSourceService.dataSource$;
 
-    combineLatest([this.selectAddRequest$, this.editLayoutIdentifier$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([selectAddRequest, editLayoutIdentifier]) => {
-        if (selectAddRequest && editLayoutIdentifier) {
-          this.crudService.selectAdd({ target: selectAddRequest.target, defaultEditLayout: editLayoutIdentifier });
-        }
-      });
+    combineLatest([this.selectAddRequest$, this.editLayoutIdentifier$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([selectAddRequest, editLayoutIdentifier]) => {
+      if (selectAddRequest && editLayoutIdentifier) {
+        this.crudService.selectAdd({ target: selectAddRequest.target, defaultEditLayout: editLayoutIdentifier });
+      }
+    });
 
-    this.crudService.functionAllowed$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((functionAllowed) => {
-        this.functionAllowed = functionAllowed;
-      });
+    this.crudService.functionAllowed$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((functionAllowed) => {
+      this.functionAllowed = functionAllowed;
+    });
   }
 
   public onReloadClicked() {
     this.crudService.reload();
   }
 
-  public onCustomFunctionClicked(e: { items: Array<CrudItem>, target: Element, customFunction: EntityCustomFunction }) {    
+  public onCustomFunctionClicked(e: { items: Array<CrudItem>, target: Element, customFunction: EntityCustomFunction }) {
     this.crudService.customEdit({
       customFunction: e.customFunction,
       items: e.items
@@ -179,7 +198,7 @@ export class EntitygridComponent extends WithDestroy() implements OnInit {
   }
 
   public onPrintClicked(e: { items: Array<CrudItem>, target: Element }) {
-    this.crudService.selectPrint({ items: e.items, target: e.target });    
+    this.crudService.selectPrint({ items: e.items, target: e.target });
   }
 
   public onExportClicked(e: { items: Array<CrudItem>, target: Element }) {

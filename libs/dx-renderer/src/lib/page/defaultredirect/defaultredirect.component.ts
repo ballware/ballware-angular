@@ -1,10 +1,10 @@
 import {
   Component,
+  DestroyRef,
   HostBinding,
   Inject,
   Input,
   OnInit,
-  SimpleChanges,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -12,15 +12,13 @@ import {
   TenantService,
 } from '@ballware/meta-services';
 import { CommonModule } from '@angular/common';
-import { Destroy } from '@ballware/renderer-commons';
-import { takeUntil } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-default-redirect',
   templateUrl: './defaultredirect.component.html',
   styleUrls: [],
   imports: [CommonModule],
-  hostDirectives: [Destroy],
   standalone: true,
 })
 export class DefaultRedirectComponent implements OnInit {
@@ -31,12 +29,12 @@ export class DefaultRedirectComponent implements OnInit {
   constructor(
     private router: Router,
     @Inject(TENANT_SERVICE) private tenantService: TenantService,
-    private destroy: Destroy
+    private destroy: DestroyRef
   ) {}
 
   ngOnInit() {
     this.tenantService.navigationLayout$.pipe(
-      takeUntil(this.destroy.destroy$)
+      takeUntilDestroyed(this.destroy),
     ).subscribe(navigationLayout => {
       if (navigationLayout?.defaultUrl) {
         this.router.navigate([`/page/${navigationLayout.defaultUrl}`]);

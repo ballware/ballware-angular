@@ -1,4 +1,11 @@
-import { Component, Inject, Input, OnDestroy, OnInit, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { EditUtil, GridLayoutColumn } from "@ballware/meta-model";
 import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService, PickvalueCreator } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
@@ -7,13 +14,13 @@ import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_b
 import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/number_box";
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep, get, set } from "lodash";
-import { combineLatest, takeUntil } from "rxjs";
+import { combineLatest } from "rxjs";
 import { createLookupDataSource } from "../../utils";
-import { WithDestroy } from "../../utils/withdestroy";
 import { CommonModule } from "@angular/common";
 import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
 import { I18NextModule } from "angular-i18next";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-entity-dynamic-column',
@@ -22,7 +29,7 @@ import { I18NextModule } from "angular-i18next";
     imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
     standalone: true
 })
-export class EntityDynamicColumnComponent extends WithDestroy() implements OnInit, OnDestroy {
+export class EntityDynamicColumnComponent implements OnInit {
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
     @ViewChild('numberbox', { static: false }) numberbox?: DxNumberBoxComponent;
     @ViewChild('datebox', { static: false }) datebox?: DxDateBoxComponent;
@@ -46,9 +53,9 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
     onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
+        private destroy: DestroyRef,
         @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(META_SERVICE) private metaService: MetaService) {
-        super();
     }
 
     boolValue() {
@@ -112,74 +119,74 @@ export class EntityDynamicColumnComponent extends WithDestroy() implements OnIni
         combineLatest([
             this.lookupService.lookups$,
             this.lookupService.getGenericLookupByIdentifier$,
-            this.metaService.editorValueChanged$])
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(([lookups, getGenericLookupByIdentifier, editorValueChanged]) => {
-                if (lookups && getGenericLookupByIdentifier && editorValueChanged) {
-                    const preparedColumn = cloneDeep(this.column);
+            this.metaService.editorValueChanged$]).pipe(
+              takeUntilDestroyed(this.destroy)
+        ).subscribe(([lookups, getGenericLookupByIdentifier, editorValueChanged]) => {
+          if (lookups && getGenericLookupByIdentifier && editorValueChanged) {
+              const preparedColumn = cloneDeep(this.column);
 
-                    this.onValueChanged = (e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => {
+              this.onValueChanged = (e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => {
 
-                        const editUtil = {
-                            getEditorOption: (dataMember, option) => dataMember === this.dataMember ? this.getEditorOption(option) : undefined,
-                            setEditorOption: (dataMember, option, value) => dataMember === this.dataMember && this.setEditorOption(option, value),
-                            apply: () => console.warn('Apply in DynamicColumnComponent not implemented'),
-                            cancel: () => console.warn('Cancel in DynamicColumnComponent not implemented')
-                        } as EditUtil;
+                  const editUtil = {
+                      getEditorOption: (dataMember, option) => dataMember === this.dataMember ? this.getEditorOption(option) : undefined,
+                      setEditorOption: (dataMember, option, value) => dataMember === this.dataMember && this.setEditorOption(option, value),
+                      apply: () => console.warn('Apply in DynamicColumnComponent not implemented'),
+                      cancel: () => console.warn('Cancel in DynamicColumnComponent not implemented')
+                  } as EditUtil;
 
-                        set(this.item, this.dataMember, e.value);
-                        this.value = get(this.item, this.dataMember);
+                  set(this.item, this.dataMember, e.value);
+                  this.value = get(this.item, this.dataMember);
 
-                        editorValueChanged(!this.readonly ? EditModes.EDIT : EditModes.VIEW, this.item, editUtil, this.dataMember, e.value);
-                    };
+                  editorValueChanged(!this.readonly ? EditModes.EDIT : EditModes.VIEW, this.item, editUtil, this.dataMember, e.value);
+              };
 
-                    this.preparedColumn = preparedColumn;
-                    this.prepared = true;
+              this.preparedColumn = preparedColumn;
+              this.prepared = true;
 
-                    if (this.preparedColumn.type === 'staticmultilookup') {
-                        this.lookupDatasource = this.preparedColumn.items ??
-                            (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember)
-                                : (this.preparedColumn.lookupMember ? get(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
+              if (this.preparedColumn.type === 'staticmultilookup') {
+                  this.lookupDatasource = this.preparedColumn.items ??
+                      (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember)
+                          : (this.preparedColumn.lookupMember ? get(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
 
-                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
-                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
-                    } else if (this.preparedColumn.type === 'multilookup') {
-                        let lookup: LookupDescriptor|undefined = undefined;
+                  this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
+                  this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
+              } else if (this.preparedColumn.type === 'multilookup') {
+                  let lookup: LookupDescriptor|undefined = undefined;
 
-                        if (this.preparedColumn.lookup) {
-                            const foundLookup = lookups[this.preparedColumn.lookup];
+                  if (this.preparedColumn.lookup) {
+                      const foundLookup = lookups[this.preparedColumn.lookup];
 
-                            if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
-                                const dynamicLookupParam = (get(this.lookupParams, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
+                      if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
+                          const dynamicLookupParam = (get(this.lookupParams, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
 
-                                lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
-                            } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
-                                const dynamicPickvalueEntity = (get(this.lookupParams, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
-                                const dynamicPickvalueField = (get(this.lookupParams, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
+                          lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
+                      } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
+                          const dynamicPickvalueEntity = (get(this.lookupParams, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
+                          const dynamicPickvalueField = (get(this.lookupParams, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
 
-                                lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
-                            } else if (foundLookup as LookupDescriptor) {
-                                lookup = foundLookup as LookupDescriptor;
-                            }
+                          lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
+                      } else if (foundLookup as LookupDescriptor) {
+                          lookup = foundLookup as LookupDescriptor;
+                      }
 
-                            if (!lookup) {
-                                lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
-                            }
+                      if (!lookup) {
+                          lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
+                      }
 
-                            if (lookup) {
-                                this.lookupDatasource = createLookupDataSource(
-                                    (lookup.store as LookupStoreDescriptor).listFunc,
-                                    (lookup.store as LookupStoreDescriptor).byIdFunc
-                                );
+                      if (lookup) {
+                          this.lookupDatasource = createLookupDataSource(
+                              (lookup.store as LookupStoreDescriptor).listFunc,
+                              (lookup.store as LookupStoreDescriptor).byIdFunc
+                          );
 
-                                this.lookupValueExpr = this.preparedColumn.valueExpr ?? lookup.valueMember  ?? 'Id';
-                                this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? lookup.displayMember ?? 'Name';
-                            } else {
-                                this.lookupDatasource = undefined;
-                            }
-                        }
-                    }
-                }
-            });
+                          this.lookupValueExpr = this.preparedColumn.valueExpr ?? lookup.valueMember  ?? 'Id';
+                          this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? lookup.displayMember ?? 'Name';
+                      } else {
+                          this.lookupDatasource = undefined;
+                      }
+                  }
+              }
+          }
+      });
     }
 }

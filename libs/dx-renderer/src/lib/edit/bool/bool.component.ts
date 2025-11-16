@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DxCheckBoxModule, DxValidatorModule } from 'devextreme-angular';
-import { NullableBoolValue, Destroy, EditItemLivecycle, Readonly, Visible } from '@ballware/renderer-commons';
+import { NullableBoolValue, EditItemLivecycle, Readonly, Visible } from '@ballware/renderer-commons';
 import { Required, Validation } from '../../directives';
 
 @Component({
@@ -9,16 +9,15 @@ import { Required, Validation } from '../../directives';
   templateUrl: './bool.component.html',
   styleUrls: [],
   imports: [CommonModule, DxValidatorModule, DxCheckBoxModule],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableBoolValue, Readonly, Validation, Required, Visible],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableBoolValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
 export class EditLayoutBoolComponent {
   constructor(
-    public destroy: Destroy,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
     public value: NullableBoolValue,
-    public validation: Validation) {   
+    public validation: Validation) {
   }
 }

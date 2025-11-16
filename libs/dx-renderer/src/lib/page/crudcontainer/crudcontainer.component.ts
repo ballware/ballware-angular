@@ -1,14 +1,22 @@
-import { Component, forwardRef, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  forwardRef,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Provider,
+} from '@angular/core';
 import { CrudContainerOptions, PageLayoutItem } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudService, CrudServiceFactory, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE, PageService } from '@ballware/meta-services';
-import { takeUntil } from 'rxjs';
-import { DataSourceService } from '../../utils/datasource.service';
-import { WithDestroy } from '../../utils/withdestroy';
+import { DataSourceService } from '../../utils';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PageLayoutItemComponent } from '../layout/item.component';
 import { CrudActionsComponent } from '../../edit';
 import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page-crudcontainer',
@@ -45,11 +53,12 @@ import { Breadcrumb } from '@ballware/renderer-commons';
   hostDirectives: [ Breadcrumb ],
   standalone: true
 })
-export class PageLayoutCrudcontainerComponent extends WithDestroy() implements OnInit, OnDestroy {
+export class PageLayoutCrudcontainerComponent implements OnInit, OnDestroy {
 
   @Input() layoutItem?: PageLayoutItem;
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(PAGE_SERVICE) private pageService: PageService,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(META_SERVICE) private metaService: MetaService,
@@ -57,13 +66,11 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
     private breadcrumb: Breadcrumb,
     private datasourceService : DataSourceService) {
 
-    super();
-
-    this.pageService.customParam$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((customParam) => {
-        this.metaService.setInitialCustomParam(customParam);
-      });
+    this.pageService.customParam$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((customParam) => {
+      this.metaService.setInitialCustomParam(customParam);
+    });
   }
 
   ngOnInit(): void {
@@ -80,23 +87,20 @@ export class PageLayoutCrudcontainerComponent extends WithDestroy() implements O
       this.crudService.setIdentifier(this.breadcrumb.pathString);
     }
 
-    this.pageService.headParams$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((headParams) => {
-          if (headParams) {
-            this.metaService.setHeadParams({
-              ...(this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.params ?? {},
-              ...headParams
-            });
-          }
-      });
+    this.pageService.headParams$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((headParams) => {
+        if (headParams) {
+          this.metaService.setHeadParams({
+            ...(this.layoutItem?.options?.itemoptions as CrudContainerOptions)?.params ?? {},
+            ...headParams
+          });
+        }
+    });
 
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
-
-    this.datasourceService.ngOnDestroy();
+  ngOnDestroy(): void {
     this.crudService.ngOnDestroy();
     this.metaService.ngOnDestroy();
     this.lookupService.ngOnDestroy();

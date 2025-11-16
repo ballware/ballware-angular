@@ -1,15 +1,15 @@
-import { Component, Inject } from '@angular/core';
+import { Component, DestroyRef, Inject } from '@angular/core';
 import { LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, PAGE_SERVICE, PageService, ToolbarItemRef, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { ClickEvent as ButtonClickEvent, InitializedEvent as ButtonInitializedEvent } from 'devextreme/ui/button';
 import { InitializedEvent as DateBoxInitializedEvent, ValueChangedEvent as DateBoxValueChangedEvent } from 'devextreme/ui/date_box';
 import { ButtonClickEvent as DropDownButtonClickEvent, InitializedEvent as DropDownButtonInitializedEvent, ItemClickEvent as DropDownButtonItemClickEvent } from 'devextreme/ui/drop_down_button';
 import { InitializedEvent as SelectBoxInitializedEvent, ValueChangedEvent as SelectBoxValueChangedEvent } from 'devextreme/ui/select_box';
 import { InitializedEvent as TagBoxInitializedEvent, ValueChangedEvent as TagBoxValueChangedEvent } from 'devextreme/ui/tag_box';
-import { combineLatest, takeUntil } from 'rxjs';
-import { createLookupDataSource } from '../../utils/datasource';
-import { WithDestroy } from '../../utils/withdestroy';
+import { combineLatest } from 'rxjs';
+import { createLookupDataSource } from '../../utils';
 import { CommonModule } from '@angular/common';
 import { DxToolbarModule } from 'devextreme-angular';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-toolbar',
@@ -18,9 +18,9 @@ import { DxToolbarModule } from 'devextreme-angular';
   imports: [CommonModule, DxToolbarModule],
   standalone: true
 })
-export class ToolbarComponent extends WithDestroy() {
+export class ToolbarComponent {
 
-  public toolbarItems: Array<{ 
+  public toolbarItems: Array<{
     location: string,
     locateInMenu: string,
     widget?: string,
@@ -29,95 +29,62 @@ export class ToolbarComponent extends WithDestroy() {
   }> = [];
 
   constructor(
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService, 
-    @Inject(PAGE_SERVICE) private pageService: PageService, 
+    private destroy: DestroyRef,
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+    @Inject(PAGE_SERVICE) private pageService: PageService,
     @Inject(TRANSLATOR) private translator: Translator) {
-    super();
 
-    combineLatest([this.pageService.layout$, this.lookupService.lookups$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([layout, lookups]) => {
-        this.toolbarItems = [];
+    combineLatest([this.pageService.layout$, this.lookupService.lookups$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([layout, lookups]) => {
+      this.toolbarItems = [];
 
-        const createLookup = (identifier: string|undefined) => {
-          const myLookup = identifier && lookups ? (lookups[identifier] as LookupDescriptor) : undefined;
+      const createLookup = (identifier: string|undefined) => {
+        const myLookup = identifier && lookups ? (lookups[identifier] as LookupDescriptor) : undefined;
 
-          return myLookup;          
+        return myLookup;
+      }
+
+      const createDataSource = (lookup: LookupDescriptor|undefined) => {
+
+        if (lookup) {
+          return createLookupDataSource(
+              () => (lookup.store as LookupStoreDescriptor).listFunc(),
+              (id) => (lookup.store as LookupStoreDescriptor).byIdFunc(id)
+            );
         }
 
-        const createDataSource = (lookup: LookupDescriptor|undefined) => {
+        return undefined;
+      }
 
-          if (lookup) {
-            return createLookupDataSource(
-                () => (lookup.store as LookupStoreDescriptor).listFunc(),
-                (id) => (lookup.store as LookupStoreDescriptor).byIdFunc(id)
-              );
-          }
+      layout?.toolbaritems?.forEach(toolbarItem => {
+        switch (toolbarItem.type) {
+          case 'lookup': {
+              const lookup = createLookup(toolbarItem.lookup);
+              const dataSource = createDataSource(lookup);
 
-          return undefined;
-        }
-
-        layout?.toolbaritems?.forEach(toolbarItem => {
-          switch (toolbarItem.type) {
-            case 'lookup': {
-                const lookup = createLookup(toolbarItem.lookup);
-                const dataSource = createDataSource(lookup);
-
-                this.toolbarItems.push({
-                  location: "before",
-                  locateInMenu: "auto",
-                  widget: 'dxSelectBox',
-                  options: {
-                    label: toolbarItem.caption ?? '',
-                    width: toolbarItem.width ?? '400px',                  
-                    dataSource: dataSource,
-                    searchEnabled: true,
-                    showClearButton: true,
-                    showDropDownButton: true,
-                    displayExpr: lookup?.displayMember,
-                    valueExpr: lookup?.valueMember ?? '',                  
-                    onInitialized: (e: SelectBoxInitializedEvent) => {
-                      if (toolbarItem.name) {
-                        const toolbarItemRef = {
-                          getOption: (option) => e.component?.option(option),
-                          setOption: (option, value) => e.component?.option(option, value)
-                        } as ToolbarItemRef;                    
-
-                        this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                      }                    
-                    },
-                    onValueChanged: (e: SelectBoxValueChangedEvent) => {
-                      if (toolbarItem.name) {
-                        this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
-                      }
-                    }
-                  }
-                });
-              }
-              break;
-            case 'staticlookup':
               this.toolbarItems.push({
                 location: "before",
                 locateInMenu: "auto",
                 widget: 'dxSelectBox',
                 options: {
                   label: toolbarItem.caption ?? '',
-                  width: toolbarItem.width ?? 'auto',
+                  width: toolbarItem.width ?? '400px',
+                  dataSource: dataSource,
                   searchEnabled: true,
-                  showClearButton: true,                  
+                  showClearButton: true,
                   showDropDownButton: true,
-                  dataSource: toolbarItem.options['items'] as any[],
-                  displayExpr: toolbarItem.options['displayExpr'] ?? 'text',
-                  valueExpr: toolbarItem.options['valueExpr'] ?? 'value',
+                  displayExpr: lookup?.displayMember,
+                  valueExpr: lookup?.valueMember ?? '',
                   onInitialized: (e: SelectBoxInitializedEvent) => {
                     if (toolbarItem.name) {
                       const toolbarItemRef = {
                         getOption: (option) => e.component?.option(option),
                         setOption: (option, value) => e.component?.option(option, value)
-                      } as ToolbarItemRef;                    
+                      } as ToolbarItemRef;
 
                       this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                    }                    
+                    }
                   },
                   onValueChanged: (e: SelectBoxValueChangedEvent) => {
                     if (toolbarItem.name) {
@@ -126,174 +93,207 @@ export class ToolbarComponent extends WithDestroy() {
                   }
                 }
               });
-              break;              
-            case 'multilookup': {
-                const lookup = createLookup(toolbarItem.lookup);
-                const dataSource = createDataSource(lookup);
+            }
+            break;
+          case 'staticlookup':
+            this.toolbarItems.push({
+              location: "before",
+              locateInMenu: "auto",
+              widget: 'dxSelectBox',
+              options: {
+                label: toolbarItem.caption ?? '',
+                width: toolbarItem.width ?? 'auto',
+                searchEnabled: true,
+                showClearButton: true,
+                showDropDownButton: true,
+                dataSource: toolbarItem.options['items'] as any[],
+                displayExpr: toolbarItem.options['displayExpr'] ?? 'text',
+                valueExpr: toolbarItem.options['valueExpr'] ?? 'value',
+                onInitialized: (e: SelectBoxInitializedEvent) => {
+                  if (toolbarItem.name) {
+                    const toolbarItemRef = {
+                      getOption: (option) => e.component?.option(option),
+                      setOption: (option, value) => e.component?.option(option, value)
+                    } as ToolbarItemRef;
 
-                this.toolbarItems.push({
-                  location: "before",
-                  locateInMenu: "auto",
-                  widget: 'dxTagBox',
-                  options: {
-                    label: toolbarItem.caption ?? '',
-                    width: toolbarItem.width ?? '400px',                  
-                    dataSource: dataSource,
-                    searchEnabled: true,
-                    showClearButton: true,
-                    showDropDownButton: true,
-                    showSelectionControls: true,
-                    multiline: false,
-                    maxDisplayedTags: 3,
-                    displayExpr: lookup?.displayMember,
-                    valueExpr: lookup?.valueMember ?? '',   
-                    onInitialized: (e: TagBoxInitializedEvent) => {
-                      if (toolbarItem.name) {
-                        const toolbarItemRef = {
-                          getOption: (option) => e.component?.option(option),
-                          setOption: (option, value) => e.component?.option(option, value)
-                        } as ToolbarItemRef;                    
-  
-                        this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                      }                    
-                    },
-                    onValueChanged: (e: TagBoxValueChangedEvent) => {
-                      if (toolbarItem.name) {
-                        this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
-                      }
-                    }
+                    this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
                   }
-                });
-              }              
-              break;
-            case 'staticmultilookup': {
-                this.toolbarItems.push({
-                  location: "before",
-                  locateInMenu: "auto",
-                  widget: 'dxTagBox',
-                  options: {
-                    label: toolbarItem.caption ?? '',
-                    width: toolbarItem.width ?? '400px', 
-                    searchEnabled: true,
-                    showClearButton: true,
-                    showDropDownButton: true,
-                    showSelectionControls: true,
-                    multiline: false,
-                    maxDisplayedTags: 3,
-                    dataSource: toolbarItem.options['items'] as any[],
-                    displayExpr: toolbarItem.options['displayExpr'] ?? 'text',
-                    valueExpr: toolbarItem.options['valueExpr'] ?? 'value',
-                    onInitialized: (e: TagBoxInitializedEvent) => {
-                      if (toolbarItem.name) {
-                        const toolbarItemRef = {
-                          getOption: (option) => e.component?.option(option),
-                          setOption: (option, value) => e.component?.option(option, value)
-                        } as ToolbarItemRef;                    
-  
-                        this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                      }                    
-                    },
-                    onValueChanged: (e: TagBoxValueChangedEvent) => {
-                      if (toolbarItem.name) {
-                        this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
-                      }
-                    }
+                },
+                onValueChanged: (e: SelectBoxValueChangedEvent) => {
+                  if (toolbarItem.name) {
+                    this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
                   }
-                });
-              }              
-              break;                            
-            case 'datetime':
+                }
+              }
+            });
+            break;
+          case 'multilookup': {
+              const lookup = createLookup(toolbarItem.lookup);
+              const dataSource = createDataSource(lookup);
+
               this.toolbarItems.push({
                 location: "before",
                 locateInMenu: "auto",
-                widget: 'dxDateBox',
+                widget: 'dxTagBox',
                 options: {
                   label: toolbarItem.caption ?? '',
-                  width: toolbarItem.width ?? '220px',
-                  type: "datetime",
-                  displayFormat: this.translator('format.datetime'),
-                  hint: toolbarItem.caption,
-                  onInitialized: (e: DateBoxInitializedEvent) => {
+                  width: toolbarItem.width ?? '400px',
+                  dataSource: dataSource,
+                  searchEnabled: true,
+                  showClearButton: true,
+                  showDropDownButton: true,
+                  showSelectionControls: true,
+                  multiline: false,
+                  maxDisplayedTags: 3,
+                  displayExpr: lookup?.displayMember,
+                  valueExpr: lookup?.valueMember ?? '',
+                  onInitialized: (e: TagBoxInitializedEvent) => {
                     if (toolbarItem.name) {
                       const toolbarItemRef = {
                         getOption: (option) => e.component?.option(option),
                         setOption: (option, value) => e.component?.option(option, value)
-                      } as ToolbarItemRef;                    
+                      } as ToolbarItemRef;
 
                       this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                    }                    
+                    }
                   },
-                  onValueChanged: (e: DateBoxValueChangedEvent) => {
+                  onValueChanged: (e: TagBoxValueChangedEvent) => {
                     if (toolbarItem.name) {
                       this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
                     }
                   }
                 }
               });
-              break;
-            case 'dropdownbutton':
+            }
+            break;
+          case 'staticmultilookup': {
               this.toolbarItems.push({
                 location: "before",
                 locateInMenu: "auto",
-                widget: 'dxDropDownButton',
+                widget: 'dxTagBox',
                 options: {
-                  width: toolbarItem.width ?? '180px',
-                  text: toolbarItem.caption ?? '', 
-                  keyExpr: "id",
-                  displayExpr: "text",
-                  splitButton: true,
+                  label: toolbarItem.caption ?? '',
+                  width: toolbarItem.width ?? '400px',
+                  searchEnabled: true,
+                  showClearButton: true,
+                  showDropDownButton: true,
+                  showSelectionControls: true,
+                  multiline: false,
+                  maxDisplayedTags: 3,
                   dataSource: toolbarItem.options['items'] as any[],
-                  onInitialized: (e: DropDownButtonInitializedEvent) => {
+                  displayExpr: toolbarItem.options['displayExpr'] ?? 'text',
+                  valueExpr: toolbarItem.options['valueExpr'] ?? 'value',
+                  onInitialized: (e: TagBoxInitializedEvent) => {
                     if (toolbarItem.name) {
                       const toolbarItemRef = {
                         getOption: (option) => e.component?.option(option),
                         setOption: (option, value) => e.component?.option(option, value)
-                      } as ToolbarItemRef;                    
+                      } as ToolbarItemRef;
 
                       this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                    }                    
-                  },    
-                  onButtonClick: (e: DropDownButtonClickEvent) => {
-                    if (toolbarItem.name) {
-                      this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: undefined });
                     }
-                  },             
-                  onItemClick: (e: DropDownButtonItemClickEvent) => {
-                    if (toolbarItem.name) {
-                      this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: e.itemData['id'] });
-                    }
-                  }
-                }
-              });
-              break;            
-            case 'button':
-              this.toolbarItems.push({
-                location: "before",
-                locateInMenu: "auto",
-                widget: 'dxButton',
-                options: {
-                  width: toolbarItem.width ?? 'auto',
-                  text: toolbarItem.caption ?? '',                   
-                  onInitialized: (e: ButtonInitializedEvent) => {
-                    if (toolbarItem.name) {
-                      const toolbarItemRef = {
-                        getOption: (option) => e.component?.option(option),
-                        setOption: (option, value) => e.component?.option(option, value)
-                      } as ToolbarItemRef;                    
-
-                      this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
-                    }                    
                   },
-                  onClick: (e: ButtonClickEvent) => {
+                  onValueChanged: (e: TagBoxValueChangedEvent) => {
                     if (toolbarItem.name) {
-                      this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click' });
+                      this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
                     }
                   }
                 }
               });
-              break;                
-          }
-        });
+            }
+            break;
+          case 'datetime':
+            this.toolbarItems.push({
+              location: "before",
+              locateInMenu: "auto",
+              widget: 'dxDateBox',
+              options: {
+                label: toolbarItem.caption ?? '',
+                width: toolbarItem.width ?? '220px',
+                type: "datetime",
+                displayFormat: this.translator('format.datetime'),
+                hint: toolbarItem.caption,
+                onInitialized: (e: DateBoxInitializedEvent) => {
+                  if (toolbarItem.name) {
+                    const toolbarItemRef = {
+                      getOption: (option) => e.component?.option(option),
+                      setOption: (option, value) => e.component?.option(option, value)
+                    } as ToolbarItemRef;
+
+                    this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
+                  }
+                },
+                onValueChanged: (e: DateBoxValueChangedEvent) => {
+                  if (toolbarItem.name) {
+                    this.pageService.paramEditorValueChanged({ name: toolbarItem.name, value: e.value });
+                  }
+                }
+              }
+            });
+            break;
+          case 'dropdownbutton':
+            this.toolbarItems.push({
+              location: "before",
+              locateInMenu: "auto",
+              widget: 'dxDropDownButton',
+              options: {
+                width: toolbarItem.width ?? '180px',
+                text: toolbarItem.caption ?? '',
+                keyExpr: "id",
+                displayExpr: "text",
+                splitButton: true,
+                dataSource: toolbarItem.options['items'] as any[],
+                onInitialized: (e: DropDownButtonInitializedEvent) => {
+                  if (toolbarItem.name) {
+                    const toolbarItemRef = {
+                      getOption: (option) => e.component?.option(option),
+                      setOption: (option, value) => e.component?.option(option, value)
+                    } as ToolbarItemRef;
+
+                    this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
+                  }
+                },
+                onButtonClick: (e: DropDownButtonClickEvent) => {
+                  if (toolbarItem.name) {
+                    this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: undefined });
+                  }
+                },
+                onItemClick: (e: DropDownButtonItemClickEvent) => {
+                  if (toolbarItem.name) {
+                    this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click', param: e.itemData['id'] });
+                  }
+                }
+              }
+            });
+            break;
+          case 'button':
+            this.toolbarItems.push({
+              location: "before",
+              locateInMenu: "auto",
+              widget: 'dxButton',
+              options: {
+                width: toolbarItem.width ?? 'auto',
+                text: toolbarItem.caption ?? '',
+                onInitialized: (e: ButtonInitializedEvent) => {
+                  if (toolbarItem.name) {
+                    const toolbarItemRef = {
+                      getOption: (option) => e.component?.option(option),
+                      setOption: (option, value) => e.component?.option(option, value)
+                    } as ToolbarItemRef;
+
+                    this.pageService.paramEditorInitialized({ name: toolbarItem.name, item: toolbarItemRef });
+                  }
+                },
+                onClick: (e: ButtonClickEvent) => {
+                  if (toolbarItem.name) {
+                    this.pageService.paramEditorEvent({ name: toolbarItem.name, event: 'click' });
+                  }
+                }
+              }
+            });
+            break;
+        }
       });
+    });
   }
 }

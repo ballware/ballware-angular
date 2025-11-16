@@ -2,7 +2,6 @@
 
 exports[`EditLayoutButtonComponent should create 1`] = `
 <ballware-edit-button
-  destroy={[Function Destroy]}
   livecycle={[Function EditItemLivecycle]}
   readonly={[Function Readonly]}
   visible={[Function Visible]}

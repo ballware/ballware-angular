@@ -2,7 +2,7 @@
 
 exports[`EditLayoutNumberComponent should create 1`] = `
 <ballware-edit-number
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   livecycle={[Function EditItemLivecycle]}
   options={[Function Object]}
   readonly={[Function Readonly]}

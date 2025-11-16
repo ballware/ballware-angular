@@ -1,20 +1,27 @@
-import { Component, Inject, OnDestroy, OnInit, Provider } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Provider,
+} from '@angular/core';
 import { CrudItem, } from "@ballware/meta-model";
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
-import { Observable, from, map, of, switchMap, takeUntil, withLatestFrom } from "rxjs";
-import { createArrayDatasource } from "../../utils/datasource";
+import { Observable, from, map, of, switchMap, withLatestFrom } from "rxjs";
+import { createArrayDatasource } from '../../utils';
 import { DxDataGridModule, DxFileUploaderModule, DxPopupModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
 import { I18NextModule } from "angular-i18next";
 import {
   Breadcrumb,
-  Destroy,
   EditItemLivecycle,
   Readonly,
   Visible,
 } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-edit-attachments',
@@ -28,7 +35,7 @@ import {
         } as Provider,
     ],
     imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule, Breadcrumb],
-    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
     standalone: true
   })
   export class EditLayoutAttachmentsComponent implements OnInit, OnDestroy {
@@ -43,7 +50,7 @@ import {
         @Inject(EDIT_SERVICE) private editService: EditService,
         @Inject(TRANSLATOR) private translator: Translator,
         private breadcrumb: Breadcrumb,
-        public destroy: Destroy,
+        public destroy: DestroyRef,
         public livecycle: EditItemLivecycle,
         public readonly: Readonly,
         public visible: Visible,
@@ -53,13 +60,14 @@ import {
 
         this.fileUpload = this.fileUpload.bind(this);
 
-        this.dataSource$ = this.attachmentService.items$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems)) : of(undefined)));
+        this.dataSource$ = this.attachmentService.items$.pipe(
+            takeUntilDestroyed(this.destroy),
+            switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems)) : of(undefined))
+        );
 
-        this.optionButtons$ = this.readonly.readonly$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(map((readonly) => [
+        this.optionButtons$ = this.readonly.readonly$.pipe(
+            takeUntilDestroyed(this.destroy),
+            map((readonly) => [
                 {
                     hint: this.translator('attachment.actions.view'),
                     icon: 'bi bi-eye-fill',
@@ -71,7 +79,8 @@ import {
                     onClick: (e: any) => this.fileDelete(e.row.data),
                     visible: !readonly
                 }
-            ]))
+            ])
+        )
     }
 
     ngOnInit(): void {
@@ -80,22 +89,22 @@ import {
 
         this.attachmentService.setIdentifier(this.breadcrumb.pathString);
 
-        this.editService.item$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .pipe(withLatestFrom(this.editService.entity$))
-            .subscribe(([item, entity]) => {
-                if (item && entity) {
-                    this.attachmentService.setEntity(entity);
-                    this.attachmentService.setOwner((item as CrudItem).Id);
-                    this.attachmentService.fetch();
-                }
-            });
+        this.editService.item$.pipe(
+            takeUntilDestroyed(this.destroy),
+            withLatestFrom(this.editService.entity$)
+        ).subscribe(([item, entity]) => {
+            if (item && entity) {
+                this.attachmentService.setEntity(entity);
+                this.attachmentService.setOwner((item as CrudItem).Id);
+                this.attachmentService.fetch();
+            }
+        });
 
-        this.attachmentService.removeDialog$
-            .pipe(takeUntil(this.destroy.destroy$))
-            .subscribe((removeDialog) => {
-                this.removeDialog = removeDialog;
-            })
+        this.attachmentService.removeDialog$.pipe(
+            takeUntilDestroyed(this.destroy)
+        ).subscribe((removeDialog) => {
+            this.removeDialog = removeDialog;
+        })
     }
 
     ngOnDestroy(): void {

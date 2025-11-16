@@ -1,43 +1,52 @@
 import { CommonModule } from "@angular/common";
-import { Component, EventEmitter, Inject, Input, OnChanges, OnDestroy, Output, SimpleChanges, ViewChild } from "@angular/core";
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { ValueType } from "@ballware/meta-model";
 import { INTERACTION_SERVICE, InteractionService } from "@ballware/meta-services";
-import { Destroy } from "@ballware/renderer-commons";
 import { BarcodeFormat, Result } from "@zxing/library";
 import { ZXingScannerComponent, ZXingScannerModule } from "@zxing/ngx-scanner";
 import { I18NextModule } from "angular-i18next";
 import { DxButtonModule, DxSelectBoxModule, DxToolbarModule } from "devextreme-angular";
-import { takeUntil } from "rxjs";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-barcodescanner',
     templateUrl: './barcodescanner.component.html',
     styleUrls: ['./barcodescanner.component.scss'],
     imports: [CommonModule, I18NextModule, DxToolbarModule, DxSelectBoxModule, DxButtonModule, ZXingScannerModule],
-    hostDirectives: [Destroy],
     standalone: true
 })
 export class BarcodeScannerComponent implements OnDestroy, OnChanges {
-    
+
     @ViewChild('scanner', { static: false }) scanner?: ZXingScannerComponent;
 
     @Input() enabled!: boolean;
     @Input() width: string|undefined;
     @Input() height: string|undefined;
-    
+
     @Output() valueChange = new EventEmitter<ValueType>();
 
-    constructor(@Inject(INTERACTION_SERVICE) private readonly interactionService: InteractionService, destroy: Destroy) {
-        this.interactionService.keyboardLine$
-            .pipe(takeUntil(destroy.destroy$))
-            .subscribe((result) => {
-                if (result) {
-                    console.debug(`onKeyboardLine: ${result}`);
-                    this.valueChange.emit(result);
-                }
-            });
+    constructor(@Inject(INTERACTION_SERVICE) private readonly interactionService: InteractionService, private destroy: DestroyRef) {
+        this.interactionService.keyboardLine$.pipe(
+            takeUntilDestroyed(this.destroy)
+        ).subscribe((result) => {
+            if (result) {
+                console.debug(`onKeyboardLine: ${result}`);
+                this.valueChange.emit(result);
+            }
+        });
     }
-    
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['enabled']) {
             this.enabled = changes['enabled'].currentValue;
@@ -59,19 +68,19 @@ export class BarcodeScannerComponent implements OnDestroy, OnChanges {
     public autofocusEnabled = false;
 
     public allowedFormats = [
-        BarcodeFormat.AZTEC, 
-        BarcodeFormat.CODABAR,        
+        BarcodeFormat.AZTEC,
+        BarcodeFormat.CODABAR,
         BarcodeFormat.CODE_39,
         BarcodeFormat.CODE_93,
-        BarcodeFormat.CODE_128,        
+        BarcodeFormat.CODE_128,
         BarcodeFormat.DATA_MATRIX,
         BarcodeFormat.EAN_8,
-        BarcodeFormat.EAN_13,        
+        BarcodeFormat.EAN_13,
         BarcodeFormat.ITF,
         BarcodeFormat.MAXICODE,
         BarcodeFormat.PDF_417,
-        BarcodeFormat.QR_CODE, 
-        BarcodeFormat.RSS_14, 
+        BarcodeFormat.QR_CODE,
+        BarcodeFormat.RSS_14,
         BarcodeFormat.RSS_EXPANDED,
         BarcodeFormat.UPC_A,
         BarcodeFormat.UPC_E,
@@ -81,14 +90,14 @@ export class BarcodeScannerComponent implements OnDestroy, OnChanges {
     public onTorchCompatible(value: boolean) {
         console.debug(`onTorchCompatible: ${value}`);
         this.torchCompatible = value;
-        this.torchEnabled = false;        
+        this.torchEnabled = false;
     }
 
-    public onTorchClicked() {        
+    public onTorchClicked() {
         this.torchEnabled = !this.torchEnabled;
     }
 
-    public onAutofocusClicked() {        
+    public onAutofocusClicked() {
         this.autofocusEnabled = !this.autofocusEnabled;
     }
 
@@ -106,7 +115,7 @@ export class BarcodeScannerComponent implements OnDestroy, OnChanges {
             this.activeDevice = device;
         }
     }
-    
+
     public onScanError(error: Error) {
         console.debug(`onScanError: ${error}`);
     }

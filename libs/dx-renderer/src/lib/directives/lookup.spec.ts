@@ -1,21 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Component, Inject, OnInit, Provider } from '@angular/core';
+import { Component, DestroyRef, Inject, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
-import { BehaviorSubject, firstValueFrom, Subject, takeUntil } from 'rxjs';
-import { Destroy, EditItemLivecycle } from '@ballware/renderer-commons';
+import { BehaviorSubject, firstValueFrom, Subject } from 'rxjs';
+import { EditItemLivecycle } from '@ballware/renderer-commons';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { Lookup } from './lookup';
 import { mockedLookupServiceContext } from '../../test/lookupservice.spec';
 import { Mock } from 'moq.ts';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-edit-lookup-test',
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Lookup],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Lookup],
   standalone: true
 })
 class EditLookupTestComponent implements OnInit {
@@ -23,7 +24,7 @@ class EditLookupTestComponent implements OnInit {
   public lookupItems$: Subject<Record<string, unknown>[]> = new Subject<Record<string, unknown>[]>();
 
   constructor(
-    private destroy: Destroy,
+    private destroy: DestroyRef,
     private lookup: Lookup,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService,
@@ -32,14 +33,14 @@ class EditLookupTestComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.lookup.dataSource$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((dataSource) => {
-        dataSource?.load()
-          .then(() => {
-            this.lookupItems$.next(dataSource?.items() as Record<string, unknown>[]);
-          });
-      });
+    this.lookup.dataSource$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((dataSource) => {
+      dataSource?.load()
+        .then(() => {
+          this.lookupItems$.next(dataSource?.items() as Record<string, unknown>[]);
+        });
+    });
   }
 }
 

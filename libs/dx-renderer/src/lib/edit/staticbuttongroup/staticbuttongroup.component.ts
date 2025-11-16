@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { Item } from 'devextreme/ui/button_group';
-import { takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { DxButtonGroupModule } from 'devextreme-angular';
-import { Destroy, EditItemLivecycle, NullableStringValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { EditItemLivecycle, NullableStringValue, Readonly, Visible } from '@ballware/renderer-commons';
 import { Validation, Required, Lookup } from '../../directives';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface KeyedButtonGroupItem extends Item {
   key: string;
@@ -15,11 +15,11 @@ interface KeyedButtonGroupItem extends Item {
   templateUrl: './staticbuttongroup.component.html',
   styleUrls: [],
   imports: [CommonModule, DxButtonGroupModule],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup],
   standalone: true
 })
 export class EditLayoutStaticButtonGroupComponent implements OnInit {
-  
+
   public items: KeyedButtonGroupItem[]|undefined;
 
   private _selectedItemKeys: string[] = [];
@@ -38,7 +38,7 @@ export class EditLayoutStaticButtonGroupComponent implements OnInit {
   }
 
   constructor(
-    public destroy: Destroy,
+    private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
@@ -48,24 +48,22 @@ export class EditLayoutStaticButtonGroupComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.lookup.dataSource$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((dataSource) => {
-        dataSource?.on('changed', () => {
-          this.items = dataSource?.items().map(item => ({
-            key: this.lookup.getLookupItemKeyValue(item),
-            text: this.lookup.getLookupItemDisplayValue(item),
-            hint: this.lookup.hasLookupItemHint ? this.lookup.getLookupItemHintValue(item) : undefined                                
-          } as KeyedButtonGroupItem)) ?? [];
-    
-          if (!this.selectedItemKeys.length && this.items.length) {
-            this.selectedItemKeys = [this.items[0].key];
-          }
-        });
-    
-        dataSource?.load();
-      });
-    
+    this.lookup.dataSource$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((dataSource) => {
+      dataSource?.on('changed', () => {
+        this.items = dataSource?.items().map(item => ({
+          key: this.lookup.getLookupItemKeyValue(item),
+          text: this.lookup.getLookupItemDisplayValue(item),
+          hint: this.lookup.hasLookupItemHint ? this.lookup.getLookupItemHintValue(item) : undefined
+        } as KeyedButtonGroupItem)) ?? [];
 
+        if (!this.selectedItemKeys.length && this.items.length) {
+          this.selectedItemKeys = [this.items[0].key];
+        }
+      });
+
+      dataSource?.load();
+    });
   }
 }

@@ -1,10 +1,9 @@
-import { Component, forwardRef, HostBinding, Inject } from '@angular/core';
+import { Component, DestroyRef, forwardRef, HostBinding, Inject } from '@angular/core';
 import { PageLayout } from '@ballware/meta-model';
 import { PAGE_SERVICE, PageService } from '@ballware/meta-services';
-import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
 import { PageLayoutItemComponent } from './item.component';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page-layout',
@@ -13,18 +12,19 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, forwardRef(() => PageLayoutItemComponent)],
   standalone: true
 })
-export class PageLayoutComponent extends WithDestroy() {
+export class PageLayoutComponent {
   @HostBinding('class') classes = 'flex-fill overflow-hidden row-cols-xs-1 row-cols-lg-12';
 
   public layout?: PageLayout;
 
-  constructor(@Inject(PAGE_SERVICE) private pageService: PageService) {
-    super();
-
-    this.pageService.layout$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((layout) => {
-        this.layout = layout;
-      });
+  constructor(
+    private destroy: DestroyRef,
+    @Inject(PAGE_SERVICE) private pageService: PageService
+  ) {
+    this.pageService.layout$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layout) => {
+      this.layout = layout;
+    });
   }
 }

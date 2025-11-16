@@ -1,9 +1,9 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, DestroyRef, Inject, ViewChild } from '@angular/core';
 import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { DxContextMenuComponent, DxContextMenuModule } from 'devextreme-angular';
-import { Observable, combineLatest, map, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { Observable, combineLatest, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-application-account-menu',
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, DxContextMenuModule],
   standalone: true
 })
-export class ApplicationAccountMenuComponent extends WithDestroy() {
+export class ApplicationAccountMenuComponent {
 
   @ViewChild('accountMenu', { static: false }) accountMenu?: DxContextMenuComponent;
 
@@ -23,62 +23,62 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
   userMenuItems: Record<string, unknown>[] = [];
 
   constructor(
-    @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
+    private destroy: DestroyRef,
+    @Inject(IDENTITY_SERVICE) private identityService: IdentityService,
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
     @Inject(TRANSLATOR) private translator: Translator) {
-    super();
 
-    combineLatest([this.identityService.accessTokenAutoRefresh$, this.identityService.userName$, this.identityService.allowedTenants$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([autoRefresh, userName, allowedTenants]) => {
+    combineLatest([this.identityService.accessTokenAutoRefresh$, this.identityService.userName$, this.identityService.allowedTenants$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([autoRefresh, userName, allowedTenants]) => {
 
-        const userMenuItems: Record<string, unknown>[] = [];
-        
-        if (userName) {
-          if (!autoRefresh) {
-            userMenuItems.push({
-              text: this.translator('session.refresh'),
-              onClick: () => {
-                this.accountMenu?.instance.hide();              
-                this.identityService.refreshToken();
-              }
-            });
-          }
+      const userMenuItems: Record<string, unknown>[] = [];
 
+      if (userName) {
+        if (!autoRefresh) {
           userMenuItems.push({
-            text: this.translator('session.manageaccount'),
+            text: this.translator('session.refresh'),
             onClick: () => {
               this.accountMenu?.instance.hide();
-              this.identityService.manageProfile();
-            }
-          });
-
-          if (allowedTenants) {
-            allowedTenants.forEach(t => userMenuItems.push({
-              text: this.translator('session.switchtenant', { tenant: t['Name'] }),
-              onClick: () => {
-                this.accountMenu?.instance.hide();
-                this.identityService.switchTenant(t['Id'] as string);
-              }
-            }));
-          }
-
-          userMenuItems.push({
-            text: this.translator('session.logout', { user: userName }),
-            onClick: () => {
-              this.accountMenu?.instance.hide();
-              this.identityService.logout();
+              this.identityService.refreshToken();
             }
           });
         }
-        
-        this.userMenuItems = userMenuItems;        
-      });
 
+        userMenuItems.push({
+          text: this.translator('session.manageaccount'),
+          onClick: () => {
+            this.accountMenu?.instance.hide();
+            this.identityService.manageProfile();
+          }
+        });
 
-    this.usePopover$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize >= SCREEN_SIZE.SM));
+        if (allowedTenants) {
+          allowedTenants.forEach(t => userMenuItems.push({
+            text: this.translator('session.switchtenant', { tenant: t['Name'] }),
+            onClick: () => {
+              this.accountMenu?.instance.hide();
+              this.identityService.switchTenant(t['Id'] as string);
+            }
+          }));
+        }
+
+        userMenuItems.push({
+          text: this.translator('session.logout', { user: userName }),
+          onClick: () => {
+            this.accountMenu?.instance.hide();
+            this.identityService.logout();
+          }
+        });
+      }
+
+      this.userMenuItems = userMenuItems;
+    });
+
+    this.usePopover$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => screenSize >= SCREEN_SIZE.SM)
+    );
 
     this.currentUser$ = this.identityService.currentUser$;
     this.username$ = this.identityService.userName$;
@@ -87,7 +87,7 @@ export class ApplicationAccountMenuComponent extends WithDestroy() {
   toggleShow(target?: Element): void {
     if (this.accountMenu?.visible) {
       this.accountMenu?.instance.hide();
-    } else if (target) {      
+    } else if (target) {
       this.accountMenu?.instance.show();
     }
   }

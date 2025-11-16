@@ -2,16 +2,17 @@ import { ApiError } from "@ballware/meta-api";
 import { AutocompleteStoreDescriptor, EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { compileGetter, compileSetter } from 'devextreme/utils';
-import { BehaviorSubject, catchError, combineLatest, of, takeUntil } from "rxjs";
+import { BehaviorSubject, catchError, combineLatest, of } from "rxjs";
 import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "../utils";
-import { Destroy, EditItemLivecycle } from "@ballware/renderer-commons";
-import { Directive, Inject, OnInit } from "@angular/core";
+import { EditItemLivecycle } from "@ballware/renderer-commons";
+import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   standalone: true
 })
 export class Lookup implements OnInit {
-  
+
   private _lookup: LookupDescriptor|undefined;
   private _dataSource$ = new BehaviorSubject<DataSource|null>(null);
 
@@ -23,19 +24,19 @@ export class Lookup implements OnInit {
   private _lookupItemKeyValueGetter: ((item: Record<string, unknown>|unknown) => unknown)|undefined;
   private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
   private _lookupItemHintValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
-  
+
   private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
   private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
-  
-  public getLookupItemKeyValue(item: Record<string, unknown>) {    
-    return this._lookupItemKeyValueGetter ? this._lookupItemKeyValueGetter(item) : undefined;
-  }    
 
-  public getLookupItemDisplayValue(item: Record<string, unknown>) {    
+  public getLookupItemKeyValue(item: Record<string, unknown>) {
+    return this._lookupItemKeyValueGetter ? this._lookupItemKeyValueGetter(item) : undefined;
+  }
+
+  public getLookupItemDisplayValue(item: Record<string, unknown>) {
     return this._lookupItemDisplayValueGetter ? this._lookupItemDisplayValueGetter(item) : undefined;
   }
 
-  public getLookupItemHintValue(item: Record<string, unknown>) {    
+  public getLookupItemHintValue(item: Record<string, unknown>) {
     return this._lookupItemHintValueGetter ? this._lookupItemHintValueGetter(item) : undefined;
   }
 
@@ -54,7 +55,7 @@ export class Lookup implements OnInit {
 
       this._lookupItemKeyValueSetter?.(customValue, event.text);
       this._lookupItemDisplayValueSetter?.(customValue, event.text);
-      
+
       event.customItem = customValue;
     }
   }
@@ -86,7 +87,7 @@ export class Lookup implements OnInit {
   }
 
   constructor(
-    private destroy: Destroy, 
+    private destroy: DestroyRef,
     private livecycle: EditItemLivecycle,
     @Inject(EDIT_SERVICE) private editService: EditService,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
@@ -99,13 +100,13 @@ export class Lookup implements OnInit {
     this.livecycle.registerOption('items', () => this._dataSource$.getValue()?.items(), (value) => this.setLookupItems(value  as []));
 
     this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
+      .pipe(takeUntilDestroyed(this.destroy))
       .subscribe((layoutItem) => {
         if (layoutItem) {
           this._acceptCustomValue = layoutItem.options?.acceptCustomValue ?? false;
 
           combineLatest([this.editService.getValue$, this.lookupService.lookups$])
-              .pipe(takeUntil(this.destroy.destroy$))
+              .pipe(takeUntilDestroyed(this.destroy))
               .subscribe(([getValue, lookups]) => {
                 if (getValue && lookups) {
                   const lookup = layoutItem?.options?.lookup;
@@ -130,13 +131,13 @@ export class Lookup implements OnInit {
                           () => (currentLookup.store as LookupStoreDescriptor).listFunc()
                             .pipe(catchError((error: ApiError) => {
                               this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                              
-                              return of([]);              
+
+                              return of([]);
                             })),
                           (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
                             .pipe(catchError((error: ApiError) => {
-                              this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });       
-                              
+                              this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+
                               return of();
                             })),
                           {
@@ -148,20 +149,20 @@ export class Lookup implements OnInit {
                           () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
                             .pipe(catchError((error: ApiError) => {
                               this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                              
-                              return of([]);              
+
+                              return of([]);
                             }))
                         ));
-                      }                      
-                    }                    
+                      }
+                    }
                   } else if (layoutItem?.options?.items || layoutItem?.options?.itemsMember) {
                     createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []))
                       .then(dataSource => this._dataSource$.next(dataSource));
                   }
-                  
+
                   this.dataSource$
-                    .pipe(takeUntil(this.destroy.destroy$))
-                    .subscribe(dataSource => {     
+                    .pipe(takeUntilDestroyed(this.destroy))
+                    .subscribe(dataSource => {
                       if (this._lookup?.type === 'autocomplete') {
                         this._lookupItemKeyValueGetter = (item) => item as string;
                         this._lookupItemDisplayValueGetter = (item) => item as string;
@@ -170,22 +171,22 @@ export class Lookup implements OnInit {
 
                         const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
                         const keyValueSetter = compileSetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
-      
+
                         this._lookupItemKeyValueGetter = (item) => keyValueGetter(item);
                         this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
-      
-                        const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');          
-                        const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');      
-                
+
+                        const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');
+                        const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');
+
                         this._lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
                         this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
-                
+
                         const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
-                
-                        this._lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;                      
+
+                        this._lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;
                       }
                     });
-                }                
+                }
               });
         }
       });

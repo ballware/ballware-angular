@@ -1,9 +1,8 @@
-import { Component, Inject } from '@angular/core';
+import { Component, DestroyRef, Inject } from '@angular/core';
 import { NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
 import notify from 'devextreme/ui/notify';
-import { takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-notification',
@@ -12,20 +11,22 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule],
   standalone: true
 })
-export class ApplicationNotificationComponent extends WithDestroy() {
-    
-  constructor(@Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService) {    
-    super();
+export class ApplicationNotificationComponent {
 
-    this.notificationService.notification$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(notification => {
-          if (notification) {
-            notify(notification.message, notification.severity);
+  constructor(
+    private destroy: DestroyRef,
+    @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService) {
 
-            this.notificationService.hideNotification();
-          }          
-      });
+
+    this.notificationService.notification$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(notification => {
+      if (notification) {
+        notify(notification.message, notification.severity);
+
+        this.notificationService.hideNotification();
+      }
+    });
   }
 }
 

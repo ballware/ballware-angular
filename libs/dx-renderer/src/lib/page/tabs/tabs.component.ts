@@ -1,15 +1,15 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, forwardRef, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PageLayoutItem, TabsOptions } from '@ballware/meta-model';
 import { isEqual } from 'lodash';
 import * as qs from 'qs';
-import { BehaviorSubject, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { BehaviorSubject } from 'rxjs';
 import { DxTabPanelModule } from 'devextreme-angular';
 import { PageLayoutTabsCounterComponent } from './counter.component';
 import { CommonModule } from '@angular/common';
 import { PageLayoutItemComponent } from '../layout/item.component';
 import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface TabsParam {
   current?: string;
@@ -28,7 +28,7 @@ interface TabsParam {
   ],
   standalone: true,
 })
-export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
+export class PageLayoutTabsComponent implements OnInit {
   @Input() layoutItem?: PageLayoutItem;
 
   public selectedTab$ = new BehaviorSubject<number>(0);
@@ -37,8 +37,10 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
 
   public tabsParam$ = new BehaviorSubject<TabsParam | undefined>(undefined);
 
-  constructor(private router: Router, private route: ActivatedRoute) {
-    super();
+  constructor(
+    private destroy: DestroyRef,
+    private router: Router,
+    private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
@@ -49,7 +51,9 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
       ?.identifier;
 
     if (identifier) {
-      this.selectedTab$.pipe(takeUntil(this.destroy$)).subscribe((value) => {
+      this.selectedTab$.pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe((value) => {
         const nextTabsParam = { current: value.toString() } as TabsParam;
 
         if (!isEqual(this.tabsParam$.getValue(), nextTabsParam)) {
@@ -57,7 +61,9 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
         }
       });
 
-      this.tabsParam$.pipe(takeUntil(this.destroy$)).subscribe((tabsParam) => {
+      this.tabsParam$.pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe((tabsParam) => {
         if (
           Number.parseInt(tabsParam?.current ?? '0') !==
           this.selectedTab$.getValue()
@@ -76,17 +82,17 @@ export class PageLayoutTabsComponent extends WithDestroy() implements OnInit {
         });
       });
 
-      this.route.queryParamMap
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((queryParams) => {
-          const nextTabsParam = qs.parse(
-            queryParams.get(identifier) ?? ''
-          ) as TabsParam;
+      this.route.queryParamMap.pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe((queryParams) => {
+        const nextTabsParam = qs.parse(
+          queryParams.get(identifier) ?? ''
+        ) as TabsParam;
 
-          if (!isEqual(this.tabsParam$.getValue(), nextTabsParam)) {
-            this.tabsParam$.next(nextTabsParam);
-          }
-        });
+        if (!isEqual(this.tabsParam$.getValue(), nextTabsParam)) {
+          this.tabsParam$.next(nextTabsParam);
+        }
+      });
     }
   }
 

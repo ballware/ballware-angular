@@ -4,7 +4,6 @@ import { Component, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE } from '@ballware/meta-services';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
-import { Destroy } from './destroy';
 import { EditItemLivecycle } from './edititemlivecycle';
 import { Readonly } from './readonly';
 
@@ -13,11 +12,11 @@ import { Readonly } from './readonly';
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly],
   standalone: true
 })
 class EditReadonlyTestComponent {
-  
+
   constructor(
     public livecycle: EditItemLivecycle) {
   }
@@ -26,17 +25,17 @@ class EditReadonlyTestComponent {
 describe('WithReadonly', () => {
   let component: EditReadonlyTestComponent;
   let fixture: ComponentFixture<EditReadonlyTestComponent>;
-  
+
   const mockedEditService = mockedEditServiceContext();
-        
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ EditReadonlyTestComponent ],
-      providers: [        
+      providers: [
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider         
+        } as Provider
       ]
     })
     .compileComponents();
@@ -44,14 +43,14 @@ describe('WithReadonly', () => {
 
   it('should create with value', () => {
     fixture = TestBed.createComponent(EditReadonlyTestComponent);
-       
+
     const layoutItem = {
         options: {
             dataMember: 'mockedmember'
         }
     } as EditLayoutItem;
-    
-    component = fixture.componentInstance;   
+
+    component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);

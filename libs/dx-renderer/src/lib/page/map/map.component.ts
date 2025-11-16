@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  Component,
+  Component, DestroyRef,
   Inject,
   Input,
   OnInit,
@@ -9,12 +9,12 @@ import {
 import { CrudItem, EntityMapOptions, PageLayoutItem } from '@ballware/meta-model';
 import { CRUD_SERVICE, CrudService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
-import { BehaviorSubject, Observable, combineLatest, takeUntil } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { get } from 'lodash';
 import { DataSourceService } from '../../utils';
-import { WithDestroy } from '../../utils/withdestroy';
 import { CommonModule } from '@angular/common';
 import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page-map',
@@ -24,10 +24,7 @@ import { Breadcrumb } from '@ballware/renderer-commons';
   hostDirectives: [Breadcrumb],
   standalone: true,
 })
-export class PageLayoutMapComponent
-  extends WithDestroy()
-  implements OnInit, AfterViewInit
-{
+export class PageLayoutMapComponent implements OnInit, AfterViewInit {
   @Input() layoutItem?: PageLayoutItem;
 
   @ViewChild('map', { static: false }) map?: DxMapComponent;
@@ -39,13 +36,12 @@ export class PageLayoutMapComponent
   private mouseTarget: Element | undefined | null;
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(SETTINGS_SERVICE) private settingsService: SettingsService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
     private breadcrumb: Breadcrumb,
     private dataSourceService: DataSourceService
   ) {
-    super();
-
     this.onMapMouseMove = this.onMapMouseMove.bind(this);
     this.onMarkerClicked = this.onMarkerClicked.bind(this);
 
@@ -61,26 +57,26 @@ export class PageLayoutMapComponent
       .element()
       .addEventListener('mousemove', this.onMapMouseMove);
 
-    combineLatest([this.dataSourceService.dataSource$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([dataSource]) => {
-        const locationMember = (
-          this.layoutItem?.options?.itemoptions as EntityMapOptions
-        )?.locationMember;
+    combineLatest([this.dataSourceService.dataSource$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([dataSource]) => {
+      const locationMember = (
+        this.layoutItem?.options?.itemoptions as EntityMapOptions
+      )?.locationMember;
 
-        if (dataSource && locationMember) {
-          dataSource.on('changed', () => {
-            this.markers$.next(
-              dataSource.items()?.map((item) => ({
-                location: get(item, locationMember),
-                onClick: () => this.onMarkerClicked(item),
-              }))
-            );
-          });
+      if (dataSource && locationMember) {
+        dataSource.on('changed', () => {
+          this.markers$.next(
+            dataSource.items()?.map((item) => ({
+              location: get(item, locationMember),
+              onClick: () => this.onMarkerClicked(item),
+            }))
+          );
+        });
 
-          dataSource.load();
-        }
-      });
+        dataSource.load();
+      }
+    });
   }
 
   public onMapMouseMove(e: MouseEvent) {

@@ -1,8 +1,16 @@
-import { Component, forwardRef, Inject, OnDestroy, OnInit, Provider } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  forwardRef,
+  Inject,
+  OnDestroy,
+  OnInit,
+  Provider,
+} from '@angular/core';
 import { GridLayout } from '@ballware/meta-model';
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
-import { BehaviorSubject, Observable, combineLatest, map, takeUntil } from 'rxjs';
-import { DataSourceService } from '../../utils/datasource.service';
+import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
+import { DataSourceService } from '../../utils';
 import { Router } from '@angular/router';
 import { EntitygridComponent } from '../../datacontainer';
 import { CrudActionsComponent } from '../actions/actions.component';
@@ -10,11 +18,11 @@ import { CommonModule } from '@angular/common';
 import { EditDetailComponent } from '../detail/detail.component';
 import {
   Breadcrumb,
-  Destroy,
   EditItemLivecycle,
   Readonly,
   Visible,
 } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface EntityGridItemOptions {
   uniqueKey?: string;
@@ -61,7 +69,7 @@ interface EntityGridItemOptions {
     }
   ],
   imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
   standalone: true
 })
 export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
@@ -79,58 +87,55 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
     private datasourceService: DataSourceService,
     @Inject(EDIT_SERVICE) private editService: EditService,
     private breadcrumb: Breadcrumb,
-    public destroy: Destroy,
+    private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public readonly: Readonly,
     public visible: Visible
   ) {
-    combineLatest([this.metaService.headParams$])
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe(([
-        fetchParams
-      ]) => {
-        if (fetchParams) {
-          this.crudService.reload();
-        }
-      });
+    combineLatest([this.metaService.headParams$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([fetchParams]) => {
+      if (fetchParams) {
+        this.crudService.reload();
+      }
+    });
 
-    this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$])
-      .pipe(takeUntil(this.destroy.destroy$))
-      .pipe(map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined));
+    this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$]).pipe(
+      takeUntilDestroyed(this.destroy),
+      map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined)
+    );
   }
 
   ngOnInit(): void {
 
-    this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((layoutItem) => {
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      const gridOptions = layoutItem?.options?.itemoptions as EntityGridItemOptions;
 
-        const gridOptions = layoutItem?.options?.itemoptions as EntityGridItemOptions;
+      if (layoutItem?.options?.dataMember) {
+        this.breadcrumb.setIdentifier(layoutItem?.options?.dataMember);
 
-        if (layoutItem?.options?.dataMember) {
-          this.breadcrumb.setIdentifier(layoutItem?.options?.dataMember);
+        this.lookupService.setIdentifier(this.breadcrumb.pathString);
+        this.metaService.setIdentifier(this.breadcrumb.pathString);
+        this.crudService.setIdentifier(this.breadcrumb.pathString);
 
-          this.lookupService.setIdentifier(this.breadcrumb.pathString);
-          this.metaService.setIdentifier(this.breadcrumb.pathString);
-          this.crudService.setIdentifier(this.breadcrumb.pathString);
+        this.metaService.setEntity(layoutItem.options?.dataMember);
+      }
 
-          this.metaService.setEntity(layoutItem.options?.dataMember);
-        }
+      this.metaService.setInitialCustomParam(gridOptions?.customParam ?? {});
+      this.metaService.setReadOnly(gridOptions?.readOnly ?? false);
+      this.metaService.setHeadParams(gridOptions?.headParams ?? {});
 
-        this.metaService.setInitialCustomParam(gridOptions?.customParam ?? {});
-        this.metaService.setReadOnly(gridOptions?.readOnly ?? false);
-        this.metaService.setHeadParams(gridOptions?.headParams ?? {});
+      this.crudService.setQuery(gridOptions?.query ?? 'primary');
 
-        this.crudService.setQuery(gridOptions?.query ?? 'primary');
-
-        this.layoutIdentifier$.next(gridOptions?.layout ?? 'primary');
-        this.height$.next(layoutItem?.options?.height);
-      });
+      this.layoutIdentifier$.next(gridOptions?.layout ?? 'primary');
+      this.height$.next(layoutItem?.options?.height);
+    });
   }
 
   ngOnDestroy(): void {
     this.editService.ngOnDestroy();
-    this.datasourceService.ngOnDestroy();
     this.crudService.ngOnDestroy();
     this.metaService.ngOnDestroy();
     this.lookupService.ngOnDestroy();

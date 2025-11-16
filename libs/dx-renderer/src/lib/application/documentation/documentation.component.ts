@@ -1,9 +1,16 @@
-import { AfterViewInit, Component, Inject, ViewChild, ViewContainerRef } from '@angular/core';
-import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, TRANSLATOR, Translator } from '@ballware/meta-services';
-import { Observable, map, takeUntil, withLatestFrom } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  Inject,
+  ViewChild,
+  ViewContainerRef,
+} from '@angular/core';
+import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TOOLBAR_SERVICE, ToolbarService, TRANSLATOR, Translator } from '@ballware/meta-services';
+import { Observable, map, withLatestFrom } from 'rxjs';
 import { DxPopupModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-application-documentation',
@@ -12,7 +19,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, DxPopupModule],
   standalone: true
 })
-export class ApplicationDocumentationComponent extends WithDestroy() implements AfterViewInit {
+export class ApplicationDocumentationComponent implements AfterViewInit {
 
   @ViewChild('content', { read: ViewContainerRef }) private contentHost?: ViewContainerRef;
 
@@ -25,16 +32,15 @@ export class ApplicationDocumentationComponent extends WithDestroy() implements 
   public visible$: Observable<boolean>;
 
   constructor(
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService, 
-    @Inject(TRANSLATOR) private translator: Translator, 
-    @Inject(IDENTITY_SERVICE) private identityService: IdentityService, 
-    @Inject(TENANT_SERVICE) private tenantService: TenantService, 
+    private destroy: DestroyRef,
+    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
+    @Inject(TRANSLATOR) private translator: Translator,
     @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
-    super();
 
-    this.fullscreenDialogs$ = this.responsiveService.onResize$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(map((screenSize) => screenSize <= SCREEN_SIZE.SM));
+    this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
+      takeUntilDestroyed(this.destroy),
+      map((screenSize) => screenSize <= SCREEN_SIZE.SM)
+    );
 
     this.documentationIdentifier$ = this.toolbarService.documentationIdentifier$;
     this.documentation$ = this.toolbarService.documentation$;
@@ -43,7 +49,7 @@ export class ApplicationDocumentationComponent extends WithDestroy() implements 
     this.documentationPopupTitle$ = this.toolbarService.title$.pipe(map((pageTitle) => pageTitle && this.translator('documentation.popuptitle', { entity: pageTitle })));
   }
 
-  ngAfterViewInit() { 
+  ngAfterViewInit() {
     this.visible$
         .pipe(withLatestFrom(this.documentation$))
         .subscribe(([visible, documentation]) => {
@@ -51,8 +57,8 @@ export class ApplicationDocumentationComponent extends WithDestroy() implements 
                 import('devextreme-angular/ui/html-editor').then(({ DxHtmlEditorComponent }) => {
                     if (this.contentHost) {
                         const componentRef = this.contentHost.createComponent(DxHtmlEditorComponent);
-                                  
-                        componentRef.setInput('readOnly', true);            
+
+                        componentRef.setInput('readOnly', true);
                         componentRef.setInput('value', documentation);
                         componentRef.changeDetectorRef.detectChanges();
                       }

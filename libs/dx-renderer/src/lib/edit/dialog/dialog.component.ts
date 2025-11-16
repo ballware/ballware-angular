@@ -1,11 +1,19 @@
-import { Component, Inject, Input, OnDestroy, OnInit, Provider } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Provider,
+} from '@angular/core';
 import { EditLayout, EditUtil } from '@ballware/meta-model';
 import { EDIT_SERVICE, EDIT_SERVICE_FACTORY, EditModes, EditService, EditServiceFactory, META_SERVICE, MetaService, Translator, TRANSLATOR } from '@ballware/meta-services';
-import { Subject, takeUntil, withLatestFrom } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { Subject, withLatestFrom } from 'rxjs';
 import { DxPopupModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
 import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-crud-dialog',
@@ -22,7 +30,7 @@ import { Breadcrumb } from '@ballware/renderer-commons';
   hostDirectives: [Breadcrumb],
   standalone: true
 })
-export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDestroy {
+export class CrudDialogComponent implements OnInit, OnDestroy {
 
   @Input() mode?: EditModes;
   @Input() title?: string;
@@ -40,42 +48,40 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
   private readonly applyAndClose$ = new Subject<void>();
 
   constructor(
+    private destroy: DestroyRef,
     @Inject(TRANSLATOR) private translator: Translator,
     @Inject(EDIT_SERVICE) private editService: EditService,
     private breadcrumb: Breadcrumb) {
-
-
-    super();
 
     this.onHidden = this.onHidden.bind(this);
     this.onApplyAndContinue = this.onApplyAndContinue.bind(this);
     this.onApplyAndClose = this.onApplyAndClose.bind(this);
 
-    this.applyAndContinue$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
-      .subscribe(([, validator, item]) => {
-        if (item && (!validator || validator())) {
-          this.apply && this.apply(this.editService.editUtil(), item as Record<string, unknown>, true);
-        }
-      });
+    this.applyAndContinue$.pipe(
+      takeUntilDestroyed(this.destroy),
+      withLatestFrom(this.editService.validator$, this.editService.item$)
+    ).subscribe(([, validator, item]) => {
+      if (item && (!validator || validator())) {
+        this.apply && this.apply(this.editService.editUtil(), item as Record<string, unknown>, true);
+      }
+    });
 
-    this.applyAndClose$
-      .pipe(takeUntil(this.destroy$))
-      .pipe(withLatestFrom(this.editService.validator$, this.editService.item$))
-      .subscribe(([, validator, item]) => {
-        if (item) {
-          if (!validator) {
-            this.apply && this.apply(this.editService.editUtil(), item, false);
-          } else {
-            validator().subscribe((isValid) => {
-              if (isValid) {
-                this.apply && this.apply(this.editService.editUtil(), item, false);
-              }
-            });
-          }
+    this.applyAndClose$.pipe(
+      takeUntilDestroyed(this.destroy),
+      withLatestFrom(this.editService.validator$, this.editService.item$)
+    ).subscribe(([, validator, item]) => {
+      if (item) {
+        if (!validator) {
+          this.apply && this.apply(this.editService.editUtil(), item, false);
+        } else {
+          validator().subscribe((isValid) => {
+            if (isValid) {
+              this.apply && this.apply(this.editService.editUtil(), item, false);
+            }
+          });
         }
-      });
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -97,9 +103,7 @@ export class CrudDialogComponent extends WithDestroy() implements OnInit, OnDest
       }
   }
 
-  override ngOnDestroy(): void {
-    super.ngOnDestroy();
-
+  ngOnDestroy(): void {
     this.editService.ngOnDestroy();
   }
 

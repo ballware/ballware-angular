@@ -1,9 +1,16 @@
-import { AfterViewInit, Component, Inject, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  Inject,
+  ViewChild,
+} from '@angular/core';
 import { SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 import { DxMapComponent, DxMapModule } from 'devextreme-angular';
-import { Observable, combineLatest, takeUntil } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { Destroy, EditItemLivecycle, NullableLatLngValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { EditItemLivecycle, NullableLatLngValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 declare let google: any;
 
@@ -12,7 +19,7 @@ declare let google: any;
   templateUrl: './map.component.html',
   styleUrls: [],
   imports: [CommonModule, DxMapModule],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableLatLngValue, Readonly, Visible],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableLatLngValue, Readonly, Visible],
   standalone: true
 })
 export class EditLayoutMapComponent implements AfterViewInit {
@@ -23,52 +30,52 @@ export class EditLayoutMapComponent implements AfterViewInit {
 
   constructor(
     @Inject(SETTINGS_SERVICE) private settingsService: SettingsService,
-    public destroy: Destroy,
+    private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
     public value: NullableLatLngValue
-  ) {    
+  ) {
     this.googlekey$ = this.settingsService.googlekey$;
   }
 
   ngAfterViewInit(): void {
-    combineLatest([this.readonly.readonly$, this.value.currentValue$])
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe(([readonly, value]) => {
-        const existingMarkers = this.map?.instance.option(
-          'markers'
-        ) as Array<object>;
+    combineLatest([this.readonly.readonly$, this.value.currentValue$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([readonly, value]) => {
+      const existingMarkers = this.map?.instance.option(
+        'markers'
+      ) as Array<object>;
 
-        for (const marker of existingMarkers) {
-          this.map?.instance.removeMarker(marker);
-        }
+      for (const marker of existingMarkers) {
+        this.map?.instance.removeMarker(marker);
+      }
 
-        if (value) {
-          value.lat = value.lat ?? 0.0;
-          value.lng = value.lng ?? 0.0;  
-          
-          this.map?.instance.addMarker({
-            location: value
-          }).then((marker) => {
-            if (!readonly) {
-              marker.setDraggable(true);
+      if (value) {
+        value.lat = value.lat ?? 0.0;
+        value.lng = value.lng ?? 0.0;
 
-              google.maps.event.addListener(
-                marker,
-                'dragend',
-                (e: {
-                  latLng: { lng: () => number; lat: () => number };
-                }) => {
-                  this.value.value = {
-                    lat: e.latLng.lat(),
-                    lng: e.latLng.lng()
-                  };
-                }
-              );
-            }
-          });
-        }
-      });
+        this.map?.instance.addMarker({
+          location: value
+        }).then((marker) => {
+          if (!readonly) {
+            marker.setDraggable(true);
+
+            google.maps.event.addListener(
+              marker,
+              'dragend',
+              (e: {
+                latLng: { lng: () => number; lat: () => number };
+              }) => {
+                this.value.value = {
+                  lat: e.latLng.lat(),
+                  lng: e.latLng.lng()
+                };
+              }
+            );
+          }
+        });
+      }
+    });
   }
 }

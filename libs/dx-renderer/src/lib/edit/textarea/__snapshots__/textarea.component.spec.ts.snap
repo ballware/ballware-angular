@@ -3,11 +3,14 @@
 exports[`EditLayoutTextareaComponent should create 1`] = `
 <ballware-edit-textarea
   allowSpeech="false"
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   fullscreenDialogs$={[Function AnonymousSubject]}
   livecycle={[Function EditItemLivecycle]}
   onSpeechApply={[Function Function]}
   onSpeechCancel={[Function Function]}
+  onSpeechClicked={[Function Function]}
+  onSpeechHidden={[Function Function]}
+  onSpeechValueChanged={[Function Function]}
   readonly={[Function Readonly]}
   responsiveService={[Function ]}
   showSpeech="false"

@@ -1,9 +1,9 @@
 import { EditLayoutItem } from "@ballware/meta-model";
 import { EDIT_SERVICE, EditItemRef, EditService } from "@ballware/meta-services";
-import { BehaviorSubject, Observable, Subject, takeUntil, combineLatest, map } from 'rxjs';
-import { Directive, Inject, Input, OnInit } from "@angular/core";
-import { Destroy } from "./destroy";
+import { BehaviorSubject, Observable, Subject, combineLatest, map } from 'rxjs';
+import { DestroyRef, Directive, Inject, Input, OnInit } from '@angular/core';
 import { Breadcrumb } from './breadcrumb';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Directive({
   hostDirectives: [Breadcrumb],
@@ -63,12 +63,12 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
     throw new Error(`Unsupported option <${option}>`);
   }
 
-  constructor(private destroy: Destroy, @Inject(EDIT_SERVICE) private editService: EditService, private breadcrumb: Breadcrumb ) {}
+  constructor(private destroy: DestroyRef, @Inject(EDIT_SERVICE) private editService: EditService, private breadcrumb: Breadcrumb ) {}
 
   ngOnInit(): void {
     if (this.initialLayoutItem) {
       combineLatest([this.editService.editorPreparing$]).pipe(
-        takeUntil(this.destroy.destroy$),
+        takeUntilDestroyed(this.destroy),
         map(([editorPreparing]) => {
             if (editorPreparing) {
               if (this.initialLayoutItem?.options?.dataMember) {
@@ -83,32 +83,32 @@ export class EditItemLivecycle implements OnInit, EditItemRef {
         ))
         .subscribe((preparedLayoutItem) => this._preparedLayoutItem$.next(preparedLayoutItem));
 
-      combineLatest([this.preparedLayoutItem$, this.editService.editorInitialized$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([layoutItem, editorInitialized]) => {
-          if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
-            editorInitialized({ dataMember: layoutItem.options.dataMember, ref: this });
-            this.breadcrumb.setIdentifier(layoutItem.options?.dataMember);
-          }
+      combineLatest([this.preparedLayoutItem$, this.editService.editorInitialized$]).pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe(([layoutItem, editorInitialized]) => {
+        if (layoutItem && editorInitialized && layoutItem.options?.dataMember) {
+          editorInitialized({ dataMember: layoutItem.options.dataMember, ref: this });
+          this.breadcrumb.setIdentifier(layoutItem.options?.dataMember);
+        }
 
-          this.layoutItem = layoutItem;
-        });
+        this.layoutItem = layoutItem;
+      });
 
-      combineLatest([this.editService.editorEntered$, this._editorEntered$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([editorEntered,]) => {
-          if (editorEntered && this.initialLayoutItem?.options?.dataMember) {
-            editorEntered({ dataMember: this.initialLayoutItem.options.dataMember });
-          }
-        });
+      combineLatest([this.editService.editorEntered$, this._editorEntered$]).pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe(([editorEntered,]) => {
+        if (editorEntered && this.initialLayoutItem?.options?.dataMember) {
+          editorEntered({ dataMember: this.initialLayoutItem.options.dataMember });
+        }
+      });
 
-      combineLatest([this.editService.editorEvent$, this._editorEvent$])
-        .pipe(takeUntil(this.destroy.destroy$))
-        .subscribe(([editorEvent, { event }]) => {
-          if (editorEvent && this.initialLayoutItem?.options?.dataMember) {
-            editorEvent({ dataMember: this.initialLayoutItem.options.dataMember, event });
-          }
-        });
+      combineLatest([this.editService.editorEvent$, this._editorEvent$]).pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe(([editorEvent, { event }]) => {
+        if (editorEvent && this.initialLayoutItem?.options?.dataMember) {
+          editorEvent({ dataMember: this.initialLayoutItem.options.dataMember, event });
+        }
+      });
     }
   }
 }

@@ -2,7 +2,7 @@
 
 exports[`EditLayoutJavascriptComponent should create 1`] = `
 <ballware-edit-javascript
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   height="undefined"
   livecycle={[Function EditItemLivecycle]}
   options="undefined"

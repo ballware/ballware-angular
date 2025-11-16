@@ -1,5 +1,6 @@
 import {
   Component,
+  DestroyRef,
   Inject,
   Input,
   OnDestroy,
@@ -8,10 +9,11 @@ import {
 } from '@angular/core';
 import { PageLayoutItem, StatisticOptions } from "@ballware/meta-model";
 import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from "@ballware/meta-services";
-import { Observable, map, takeUntil } from "rxjs";
+import { Observable, map } from "rxjs";
 import { StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent } from "../../statistic";
 import { CommonModule } from "@angular/common";
-import { Breadcrumb, Destroy } from '@ballware/renderer-commons';
+import { Breadcrumb } from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page-statistic',
@@ -33,7 +35,7 @@ import { Breadcrumb, Destroy } from '@ballware/renderer-commons';
     StatisticMapComponent,
     StatisticPivotgridComponent,
   ],
-  hostDirectives: [Breadcrumb, Destroy],
+  hostDirectives: [Breadcrumb],
   standalone: true,
 })
 export class PageLayoutStatisticComponent implements OnInit, OnDestroy
@@ -46,25 +48,25 @@ export class PageLayoutStatisticComponent implements OnInit, OnDestroy
     @Inject(PAGE_SERVICE) private pageService: PageService,
     @Inject(STATISTIC_SERVICE) private statisticService: StatisticService,
     private breadcrumb: Breadcrumb,
-    private destroy: Destroy,
+    private destroy: DestroyRef,
   ) {
     this.type$ = this.statisticService.layout$.pipe(
       map((layout) => layout?.type)
     );
 
-    this.pageService.customParam$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((customParam) => {
-        this.statisticService.setCustomParam(customParam);
-      });
+    this.pageService.customParam$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((customParam) => {
+      this.statisticService.setCustomParam(customParam);
+    });
 
-    this.pageService.headParams$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((headParams) => {
-        if (headParams) {
-          this.statisticService.setHeadParams(headParams);
-        }
-      });
+    this.pageService.headParams$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((headParams) => {
+      if (headParams) {
+        this.statisticService.setHeadParams(headParams);
+      }
+    });
   }
 
   ngOnInit(): void {

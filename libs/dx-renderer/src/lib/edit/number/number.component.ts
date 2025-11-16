@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { takeUntil } from 'rxjs';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { DxNumberBoxModule, DxValidatorModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
-import { Destroy, EditItemLivecycle, NumberValue, Readonly, Visible } from '@ballware/renderer-commons';
+import { EditItemLivecycle, NumberValue, Readonly, Visible } from '@ballware/renderer-commons';
 import { Validation, Required } from '../../directives';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-export interface NumberItemOptions {  
+export interface NumberItemOptions {
   min?: number;
   max?: number;
 }
@@ -15,7 +15,7 @@ export interface NumberItemOptions {
   templateUrl: './number.component.html',
   styleUrls: [],
   imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Readonly, Validation, Required, Visible],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Readonly, Validation, Required, Visible],
   standalone: true
 })
 export class EditLayoutNumberComponent implements OnInit {
@@ -23,7 +23,7 @@ export class EditLayoutNumberComponent implements OnInit {
   public options: NumberItemOptions = {};
 
   constructor(
-    public destroy: Destroy,
+    private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
@@ -33,13 +33,13 @@ export class EditLayoutNumberComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((layoutItem) => {        
-        this.options = layoutItem?.options?.itemoptions as NumberItemOptions ?? {};
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      this.options = layoutItem?.options?.itemoptions as NumberItemOptions ?? {};
 
-        this.livecycle.registerOption('min', () => this.options?.min, (value) => this.options.min = value as number);
-        this.livecycle.registerOption('max', () => this.options?.max, (value) => this.options.max = value as number);
-      });  
-  }  
+      this.livecycle.registerOption('min', () => this.options?.min, (value) => this.options.min = value as number);
+      this.livecycle.registerOption('max', () => this.options?.max, (value) => this.options.max = value as number);
+    });
+  }
 }

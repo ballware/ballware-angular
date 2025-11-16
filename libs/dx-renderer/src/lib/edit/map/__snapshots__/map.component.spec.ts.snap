@@ -2,7 +2,7 @@
 
 exports[`EditLayoutMapComponent should create 1`] = `
 <ballware-edit-map
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   googlekey$={[Function BehaviorSubject]}
   livecycle={[Function EditItemLivecycle]}
   map={[Function _DxMapComponent]}

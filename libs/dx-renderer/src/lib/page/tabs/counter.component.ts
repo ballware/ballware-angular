@@ -1,32 +1,44 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output, Provider } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Inject,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  Provider,
+} from '@angular/core';
 import { ApiError } from '@ballware/meta-api';
 import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, META_SERVICE, META_SERVICE_FACTORY, MetaService, MetaServiceFactory, PAGE_SERVICE, PageService } from '@ballware/meta-services';
-import { catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
-import { WithDestroy } from '../../utils/withdestroy';
+import { catchError, combineLatest, of, switchMap } from 'rxjs';
 import { DxLoadIndicatorModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'ballware-page-tabs-counter',
   templateUrl: './counter.component.html',
   styleUrls: ['./counter.component.scss'],
   providers: [
-    { 
-      provide: LOOKUP_SERVICE, 
+    {
+      provide: LOOKUP_SERVICE,
       useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]  
+      deps: [LOOKUP_SERVICE_FACTORY],
     } as Provider,
-    { 
-      provide: META_SERVICE, 
-      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
+    {
+      provide: META_SERVICE,
+      useFactory: (
+        serviceFactory: MetaServiceFactory,
+        lookupService: LookupService
+      ) => serviceFactory(lookupService),
+      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE],
     } as Provider,
   ],
   imports: [CommonModule, DxLoadIndicatorModule],
-  standalone: true
+  standalone: true,
 })
-export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnInit {
-
+export class PageLayoutTabsCounterComponent implements OnInit, OnDestroy {
   @Input() tab!: any;
   @Input() caption!: string;
   @Input() entity!: string;
@@ -34,21 +46,22 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
 
   @Output() tabNotAuthorized = new EventEmitter<{ tab: any }>();
 
-  public count: number|undefined = undefined;
+  public count: number | undefined = undefined;
 
   constructor(
-    @Inject(PAGE_SERVICE) private pageService: PageService, 
-    @Inject(META_SERVICE) private metaService: MetaService) {
-    super();
-
+    private destroy: DestroyRef,
+    @Inject(PAGE_SERVICE) private pageService: PageService,
+    @Inject(META_SERVICE) private metaService: MetaService,
+    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+  ) {
     this.pageService.customParam$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroy))
       .subscribe((customParam) => {
         this.metaService.setInitialCustomParam(customParam);
       });
 
     this.pageService.headParams$
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroy))
       .subscribe((pageParam) => {
         if (pageParam) {
           this.metaService.setHeadParams(pageParam);
@@ -56,19 +69,24 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
       });
 
     combineLatest([this.metaService.count$, this.pageService.headParams$])
-      .pipe(takeUntil(this.destroy$))
-      .pipe(switchMap(([countFunc, pageParam]) => (countFunc && pageParam)
-        ? countFunc(this.query ?? 'primary', pageParam)
-          .pipe(catchError((error: ApiError) => {      
-            if (error.status === 401) {              
-              this.tabNotAuthorized.emit({ tab: this.tab });
+      .pipe(
+        takeUntilDestroyed(this.destroy),
+        switchMap(([countFunc, pageParam]) =>
+          countFunc && pageParam
+            ? countFunc(this.query ?? 'primary', pageParam).pipe(
+                catchError((error: ApiError) => {
+                  if (error.status === 401) {
+                    this.tabNotAuthorized.emit({ tab: this.tab });
 
-              return of(0);              
-            }             
-            
-            throw error;
-          }))
-        : of(undefined)))
+                    return of(0);
+                  }
+
+                  throw error;
+                })
+              )
+            : of(undefined)
+        )
+      )
       .subscribe((count) => {
         this.count = count;
       });
@@ -79,5 +97,10 @@ export class PageLayoutTabsCounterComponent extends WithDestroy() implements OnI
       this.metaService.setEntity(this.entity);
       this.metaService.setReadOnly(true);
     }
+  }
+
+  ngOnDestroy() {
+    this.metaService.ngOnDestroy();
+    this.lookupService.ngOnDestroy();
   }
 }

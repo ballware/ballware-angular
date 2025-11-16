@@ -4,7 +4,7 @@ import { Component, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, TRANSLATOR } from '@ballware/meta-services';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
-import { Destroy, EditItemLivecycle } from '@ballware/renderer-commons';
+import { EditItemLivecycle } from '@ballware/renderer-commons';
 import { Required } from './required';
 import { Validation } from './validation';
 
@@ -13,7 +13,7 @@ import { Validation } from './validation';
   template: '',
   styleUrls: [],
   imports: [],
-  hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required],
+  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required],
   standalone: true
 })
 class EditRequiredTestComponent {

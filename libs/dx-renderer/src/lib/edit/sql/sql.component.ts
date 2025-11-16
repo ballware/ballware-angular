@@ -1,26 +1,31 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { CodeMirrorEditorOptions } from "../components/codeeditor/options";
 import { CommonModule } from "@angular/common";
 import { CodeMirrorComponent } from "../components/codeeditor/codemirror.component";
-import { Destroy, EditItemLivecycle, StringValue, Readonly, Visible } from "@ballware/renderer-commons";
+import {
+  EditItemLivecycle,
+  StringValue,
+  Readonly,
+  Visible,
+} from '@ballware/renderer-commons';
 import { Validation, Required } from "../../directives";
-import { takeUntil } from "rxjs";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-edit-javascript',
     templateUrl: './sql.component.html',
     styleUrls: [],
     imports: [CommonModule, CodeMirrorComponent],
-    hostDirectives: [Destroy, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
     standalone: true
 })
 export class EditLayoutSqlComponent implements OnInit {
-  
+
   public options: CodeMirrorEditorOptions|undefined;
   public height: string|undefined;
 
   constructor(
-    public destroy: Destroy,
+    private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
@@ -29,11 +34,11 @@ export class EditLayoutSqlComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
-      .subscribe((layoutItem) => {        
-        this.height = layoutItem?.options?.height;
-        this.options = layoutItem?.options?.itemoptions as CodeMirrorEditorOptions;        
-      });    
-  }    
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      this.height = layoutItem?.options?.height;
+      this.options = layoutItem?.options?.itemoptions as CodeMirrorEditorOptions;
+    });
+  }
 }

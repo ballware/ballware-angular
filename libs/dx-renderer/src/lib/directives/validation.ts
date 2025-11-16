@@ -1,10 +1,11 @@
 import { EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
-import { BehaviorSubject, Observable, combineLatest, map, takeUntil, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, firstValueFrom } from 'rxjs';
 
 import { AsyncRule, CompareRule, CustomRule, EmailRule, NumericRule, PatternRule, RangeRule, RequiredRule, StringLengthRule } from "devextreme-angular/common";
 
-import { Directive, Inject, OnInit } from "@angular/core";
-import { Destroy, EditItemLivecycle } from "@ballware/renderer-commons";
+import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
+import { EditItemLivecycle } from "@ballware/renderer-commons";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type ValidationRule = RequiredRule | NumericRule | RangeRule | StringLengthRule | CustomRule | CompareRule | PatternRule | EmailRule | AsyncRule;
 
@@ -27,7 +28,7 @@ export class Validation implements OnInit {
   }
 
   constructor(
-    private destroy: Destroy,
+    private destroy: DestroyRef,
     private livecycle: EditItemLivecycle,
     @Inject(EDIT_SERVICE) private editService: EditService,
     @Inject(TRANSLATOR) private translator: Translator
@@ -36,11 +37,11 @@ export class Validation implements OnInit {
   ngOnInit(): void {
 
     this.livecycle.preparedLayoutItem$
-      .pipe(takeUntil(this.destroy.destroy$))
+      .pipe(takeUntilDestroyed(this.destroy))
       .subscribe((layoutItem) => {
         if (layoutItem) {
           this.validationRules$ = combineLatest([this.requiredValidation$, this.emailValidation$, this.editService.editorValidating$])
-            .pipe(takeUntil(this.destroy.destroy$))
+            .pipe(takeUntilDestroyed(this.destroy))
             .pipe(map(([required, email, editorValidating]) => {
                 const validationRules = [] as ValidationRule[];
 

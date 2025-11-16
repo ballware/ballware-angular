@@ -1,4 +1,4 @@
-import { Component, Inject, Input } from "@angular/core";
+import { Component, DestroyRef, Inject, Input } from "@angular/core";
 import { StatisticPivotOptions } from "@ballware/meta-model";
 import { STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { exportPivotGrid } from 'devextreme/excel_exporter';
@@ -7,10 +7,10 @@ import PivotGridDataSource from "devextreme/ui/pivot_grid/data_source";
 import { Workbook } from "exceljs";
 import saveAs from 'file-saver';
 import moment from "moment";
-import { Observable, combineLatest, map, takeUntil } from "rxjs";
-import { WithDestroy } from "../../utils/withdestroy";
+import { Observable, combineLatest, map } from "rxjs";
 import { DxPivotGridModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-statistic-pivotgrid',
@@ -20,7 +20,7 @@ import { CommonModule } from "@angular/common";
     imports: [CommonModule, DxPivotGridModule],
     standalone: true
   })
-  export class StatisticPivotgridComponent extends WithDestroy() {
+  export class StatisticPivotgridComponent {
 
     @Input() visible!: boolean|null;
 
@@ -33,14 +33,14 @@ import { CommonModule } from "@angular/common";
 
     name: string|undefined;
 
-    constructor(@Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
-      super();
-
+    constructor(
+      private destroy: DestroyRef,
+      @Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
       this.name$ = this.statisticService.name$;
       this.height$ = this.statisticService.layout$.pipe(map((layout) => layout?.height ?? '100%'));
       this.exportFilename$ = this.name$.pipe(map((name) => `${name}_${moment().format('YYYYMMDD')}`));
       this.options$ = this.statisticService.layout$.pipe(map((layout) => layout?.options as StatisticPivotOptions));
-      this.data$ = this.statisticService.data$;      
+      this.data$ = this.statisticService.data$;
       this.dataSource$ = combineLatest([this.options$, this.data$])
         .pipe(map(([options, data]) => (options && data)
           ? new PivotGridDataSource({
@@ -64,11 +64,11 @@ import { CommonModule } from "@angular/common";
             })
           : undefined ));
 
-      this.statisticService.name$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((name) => {
-          this.name = name; 
-        });
+      this.statisticService.name$.pipe(
+        takeUntilDestroyed(this.destroy)
+      ).subscribe((name) => {
+        this.name = name;
+      });
     }
 
     onExporting(e: ExportingEvent) {
@@ -84,7 +84,7 @@ import { CommonModule } from "@angular/common";
         })
       });
 
-      e.cancel = true;  
+      e.cancel = true;
     }
-  }  
+  }
 

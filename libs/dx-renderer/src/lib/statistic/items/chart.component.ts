@@ -4,7 +4,6 @@ import { STATISTIC_SERVICE, StatisticService } from "@ballware/meta-services";
 import { LegendClickEvent } from "devextreme/viz/chart";
 import moment from "moment";
 import { Observable, map } from "rxjs";
-import { WithDestroy } from "../../utils/withdestroy";
 import { DxChartModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
 import { ChartSeries } from "devextreme/viz/common";
@@ -17,7 +16,7 @@ import { ChartSeries } from "devextreme/viz/common";
     imports: [CommonModule, DxChartModule],
     standalone: true
   })
-  export class StatisticChartComponent extends WithDestroy() {
+  export class StatisticChartComponent {
 
     @Input() visible!: boolean|null;
 
@@ -32,8 +31,8 @@ import { ChartSeries } from "devextreme/viz/common";
     argumentAxisConstantLines$: Observable<any[]|undefined>;
     valueAxisConstantLines$: Observable<any[]|undefined>;
 
-    constructor(@Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
-      super();
+    constructor(
+      @Inject(STATISTIC_SERVICE) private statisticService: StatisticService) {
 
       this.name$ = this.statisticService.name$;
       this.height$ = this.statisticService.layout$.pipe(map((layout) => layout?.height ?? '100%'));
@@ -54,8 +53,8 @@ import { ChartSeries } from "devextreme/viz/common";
         label: { visible: s.labelVisible, format: { type: s.format, precision: s.precision } }
       } as ChartSeries))));
 
-      this.argumentAxisCustomizeText$ = this.statisticService.argumentAxisCustomizeText$.pipe(map((customizeText) => customizeText 
-        ? (arg: { value: number }) => customizeText(arg.value) ?? arg.value 
+      this.argumentAxisCustomizeText$ = this.statisticService.argumentAxisCustomizeText$.pipe(map((customizeText) => customizeText
+        ? (arg: { value: number }) => customizeText(arg.value) ?? arg.value
         : (arg: { value: number }) => arg.value.toString())
       );
 
@@ -83,5 +82,5 @@ import { ChartSeries } from "devextreme/viz/common";
         }
       }
     }
-    
-  }  
+
+  }

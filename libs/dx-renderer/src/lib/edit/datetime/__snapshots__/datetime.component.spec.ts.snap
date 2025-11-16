@@ -2,7 +2,7 @@
 
 exports[`EditLayoutDatetimeComponent should create date 1`] = `
 <ballware-edit-datetime
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   displayFormat={[Function String]}
   livecycle={[Function EditItemLivecycle]}
   readonly={[Function Readonly]}
@@ -77,7 +77,7 @@ exports[`EditLayoutDatetimeComponent should create date 1`] = `
 
 exports[`EditLayoutDatetimeComponent should create datetime 1`] = `
 <ballware-edit-datetime
-  destroy={[Function Destroy]}
+  destroy={[Function NodeInjectorDestroyRef]}
   displayFormat={[Function String]}
   livecycle={[Function EditItemLivecycle]}
   readonly={[Function Readonly]}
