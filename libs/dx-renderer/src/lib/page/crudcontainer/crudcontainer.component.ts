@@ -63,8 +63,7 @@ export class PageLayoutCrudcontainerComponent implements OnInit, OnDestroy {
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
-    private breadcrumb: Breadcrumb,
-    private datasourceService : DataSourceService) {
+    private breadcrumb: Breadcrumb) {
 
     this.pageService.customParam$.pipe(
       takeUntilDestroyed(this.destroy)

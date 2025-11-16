@@ -7,8 +7,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, TRANSLATOR, Translator } from '@ballware/meta-services';
-import { Observable, interval, map, takeUntil, takeWhile, tap, withLatestFrom, of } from 'rxjs';
+import { IDENTITY_SERVICE, IdentityService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService } from '@ballware/meta-services';
+import { Observable, interval, map, takeWhile, tap, withLatestFrom, of } from 'rxjs';
 import { ApplicationAccountMenuComponent } from '../account/menu.component';
 import { ApplicationDocumentationComponent } from "../documentation/documentation.component";
 import { DxButtonModule, DxPopupModule, DxToolbarModule } from 'devextreme-angular';
