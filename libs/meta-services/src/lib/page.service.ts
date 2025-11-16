@@ -1,12 +1,12 @@
 import { Observable } from 'rxjs';
 
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { CompiledPageData, PageLayout, QueryParams, ValueType } from '@ballware/meta-model';
 import { ToolbarItemRef } from './toolbaritemref';
 import { Router } from '@angular/router';
 import { LookupService } from './lookup.service';
 
-export interface PageService extends OnDestroy {
+export interface PageService {
   initialized$: Observable<boolean>;
   page$: Observable<CompiledPageData|undefined>;
   title$: Observable<string|undefined>;

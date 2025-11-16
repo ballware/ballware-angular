@@ -123,7 +123,7 @@ export interface LookupRequest {
   field?: string;
 }
 
-export interface LookupService extends OnDestroy {
+export interface LookupService {
 
   setIdentifier(identifier: string): void;
 

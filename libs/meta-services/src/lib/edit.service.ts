@@ -1,11 +1,11 @@
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditItemRef } from './edititemref';
 import { EditModes } from './editmodes';
 import { MetaService } from './meta.service';
 
-export interface EditService extends OnDestroy {
+export interface EditService {
     item$: Observable<Record<string, unknown>|undefined>;
     mode$: Observable<EditModes|undefined>;
     entity$: Observable<string|undefined>;

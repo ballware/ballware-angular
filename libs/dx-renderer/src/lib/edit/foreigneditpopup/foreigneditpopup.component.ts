@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   Provider,
@@ -42,7 +41,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
       imports: [CommonModule, CrudDialogComponent, EditLayoutComponent],
       standalone: true
 })
-export class ForeignEditPopupComponent implements OnInit, OnDestroy {
+export class ForeignEditPopupComponent implements OnInit {
 
     @Input() fullscreen!: boolean;
     @Input() customFunctionEntity!: string;
@@ -55,7 +54,6 @@ export class ForeignEditPopupComponent implements OnInit, OnDestroy {
 
     constructor(
         private destroy: DestroyRef,
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
         @Inject(META_SERVICE) private metaService: MetaService,
         @Inject(CRUD_SERVICE) private crudService: CrudService) {
 
@@ -89,11 +87,5 @@ export class ForeignEditPopupComponent implements OnInit, OnDestroy {
                 }
             });
         }
-    }
-
-    ngOnDestroy(): void {
-        this.crudService.ngOnDestroy();
-        this.metaService.ngOnDestroy();
-        this.lookupService.ngOnDestroy();
     }
 }

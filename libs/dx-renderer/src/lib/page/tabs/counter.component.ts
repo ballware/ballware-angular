@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   Output,
   Provider,
@@ -38,7 +37,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   imports: [CommonModule, DxLoadIndicatorModule],
   standalone: true,
 })
-export class PageLayoutTabsCounterComponent implements OnInit, OnDestroy {
+export class PageLayoutTabsCounterComponent implements OnInit {
   @Input() tab!: any;
   @Input() caption!: string;
   @Input() entity!: string;
@@ -51,8 +50,7 @@ export class PageLayoutTabsCounterComponent implements OnInit, OnDestroy {
   constructor(
     private destroy: DestroyRef,
     @Inject(PAGE_SERVICE) private pageService: PageService,
-    @Inject(META_SERVICE) private metaService: MetaService,
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
+    @Inject(META_SERVICE) private metaService: MetaService
   ) {
     this.pageService.customParam$
       .pipe(takeUntilDestroyed(this.destroy))
@@ -97,10 +95,5 @@ export class PageLayoutTabsCounterComponent implements OnInit, OnDestroy {
       this.metaService.setEntity(this.entity);
       this.metaService.setReadOnly(true);
     }
-  }
-
-  ngOnDestroy() {
-    this.metaService.ngOnDestroy();
-    this.lookupService.ngOnDestroy();
   }
 }

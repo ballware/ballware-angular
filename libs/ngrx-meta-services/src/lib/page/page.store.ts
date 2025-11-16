@@ -1,4 +1,4 @@
-import { OnDestroy } from "@angular/core";
+import { DestroyRef, inject } from "@angular/core";
 import { MetaPageApi } from "@ballware/meta-api";
 import { EditUtil, QueryParams, ScriptActions, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
@@ -11,7 +11,9 @@ import { LookupRequest, LookupService, PageService, TenantService, ToolbarServic
 import { PageState } from "./page.state";
 import { Router } from '@angular/router';
 
-export class PageStore extends ComponentStore<PageState> implements OnDestroy, PageService {
+export class PageStore extends ComponentStore<PageState> implements PageService {
+
+    private destroyRef = inject(DestroyRef);
 
     private scriptActions: ScriptActions;
 
@@ -40,6 +42,10 @@ export class PageStore extends ComponentStore<PageState> implements OnDestroy, P
                     console.debug(state);
                 }
             });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        });
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))

@@ -2,7 +2,6 @@ import {
   Component,
   DestroyRef,
   Inject,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
@@ -38,7 +37,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
     standalone: true
   })
-  export class EditLayoutAttachmentsComponent implements OnInit, OnDestroy {
+  export class EditLayoutAttachmentsComponent implements OnInit {
 
     public removeDialog: AttachmentRemoveDialog|undefined;
 
@@ -105,10 +104,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         ).subscribe((removeDialog) => {
             this.removeDialog = removeDialog;
         })
-    }
-
-    ngOnDestroy(): void {
-        this.attachmentService.ngOnDestroy();
     }
 
     fileOpen(file: Record<string, unknown>) {

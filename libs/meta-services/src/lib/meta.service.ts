@@ -1,10 +1,10 @@
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, Template, ValueType } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { EditModes } from './editmodes';
 import { LookupService } from './lookup.service';
 
-export interface MetaService extends OnDestroy {
+export interface MetaService {
   setIdentifier(identifier: string): void;
   setEntity(entity: string): void;
   setReadOnly(readOnly: boolean): void;

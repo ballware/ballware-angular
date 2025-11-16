@@ -1,10 +1,10 @@
 
-import { InjectionToken, OnDestroy } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import { CompiledStatistic, QueryParams, StatisticLayout } from '@ballware/meta-model';
 import { Observable } from 'rxjs';
 import { LookupService } from './lookup.service';
 
-export interface StatisticService extends OnDestroy {
+export interface StatisticService {
 
   setIdentifier(identifier: string): void;
   setStatistic(identifier: string): void;

@@ -1,4 +1,4 @@
-import { OnDestroy } from "@angular/core";
+import { DestroyRef, inject } from "@angular/core";
 import { MetaStatisticApi } from "@ballware/meta-api";
 import { CompiledStatistic, QueryParams, ScriptUtil, StatisticLayout } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
@@ -9,25 +9,31 @@ import { statisticDestroyed, statisticUpdated } from "../component";
 import { LookupService, StatisticService } from "@ballware/meta-services";
 import { StatisticState } from "./statistic.state";
 
-export class StatisticStore extends ComponentStore<StatisticState> implements StatisticService, OnDestroy {
-    
-    constructor(private store: Store, 
+export class StatisticStore extends ComponentStore<StatisticState> implements StatisticService {
+
+    private destroyRef = inject(DestroyRef);
+
+    constructor(private store: Store,
         private readonly scriptUtil: ScriptUtil,
-        private metaStatisticApi: MetaStatisticApi, 
+        private metaStatisticApi: MetaStatisticApi,
         private lookupService: LookupService) {
         super({});
 
         this.state$
             .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {                
+            .subscribe((state) => {
                 if (state.identifier) {
                     this.store.dispatch(statisticUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Statistic state update');
-                    console.debug(state);    
+                    console.debug(state);
                 }
             });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        });
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))
@@ -37,23 +43,23 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
                 }
             });
 
-        this.effect(_ => this.statistic$            
-            .pipe(switchMap((statistic) => (statistic) 
+        this.effect(_ => this.statistic$
+            .pipe(switchMap((statistic) => (statistic)
                 ? this.metaStatisticApi.metadataForStatistic(statistic)
                 : of(undefined)))
-            .pipe(tap((statisticMetadata) => {                
+            .pipe(tap((statisticMetadata) => {
                 this.updater((state, statisticMetadata: CompiledStatistic|undefined) => ({
                     ...state,
-                    statisticMetadata,                        
-                }))(statisticMetadata);                
+                    statisticMetadata,
+                }))(statisticMetadata);
             }))
         );
 
         this.effect(_ => combineLatest([this.metadata$, this.customParam$, this.headParams$, this.lookupService.lookups$])
-            .pipe(switchMap(([metadata, customParam, headParams, lookups]) => 
-                combineLatest([of(metadata), of(customParam), of(headParams), of(lookups), (metadata && customParam && headParams && lookups) 
+            .pipe(switchMap(([metadata, customParam, headParams, lookups]) =>
+                combineLatest([of(metadata), of(customParam), of(headParams), of(lookups), (metadata && customParam && headParams && lookups)
                     ? this.metaStatisticApi.dataForStatistic(metadata.identifier, headParams)
-                    : of(undefined)])                                                
+                    : of(undefined)])
             ))
             .pipe(tap(([metadata, customParam, headParams, lookups, data]) => {
                 if (metadata && metadata.layout && customParam && headParams && lookups && data) {
@@ -78,10 +84,10 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
     readonly name$ = this.select(state => state.name);
     readonly layout$ = this.select(state => state.layout);
     readonly data$ = this.select(state => state.data);
-    
+
     readonly argumentAxisCustomizeText$ = combineLatest([this.metadata$, this.layout$, this.customParam$, this.headParams$])
-        .pipe(map(([metadata, layout, customParam, headParams]) => (metadata && layout && customParam && headParams) 
-            ? (value: unknown) => metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, this.scriptUtil)    
+        .pipe(map(([metadata, layout, customParam, headParams]) => (metadata && layout && customParam && headParams)
+            ? (value: unknown) => metadata.customScripts.argumentAxisCustomizeText(layout, value, headParams, customParam, this.scriptUtil)
             : undefined));
 
     readonly setStatistic = this.updater((state, statistic: string) => ({
@@ -94,15 +100,15 @@ export class StatisticStore extends ComponentStore<StatisticState> implements St
         identifier
     }));
 
-    readonly setHeadParams = 
+    readonly setHeadParams =
         this.updater((state, headParams: QueryParams) => ({
             ...state,
             headParams
         }));
 
-    readonly setCustomParam = 
+    readonly setCustomParam =
         this.updater((state, customParam: Record<string, unknown>|undefined) => ({
             ...state,
             customParam
-        })); 
+        }));
 }

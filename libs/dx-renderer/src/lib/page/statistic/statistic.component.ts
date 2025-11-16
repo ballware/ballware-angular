@@ -3,7 +3,6 @@ import {
   DestroyRef,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
@@ -38,7 +37,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [Breadcrumb],
   standalone: true,
 })
-export class PageLayoutStatisticComponent implements OnInit, OnDestroy
+export class PageLayoutStatisticComponent implements OnInit
 {
   @Input() layoutItem!: PageLayoutItem;
 
@@ -79,9 +78,5 @@ export class PageLayoutStatisticComponent implements OnInit, OnDestroy
 
       this.statisticService.setStatistic(statisticOptions?.statistic);
     }
-  }
-
-  ngOnDestroy() {
-    this.statisticService.ngOnDestroy();
   }
 }

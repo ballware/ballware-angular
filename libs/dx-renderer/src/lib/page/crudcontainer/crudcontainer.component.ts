@@ -4,7 +4,6 @@ import {
   forwardRef,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
@@ -53,7 +52,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [ Breadcrumb ],
   standalone: true
 })
-export class PageLayoutCrudcontainerComponent implements OnInit, OnDestroy {
+export class PageLayoutCrudcontainerComponent implements OnInit {
 
   @Input() layoutItem?: PageLayoutItem;
 
@@ -97,11 +96,5 @@ export class PageLayoutCrudcontainerComponent implements OnInit, OnDestroy {
         }
     });
 
-  }
-
-  ngOnDestroy(): void {
-    this.crudService.ngOnDestroy();
-    this.metaService.ngOnDestroy();
-    this.lookupService.ngOnDestroy();
   }
 }

@@ -5,7 +5,6 @@ import {
   Inject,
   Input,
   OnChanges,
-  OnDestroy,
   Provider,
   SimpleChanges,
 } from '@angular/core';
@@ -38,7 +37,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [Breadcrumb],
   standalone: true
 })
-export class PageComponent implements OnDestroy, OnChanges {
+export class PageComponent implements OnChanges {
   @HostBinding('class') classes = 'h-100 p-2';
 
   public readonly initialized$ = this.pageService.initialized$;
@@ -52,18 +51,12 @@ export class PageComponent implements OnDestroy, OnChanges {
     private destroy: DestroyRef,
     @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
     @Inject(PAGE_SERVICE) private pageService: PageService,
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     private breadcrumb: Breadcrumb) {
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
       takeUntilDestroyed(this.destroy),
       map((screenSize) => screenSize <= SCREEN_SIZE.SM)
     );
-  }
-
-  ngOnDestroy(): void {
-    this.pageService.ngOnDestroy();
-    this.lookupService.ngOnDestroy();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

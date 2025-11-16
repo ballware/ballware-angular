@@ -3,7 +3,6 @@ import {
   DestroyRef,
   Inject,
   Input,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
@@ -30,7 +29,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [Breadcrumb],
   standalone: true
 })
-export class CrudDialogComponent implements OnInit, OnDestroy {
+export class CrudDialogComponent implements OnInit {
 
   @Input() mode?: EditModes;
   @Input() title?: string;
@@ -101,10 +100,6 @@ export class CrudDialogComponent implements OnInit, OnDestroy {
           this.editService.setCancel(this.cancel);
         }
       }
-  }
-
-  ngOnDestroy(): void {
-    this.editService.ngOnDestroy();
   }
 
   public get applyAndCloseText(): string {

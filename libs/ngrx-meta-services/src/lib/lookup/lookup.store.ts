@@ -1,3 +1,4 @@
+import { DestroyRef, inject } from "@angular/core";
 import { IdentityRoleApi, IdentityUserApi, MetaDocumentApi, MetaDocumentationApi, MetaEntityApi, MetaLookupApi, MetaMlModelApi, MetaNotificationApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi, MetaSubscriptionApi, MetaTenantApi } from "@ballware/meta-api";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -22,7 +23,7 @@ const createIdentityUserLookup = (
       displayMember: displayMember,
     } as LookupDescriptor;
   };
-  
+
 const createIdentityRoleLookup = (
     api: IdentityRoleApi,
     valueMember: string,
@@ -117,7 +118,7 @@ const createMetaLookupLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };  
+  };
 
 const createMetaMlModelLookup = (
     api: MetaMlModelApi,
@@ -133,7 +134,7 @@ const createMetaMlModelLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };  
+  };
 
 const createMetaNotificationLookup = (
     api: MetaNotificationApi,
@@ -149,7 +150,7 @@ const createMetaNotificationLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };    
+  };
 
 const createMetaPageLookup = (
     api: MetaPageApi,
@@ -197,7 +198,7 @@ const createMetaStatisticLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };  
+  };
 
 const createMetaSubscriptionLookup = (
     api: MetaSubscriptionApi,
@@ -213,7 +214,7 @@ const createMetaSubscriptionLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };    
+  };
 
 const createMetaTenantLookup = (
     api: MetaTenantApi,
@@ -229,7 +230,7 @@ const createMetaTenantLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };    
+  };
 
 const createMetaEntityRightLookup = (
     api: MetaEntityApi,
@@ -245,7 +246,7 @@ const createMetaEntityRightLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  }; 
+  };
 
 const createMetaEntityStateLookup = (
     api: MetaProcessingstateApi,
@@ -261,7 +262,7 @@ const createMetaEntityStateLookup = (
       valueMember: valueMember,
       displayMember: displayMember,
     } as LookupDescriptor;
-  };  
+  };
 
 const createMetaEntityPickvalueLookup = (
   api: MetaPickvalueApi,
@@ -279,7 +280,7 @@ const createMetaEntityPickvalueLookup = (
     displayMember: displayMember,
   } as LookupDescriptor;
 };
-  
+
 const createGenericLookup = (
     api: MetaLookupApi,
     lookupId: string,
@@ -296,7 +297,7 @@ const createGenericLookup = (
       displayMember: displayMember,
     } as LookupDescriptor;
   };
-  
+
 const createGenericLookupWithParam = (
     api: MetaLookupApi,
     lookupId: string,
@@ -317,7 +318,7 @@ const createGenericLookupWithParam = (
       };
     };
   };
-  
+
 const createGenericPickvalueLookup = (
     api: MetaPickvalueApi,
     entity: string,
@@ -336,7 +337,7 @@ const createGenericPickvalueLookup = (
       displayMember: displayMember,
     } as LookupDescriptor;
   };
-  
+
 const createGenericAutocomplete = (
     api: MetaLookupApi,
     lookupId: string
@@ -348,7 +349,7 @@ const createGenericAutocomplete = (
       } as AutocompleteStoreDescriptor,
     } as LookupDescriptor;
   };
-  
+
 const createGenericAutocompleteWithParam = (
     api: MetaLookupApi,
     lookupId: string
@@ -363,7 +364,7 @@ const createGenericAutocompleteWithParam = (
       };
     };
   };
-  
+
 const createGenericStateLookup = (
     api: MetaProcessingstateApi,
     entity: string,
@@ -380,7 +381,7 @@ const createGenericStateLookup = (
       displayMember: displayMember,
     } as LookupDescriptor;
   };
-  
+
 const createMetaAllowedStateLookup = (
     api: MetaProcessingstateApi,
     entity: string,
@@ -426,7 +427,7 @@ const createTenantAllowedStateLookup = (
       };
     };
   };
-  
+
 const createGenericLookupByIdentifier = (
     api: MetaLookupApi,
     lookupIdentifier: string,
@@ -448,19 +449,22 @@ const createGenericLookupByIdentifier = (
 
 
 export class LookupStore extends ComponentStore<LookupState> implements LookupService {
-    constructor(private store: Store, 
-      private readonly userApi: IdentityUserApi, 
-      private readonly roleApi: IdentityRoleApi, 
-      private readonly documentApi: MetaDocumentApi, 
-      private readonly documentationApi: MetaDocumentationApi, 
-      private readonly entityApi: MetaEntityApi, 
-      private readonly mlmodelApi: MetaMlModelApi, 
-      private readonly notificationApi: MetaNotificationApi, 
-      private readonly pageApi: MetaPageApi, 
-      private readonly statisticApi: MetaStatisticApi, 
-      private readonly subscriptionApi: MetaSubscriptionApi, 
-      private readonly tenantApi: MetaTenantApi, 
-      private readonly lookupApi: MetaLookupApi, 
+
+  private destroyRef = inject(DestroyRef);
+
+  constructor(private store: Store,
+      private readonly userApi: IdentityUserApi,
+      private readonly roleApi: IdentityRoleApi,
+      private readonly documentApi: MetaDocumentApi,
+      private readonly documentationApi: MetaDocumentationApi,
+      private readonly entityApi: MetaEntityApi,
+      private readonly mlmodelApi: MetaMlModelApi,
+      private readonly notificationApi: MetaNotificationApi,
+      private readonly pageApi: MetaPageApi,
+      private readonly statisticApi: MetaStatisticApi,
+      private readonly subscriptionApi: MetaSubscriptionApi,
+      private readonly tenantApi: MetaTenantApi,
+      private readonly lookupApi: MetaLookupApi,
       private readonly pickvalueApi: MetaPickvalueApi,
       private readonly processingstateApi: MetaProcessingstateApi) {
         super({});
@@ -468,14 +472,18 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
         this.state$
           .pipe(takeUntil(this.destroy$))
           .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-          .subscribe((state) => {                
+          .subscribe((state) => {
               if (state.identifier) {
                   this.store.dispatch(lookupUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
               } else {
                   console.debug('Lookup state update');
-                  console.debug(state);    
+                  console.debug(state);
               }
           });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        });
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))
@@ -483,7 +491,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 if (state.identifier) {
                     this.store.dispatch(lookupDestroyed({ identifier: state.identifier }));
                 }
-            });    
+            });
     }
 
     readonly setIdentifier = this.updater((state, identifier: string) => ({
@@ -497,7 +505,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
         this.updater((state, lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>|undefined) => ({
             ...state,
             lookups
-        }));    
+        }));
 
     readonly getGenericLookupByIdentifier$ = of((identifier: string, valueExpr: string, displayExpr: string) => createGenericLookupByIdentifier(this.lookupApi, identifier, valueExpr, displayExpr));
 
@@ -549,7 +557,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 break;
             case 'lookupwithparam':
                 if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
-                  newLookups[l.identifier] = createGenericLookupWithParam(                    
+                  newLookups[l.identifier] = createGenericLookupWithParam(
                       this.lookupApi,
                       l.lookupId,
                       l.valueMember,
@@ -562,7 +570,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 }
                 break;
             case 'pickvalue':
-                newLookups[l.identifier] = createGenericPickvalueLookup(                
+                newLookups[l.identifier] = createGenericPickvalueLookup(
                   this.pickvalueApi,
                   l.entity as string,
                   l.field as string,
@@ -617,7 +625,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                   l.valueMember,
                   l.displayMember
                 );
-                break;                
+                break;
             }
         });
 
@@ -626,5 +634,5 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
           this.updateLookups(undefined);
         }
     }
-        
+
 }

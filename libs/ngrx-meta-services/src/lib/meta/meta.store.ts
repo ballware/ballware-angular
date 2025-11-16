@@ -1,4 +1,4 @@
-import { OnDestroy } from "@angular/core";
+import { DestroyRef, inject } from "@angular/core";
 import { GenericEntityApiFactory, MetaDocumentApi, MetaEntityApi } from "@ballware/meta-api";
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
@@ -14,7 +14,10 @@ interface TemplateItemOptions {
     identifier: string;
 }
 
-export class MetaStore extends ComponentStore<MetaState> implements MetaService, OnDestroy {
+export class MetaStore extends ComponentStore<MetaState> implements MetaService {
+
+    private destroyRef = inject(DestroyRef);
+
     constructor(private store: Store,
         private readonly scriptUtil: ScriptUtil,
         private translator: Translator,
@@ -37,6 +40,10 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService,
                     console.debug(state);
                 }
             });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        })
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))

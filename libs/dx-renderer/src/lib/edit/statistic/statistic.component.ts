@@ -2,7 +2,6 @@ import {
   Component,
   DestroyRef,
   Inject,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
@@ -35,7 +34,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   hostDirectives: [Breadcrumb, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible],
   standalone: true
 })
-export class EditLayoutStatisticComponent implements OnInit, OnDestroy {
+export class EditLayoutStatisticComponent implements OnInit {
 
   type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
 
@@ -72,9 +71,5 @@ export class EditLayoutStatisticComponent implements OnInit, OnDestroy {
         }
       }
     });
-  }
-
-  ngOnDestroy(): void {
-    this.statisticService.ngOnDestroy();
   }
 }

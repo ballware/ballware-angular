@@ -3,12 +3,11 @@ import {
   DestroyRef,
   forwardRef,
   Inject,
-  OnDestroy,
   OnInit,
   Provider,
 } from '@angular/core';
 import { GridLayout } from '@ballware/meta-model';
-import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, EditService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory, EDIT_SERVICE } from '@ballware/meta-services';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory } from '@ballware/meta-services';
 import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
 import { DataSourceService } from '../../utils';
 import { Router } from '@angular/router';
@@ -72,7 +71,7 @@ interface EntityGridItemOptions {
   hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
   standalone: true
 })
-export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
+export class EditLayoutEntitygridComponent implements OnInit {
 
   public gridLayout$: Observable<GridLayout|undefined>;
 
@@ -84,8 +83,6 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(META_SERVICE) private metaService: MetaService,
     @Inject(CRUD_SERVICE) private crudService: CrudService,
-    private datasourceService: DataSourceService,
-    @Inject(EDIT_SERVICE) private editService: EditService,
     private breadcrumb: Breadcrumb,
     private destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
@@ -132,12 +129,5 @@ export class EditLayoutEntitygridComponent implements OnInit, OnDestroy {
       this.layoutIdentifier$.next(gridOptions?.layout ?? 'primary');
       this.height$.next(layoutItem?.options?.height);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.editService.ngOnDestroy();
-    this.crudService.ngOnDestroy();
-    this.metaService.ngOnDestroy();
-    this.lookupService.ngOnDestroy();
   }
 }

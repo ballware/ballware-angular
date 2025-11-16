@@ -1,4 +1,4 @@
-import { OnDestroy } from "@angular/core";
+import { DestroyRef, inject } from "@angular/core";
 import { EditLayout, EditLayoutItem, EditUtil, GridLayoutColumn, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
@@ -15,7 +15,9 @@ interface DetailEditUtil extends EditUtil {
     getDetailItemIndex: () => number;
 }
 
-export class EditStore extends ComponentStore<EditState> implements OnDestroy, EditService {
+export class EditStore extends ComponentStore<EditState> implements EditService {
+
+    private destroyRef = inject(DestroyRef);
 
     private editItems: Record<string, EditItemRef|undefined> = {};
     private applyMethod?: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
@@ -46,6 +48,10 @@ export class EditStore extends ComponentStore<EditState> implements OnDestroy, E
                     console.debug(state);
                 }
             });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        });
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))

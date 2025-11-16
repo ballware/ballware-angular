@@ -1,4 +1,4 @@
-import { OnDestroy } from '@angular/core';
+import { DestroyRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiError } from '@ballware/meta-api';
 import { CrudItem, EntityCustomFunction, GridLayoutColumn } from '@ballware/meta-model';
@@ -10,22 +10,28 @@ import { crudDestroyed, crudUpdated } from '../component';
 import { CrudAction, CrudEditMenuItem, CrudService, DetailColumnEditDialog, EditModes, FunctionIdentifier, ImportDialog, ItemEditDialog, ItemRemoveDialog, MetaService, NotificationService, Translator } from '@ballware/meta-services';
 import { CrudState } from "./crud.state";
 
-export class CrudStore extends ComponentStore<CrudState> implements CrudService, OnDestroy {
-    
+export class CrudStore extends ComponentStore<CrudState> implements CrudService {
+
+    private destroyRef = inject(DestroyRef);
+
     constructor(private store: Store, private metaService: MetaService, private notificationService: NotificationService, private translator: Translator, private router: Router) {
         super({});
 
         this.state$
             .pipe(takeUntil(this.destroy$))
             .pipe(distinctUntilChanged((prev, next) => isEqual(prev, next)))
-            .subscribe((state) => {                
+            .subscribe((state) => {
                 if (state.identifier) {
                     this.store.dispatch(crudUpdated({ identifier: state.identifier, currentState: cloneDeep(state) }));
                 } else {
                     console.debug('Crud state update');
-                    console.debug(state);    
+                    console.debug(state);
                 }
             });
+
+        this.destroyRef.onDestroy(() => {
+          super.ngOnDestroy();
+        })
 
         this.destroy$
             .pipe(withLatestFrom(this.state$))
@@ -35,7 +41,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 }
             });
 
-        this.effect(_ => combineLatest([ 
+        this.effect(_ => combineLatest([
             combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
                 .pipe(switchMap(([customFunctions, customFunctionAllowed]) =>
                     of(customFunctions?.filter(f => f.type === 'add' && customFunctionAllowed && customFunctionAllowed(f))
@@ -90,12 +96,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 importMenuItems
             }))(importMenuItems))));
 
-        this.effect(_ => 
+        this.effect(_ =>
             combineLatest([this.metaService.customFunctions$, this.metaService.customFunctionAllowed$])
                 .pipe(switchMap(([customFunctions, customFunctionAllowed]) =>
                     of(customFunctions?.filter(f => f.multi && f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f))
                         .map(f => ({
-                            id: f.id,                            
+                            id: f.id,
                             type: 'edit',
                             icon: f.icon,
                             text: f.text,
@@ -108,10 +114,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     ...state,
                     headCustomFunctions
                 }))(headCustomFunctions)))
-        );        
+        );
 
     }
-    
+
     readonly currentInteractionTarget$: Subject<Element | undefined> = new Subject<Element|undefined>();
 
     readonly reload$ = new Subject<void>();
@@ -143,17 +149,17 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     const allowedAdditionalFunctions = customFunctions?.filter(f =>
                         customFunctionAllowed(f, data)
                     );
-        
+
                     return allowedAdditionalFunctions?.length > 0;
                 }
-    
+
                 return false;
             }
             default:
                 return false;
             }
         }));
-    
+
     readonly functionExecute$ = combineLatest([this.metaService.viewFunction$, this.metaService.editFunction$])
         .pipe(map(([viewFunction, editFunction]) => (viewFunction && editFunction) ? (identifier: FunctionIdentifier, editLayoutIdentifier: string, data: CrudItem, target: Element) => {
             switch (identifier) {
@@ -164,14 +170,14 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         this.customEdit({ customFunction: viewFunction, items: [data]});
                     } else {
                         this.view({ item: data, editLayout: editLayoutIdentifier });
-                    }           
+                    }
                     break;
                 case 'edit':
                     if (editFunction.id !== 'edit') {
                         this.customEdit({ customFunction: editFunction, items: [data]});
                     } else {
                         this.edit({ item: data, editLayout: editLayoutIdentifier });
-                    }                    
+                    }
                     break;
                 case 'delete':
                     this.remove({ item: data });
@@ -202,7 +208,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     readonly selectPrintSheet$ = this.select(state => state.selectPrintSheet);
     readonly selectExportSheet$ = this.select(state => state.selectExportSheet);
     readonly selectImportSheet$ = this.select(state => state.selectImportSheet);
-    
+
     readonly setQuery = this.updater((state, queryIdentifier: string) => ({
         ...state,
         queryIdentifier
@@ -212,12 +218,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
         ...state,
         identifier
     }));
-    
+
     readonly reload = () => {
         setTimeout(() => this.reload$.next());
     }
 
-    readonly create = this.effect((request$: Observable<{ editLayout: string }>) => 
+    readonly create = this.effect((request$: Observable<{ editLayout: string }>) =>
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.create$, this.metaService.entity$, this.metaService.displayName$, this.metaService.headParams$))
             .pipe(switchMap(([request, getEditLayout, create, entity, displayName, headParams]) => (getEditLayout && create && entity && displayName && headParams && request) ?
                 create(request.editLayout ?? 'primary', headParams)
@@ -228,10 +234,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         title: this.translator('datacontainer.titles.add', { entity: displayName }),
                         supportContinueAfterSave: false,
                         editLayout: getEditLayout(request.editLayout, EditModes.CREATE),
-                        apply: (editUtil, editedItem, continueAfterSave) => { 
+                        apply: (editUtil, editedItem, continueAfterSave) => {
                             this.save({ item: editedItem as CrudItem, continueAfterSave });
                         },
-                        cancel: () => { 
+                        cancel: () => {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
@@ -239,7 +245,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                          }
                     } as ItemEditDialog)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {                
+            .pipe(tap((itemDialog) => {
                 this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
                     ...state,
                     itemDialog
@@ -247,7 +253,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))
     );
 
-    readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
+    readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) =>
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
             .pipe(switchMap(([viewRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && viewRequest) ?
                 byId(viewRequest.editLayout ?? 'primary', viewRequest.item.Id)
@@ -258,21 +264,21 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         title: this.translator('datacontainer.titles.view', { entity: displayName }),
                         supportContinueAfterSave: false,
                         editLayout: getEditLayout(viewRequest.editLayout, EditModes.VIEW),
-                        apply: () => { 
+                        apply: () => {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
+                            }))();
                         },
-                        cancel: () => { 
+                        cancel: () => {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
+                            }))();
                          }
                     } as ItemEditDialog)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {                
+            .pipe(tap((itemDialog) => {
                 this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
                     ...state,
                     itemDialog
@@ -280,7 +286,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))
     );
 
-    readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) => 
+    readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) =>
         request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
             .pipe(switchMap(([editRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && editRequest) ?
                 byId(editRequest.editLayout ?? 'primary', editRequest.item.Id)
@@ -291,18 +297,18 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                         title: this.translator('datacontainer.titles.edit', { entity: displayName }),
                         supportContinueAfterSave: false,
                         editLayout: getEditLayout(editRequest.editLayout, EditModes.EDIT),
-                        apply: (editUtil, editedItem, continueAfterSave) => { 
+                        apply: (editUtil, editedItem, continueAfterSave) => {
                             this.save({ item: editedItem as CrudItem, continueAfterSave });
                         },
-                        cancel: () => { 
+                        cancel: () => {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
+                            }))();
                          }
                     } as ItemEditDialog)))
                 : of(undefined)))
-            .pipe(tap((itemDialog) => {                
+            .pipe(tap((itemDialog) => {
                 this.updater((state, itemDialog: ItemEditDialog|undefined) => ({
                     ...state,
                     itemDialog
@@ -310,22 +316,22 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))
     );
 
-    readonly remove = this.effect((request$: Observable<{ item: CrudItem }>) => 
+    readonly remove = this.effect((request$: Observable<{ item: CrudItem }>) =>
         request$.pipe(withLatestFrom(this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$))
-            .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName]) => (entityMetadata && byId && displayName && removeRequest) ? 
+            .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName]) => (entityMetadata && byId && displayName && removeRequest) ?
                 byId('primary', removeRequest.item.Id)
-                    .pipe(map((item) => 
+                    .pipe(map((item) =>
                         ({
                             item: item,
                             title: this.translator('datacontainer.titles.remove', { entity: displayName }),
-                            apply: () => { 
+                            apply: () => {
                                 this.drop({ item });
                             },
-                            cancel: () => { 
+                            cancel: () => {
                                 this.updater((state) => ({
                                     ...state,
                                     removeDialog: undefined
-                                }))(); 
+                                }))();
                             }
                         } as ItemRemoveDialog))) : of(undefined)))
             .pipe(tap((removeDialog) => this.updater((state, removeDialog: ItemRemoveDialog|undefined) => ({
@@ -334,7 +340,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))(removeDialog)))
     );
 
-    readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) => 
+    readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) =>
         request$
             .pipe(tap((request) => this.router.navigate(['print'], {
                 queryParams: {
@@ -343,10 +349,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 }
             })))
     );
-      
-    readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) => 
+
+    readonly customEdit = this.effect((request$: Observable<{ customFunction: EntityCustomFunction, items?: CrudItem[] | undefined }>) =>
         request$.pipe(withLatestFrom(this.metaService.prepareCustomFunction$, this.metaService.evaluateCustomFunction$, this.metaService.getEditLayout$, this.metaService.entity$, this.metaService.headParams$))
-            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, entity, headParams]) =>  customFunction.entity 
+            .pipe(tap(([{ customFunction, items }, prepareCustomFunction, evaluateCustomFunction, getEditLayout, entity, headParams]) =>  customFunction.entity
                 ? this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
                     itemDialog
@@ -360,21 +366,21 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     externalEditor: false,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction,
-                    apply: (editUtil, editedItem, continueAfterSave) => {       
+                    apply: (editUtil, editedItem, continueAfterSave) => {
                         if (!continueAfterSave) {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
-                        }          
+                            }))();
+                        }
                     },
-                    cancel: () => { 
+                    cancel: () => {
                         this.updater((state) => ({
                             ...state,
                             itemDialog: undefined
-                        }))(); 
+                        }))();
                      }
-                } as ItemEditDialog) 
+                } as ItemEditDialog)
                 : prepareCustomFunction && evaluateCustomFunction && getEditLayout && prepareCustomFunction(customFunction.id, items, (params) => {
                 this.updater((state, itemDialog: ItemEditDialog) => ({
                     ...state,
@@ -389,15 +395,15 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     externalEditor: customFunction.externalEditor,
                     foreignEntity: customFunction.entity,
                     customFunction: customFunction,
-                    apply: (editUtil, editedItem, continueAfterSave) => { 
+                    apply: (editUtil, editedItem, continueAfterSave) => {
                         if (!customFunction.externalEditor && !customFunction.entity) {
-                            evaluateCustomFunction(customFunction.id, continueAfterSave, editUtil, editedItem, 
+                            evaluateCustomFunction(customFunction.id, continueAfterSave, editUtil, editedItem,
                                 (evaluatedResult) => {
                                     if (Array.isArray(evaluatedResult)) {
                                         this.saveBatch({ customFunction, items: evaluatedResult as Array<CrudItem>, continueAfterSave });
                                     } else {
                                         this.save({ customFunction, item: evaluatedResult as CrudItem, continueAfterSave });
-                                    }                                
+                                    }
                                 },
                                 (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'warning' })
                             );
@@ -406,113 +412,113 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                 this.updater((state) => ({
                                     ...state,
                                     itemDialog: undefined
-                                }))(); 
-                            }                            
-                        }          
+                                }))();
+                            }
+                        }
                     },
-                    cancel: () => { 
+                    cancel: () => {
                         this.updater((state) => ({
                             ...state,
                             itemDialog: undefined
-                        }))(); 
+                        }))();
                      }
                 } as ItemEditDialog);
-            }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));           
-            
-    readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem, continueAfterSave: boolean }>) => 
+            }, (message) => this.notificationService.triggerNotification({ message: this.translator(message), severity: 'info' }), headParams))));
+
+    readonly save = this.effect((saveRequest$: Observable<{ customFunction?: EntityCustomFunction, item: CrudItem, continueAfterSave: boolean }>) =>
         saveRequest$.pipe(withLatestFrom(this.metaService.save$))
             .pipe(switchMap(([saveRequest, save]) => (saveRequest && save)
                 ? save(saveRequest.customFunction?.id ?? 'primary', saveRequest.item)
-                    .pipe(tap(() => { 
+                    .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
-                        
+
                         if (!saveRequest.continueAfterSave) {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
-    
+                            }))();
+
                             this.reload();
-                        }                        
+                        }
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                        
-                        return of(undefined);              
+
+                        return of(undefined);
                     }))
                 : of(undefined)
             )));
 
-    readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[], continueAfterSave: boolean }>) => 
+    readonly saveBatch = this.effect((saveRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[], continueAfterSave: boolean }>) =>
         saveRequest$.pipe(withLatestFrom(this.metaService.saveBatch$))
             .pipe(switchMap(([saveRequest, saveBatch]) => (saveRequest && saveBatch)
                 ? saveBatch(saveRequest.customFunction?.id ?? 'primary', saveRequest.items)
-                    .pipe(tap(() => { 
+                    .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
-                        
+
                         if (!saveRequest.continueAfterSave) {
                             this.updater((state) => ({
                                 ...state,
                                 itemDialog: undefined
-                            }))(); 
-    
+                            }))();
+
                             this.reload();
-                        }                        
+                        }
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                        
-                        return of(undefined);              
+
+                        return of(undefined);
                     }))
                 : of(undefined)
             )));
 
 
-    readonly uploadItems = this.effect((uploadRequest$: Observable<{ query: string, file: File }>) => 
+    readonly uploadItems = this.effect((uploadRequest$: Observable<{ query: string, file: File }>) =>
         uploadRequest$.pipe(withLatestFrom(this.metaService.importItems$))
             .pipe(switchMap(([uploadRequest, importFiles]) => (uploadRequest && importFiles)
                 ? importFiles(uploadRequest.query, uploadRequest.file)
-                    .pipe(tap(() => { 
+                    .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.saved'), severity: 'info' });
-                        
+
                         this.updater((state) => ({
                             ...state,
                             importDialog: undefined
-                        }))(); 
+                        }))();
 
                         this.reload();
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                        
-                        return of(undefined);              
+
+                        return of(undefined);
                     }))
                 : of(undefined))));
 
-    readonly drop = this.effect((dropRequest$: Observable<{ item: CrudItem }>) => 
+    readonly drop = this.effect((dropRequest$: Observable<{ item: CrudItem }>) =>
         dropRequest$.pipe(withLatestFrom(this.metaService.drop$))
             .pipe(switchMap(([dropRequest, drop]) => (dropRequest && drop)
                 ? drop(dropRequest.item)
-                    .pipe(tap(() => { 
+                    .pipe(tap(() => {
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.removed'), severity: 'info' });
-                        
+
                         this.updater((state) => ({
                             ...state,
                             removeDialog: undefined
-                        }))(); 
+                        }))();
 
                         this.reload();
                     }))
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                        
-                        return of(undefined);              
+
+                        return of(undefined);
                     }))
                 : of(undefined)
             ))
     );
 
-    readonly importItems = this.effect((importRequest$: Observable<{ customFunction: EntityCustomFunction }>) => 
+    readonly importItems = this.effect((importRequest$: Observable<{ customFunction: EntityCustomFunction }>) =>
         importRequest$
             .pipe(tap((request) => this.updater((state, importDialog: ImportDialog) => ({
                 ...state,
@@ -527,23 +533,23 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
              } as ImportDialog)))
     );
 
-    readonly exportItems = this.effect((exportRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) => 
+    readonly exportItems = this.effect((exportRequest$: Observable<{ customFunction: EntityCustomFunction, items: CrudItem[] }>) =>
         exportRequest$.pipe(withLatestFrom(this.metaService.exportItems$))
             .pipe(switchMap(([exportRequest, exportItems]) => exportItems
                 ? exportItems(exportRequest.customFunction.id, exportRequest.items)
                     .pipe(catchError((error: ApiError) => {
                         this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-                    
-                        return of(undefined);              
-                    }))   
-                    .pipe(map((url) => url && window.open(url)))  
+
+                        return of(undefined);
+                    }))
+                    .pipe(map((url) => url && window.open(url)))
                 : of(undefined)))
     );
 
-    readonly detailColumnEdit = this.effect((request$: Observable<{ mode: EditModes, item: unknown, column: GridLayoutColumn }>) => 
+    readonly detailColumnEdit = this.effect((request$: Observable<{ mode: EditModes, item: unknown, column: GridLayoutColumn }>) =>
         request$.pipe((withLatestFrom(this.metaService.getEditLayout$, this.metaService.entity$)))
             .pipe(switchMap(([request, getEditLayout, entity]) => {
-                const editLayout = getEditLayout 
+                const editLayout = getEditLayout
                     ? getEditLayout(request.column.popuplayout ?? 'primary', request.mode)
                     : undefined;
 
@@ -555,31 +561,31 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))((request && editLayout && entity) ? ({
                 mode: request.mode,
                 entity: entity,
-                item: cloneDeep(request.item),   
+                item: cloneDeep(request.item),
                 title: request.column.caption,
-                dataMember: request.column.dataMember,                
+                dataMember: request.column.dataMember,
                 editLayout: editLayout,
-                apply: (editUtil, item) => { 
+                apply: (editUtil, item) => {
                     if (request.column.dataMember) {
                         set(request.item as Record<string, unknown>, request.column.dataMember, get(item, request.column.dataMember));
-                    }                    
+                    }
 
                     this.updater((state) => ({
                         ...state,
                         detailColumnEditDialog: undefined
-                    }))(); 
+                    }))();
                  },
-                 cancel: () => { 
+                 cancel: () => {
                     this.updater((state) => ({
                         ...state,
                         detailColumnEditDialog: undefined
-                    }))(); 
-                 }             
+                    }))();
+                 }
             } as DetailColumnEditDialog) : undefined)))
     );
 
-    readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) => 
-        selectAddRequest$.pipe(withLatestFrom(this.addMenuItems$))            
+    readonly selectAdd = this.effect((selectAddRequest$: Observable<{ target: Element, defaultEditLayout: string }>) =>
+        selectAddRequest$.pipe(withLatestFrom(this.addMenuItems$))
             .pipe(map(([selectAddRequest, addMenuItems]) => {
                 if (selectAddRequest && addMenuItems) {
                     if (addMenuItems.length === 1) {
@@ -600,7 +606,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                                 text: f.text,
                                 icon: f.customFunction?.icon ?? 'bi bi-plus',
                                 execute: (_target) => (f.customFunction && f.customFunction.id !== 'add')
-                                    ? this.customEdit({ customFunction: f.customFunction }) 
+                                    ? this.customEdit({ customFunction: f.customFunction })
                                     : this.create({ editLayout: selectAddRequest.defaultEditLayout })
                             } as CrudAction))
                         };
@@ -615,7 +621,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             }))(selectAddSheet)))
     );
 
-    readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
+    readonly selectPrint = this.effect((selectPrintRequest$: Observable<{ items: CrudItem[], target: Element }>) =>
         selectPrintRequest$
             .pipe(withLatestFrom(this.metaService.entityDocuments$, this.metaService.printAllowed$))
             .pipe(map(([selectPrintRequest, entityDocuments, printAllowed]) => {
@@ -623,7 +629,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
                     if (selectPrintRequest?.items.filter(item => !printAllowed(item)).length) {
                         this.notificationService.triggerNotification({ message: this.translator('editing.notifications.notallowed'), severity: 'info' });
-                        
+
                         return undefined;
                     }
 
@@ -649,7 +655,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             ))
     );
 
-    readonly selectExport = this.effect((selectExportRequest$: Observable<{ items: CrudItem[], target: Element }>) => 
+    readonly selectExport = this.effect((selectExportRequest$: Observable<{ items: CrudItem[], target: Element }>) =>
         selectExportRequest$.pipe(withLatestFrom(this.exportMenuItems$))
             .pipe(map(([selectExportRequest, exportMenuItems]) => {
                 if (exportMenuItems && selectExportRequest) {
@@ -658,10 +664,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
                     return {
                         items: selectExportRequest.items,
-                        actions: exportMenuItems.map(f => ({ 
-                            id: f.id, 
-                            icon: f.icon, 
-                            text: f.text, 
+                        actions: exportMenuItems.map(f => ({
+                            id: f.id,
+                            icon: f.icon,
+                            text: f.text,
                             execute: (_target) => f.customFunction && this.exportItems({ customFunction: f.customFunction, items: selectExportRequest.items })
                         } as CrudAction))
                     };
@@ -676,7 +682,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             ))
     );
 
-    readonly selectImport = this.effect((selectImportRequest$: Observable<{ target: Element }>) => 
+    readonly selectImport = this.effect((selectImportRequest$: Observable<{ target: Element }>) =>
         selectImportRequest$.pipe(withLatestFrom(this.importMenuItems$))
             .pipe(map(([selectImportRequest, importMenuItems]) => {
                 if (importMenuItems && selectImportRequest) {
@@ -684,10 +690,10 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     this.currentInteractionTarget$.next(selectImportRequest.target);
 
                     return {
-                        actions: importMenuItems.map(f => ({ 
-                            id: f.id, 
-                            icon: f.icon, 
-                            text: f.text, 
+                        actions: importMenuItems.map(f => ({
+                            id: f.id,
+                            icon: f.icon,
+                            text: f.text,
                             execute: (_target) => f.customFunction && this.importItems({ customFunction: f.customFunction })
                         } as CrudAction))
                     };
@@ -702,16 +708,16 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             ))
     );
 
-    readonly selectOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
-        request$.pipe(withLatestFrom(            
-                this.metaService.customFunctions$, 
+    readonly selectOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) =>
+        request$.pipe(withLatestFrom(
+                this.metaService.customFunctions$,
                 this.metaService.customFunctionAllowed$
-            )).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
+            )).pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) =>
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
-                    .map(f => ({ 
-                        id: f.id, 
-                        icon: f.icon, 
-                        text: f.text, 
+                    .map(f => ({
+                        id: f.id,
+                        icon: f.icon,
+                        text: f.text,
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
             )).pipe(withLatestFrom(
@@ -720,7 +726,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                 this.metaService.editFunction$,
                 this.metaService.customFunctionAllowed$,
                 this.metaService.dropAllowed$,
-                this.metaService.printAllowed$            
+                this.metaService.printAllowed$
             ))
             .pipe(map(([customFunctions, { item, target, defaultEditLayout }, viewFunction, editFunction, customFunctionAllowed, dropAllowed, printAllowed]) => {
 
@@ -731,18 +737,18 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
                     id: 'view',
                     icon: viewFunction.icon ?? 'bi bi-eye-fill',
                     text: viewFunction.text,
-                    execute: (_target) => viewFunction.id === 'view' 
-                        ? this.view({ item, editLayout: defaultEditLayout }) 
+                    execute: (_target) => viewFunction.id === 'view'
+                        ? this.view({ item, editLayout: defaultEditLayout })
                         : this.customEdit({ customFunction: viewFunction, items: [item]})
                 });
             }
 
             if (editFunction && customFunctionAllowed && customFunctionAllowed(editFunction, item)) {
                 actions.push({
-                    id: 'edit',                  
+                    id: 'edit',
                     icon: editFunction.icon ?? 'bi bi-pencil-fill',
                     text: editFunction.text,
-                    execute: (_target) => editFunction.id === 'edit' 
+                    execute: (_target) => editFunction.id === 'edit'
                         ? this.edit({ item, editLayout: defaultEditLayout })
                         : this.customEdit({ customFunction: editFunction, items: [item]})
                 });
@@ -750,16 +756,16 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
 
             if (dropAllowed && dropAllowed(item)) {
                 actions.push({
-                    id: 'delete',                  
+                    id: 'delete',
                     icon: 'bi bi-trash-fill',
                     text: this.translator('datacontainer.actions.remove'),
                     execute: (_target) => this.remove({ item })
                 });
-            }              
+            }
 
             if (printAllowed && printAllowed(item)) {
                 actions.push({
-                    id: 'print',                    
+                    id: 'print',
                     icon: 'bi bi-printer-fill',
                     text: this.translator('datacontainer.actions.print'),
                     execute: (target) => this.selectPrint({ items: [item], target })
@@ -784,17 +790,17 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
     ;
 
 
-    readonly selectCustomOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) => 
+    readonly selectCustomOptions = this.effect((request$: Observable<{ item: CrudItem, target: Element, defaultEditLayout: string }>) =>
         request$.pipe(withLatestFrom(
-                this.metaService.customFunctions$, 
+                this.metaService.customFunctions$,
                 this.metaService.customFunctionAllowed$
             ))
-            .pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) => 
+            .pipe(switchMap(([{ item }, customFunctions, customFunctionAllowed]) =>
                 of(customFunctions?.filter(f => f.type === 'edit' && customFunctionAllowed && customFunctionAllowed(f, item))
-                    .map(f => ({ 
-                        id: f.id, 
-                        icon: f.icon, 
-                        text: f.text, 
+                    .map(f => ({
+                        id: f.id,
+                        icon: f.icon,
+                        text: f.text,
                         execute: (_target) => this.customEdit({ customFunction: f, items: [item]})
                     } as CrudAction)))
             ))
@@ -819,7 +825,7 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService,
             selectActionSheet
         }))(selectActionSheet)))
     );
-    
+
     readonly selectAddDone = this.updater((state) => ({
         ...state,
         selectAddSheet: undefined
