@@ -9,7 +9,6 @@ import {
 import { PageLayoutItem, StatisticOptions } from "@ballware/meta-model";
 import { LOOKUP_SERVICE, LookupService, PAGE_SERVICE, PageService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from "@ballware/meta-services";
 import { Observable, map, takeUntil } from "rxjs";
-import { WithDestroy } from "../../utils/withdestroy";
 import { StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent } from "../../statistic";
 import { CommonModule } from "@angular/common";
 import { Breadcrumb, Destroy } from '@ballware/renderer-commons';
