@@ -28,7 +28,8 @@
       "@ballware/ngrx-meta-services": ["libs/ngrx-meta-services/src/index.ts"],
       "@ballware/renderer-commons": ["libs/renderer-commons/src/index.ts"],
       "@ballware/rest-meta-api": ["libs/rest-meta-api/src/index.ts"],
-      "@storybook-helpers/*": ["libs/dx-renderer/.storybook/helper/*"]
+      "@storybook-helpers/prototyping": ["apps/storybook-prototyping/.storybook/helper/index.ts"],
+      "@storybook-helpers/dx/*": ["libs/dx-renderer/.storybook/helper/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

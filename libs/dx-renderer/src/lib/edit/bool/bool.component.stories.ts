@@ -4,9 +4,9 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutBoolComponent } from './bool.component';
 import { of } from 'rxjs';
 import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
-import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
-import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
-import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
+import { createMockedEditService } from '@storybook-helpers/dx/edit.service.mock';
+import { createMockedLookupService } from '@storybook-helpers/dx/lookup.service.mock';
+import { createSimpleTranslator } from '@storybook-helpers/dx/translator.mock';
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<EditLayoutBoolComponent> = {
@@ -126,8 +126,6 @@ export const Readonly: Story = {
     },
   }),
   play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
     // Test: Checkbox should be in readonly state
     const readonlyCheckbox = canvasElement.querySelector('.dx-state-readonly');
     await expect(readonlyCheckbox).toBeTruthy();

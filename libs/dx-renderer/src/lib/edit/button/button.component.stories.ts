@@ -3,9 +3,9 @@ import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutButtonComponent } from './button.component';
 import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
-import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
-import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
-import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
+import { createMockedEditService } from '@storybook-helpers/dx/edit.service.mock';
+import { createMockedLookupService } from '@storybook-helpers/dx/lookup.service.mock';
+import { createSimpleTranslator } from '@storybook-helpers/dx/translator.mock';
 import { of } from 'rxjs';
 import { expect, within, userEvent } from 'storybook/test';
 

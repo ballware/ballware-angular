@@ -94,7 +94,8 @@
       "ngrx-meta-services",
       "renderer-commons",
       "dx-renderer",
-      "webclient"
+      "webclient",
+      "storybook-prototyping"
     ],
     "changelog": {
       "workspaceChangelog": {

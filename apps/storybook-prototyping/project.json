@@ -1,0 +1,65 @@
+{
+  "name": "storybook-prototyping",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/storybook-prototyping/src",
+  "prefix": "ballware",
+  "tags": [],
+  "targets": {
+    "serve": {
+      "executor": "@storybook/angular:start-storybook",
+      "options": {
+        "host": "0.0.0.0",
+        "port": 4200,
+        "configDir": "apps/storybook-prototyping/.storybook",
+        "browserTarget": "storybook-prototyping:build",
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "build": {
+      "executor": "@storybook/angular:build-storybook",
+      "outputs": ["{options.outputDir}"],
+      "options": {
+        "outputDir": "dist/storybook-prototyping",
+        "configDir": "apps/storybook-prototyping/.storybook",
+        "browserTarget": "storybook-prototyping:build",
+        "styles": [
+          "node_modules/bootstrap/scss/bootstrap-grid.scss",
+          "node_modules/bootstrap/scss/bootstrap-utilities.scss",
+          "node_modules/bootstrap/scss/bootstrap-reboot.scss",
+          "node_modules/bootstrap-icons/font/bootstrap-icons.scss",
+          "node_modules/devextreme/dist/css/dx.material.blue.light.css"
+        ],
+        "compodoc": false
+      },
+      "configurations": {
+        "ci": {
+          "quiet": true
+        }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test -c apps/storybook-prototyping/.storybook --url=http://localhost:4200"
+      }
+    },
+    "server": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "storybook-prototyping:build",
+        "staticFilePath": "dist/storybook-prototyping"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "storybook-prototyping:build:ci"
+        }
+      }
+    }
+  }
+}
