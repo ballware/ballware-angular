@@ -5,11 +5,11 @@ import { tenantFetched } from "./tenant.actions";
 
 const navigationLayout = {
     items: [
-        { 
-            type: 'group',             
+        {
+            type: 'group',
             options: {
                 caption: 'allowed_group'
-            },       
+            },
             items: [
                 {
                     type: 'page',
@@ -46,20 +46,20 @@ const navigationLayout = {
                             }
                         }
                     ]
-                },                        
+                },
             ]
         },
-        { 
-            type: 'group',             
+        {
+            type: 'group',
             options: {
                 caption: 'forbidden_group'
-            },       
+            },
             items: [
                 {
                     type: 'page',
                     options: {
                         page: 'forbidden_page_4',
-                        url: 'page_4',                                
+                        url: 'page_4',
                         caption: 'Page 4'
                     }
                 },
@@ -99,7 +99,7 @@ describe('build navigation tree', () => {
         expect(navigationTree).toEqual([]);
     });
 
-    it('metadata with not allowed pages should generate tree without excluded pages and empty groups', () => {
+    it('metadata with not allowed page should generate tree without excluded page and empty groups', () => {
 
         const navigationTree = buildNavigationTree((right) => !right.includes('forbidden'), navigationLayout);
 
@@ -116,7 +116,7 @@ describe('build page list', () => {
         expect(pageList).toEqual([]);
     });
 
-    it('metadata with not allowed pages should generate page list without excluded pages', () => {
+    it('metadata with not allowed page should generate page list without excluded page', () => {
 
         const pageList = buildPageList((right) => !right.includes('forbidden'), navigationLayout);
 
@@ -129,14 +129,14 @@ describe('reducer', () => {
         const noopAction = createAction('noop');
 
         const newState = tenantReducer(undefined, noopAction);
-        
+
         expect(newState).toEqual(initialState);
     });
 
     it('fetch tenant without navigation should add fetched tenant to state', () => {
         const user = { 'preferred_username': 'John Doo' } as Record<string, unknown>;
-        const tenant = { 
-            name: 'My tenant'            
+        const tenant = {
+            name: 'My tenant'
         } as CompiledTenant;
 
         const newState = tenantReducer(initialState, tenantFetched({ user, tenant }));
@@ -151,7 +151,7 @@ describe('reducer', () => {
 
     it('fetch tenant should add fetched tenant to state', () => {
         const user = { 'preferred_username': 'John Doo' } as Record<string, unknown>;
-        const tenant = { 
+        const tenant = {
             name: 'My tenant',
             hasRight: (_user, _right) => true,
             navigation: navigationLayout

@@ -24,6 +24,9 @@ import { DefaultRedirectComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
 
+export * from './directives';
+export * from './page';
+export * from './edit';
 export { ApplicationComponent } from './application';
 
 export interface DxRenderFactoryConfig {
@@ -71,7 +74,9 @@ const routes: Routes = [
 @Injectable()
 export class NoReuseOnParamChangeStrategy implements RouteReuseStrategy {
   shouldDetach(): boolean { return false; }
-  store(): void {}
+  store(): void {
+    // no implementation
+  }
   shouldAttach(): boolean { return false; }
   retrieve(): DetachedRouteHandle | null { return null; }
 

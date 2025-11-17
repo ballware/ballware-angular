@@ -1,5 +1,6 @@
 export { CrudActionsComponent } from './actions/actions.component';
 export { EditLayoutAttachmentsComponent } from './attachments/attachments.component';
+export { EditLayoutBoolComponent } from './bool/bool.component';
 export { EditLayoutDatetimeComponent } from './datetime/datetime.component';
 export { EditDetailComponent } from './detail/detail.component';
 export { EditLayoutDetailGridComponent } from './detailgrid/detailgrid.component';

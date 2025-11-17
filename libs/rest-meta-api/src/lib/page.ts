@@ -7,7 +7,7 @@ import { CompiledPageData } from '@ballware/meta-model';
 import { compilePrepareCustomParam, compileParamsInitialized, compileParamEditorInitialized, compileParamEditorValueChanged, compileParamEditorEvent } from '@ballware/meta-scripting';
 import { MetaPageApi } from '@ballware/meta-api';
 
-interface PageData {
+export interface PageData {
   Identifier: string;
   Name: string;
   Layout?: string;
@@ -16,7 +16,7 @@ interface PageData {
   CustomScripts?: string;
 }
 
-interface PageCustomScripts {
+export interface PageCustomScripts {
   prepareCustomParam?: string;
   paramsInitialized?: string;
   paramEditorInitialized?: string;
@@ -24,7 +24,7 @@ interface PageCustomScripts {
   paramEditorEvent?: string;
 }
 
-const compilePage = (pageData: PageData): CompiledPageData => {
+export const compilePage = (pageData: PageData): CompiledPageData => {
   const compiledPageData = {
     identifier: pageData.Identifier,
     name: pageData.Name,
@@ -77,7 +77,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendPageApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   metaServiceBaseUrl: string
 ): MetaPageApi {
   return {

@@ -18,6 +18,9 @@ import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
 
+export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
+export { PageData, PageCustomScripts, compilePage } from './page';
+
 export function provideIdentityKeycloakRestApi(serviceBaseUrl: string): EnvironmentProviders {
   return makeEnvironmentProviders(
     [

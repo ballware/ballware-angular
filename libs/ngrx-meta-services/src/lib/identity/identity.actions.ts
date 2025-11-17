@@ -1,6 +1,12 @@
 import { createAction, props } from "@ngrx/store";
 
-export const identityInitialize = createAction('[Identity] initialize', props<{
+export const identityInitializeStaticUser = createAction('[Identity] initialize static user', props<{
+    user: Record<string, unknown>,
+    tenant: string,
+    userName: string
+}>());
+
+export const identityInitializeOidc = createAction('[Identity] initialize oidc', props<{
     issuer?: string,
     client?: string,
     scopes?: string,

@@ -3,11 +3,11 @@ import { map, Observable } from 'rxjs';
 
 import { parse } from 'json5/lib';
 
-import { CompiledEntityMetadata, DocumentSelectEntry, EditLayout, GridLayout, Template } from '@ballware/meta-model';
+import { CompiledEntityMetadata, EditLayout, GridLayout, Template } from '@ballware/meta-model';
 import { compileDetailGridCellPreparing, compileDetailGridRowValidating, compileEditorEntered, compileEditorEvent, compileEditorInitialized, compileEditorPreparing, compileEditorValidating, compileEditorValueChanged, compileEvaluateCustomFunction, compileInitNewDetailItem, compileInteractionKeyboardLine, compileItemMapping, compilePrepareCustomFunction, compilePrepareCustomParam, compilePrepareEditLayout, compilePrepareGridLayout, compilePrepareMaterializedEditItem, compileRightsCheckFunc, compileRightsParamForHead, compileRightsParamForItem } from '@ballware/meta-scripting';
 import { MetaEntityApi } from '@ballware/meta-api';
 
-interface EntityMetadata {
+export interface EntityMetadata {
   Application: string;
   Entity: string;
   DisplayName: string;
@@ -24,7 +24,7 @@ interface EntityMetadata {
   StateColumn: string;
 }
 
-interface EntityCustomScripts {
+export interface EntityCustomScripts {
   commonUtils?: string;
   extendedRightsCheck?: string;
   rightsParamForHead?: string;
@@ -32,7 +32,7 @@ interface EntityCustomScripts {
   prepareCustomParam?: string;
   prepareGridLayout?: string;
   prepareEditLayout?: string;
-  prepareMaterializedEditItem?: string;  
+  prepareMaterializedEditItem?: string;
   editorPreparing?: string;
   editorInitialized?: string;
   editorValueChanged?: string;
@@ -47,7 +47,7 @@ interface EntityCustomScripts {
   evaluateCustomFunction?: string;
 }
 
-const compileEntityMetadata = (
+export const compileEntityMetadata = (
   metaData: EntityMetadata
 ): CompiledEntityMetadata => {
   const compiledMetaData = {
@@ -57,7 +57,7 @@ const compileEntityMetadata = (
     baseUrl: metaData.BaseUrl,
     stateColumn: metaData.StateColumn,
   } as CompiledEntityMetadata;
-  
+
   const customScripts = metaData.CustomScripts ? parse(
     metaData.CustomScripts
   ) as EntityCustomScripts : {} as EntityCustomScripts;
@@ -90,7 +90,7 @@ const compileEntityMetadata = (
       identifier: t.identifier,
       definition: parse(t.definition)
     } as Template));
-  }  
+  }
 
   if (metaData.CustomFunctions) {
     compiledMetaData.customFunctions = parse(metaData.CustomFunctions);
@@ -172,7 +172,7 @@ const rightSelectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: s
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendEntityApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   serviceBaseUrl: string
 ): MetaEntityApi {
   return {
@@ -180,7 +180,7 @@ export function createMetaBackendEntityApi(
     selectById: selectById(httpClient, serviceBaseUrl),
     selectByIdentifier: selectByIdentifier(httpClient, serviceBaseUrl),
     rightSelectList: rightSelectList(httpClient, serviceBaseUrl),
-    rightSelectById: rightSelectById(httpClient, serviceBaseUrl),    
+    rightSelectById: rightSelectById(httpClient, serviceBaseUrl),
     metadataForEntity: metadataFunc(httpClient, serviceBaseUrl)
   } as MetaEntityApi;
 }

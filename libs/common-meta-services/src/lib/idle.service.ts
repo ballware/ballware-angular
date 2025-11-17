@@ -1,5 +1,5 @@
 import { IdleService } from "@ballware/meta-services";
-import { BehaviorSubject, distinctUntilChanged, Observable, tap } from "rxjs";
+import { BehaviorSubject, distinctUntilChanged, Observable } from "rxjs";
 
 export class DefaultIdleService implements IdleService {
 
@@ -7,7 +7,7 @@ export class DefaultIdleService implements IdleService {
     return this.idleSubject.asObservable().pipe(distinctUntilChanged());
   }
 
-  private idleTimer = 0;
+  private idleTimer: ReturnType<typeof setTimeout>|undefined = undefined;
   private readonly idleSubject = new BehaviorSubject(false);
 
   constructor() {
@@ -15,11 +15,11 @@ export class DefaultIdleService implements IdleService {
         .subscribe((idle) => console.log(`User idle ${idle}`));
   }
 
-  renewBusy() {    
+  renewBusy() {
     setTimeout(() => this.idleSubject.next(false));
 
-    if (this.idleTimer > 0) {
-        clearTimeout(this.idleTimer);        
+    if (this.idleTimer) {
+        clearTimeout(this.idleTimer);
     }
 
     this.idleTimer = setTimeout(() => this.idleSubject.next(true), 1000 * 60 * 5);

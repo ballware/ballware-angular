@@ -4,15 +4,28 @@ import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { Store } from "@ngrx/store";
 import { AuthConfig, OAuthService } from "angular-oauth2-oidc";
 import { filter, switchMap, tap } from "rxjs";
-import { showNotification } from "../notification/notification.actions";
-import { identityAllowedTenantsFetched, identityInitialize, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityTokenRefreshed, identityUserBusy, identityUserExpired, identityUserIdle, identityUserLoggedOut, identityUserLogin, identityUserLogout } from "./identity.actions";
-import { selectCurrentUser, selectProfileUrl } from "./identity.state";
+import { showNotification } from "../notification";
+import {
+  identityAllowedTenantsFetched,
+  identityInitializeOidc,
+  identityManageProfile,
+  identityRefreshToken,
+  identitySwitchTenant,
+  identityTokenRefreshed,
+  identityUserBusy,
+  identityUserExpired,
+  identityUserIdle,
+  identityUserLoggedOut,
+  identityUserLogin,
+  identityUserLogout
+} from './identity.actions';
+import { selectProfileUrl } from "./identity.state";
 import { IDLE_SERVICE, TRANSLATOR } from "@ballware/meta-services";
 
-export const initializeOAuth = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) => 
-    actions$.pipe(ofType(identityInitialize))
+export const initializeOidc = createEffect((actions$ = inject(Actions), store = inject(Store), oauthService = inject(OAuthService)) =>
+    actions$.pipe(ofType(identityInitializeOidc))
         .pipe(tap(({ issuer, client, scopes, tenantClaim, usernameClaim, accessTokenAutoRefresh }) => {
-            if (issuer && client && scopes && tenantClaim && usernameClaim) { 
+            if (issuer && client && scopes && tenantClaim && usernameClaim) {
                 oauthService.events
                     .pipe(filter((e) => e.type === 'logout'))
                     .subscribe((_) => {
@@ -29,7 +42,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                                 idToken: oauthService.getIdToken(),
                                 refreshToken: oauthService.getRefreshToken(),
                                 accessToken: oauthService.getAccessToken(),
-                                accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),                        
+                                accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),
                                 currentUser: identityClaims,
                                 tenant: identityClaims[tenantClaim] as string,
                                 userName: identityClaims[usernameClaim] as string
@@ -50,8 +63,8 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
 
                 const oauthConfig: AuthConfig = {
                     issuer: issuer,
-                    redirectUri: window.location.origin + '/signin-oidc',
-                    postLogoutRedirectUri: window.location.origin,
+                    redirectUri: globalThis.location.origin + '/signin-oidc',
+                    postLogoutRedirectUri: globalThis.location.origin,
                     clientId: client,
                     responseType: 'code',
                     scope: scopes,
@@ -64,7 +77,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                 if (accessTokenAutoRefresh) {
                     oauthService.setupAutomaticSilentRefresh();
                 }
-                
+
                 oauthService.loadDiscoveryDocumentAndLogin().then(result => {
                     if (result) {
                         const identityClaims = oauthService.getIdentityClaims() as Record<string, unknown>;
@@ -73,7 +86,7 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
                             idToken: oauthService.getIdToken(),
                             refreshToken: oauthService.getRefreshToken(),
                             accessToken: oauthService.getAccessToken(),
-                            accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),                        
+                            accessTokenExpiration: new Date(oauthService.getAccessTokenExpiration()),
                             currentUser: identityClaims,
                             tenant: identityClaims[tenantClaim] as string,
                             userName: identityClaims[usernameClaim] as string
@@ -84,19 +97,19 @@ export const initializeOAuth = createEffect((actions$ = inject(Actions), store =
         }))
 , { functional: true, dispatch: false });
 
-export const notifyUserLogin = createEffect((actions$ = inject(Actions), store = inject(Store), translator = inject(TRANSLATOR)) => 
+export const notifyUserLogin = createEffect((actions$ = inject(Actions), store = inject(Store), translator = inject(TRANSLATOR)) =>
     actions$.pipe((ofType(identityUserLogin)))
         .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.loginsuccess') }}))))
 , { functional: true, dispatch: false});
 
-export const logoutOAuth = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) => 
+export const logoutOAuth = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) =>
     actions$.pipe(ofType(identityUserLogout))
         .pipe(tap(() => {
             oauthService.logOut();
         }))
 , { functional: true, dispatch: false });
 
-export const userExpired = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), translator = inject(TRANSLATOR)) => 
+export const userExpired = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService), store = inject(Store), translator = inject(TRANSLATOR)) =>
     actions$.pipe((ofType(identityUserExpired)))
         .pipe(tap(() => store.dispatch(showNotification({ notification: { severity: 'info', message: translator('rights.notifications.sessionexpired') }}))))
         .pipe(tap(() => {
@@ -104,29 +117,29 @@ export const userExpired = createEffect((actions$ = inject(Actions), oauthServic
         }))
 , { functional: true, dispatch: false});
 
-export const userIdle = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) => 
+export const userIdle = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) =>
     idleService.idle$
         .pipe(filter((idle => idle)))
         .pipe(tap(() => store.dispatch(identityUserIdle())))
-, { functional: true, dispatch: false});        
+, { functional: true, dispatch: false});
 
-export const userBusy = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) => 
+export const userBusy = createEffect((store = inject(Store), idleService = inject(IDLE_SERVICE)) =>
     idleService.idle$
         .pipe(filter((idle => !idle)))
         .pipe(tap(() => store.dispatch(identityUserBusy())))
-, { functional: true, dispatch: false});  
+, { functional: true, dispatch: false});
 
-export const manageProfile = createEffect((actions$ = inject(Actions), store = inject(Store)) => 
+export const manageProfile = createEffect((actions$ = inject(Actions), store = inject(Store)) =>
     actions$.pipe(ofType(identityManageProfile))
-        .pipe(switchMap(() => store.select(selectProfileUrl)))        
+        .pipe(switchMap(() => store.select(selectProfileUrl)))
         .pipe(tap((identityProfileUrl) => {
             if (identityProfileUrl) {
-                window.location.href = identityProfileUrl;
+                globalThis.location.href = identityProfileUrl;
             }
         }))
 , { functional: true, dispatch: false });
 
-export const refreshToken = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) => 
+export const refreshToken = createEffect((actions$ = inject(Actions), oauthService = inject(OAuthService)) =>
     actions$.pipe(ofType(identityRefreshToken))
         .pipe(tap(() => oauthService.refreshToken()))
 , { functional: true, dispatch: false });

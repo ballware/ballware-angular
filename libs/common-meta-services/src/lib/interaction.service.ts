@@ -9,7 +9,7 @@ export class DefaultInteractionService implements InteractionService {
     );
   }
 
-  private lineTimer = 0;
+  private lineTimer: ReturnType<typeof setTimeout>|undefined = undefined;
   private lineBuffer = '';
   private readonly keyboardLineSubject = new Subject<string>();
 
@@ -18,9 +18,8 @@ export class DefaultInteractionService implements InteractionService {
   }
 
   renewLineTimer() {
-    if (this.lineTimer > 0) {
+    if (this.lineTimer) {
       clearTimeout(this.lineTimer);
-      this.lineTimer = 0;
     }
 
     this.lineTimer = setTimeout(() => this.resetLine(), 1000);
@@ -29,9 +28,9 @@ export class DefaultInteractionService implements InteractionService {
   resetLine() {
     this.lineBuffer = '';
 
-    if (this.lineTimer > 0) {
+    if (this.lineTimer) {
       clearTimeout(this.lineTimer);
-      this.lineTimer = 0;
+      this.lineTimer = undefined;
     }
   }
 

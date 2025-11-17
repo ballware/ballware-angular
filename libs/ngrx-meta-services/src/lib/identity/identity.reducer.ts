@@ -1,5 +1,14 @@
 import { createReducer, on } from "@ngrx/store";
-import { identityAllowedTenantsFetched, identityInitialize, identityTokenRefreshed, identityUserBusy, identityUserIdle, identityUserLogin, identityUserLogout } from "./identity.actions";
+import {
+  identityAllowedTenantsFetched,
+  identityInitializeOidc,
+  identityInitializeStaticUser,
+  identityTokenRefreshed,
+  identityUserBusy,
+  identityUserIdle,
+  identityUserLogin,
+  identityUserLogout
+} from './identity.actions';
 import { IdentityState } from "./identity.state";
 import * as moment from "moment";
 
@@ -8,14 +17,21 @@ const initialState = {
 } as IdentityState;
 
 export const identityReducer = createReducer(
-    initialState, 
-    on(identityInitialize, (state, { issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh }) => ({ 
+    initialState,
+    on(identityInitializeStaticUser, (state, { user, tenant, userName }) => ({
         ...state,
-        issuer, 
-        client, 
-        scopes, 
-        tenantClaim, 
-        usernameClaim, 
+        authenticated: true,
+        currentUser: user,
+        tenant: tenant,
+        userName: userName,
+    })),
+    on(identityInitializeOidc, (state, { issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh }) => ({
+        ...state,
+        issuer,
+        client,
+        scopes,
+        tenantClaim,
+        usernameClaim,
         profileUrl,
         accessTokenAutoRefresh
     })),
@@ -24,7 +40,7 @@ export const identityReducer = createReducer(
         authenticated: true,
         idToken,
         refreshToken,
-        accessToken, 
+        accessToken,
         accessTokenExpiration,
         currentUser,
         tenant,
@@ -35,7 +51,7 @@ export const identityReducer = createReducer(
         authenticated: false,
         idToken: undefined,
         refreshToken: undefined,
-        accessToken: undefined, 
+        accessToken: undefined,
         accessTokenExpiration: undefined,
         currentUser: undefined,
         tenant: undefined,
@@ -46,7 +62,7 @@ export const identityReducer = createReducer(
         ...state,
         idToken,
         refreshToken,
-        accessToken, 
+        accessToken,
         accessTokenExpiration,
     })),
     on(identityUserIdle, (state) => ({
