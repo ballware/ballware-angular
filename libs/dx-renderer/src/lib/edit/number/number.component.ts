@@ -11,12 +11,11 @@ export interface NumberItemOptions {
 }
 
 @Component({
-  selector: 'ballware-edit-number',
-  templateUrl: './number.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-number',
+    templateUrl: './number.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxNumberBoxModule, DxValidatorModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutNumberComponent implements OnInit {
 

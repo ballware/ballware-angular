@@ -12,12 +12,11 @@ import {
 } from '@ballware/renderer-commons';
 
 @Component({
-  selector: 'ballware-edit-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxTabPanelModule, Breadcrumb, forwardRef(() => EditLayoutContainerComponent)],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Visible],
-  standalone: true
+    selector: 'ballware-edit-tabs',
+    templateUrl: './tabs.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxTabPanelModule, Breadcrumb, forwardRef(() => EditLayoutContainerComponent)],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NumberValue, Visible]
 })
 export class EditLayoutTabsComponent implements OnInit {
 

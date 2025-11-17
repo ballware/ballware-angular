@@ -8,12 +8,11 @@ import { EditItemLivecycle } from './edititemlivecycle';
 import { Readonly } from './readonly';
 
 @Component({
-  selector: 'lib-edit-readonly-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly],
-  standalone: true
+    selector: 'lib-edit-readonly-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly]
 })
 class EditReadonlyTestComponent {
 

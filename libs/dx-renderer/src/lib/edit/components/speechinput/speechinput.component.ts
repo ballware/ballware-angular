@@ -25,8 +25,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     selector: 'ballware-speechinput',
     templateUrl: './speechinput.component.html',
     styleUrls: ['./speechinput.component.scss'],
-    imports: [CommonModule, I18NextModule, DxButtonModule, DxTextAreaModule],
-    standalone: true
+    imports: [CommonModule, I18NextModule, DxButtonModule, DxTextAreaModule]
 })
 export class SpeechInputComponent implements OnDestroy, OnChanges {
 

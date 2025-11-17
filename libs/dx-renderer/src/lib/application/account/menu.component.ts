@@ -6,11 +6,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-application-account-menu',
-  templateUrl: './menu.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxContextMenuModule],
-  standalone: true
+    selector: 'ballware-application-account-menu',
+    templateUrl: './menu.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxContextMenuModule]
 })
 export class ApplicationAccountMenuComponent {
 

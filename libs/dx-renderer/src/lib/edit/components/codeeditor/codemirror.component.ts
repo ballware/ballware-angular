@@ -9,8 +9,7 @@ import { CodeMirrorEditorOptions } from "./options";
     selector: 'ballware-codemirror',
     templateUrl: './codemirror.component.html',
     styleUrls: ['./codemirror.component.scss'],
-    imports: [CommonModule],
-    standalone: true
+    imports: [CommonModule]
 })
 export class CodeMirrorComponent implements AfterViewInit {
     @ViewChild('editor', { read: ViewContainerRef }) private editorHost?: ViewContainerRef;

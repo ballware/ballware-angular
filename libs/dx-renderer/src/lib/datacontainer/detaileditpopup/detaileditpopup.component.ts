@@ -9,8 +9,7 @@ import { CommonModule } from "@angular/common";
     selector: 'ballware-edit-detaileditpopup',
     templateUrl: './detaileditpopup.component.html',
     styleUrls: ['./detaileditpopup.component.scss'],
-    imports: [CommonModule, I18NextModule, DxButtonModule],
-    standalone: true
+    imports: [CommonModule, I18NextModule, DxButtonModule]
 })
 export class DetailEditPopupComponent {
 

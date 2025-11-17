@@ -13,9 +13,8 @@ import { ChartSeries } from "devextreme/viz/common";
     templateUrl: './chart.component.html',
     styleUrls: [],
     providers: [],
-    imports: [CommonModule, DxChartModule],
-    standalone: true
-  })
+    imports: [CommonModule, DxChartModule]
+})
   export class StatisticChartComponent {
 
     @Input() visible!: boolean|null;

@@ -5,12 +5,11 @@ import { BoolValue, EditItemLivecycle, Readonly, Visible } from '@ballware/rende
 import { Required, Validation } from '../../directives';
 
 @Component({
-  selector: 'ballware-edit-toggle',
-  templateUrl: './toggle.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxValidatorModule, DxSwitchModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, BoolValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-toggle',
+    templateUrl: './toggle.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxValidatorModule, DxSwitchModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, BoolValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutToggleComponent {
   constructor(

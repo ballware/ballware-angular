@@ -12,11 +12,10 @@ import { EditLayoutComponent } from '../layout/layout.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-crud-actions',
-  templateUrl: './actions.component.html',
-  styleUrls: ['./actions.component.scss'],
-  imports: [CommonModule, I18NextModule, DxPopupModule, DxFileUploaderModule, DxActionSheetModule, ForeignEditPopupComponent, CrudDialogComponent, EditLayoutComponent],
-  standalone: true
+    selector: 'ballware-crud-actions',
+    templateUrl: './actions.component.html',
+    styleUrls: ['./actions.component.scss'],
+    imports: [CommonModule, I18NextModule, DxPopupModule, DxFileUploaderModule, DxActionSheetModule, ForeignEditPopupComponent, CrudDialogComponent, EditLayoutComponent]
 })
 export class CrudActionsComponent implements OnInit {
 

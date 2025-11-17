@@ -8,12 +8,11 @@ import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { StringValue } from './value';
 
 @Component({
-  selector: 'lib-edit-value-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue],
-  standalone: true
+    selector: 'lib-edit-value-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue]
 })
 class EditValueTestComponent {
 

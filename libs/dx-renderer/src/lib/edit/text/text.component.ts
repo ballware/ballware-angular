@@ -11,12 +11,11 @@ import { RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/me
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-text',
-  templateUrl: './text.component.html',
-  styleUrls: [],
-  imports: [CommonModule, I18NextModule, DxPopupModule, DxTextBoxModule, DxValidatorModule, BarcodeScannerComponent],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-text',
+    templateUrl: './text.component.html',
+    styleUrls: [],
+    imports: [CommonModule, I18NextModule, DxPopupModule, DxTextBoxModule, DxValidatorModule, BarcodeScannerComponent],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutTextComponent implements OnInit {
 

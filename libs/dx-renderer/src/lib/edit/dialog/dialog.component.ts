@@ -15,19 +15,18 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-crud-dialog',
-  templateUrl: './dialog.component.html',
-  styleUrls: ['./dialog.component.scss'],
-  providers: [
-    {
-      provide: EDIT_SERVICE,
-      useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
-      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
-    } as Provider
-  ],
-  imports: [CommonModule, DxPopupModule],
-  hostDirectives: [Breadcrumb],
-  standalone: true
+    selector: 'ballware-crud-dialog',
+    templateUrl: './dialog.component.html',
+    styleUrls: ['./dialog.component.scss'],
+    providers: [
+        {
+            provide: EDIT_SERVICE,
+            useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
+            deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
+        } as Provider
+    ],
+    imports: [CommonModule, DxPopupModule],
+    hostDirectives: [Breadcrumb]
 })
 export class CrudDialogComponent implements OnInit {
 

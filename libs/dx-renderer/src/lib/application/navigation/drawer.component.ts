@@ -10,11 +10,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-application-navigation-drawer',
-  templateUrl: './drawer.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxDrawerModule, DxTreeViewModule],
-  standalone: true
+    selector: 'ballware-application-navigation-drawer',
+    templateUrl: './drawer.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxDrawerModule, DxTreeViewModule]
 })
 export class ApplicationNavigationDrawerComponent {
   @HostBinding('class') classes = 'flex-fill overflow-hidden pt-2';

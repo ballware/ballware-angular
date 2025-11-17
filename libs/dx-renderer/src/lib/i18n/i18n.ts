@@ -1,12 +1,13 @@
-import { APP_INITIALIZER, LOCALE_ID, Provider } from '@angular/core';
-import { I18NEXT_SERVICE, I18NextModule, ITranslationService, defaultInterpolationFormat } from 'angular-i18next';
+import { LOCALE_ID, provideAppInitializer, Provider, inject } from '@angular/core';
+import { I18NEXT_SERVICE, ITranslationService, interpolationFormat, defaultInterpolationFormat } from 'angular-i18next';
 import { ResourceLanguage } from 'i18next';
 import * as languageDe from './de/translate.json';
 import * as languageEn from './en/translate.json';
 
-function appInit(i18next: ITranslationService) {
-  return () => i18next
-    .init({
+function appInit() {
+  const i18next = inject(I18NEXT_SERVICE)
+
+  return i18next.init({
       supportedLngs: ['en', 'de'],
       lng: navigator.language,
       fallbackLng: 'en',
@@ -21,7 +22,7 @@ function appInit(i18next: ITranslationService) {
         'translations'
       ],
       interpolation: {
-        format: I18NextModule.interpolationFormat(defaultInterpolationFormat)
+        format: interpolationFormat(defaultInterpolationFormat)
       },
     });
 }
@@ -31,12 +32,7 @@ function localeIdFactory(i18next: ITranslationService)  {
 }
 
 export const I18N_PROVIDERS = [
-  {
-    provide: APP_INITIALIZER,
-    useFactory: appInit,
-    deps: [I18NEXT_SERVICE],
-    multi: true
-  } as Provider,
+  provideAppInitializer(appInit),
   {
     provide: LOCALE_ID,
     deps: [I18NEXT_SERVICE],

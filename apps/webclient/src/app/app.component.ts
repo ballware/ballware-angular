@@ -7,12 +7,11 @@ import { CommonModule } from '@angular/common';
 declare let window :any;
 
 @Component({
-  selector: 'ballware-root',
-  templateUrl: './app.component.html',
-  styleUrls: [],
-  imports: [CommonModule, ApplicationComponent],
-  providers: [],
-  standalone: true
+    selector: 'ballware-root',
+    templateUrl: './app.component.html',
+    styleUrls: [],
+    imports: [CommonModule, ApplicationComponent],
+    providers: []
 })
 export class AppComponent implements OnInit {
   title = 'ballware';

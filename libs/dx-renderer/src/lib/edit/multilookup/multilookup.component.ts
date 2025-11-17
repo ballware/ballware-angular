@@ -5,12 +5,11 @@ import { EditItemLivecycle, Readonly, UnknownArrayValue, Visible } from '@ballwa
 import { Validation, Required, Lookup } from '../../directives';
 
 @Component({
-  selector: 'ballware-edit-multilookup',
-  templateUrl: './multilookup.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxTagBoxModule, DxValidatorModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Validation, Required, Visible, Lookup],
-  standalone: true
+    selector: 'ballware-edit-multilookup',
+    templateUrl: './multilookup.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxTagBoxModule, DxValidatorModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Validation, Required, Visible, Lookup]
 })
 export class EditLayoutMultilookupComponent {
 

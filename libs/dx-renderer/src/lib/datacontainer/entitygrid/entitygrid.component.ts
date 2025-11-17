@@ -42,11 +42,10 @@ const createSummaryConfiguration = (gridLayout: GridLayout) => {
 };
 
 @Component({
-  selector: 'ballware-entitygrid',
-  templateUrl: './entitygrid.component.html',
-  styleUrls: ['./entitygrid.component.scss'],
-  imports: [CommonModule, DatagridComponent],
-  standalone: true
+    selector: 'ballware-entitygrid',
+    templateUrl: './entitygrid.component.html',
+    styleUrls: ['./entitygrid.component.scss'],
+    imports: [CommonModule, DatagridComponent]
 })
 export class EntitygridComponent implements OnInit {
 

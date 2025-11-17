@@ -11,12 +11,11 @@ interface KeyedButtonGroupItem extends Item {
 }
 
 @Component({
-  selector: 'ballware-edit-staticbuttongroup',
-  templateUrl: './staticbuttongroup.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxButtonGroupModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup],
-  standalone: true
+    selector: 'ballware-edit-staticbuttongroup',
+    templateUrl: './staticbuttongroup.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxButtonGroupModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup]
 })
 export class EditLayoutStaticButtonGroupComponent implements OnInit {
 

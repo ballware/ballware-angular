@@ -4,12 +4,11 @@ import { DxButtonModule } from 'devextreme-angular';
 import { EditItemLivecycle, Readonly, Visible } from '@ballware/renderer-commons';
 
 @Component({
-  selector: 'ballware-edit-button',
-  templateUrl: './button.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxButtonModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
-  standalone: true
+    selector: 'ballware-edit-button',
+    templateUrl: './button.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxButtonModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible]
 })
 export class EditLayoutButtonComponent {
 

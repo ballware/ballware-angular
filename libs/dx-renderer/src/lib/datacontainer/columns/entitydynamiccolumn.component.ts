@@ -26,8 +26,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     selector: 'ballware-entity-dynamic-column',
     templateUrl: './entitydynamiccolumn.component.html',
     styleUrls: [],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule],
-    standalone: true
+    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule]
 })
 export class EntityDynamicColumnComponent implements OnInit {
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;

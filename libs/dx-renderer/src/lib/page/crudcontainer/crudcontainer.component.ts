@@ -18,39 +18,38 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-crudcontainer',
-  templateUrl: './crudcontainer.component.html',
-  styleUrls: ['./crudcontainer.component.scss'],
-  providers: [
-    {
-      provide: LOOKUP_SERVICE,
-      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]
-    } as Provider,
-    {
-      provide: META_SERVICE,
-      useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
-    } as Provider,
-    {
-      provide: ATTACHMENT_SERVICE,
-      useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
-      deps: [ATTACHMENT_SERVICE_FACTORY]
-    } as Provider,
-    {
-      provide: CRUD_SERVICE,
-      useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
-      deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
-    } as Provider,
-    {
-      provide: DataSourceService,
-      useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
-      deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
-    }
-  ],
-  imports: [CommonModule, forwardRef(() => PageLayoutItemComponent), forwardRef(() => CrudActionsComponent)],
-  hostDirectives: [ Breadcrumb ],
-  standalone: true
+    selector: 'ballware-page-crudcontainer',
+    templateUrl: './crudcontainer.component.html',
+    styleUrls: ['./crudcontainer.component.scss'],
+    providers: [
+        {
+            provide: LOOKUP_SERVICE,
+            useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+            deps: [LOOKUP_SERVICE_FACTORY]
+        } as Provider,
+        {
+            provide: META_SERVICE,
+            useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
+        } as Provider,
+        {
+            provide: ATTACHMENT_SERVICE,
+            useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
+            deps: [ATTACHMENT_SERVICE_FACTORY]
+        } as Provider,
+        {
+            provide: CRUD_SERVICE,
+            useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+            deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
+        } as Provider,
+        {
+            provide: DataSourceService,
+            useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
+            deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
+        }
+    ],
+    imports: [CommonModule, forwardRef(() => PageLayoutItemComponent), forwardRef(() => CrudActionsComponent)],
+    hostDirectives: [Breadcrumb]
 })
 export class PageLayoutCrudcontainerComponent implements OnInit {
 

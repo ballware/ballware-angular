@@ -7,11 +7,10 @@ import { IDENTITY_SERVICE, IdentityService, TOOLBAR_SERVICE, ToolbarService, Tra
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs';
 
 @Component({
-  selector: 'ballware-print',
-  templateUrl: './print.component.html',
-  styleUrls: [],
-  imports: [CommonModule],
-  standalone: true
+    selector: 'ballware-print',
+    templateUrl: './print.component.html',
+    styleUrls: [],
+    imports: [CommonModule]
 })
 export class PrintComponent {
 

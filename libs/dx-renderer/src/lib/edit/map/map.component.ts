@@ -15,12 +15,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 declare let google: any;
 
 @Component({
-  selector: 'ballware-edit-map',
-  templateUrl: './map.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxMapModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableLatLngValue, Readonly, Visible],
-  standalone: true
+    selector: 'ballware-edit-map',
+    templateUrl: './map.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxMapModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableLatLngValue, Readonly, Visible]
 })
 export class EditLayoutMapComponent implements AfterViewInit {
 

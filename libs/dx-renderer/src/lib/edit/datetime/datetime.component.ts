@@ -8,12 +8,11 @@ import { Validation, Required } from '../../directives';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-datetime',
-  templateUrl: './datetime.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxDateBoxModule, DxValidatorModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableDateValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-datetime',
+    templateUrl: './datetime.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxDateBoxModule, DxValidatorModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableDateValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutDatetimeComponent implements OnInit {
 

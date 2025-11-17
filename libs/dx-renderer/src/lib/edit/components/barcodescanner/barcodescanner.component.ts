@@ -23,8 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     selector: 'ballware-barcodescanner',
     templateUrl: './barcodescanner.component.html',
     styleUrls: ['./barcodescanner.component.scss'],
-    imports: [CommonModule, I18NextModule, DxToolbarModule, DxSelectBoxModule, DxButtonModule, ZXingScannerModule],
-    standalone: true
+    imports: [CommonModule, I18NextModule, DxToolbarModule, DxSelectBoxModule, DxButtonModule, ZXingScannerModule]
 })
 export class BarcodeScannerComponent implements OnDestroy, OnChanges {
 

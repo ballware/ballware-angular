@@ -6,11 +6,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss'],
-  imports: [CommonModule, forwardRef(() => PageLayoutItemComponent)],
-  standalone: true
+    selector: 'ballware-page-layout',
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.scss'],
+    imports: [CommonModule, forwardRef(() => PageLayoutItemComponent)]
 })
 export class PageLayoutComponent {
   @HostBinding('class') classes = 'flex-fill overflow-hidden row-cols-xs-1 row-cols-lg-12';

@@ -17,11 +17,10 @@ import { I18NextModule } from 'angular-i18next';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-application-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
-  imports: [CommonModule, I18NextModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule],
-  standalone: true
+    selector: 'ballware-application-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    imports: [CommonModule, I18NextModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule]
 })
 export class ApplicationHeaderComponent {
   @ViewChild('accountMenu', { static: false }) accountMenu?: ApplicationAccountMenuComponent;

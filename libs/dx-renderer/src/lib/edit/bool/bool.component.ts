@@ -5,12 +5,11 @@ import { NullableBoolValue, EditItemLivecycle, Readonly, Visible } from '@ballwa
 import { Required, Validation } from '../../directives';
 
 @Component({
-  selector: 'ballware-edit-bool',
-  templateUrl: './bool.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxValidatorModule, DxCheckBoxModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableBoolValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-bool',
+    templateUrl: './bool.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxValidatorModule, DxCheckBoxModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableBoolValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutBoolComponent {
   constructor(

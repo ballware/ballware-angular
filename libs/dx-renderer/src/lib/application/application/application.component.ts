@@ -10,12 +10,11 @@ import { IdleDetector, InteractionDetector } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-application',
-  templateUrl: './application.component.html',
-  styleUrls: ['./application.component.scss'],
-  imports: [CommonModule, RouterOutlet, ApplicationHeaderComponent, ApplicationNotificationComponent, ApplicationNavigationDrawerComponent],
-  hostDirectives: [IdleDetector, InteractionDetector],
-  standalone: true
+    selector: 'ballware-application',
+    templateUrl: './application.component.html',
+    styleUrls: ['./application.component.scss'],
+    imports: [CommonModule, RouterOutlet, ApplicationHeaderComponent, ApplicationNotificationComponent, ApplicationNavigationDrawerComponent],
+    hostDirectives: [IdleDetector, InteractionDetector]
 })
 export class ApplicationComponent {
   @HostBinding('class') classes = 'dx-viewport application container-fluid vh-100 vw-100 px-0 d-flex flex-column overflow-hidden';

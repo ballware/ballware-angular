@@ -11,12 +11,11 @@ import { SpeechInputComponent } from "../components/speechinput/speechinput.comp
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-textarea',
-  templateUrl: './textarea.component.html',
-  styleUrls: ['./textarea.component.scss'],
-  imports: [CommonModule, I18NextModule, DxTextAreaModule, DxButtonModule, DxPopupModule, DxValidatorModule, SpeechInputComponent],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
-  standalone: true
+    selector: 'ballware-edit-textarea',
+    templateUrl: './textarea.component.html',
+    styleUrls: ['./textarea.component.scss'],
+    imports: [CommonModule, I18NextModule, DxTextAreaModule, DxButtonModule, DxPopupModule, DxValidatorModule, SpeechInputComponent],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutTextareaComponent implements OnInit {
 

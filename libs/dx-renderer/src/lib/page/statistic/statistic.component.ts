@@ -15,27 +15,23 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-statistic',
-  templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.scss'],
-  providers: [
-    {
-      provide: STATISTIC_SERVICE,
-      useFactory: (
-        serviceFactory: StatisticServiceFactory,
-        lookupService: LookupService
-      ) => serviceFactory(lookupService),
-      deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE],
-    } as Provider,
-  ],
-  imports: [
-    CommonModule,
-    StatisticChartComponent,
-    StatisticMapComponent,
-    StatisticPivotgridComponent,
-  ],
-  hostDirectives: [Breadcrumb],
-  standalone: true,
+    selector: 'ballware-page-statistic',
+    templateUrl: './statistic.component.html',
+    styleUrls: ['./statistic.component.scss'],
+    providers: [
+        {
+            provide: STATISTIC_SERVICE,
+            useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE],
+        } as Provider,
+    ],
+    imports: [
+        CommonModule,
+        StatisticChartComponent,
+        StatisticMapComponent,
+        StatisticPivotgridComponent,
+    ],
+    hostDirectives: [Breadcrumb]
 })
 export class PageLayoutStatisticComponent implements OnInit
 {

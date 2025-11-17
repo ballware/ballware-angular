@@ -9,11 +9,10 @@ import { PageLayoutMapComponent } from '../map/map.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ballware-page-item',
-  templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss'],
-  imports: [CommonModule],
-  standalone: true
+    selector: 'ballware-page-item',
+    templateUrl: './item.component.html',
+    styleUrls: ['./item.component.scss'],
+    imports: [CommonModule]
 })
 export class PageLayoutItemComponent implements AfterViewInit {
 

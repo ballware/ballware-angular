@@ -16,8 +16,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './javascript.component.html',
     styleUrls: [],
     imports: [CommonModule, CodeMirrorComponent],
-    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
-    standalone: true
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible]
 })
 export class EditLayoutJavascriptComponent implements OnInit {
 

@@ -14,8 +14,7 @@ import { DetailCollectionEditing } from "../../directives";
     templateUrl: './detailgrid.component.html',
     styleUrls: [],
     imports: [CommonModule, I18NextModule, DxDataGridModule, DxValidatorModule, DxToolbarModule, DetailDynamicColumnComponent, EditLayoutJsonComponent],
-    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing],
-    standalone: true
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing]
 })
 export class EditLayoutDetailGridComponent {
 

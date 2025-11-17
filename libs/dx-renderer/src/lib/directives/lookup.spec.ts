@@ -12,12 +12,11 @@ import { Mock } from 'moq.ts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-lookup-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Lookup],
-  standalone: true
+    selector: 'ballware-edit-lookup-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Lookup]
 })
 class EditLookupTestComponent implements OnInit {
 

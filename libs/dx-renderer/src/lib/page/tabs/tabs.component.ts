@@ -16,17 +16,16 @@ interface TabsParam {
 }
 
 @Component({
-  selector: 'ballware-page-tabs',
-  templateUrl: './tabs.component.html',
-  styleUrls: ['./tabs.component.scss'],
-  imports: [
-    CommonModule,
-    DxTabPanelModule,
-    forwardRef(() => PageLayoutItemComponent),
-    PageLayoutTabsCounterComponent,
-    Breadcrumb,
-  ],
-  standalone: true,
+    selector: 'ballware-page-tabs',
+    templateUrl: './tabs.component.html',
+    styleUrls: ['./tabs.component.scss'],
+    imports: [
+        CommonModule,
+        DxTabPanelModule,
+        forwardRef(() => PageLayoutItemComponent),
+        PageLayoutTabsCounterComponent,
+        Breadcrumb,
+    ]
 })
 export class PageLayoutTabsComponent implements OnInit {
   @Input() layoutItem?: PageLayoutItem;

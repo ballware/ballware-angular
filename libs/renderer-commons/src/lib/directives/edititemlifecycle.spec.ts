@@ -8,12 +8,11 @@ import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'lib-edit-lifecycle-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }],
-  standalone: true
+    selector: 'lib-edit-lifecycle-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }]
 })
 class EditLifecycleTestComponent implements OnInit {
 

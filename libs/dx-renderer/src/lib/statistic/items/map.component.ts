@@ -10,9 +10,8 @@ import { DxMapModule } from "devextreme-angular";
     selector: 'ballware-statistic-map',
     templateUrl: './map.component.html',
     styleUrls: [],
-    imports: [CommonModule, DxMapModule],
-    standalone: true
-  })
+    imports: [CommonModule, DxMapModule]
+})
   export class StatisticMapComponent {
 
     @Input() visible!: boolean|null;

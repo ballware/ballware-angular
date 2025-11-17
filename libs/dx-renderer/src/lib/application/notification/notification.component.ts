@@ -5,11 +5,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-notification',
-  template: '',
-  styleUrls: [],
-  imports: [CommonModule],
-  standalone: true
+    selector: 'ballware-notification',
+    template: '',
+    styleUrls: [],
+    imports: [CommonModule]
 })
 export class ApplicationNotificationComponent {
 

@@ -10,12 +10,11 @@ import { Validation } from './validation';
 import { Required } from './required';
 
 @Component({
-  selector: 'ballware-edit-validation-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required],
-  standalone: true
+    selector: 'ballware-edit-validation-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Validation, Required]
 })
 class EditValidationTestComponent {
 

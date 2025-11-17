@@ -20,19 +20,18 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-statistic',
-  templateUrl: './statistic.component.html',
-  styleUrls: ['./statistic.component.scss'],
-  providers: [
-    {
-      provide: STATISTIC_SERVICE,
-      useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-      deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]
-    } as Provider,
-  ],
-  imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
-  hostDirectives: [Breadcrumb, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible],
-  standalone: true
+    selector: 'ballware-edit-statistic',
+    templateUrl: './statistic.component.html',
+    styleUrls: ['./statistic.component.scss'],
+    providers: [
+        {
+            provide: STATISTIC_SERVICE,
+            useFactory: (serviceFactory: StatisticServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [STATISTIC_SERVICE_FACTORY, LOOKUP_SERVICE]
+        } as Provider,
+    ],
+    imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
+    hostDirectives: [Breadcrumb, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
 })
 export class EditLayoutStatisticComponent implements OnInit {
 

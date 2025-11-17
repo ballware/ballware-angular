@@ -14,8 +14,7 @@ import { DetailDynamicColumnComponent } from "../../datacontainer";
     templateUrl: './detailtree.component.html',
     styleUrls: [],
     imports: [CommonModule, I18NextModule, DxToolbarModule, DxTreeListModule, DxValidatorModule, DetailDynamicColumnComponent, EditLayoutJsonComponent],
-    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing],
-    standalone: true
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing]
 })
 export class EditLayoutDetailTreeComponent {
 

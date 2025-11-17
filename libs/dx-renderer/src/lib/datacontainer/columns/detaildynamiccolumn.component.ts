@@ -38,8 +38,7 @@ import { compileSetter } from 'devextreme/utils';
     selector: 'ballware-detail-dynamic-column',
     templateUrl: './detaildynamiccolumn.component.html',
     styleUrls: ['./detaildynamiccolumn.component.scss'],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule],
-    standalone: true
+    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule]
 })
 export class DetailDynamicColumnComponent implements OnInit {
     @ViewChild('textbox', { static: false }) textbox?: DxTextBoxComponent;

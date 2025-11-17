@@ -15,18 +15,17 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-edit-detail',
-  templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss'],
-  providers: [
-    {
-      provide: EDIT_SERVICE,
-      useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
-      deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
-    } as Provider
-  ],
-  imports: [CommonModule, forwardRef(() => EditLayoutContainerComponent)],
-  standalone: true
+    selector: 'ballware-edit-detail',
+    templateUrl: './detail.component.html',
+    styleUrls: ['./detail.component.scss'],
+    providers: [
+        {
+            provide: EDIT_SERVICE,
+            useFactory: (serviceFactory: EditServiceFactory, metaService: MetaService) => serviceFactory(metaService),
+            deps: [EDIT_SERVICE_FACTORY, META_SERVICE]
+        } as Provider
+    ],
+    imports: [CommonModule, forwardRef(() => EditLayoutContainerComponent)]
 })
 export class EditDetailComponent implements OnInit {
 

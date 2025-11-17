@@ -17,12 +17,11 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-map',
-  templateUrl: './map.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxMapModule],
-  hostDirectives: [Breadcrumb],
-  standalone: true,
+    selector: 'ballware-page-map',
+    templateUrl: './map.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxMapModule],
+    hostDirectives: [Breadcrumb]
 })
 export class PageLayoutMapComponent implements OnInit, AfterViewInit {
   @Input() layoutItem?: PageLayoutItem;

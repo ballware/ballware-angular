@@ -34,9 +34,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         } as Provider,
     ],
     imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule, Breadcrumb],
-    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible],
-    standalone: true
-  })
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible]
+})
   export class EditLayoutAttachmentsComponent implements OnInit {
 
     public removeDialog: AttachmentRemoveDialog|undefined;

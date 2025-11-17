@@ -15,11 +15,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-default-redirect',
-  templateUrl: './defaultredirect.component.html',
-  styleUrls: [],
-  imports: [CommonModule],
-  standalone: true,
+    selector: 'ballware-default-redirect',
+    templateUrl: './defaultredirect.component.html',
+    styleUrls: [],
+    imports: [CommonModule]
 })
 export class DefaultRedirectComponent implements OnInit {
   @HostBinding('class') classes = 'h-100 p-2';

@@ -5,11 +5,10 @@ import { PageLayoutGridComponent } from '../grid/grid.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ballware-page-entitygrid',
-  templateUrl: './entitygrid.component.html',
-  styleUrls: ['./entitygrid.component.scss'],
-  imports: [CommonModule, PageLayoutCrudcontainerComponent, PageLayoutGridComponent],
-  standalone: true
+    selector: 'ballware-page-entitygrid',
+    templateUrl: './entitygrid.component.html',
+    styleUrls: ['./entitygrid.component.scss'],
+    imports: [CommonModule, PageLayoutCrudcontainerComponent, PageLayoutGridComponent]
 })
 export class PageLayoutEntitygridComponent {
 

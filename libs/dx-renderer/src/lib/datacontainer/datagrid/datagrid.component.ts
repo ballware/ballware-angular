@@ -42,11 +42,10 @@ export interface DatagridSummary {
 }
 
 @Component({
-  selector: 'ballware-datagrid',
-  templateUrl: './datagrid.component.html',
-  styleUrls: ['./datagrid.component.scss'],
-  imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent, EntityDynamicColumnComponent],
-  standalone: true
+    selector: 'ballware-datagrid',
+    templateUrl: './datagrid.component.html',
+    styleUrls: ['./datagrid.component.scss'],
+    imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent, EntityDynamicColumnComponent]
 })
 export class DatagridComponent implements OnInit {
 

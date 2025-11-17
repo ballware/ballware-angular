@@ -9,9 +9,8 @@ import { Validation, Required } from "../../directives";
     templateUrl: './richtext.component.html',
     styleUrls: ['./richtext.component.scss'],
     imports: [CommonModule, DxHtmlEditorModule, DxValidatorModule],
-    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible],
-    standalone: true
-  })
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, StringValue, Readonly, Validation, Required, Visible]
+})
   export class EditLayoutRichtextComponent {
 
     constructor(

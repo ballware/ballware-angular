@@ -23,23 +23,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     styleUrls: ['./foreigneditpopup.component.scss'],
     providers: [
         {
-          provide: LOOKUP_SERVICE,
-          useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-          deps: [LOOKUP_SERVICE_FACTORY]
+            provide: LOOKUP_SERVICE,
+            useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+            deps: [LOOKUP_SERVICE_FACTORY]
         } as Provider,
         {
-          provide: META_SERVICE,
-          useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
-          deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
+            provide: META_SERVICE,
+            useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
         } as Provider,
         {
-          provide: CRUD_SERVICE,
-          useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
-          deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
+            provide: CRUD_SERVICE,
+            useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+            deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
         } as Provider,
-      ],
-      imports: [CommonModule, CrudDialogComponent, EditLayoutComponent],
-      standalone: true
+    ],
+    imports: [CommonModule, CrudDialogComponent, EditLayoutComponent]
 })
 export class ForeignEditPopupComponent implements OnInit {
 

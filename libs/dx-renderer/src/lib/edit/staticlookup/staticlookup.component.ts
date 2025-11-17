@@ -5,12 +5,11 @@ import { EditItemLivecycle, NullableStringValue, Readonly, Visible } from '@ball
 import { Validation, Required, Lookup } from '../../directives';
 
 @Component({
-  selector: 'ballware-edit-staticlookup',
-  templateUrl: './staticlookup.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxSelectBoxModule, DxValidatorModule],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup],
-  standalone: true
+    selector: 'ballware-edit-staticlookup',
+    templateUrl: './staticlookup.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxSelectBoxModule, DxValidatorModule],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, NullableStringValue, Readonly, Validation, Required, Visible, Lookup]
 })
 export class EditLayoutStaticlookupComponent {
 

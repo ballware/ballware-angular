@@ -8,12 +8,11 @@ import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { Visible } from './visible';
 
 @Component({
-  selector: 'lib-edit-visible-test',
-  template: '',
-  styleUrls: [],
-  imports: [],
-  hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible],
-  standalone: true
+    selector: 'lib-edit-visible-test',
+    template: '',
+    styleUrls: [],
+    imports: [],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
 })
 class EditVisibleTestComponent {
   constructor(public livecycle: EditItemLivecycle, public visible: Visible) {}

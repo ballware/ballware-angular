@@ -9,17 +9,16 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-grid',
-  templateUrl: './grid.component.html',
-  styleUrls: ['./grid.component.scss'],
-  providers: [
-    {
-      provide: MasterdetailService, useClass: MasterdetailService
-    }
-  ],
-  imports: [CommonModule, EntitygridComponent, EditDetailComponent],
-  hostDirectives: [ Breadcrumb ],
-  standalone: true
+    selector: 'ballware-page-grid',
+    templateUrl: './grid.component.html',
+    styleUrls: ['./grid.component.scss'],
+    providers: [
+        {
+            provide: MasterdetailService, useClass: MasterdetailService
+        }
+    ],
+    imports: [CommonModule, EntitygridComponent, EditDetailComponent],
+    hostDirectives: [Breadcrumb]
 })
 export class PageLayoutGridComponent implements OnInit {
 

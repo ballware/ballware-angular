@@ -12,11 +12,10 @@ import { DxToolbarModule } from 'devextreme-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-toolbar',
-  templateUrl: './toolbar.component.html',
-  styleUrls: ['./toolbar.component.scss'],
-  imports: [CommonModule, DxToolbarModule],
-  standalone: true
+    selector: 'ballware-toolbar',
+    templateUrl: './toolbar.component.html',
+    styleUrls: ['./toolbar.component.scss'],
+    imports: [CommonModule, DxToolbarModule]
 })
 export class ToolbarComponent {
 

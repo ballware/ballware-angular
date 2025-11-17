@@ -16,26 +16,22 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page-tabs-counter',
-  templateUrl: './counter.component.html',
-  styleUrls: ['./counter.component.scss'],
-  providers: [
-    {
-      provide: LOOKUP_SERVICE,
-      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY],
-    } as Provider,
-    {
-      provide: META_SERVICE,
-      useFactory: (
-        serviceFactory: MetaServiceFactory,
-        lookupService: LookupService
-      ) => serviceFactory(lookupService),
-      deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE],
-    } as Provider,
-  ],
-  imports: [CommonModule, DxLoadIndicatorModule],
-  standalone: true,
+    selector: 'ballware-page-tabs-counter',
+    templateUrl: './counter.component.html',
+    styleUrls: ['./counter.component.scss'],
+    providers: [
+        {
+            provide: LOOKUP_SERVICE,
+            useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+            deps: [LOOKUP_SERVICE_FACTORY],
+        } as Provider,
+        {
+            provide: META_SERVICE,
+            useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE],
+        } as Provider,
+    ],
+    imports: [CommonModule, DxLoadIndicatorModule]
 })
 export class PageLayoutTabsCounterComponent implements OnInit {
   @Input() tab!: any;

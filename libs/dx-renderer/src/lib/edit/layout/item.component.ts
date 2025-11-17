@@ -28,11 +28,10 @@ import { EditLayoutMapComponent } from '../map/map.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ballware-edit-item',
-  templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss'],
-  imports: [CommonModule],
-  standalone: true
+    selector: 'ballware-edit-item',
+    templateUrl: './item.component.html',
+    styleUrls: ['./item.component.scss'],
+    imports: [CommonModule]
 })
 export class EditLayoutItemComponent implements AfterViewInit {
 

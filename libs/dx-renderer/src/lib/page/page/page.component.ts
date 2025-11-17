@@ -18,24 +18,23 @@ import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-page',
-  templateUrl: './page.component.html',
-  styleUrls: ['./page.component.scss'],
-  providers: [
-    {
-      provide: LOOKUP_SERVICE,
-      useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
-      deps: [LOOKUP_SERVICE_FACTORY]
-    } as Provider,
-    {
-      provide: PAGE_SERVICE,
-      useFactory: (serviceFactory: PageServiceFactory, router: Router, lookupService: LookupService) => serviceFactory(router, lookupService),
-      deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]
-    } as Provider
-  ],
-  imports: [CommonModule, ToolbarComponent, PageLayoutComponent],
-  hostDirectives: [Breadcrumb],
-  standalone: true
+    selector: 'ballware-page',
+    templateUrl: './page.component.html',
+    styleUrls: ['./page.component.scss'],
+    providers: [
+        {
+            provide: LOOKUP_SERVICE,
+            useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+            deps: [LOOKUP_SERVICE_FACTORY]
+        } as Provider,
+        {
+            provide: PAGE_SERVICE,
+            useFactory: (serviceFactory: PageServiceFactory, router: Router, lookupService: LookupService) => serviceFactory(router, lookupService),
+            deps: [PAGE_SERVICE_FACTORY, Router, LOOKUP_SERVICE]
+        } as Provider
+    ],
+    imports: [CommonModule, ToolbarComponent, PageLayoutComponent],
+    hostDirectives: [Breadcrumb]
 })
 export class PageComponent implements OnChanges {
   @HostBinding('class') classes = 'h-100 p-2';

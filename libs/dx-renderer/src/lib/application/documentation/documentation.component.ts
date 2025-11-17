@@ -13,11 +13,10 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'ballware-application-documentation',
-  templateUrl: './documentation.component.html',
-  styleUrls: [],
-  imports: [CommonModule, DxPopupModule],
-  standalone: true
+    selector: 'ballware-application-documentation',
+    templateUrl: './documentation.component.html',
+    styleUrls: [],
+    imports: [CommonModule, DxPopupModule]
 })
 export class ApplicationDocumentationComponent implements AfterViewInit {
 

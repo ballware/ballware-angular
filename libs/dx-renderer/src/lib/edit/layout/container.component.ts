@@ -4,11 +4,10 @@ import { EditLayoutItem } from '@ballware/meta-model';
 import { EditLayoutItemComponent } from './item.component';
 
 @Component({
-  selector: 'ballware-edit-container',
-  templateUrl: './container.component.html',
-  styleUrls: ['./container.component.scss'],
-  imports: [CommonModule, EditLayoutItemComponent],
-  standalone: true
+    selector: 'ballware-edit-container',
+    templateUrl: './container.component.html',
+    styleUrls: ['./container.component.scss'],
+    imports: [CommonModule, EditLayoutItemComponent]
 })
 export class EditLayoutContainerComponent implements OnChanges {
 

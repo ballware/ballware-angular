@@ -8,11 +8,10 @@ import { EditLayoutContainerComponent } from './container.component';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ballware-edit-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss'],
-  imports: [CommonModule, DxValidationGroupModule, DxValidationSummaryModule, DxScrollViewModule, forwardRef(() => EditLayoutContainerComponent)],
-  standalone: true
+    selector: 'ballware-edit-layout',
+    templateUrl: './layout.component.html',
+    styleUrls: ['./layout.component.scss'],
+    imports: [CommonModule, DxValidationGroupModule, DxValidationSummaryModule, DxScrollViewModule, forwardRef(() => EditLayoutContainerComponent)]
 })
 export class EditLayoutComponent implements OnDestroy {
 

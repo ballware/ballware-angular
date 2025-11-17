@@ -17,9 +17,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     templateUrl: './pivotgrid.component.html',
     styleUrls: [],
     providers: [],
-    imports: [CommonModule, DxPivotGridModule],
-    standalone: true
-  })
+    imports: [CommonModule, DxPivotGridModule]
+})
   export class StatisticPivotgridComponent {
 
     @Input() visible!: boolean|null;
