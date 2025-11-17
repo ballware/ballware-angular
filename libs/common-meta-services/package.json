@@ -1,6 +1,6 @@
 {
   "name": "@ballware/common-meta-services",
-  "version": "9.5.0",
+  "version": "9.6.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
