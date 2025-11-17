@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`build navigation tree metadata with not allowed pages should generate tree without excluded pages and empty groups 1`] = `
+exports[`build navigation tree metadata with not allowed page should generate tree without excluded page and empty groups 1`] = `
 [
   {
     "expanded": false,
@@ -25,7 +25,7 @@ exports[`build navigation tree metadata with not allowed pages should generate t
 ]
 `;
 
-exports[`build page list metadata with not allowed pages should generate page list without excluded pages 1`] = `
+exports[`build page list metadata with not allowed page should generate page list without excluded page 1`] = `
 [
   {
     "options": {
