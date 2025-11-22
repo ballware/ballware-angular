@@ -9,11 +9,10 @@ import { CrudItem, } from "@ballware/meta-model";
 import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentRemoveDialog, AttachmentService, AttachmentServiceFactory, EDIT_SERVICE, EditService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import DataSource from "devextreme/data/data_source";
 import { ColumnButton } from "devextreme/ui/data_grid";
-import { Observable, from, map, of, switchMap, withLatestFrom } from "rxjs";
+import { Observable, map, withLatestFrom } from "rxjs";
 import { createArrayDatasource } from '../../utils';
 import { DxDataGridModule, DxFileUploaderModule, DxPopupModule } from "devextreme-angular";
 import { CommonModule } from "@angular/common";
-import { I18NextModule } from "angular-i18next";
 import {
   Breadcrumb,
   EditItemLivecycle,
@@ -21,19 +20,20 @@ import {
   Visible,
 } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { I18NextPipe } from 'angular-i18next';
 
 @Component({
     selector: 'ballware-edit-attachments',
     templateUrl: './attachments.component.html',
     styleUrls: [],
     providers: [
-        {
-            provide: ATTACHMENT_SERVICE,
-            useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
-            deps: [ATTACHMENT_SERVICE_FACTORY]
-        } as Provider,
+      {
+          provide: ATTACHMENT_SERVICE,
+          useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
+          deps: [ATTACHMENT_SERVICE_FACTORY]
+      } as Provider,
     ],
-    imports: [CommonModule, I18NextModule, DxFileUploaderModule, DxDataGridModule, DxPopupModule, Breadcrumb],
+    imports: [CommonModule, I18NextPipe, DxFileUploaderModule, DxDataGridModule, DxPopupModule, Breadcrumb],
     hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible]
 })
   export class EditLayoutAttachmentsComponent implements OnInit {
@@ -44,10 +44,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     public optionButtons$: Observable<Array<ColumnButton>|undefined>;
 
     constructor(
-        @Inject(ATTACHMENT_SERVICE) private attachmentService: AttachmentService,
-        @Inject(EDIT_SERVICE) private editService: EditService,
-        @Inject(TRANSLATOR) private translator: Translator,
-        private breadcrumb: Breadcrumb,
+        @Inject(ATTACHMENT_SERVICE) private readonly attachmentService: AttachmentService,
+        @Inject(EDIT_SERVICE) private readonly editService: EditService,
+        @Inject(TRANSLATOR) private readonly translator: Translator,
+        private readonly breadcrumb: Breadcrumb,
         public destroy: DestroyRef,
         public livecycle: EditItemLivecycle,
         public readonly: Readonly,
@@ -60,7 +60,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
         this.dataSource$ = this.attachmentService.items$.pipe(
             takeUntilDestroyed(this.destroy),
-            switchMap((fetchedItems) => fetchedItems ? from(createArrayDatasource(fetchedItems)) : of(undefined))
+            map((fetchedItems) => fetchedItems ? createArrayDatasource(fetchedItems) : undefined)
         );
 
         this.optionButtons$ = this.readonly.readonly$.pipe(

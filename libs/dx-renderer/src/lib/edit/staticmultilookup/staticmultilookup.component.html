@@ -5,7 +5,7 @@
   [name]="livecycle.layoutItem.options.dataMember"
   [(value)]="value.value"
   [readOnly]="(readonly.readonly$ | async) ?? false"
-  [dataSource]="lookup.dataSource$ | async"
+  [dataSource]="(lookup.dataSource$ | async) ?? null"
   [displayExpr]="livecycle.layoutItem.options.displayExpr ?? 'Text'"
   [valueExpr]="livecycle.layoutItem.options.valueExpr ?? 'Value'"
   [searchEnabled]=true
@@ -14,13 +14,13 @@
   [showDropDownButton]=true
   [multiline]=false
   [maxDisplayedTags]=3
-  [grouped]="lookup.grouped"
+  [grouped]="(lookup.grouped$ | async) ?? false"
   [acceptCustomValue]="lookup.acceptCustomValue"
   (onFocusIn)="livecycle.onEntered()">
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
-    <br *ngIf="lookup.hasLookupItemHint"/>
-    <small *ngIf="lookup.hasLookupItemHint">{{lookup.getLookupItemHintValue(item)}}</small>
+    <br *ngIf="lookup.hasLookupItemHint$ | async"/>
+    <small *ngIf="lookup.hasLookupItemHint$ | async">{{lookup.getLookupItemHintValue(item)}}</small>
   </div>
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
 </dx-tag-box>

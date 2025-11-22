@@ -5,19 +5,19 @@
   [(value)]="value.value"
   [readOnly]="(readonly.readonly$ | async) ?? false"
   [visible]="(visible.visible$ | async) ?? false"
-  [dataSource]="lookup.dataSource$ | async"
-  [displayExpr]="livecycle.layoutItem.options.displayExpr ?? lookup.lookup?.displayMember"
-  [valueExpr]="livecycle.layoutItem.options.valueExpr ?? lookup.lookup?.valueMember ?? ''"
+  [dataSource]="(lookup.dataSource$ | async) ?? null"
+  [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+  [valueExpr]="(lookup.valueExpr$ | async) ?? ''"
   [showClearButton]="true"
   [searchEnabled]="true"
-  [acceptCustomValue]="lookup.acceptCustomValue"    
-  [grouped]="lookup.grouped"
+  [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
+  [grouped]="(lookup.grouped$ | async) ?? false"
   (onFocusIn)="livecycle.onEntered()"
-  (onCustomItemCreating)="lookup.onCustomItemCreating($event)">  
+  (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
-    <br *ngIf="lookup.hasLookupItemHint"/>
-    <small *ngIf="lookup.hasLookupItemHint">{{lookup.getLookupItemHintValue(item)}}</small>
+    <br *ngIf="lookup.hasLookupItemHint$ | async"/>
+    <small *ngIf="lookup.hasLookupItemHint$ | async">{{lookup.getLookupItemHintValue(item)}}</small>
   </div>
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
 </dx-select-box>

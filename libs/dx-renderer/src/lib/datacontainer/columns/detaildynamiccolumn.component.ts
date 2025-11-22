@@ -9,16 +9,15 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GridLayoutColumn } from "@ballware/meta-model";
-import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, PickvalueCreator, Translator, TRANSLATOR } from "@ballware/meta-services";
+import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { Readonly } from "@ballware/renderer-commons";
-import { I18NextModule } from "angular-i18next";
+import { I18NextPipe } from "angular-i18next";
 import {
     DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule,
     DxSelectBoxComponent,
     DxSelectBoxModule, DxTagBoxComponent, DxTagBoxModule, DxTextBoxComponent, DxTextBoxModule, DxValidatorModule
 } from 'devextreme-angular';
 import { RequiredRule, ValidationRule } from "devextreme/common";
-import DataSource from "devextreme/data/data_source";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
 import { ColumnEditCellTemplateData as DataGridColumnEditCellTemplateData } from 'devextreme/ui/data_grid';
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
@@ -30,15 +29,14 @@ import { ColumnEditCellTemplateData as TreeListColumnEditCellTemplateData } from
 import { cloneDeep, get } from "lodash";
 import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
 import { DetailCollectionEditing } from "../../directives";
-import { createLookupDataSource } from "../../utils";
+import { createLookupDelegateBuilder, LookupDelegate } from '../../utils';
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
-import { compileSetter } from 'devextreme/utils';
 
 @Component({
     selector: 'ballware-detail-dynamic-column',
     templateUrl: './detaildynamiccolumn.component.html',
     styleUrls: ['./detaildynamiccolumn.component.scss'],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule]
+    imports: [CommonModule, I18NextPipe, DetailEditPopupComponent, DxTextBoxModule, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxSelectBoxModule, DxTagBoxModule, DxValidatorModule]
 })
 export class DetailDynamicColumnComponent implements OnInit {
     @ViewChild('textbox', { static: false }) textbox?: DxTextBoxComponent;
@@ -62,14 +60,7 @@ export class DetailDynamicColumnComponent implements OnInit {
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
     value: unknown|undefined = undefined;
-    lookupDatasource: DataSource|object[]|undefined;
-    lookupValueExpr: string|undefined;
-    lookupDisplayExpr: string|undefined;
-    acceptCustomValue: boolean|undefined;
-    lookup: LookupDescriptor|undefined;
-
-    private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
-    private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
+    lookup: LookupDelegate|undefined;
 
     public requiredValidation$ = new BehaviorSubject<boolean>(false);
 
@@ -78,12 +69,12 @@ export class DetailDynamicColumnComponent implements OnInit {
     onValueChanged: ((e: TextValueChangedEvent|BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|LookupValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
-        @Inject(TRANSLATOR) private translator: Translator,
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(EDIT_SERVICE) private editService: EditService,
-        private destroy: DestroyRef,
+        @Inject(TRANSLATOR) private readonly translator: Translator,
+        @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+        @Inject(EDIT_SERVICE) private readonly editService: EditService,
+        private readonly destroy: DestroyRef,
         public readonly: Readonly,
-        private editing: DetailCollectionEditing) {
+        private readonly editing: DetailCollectionEditing) {
     }
 
     stringValue() {
@@ -159,8 +150,6 @@ export class DetailDynamicColumnComponent implements OnInit {
                     options: cloneDeep(this.column)
                   });
 
-                  this.acceptCustomValue = this.preparedColumn.acceptCustomValue ?? false;
-
                   this.onValueChanged = (e) => {
                     this.cell.setValue(e.value);
 
@@ -171,81 +160,46 @@ export class DetailDynamicColumnComponent implements OnInit {
 
                   this.requiredValidation$.next(this.preparedColumn.required ?? false);
 
-                  this.prepared = true;
+                  let lookupBuilder = createLookupDelegateBuilder(lookups);
 
-                  if (this.preparedColumn.type === 'staticmultilookup') {
-                    this.lookupDatasource = this.preparedColumn.items ??
-                      (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember)
-                        : (this.preparedColumn.lookupMember ? get(this.item, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
+                  if (this.preparedColumn.items) {
+                    lookupBuilder.forStaticItems(this.preparedColumn.items);
+                  } else if (this.preparedColumn.itemsMember) {
+                    lookupBuilder.forItemsFromMember(this.preparedColumn.itemsMember, (member) => get(this.item, member) as Array<Record<string, unknown>>);
+                  } else if (this.preparedColumn.lookupMember) {
+                    lookupBuilder.forItemsFromMember(this.preparedColumn.lookupMember, (member) => get(this.detailItem, member) as Array<Record<string, unknown>>);
+                  } else if (this.preparedColumn.lookup) {
+                    lookupBuilder.forIdentifier(this.preparedColumn.lookup);
 
-                    this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
-                    this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
-                  } else if (this.preparedColumn.type === 'pickvalue' || this.preparedColumn.type === 'lookup' || this.preparedColumn.type === 'multilookup') {
-
-                    if (this.preparedColumn.lookup) {
-                      const foundLookup = lookups[this.preparedColumn.lookup];
-
-                      if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
-                        const dynamicLookupParam = (get(this.item, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
-
-                        this.lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
-                      } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
-                        const dynamicPickvalueEntity = (get(this.item, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
-                        const dynamicPickvalueField = (get(this.item, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
-
-                        this.lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
-                      } else if (foundLookup as LookupDescriptor) {
-                        this.lookup = foundLookup as LookupDescriptor;
-                      }
-
-                      if (!this.lookup) {
-                        this.lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
-                      }
-
-                      if (this.lookup) {
-                        this.lookupDatasource = createLookupDataSource(
-                          (this.lookup.store as LookupStoreDescriptor).listFunc,
-                          (this.lookup.store as LookupStoreDescriptor).byIdFunc
-                        );
-
-                        this.lookupValueExpr = this.preparedColumn.valueExpr ?? this.lookup.valueMember ?? 'Id';
-                        this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? this.lookup.displayMember ?? 'Name';
-
-                        if (this.lookup.type !== 'autocomplete') {
-                          const keyValueSetter = compileSetter(this.lookupValueExpr ?? (this.lookup as LookupDescriptor)?.valueMember ?? this.lookupDatasource?.key() ?? 'Id');
-
-                          this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
-
-                          const displayValueSetter = compileSetter(this.lookupDisplayExpr ?? (this.lookup as LookupDescriptor)?.displayMember ?? 'Name');
-
-                          this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
-                        }
-                      } else {
-                        this.lookupDatasource = undefined;
-                      }
+                    if (this.preparedColumn.lookupParam) {
+                      lookupBuilder.withParamFromMember(this.preparedColumn.lookupParam, (member) => get(this.item, member) as string);
+                    } else if (this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
+                      lookupBuilder.withPickvaluesForEntityAndField(this.preparedColumn.pickvalueEntity, this.preparedColumn.pickvalueField);
                     }
                   }
+
+                  lookupBuilder.withUnknownLookupFallback(getGenericLookupByIdentifier);
+
+                  if (this.preparedColumn.type === 'staticmultilookup') {
+                    lookupBuilder.withValueExpr(this.preparedColumn.valueExpr ?? 'Value');
+                    lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr ?? 'Text');
+                  } else {
+                    if (this.preparedColumn.valueExpr) {
+                      lookupBuilder.withValueExpr(this.preparedColumn.valueExpr);
+                    }
+
+                    if (this.preparedColumn.displayExpr) {
+                      lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr);
+                    }
+                  }
+
+                  if (this.preparedColumn.acceptCustomValue) {
+                    lookupBuilder.withAcceptCustomValue(this.preparedColumn.acceptCustomValue);
+                  }
+
+                  this.lookup = lookupBuilder.build();
+                  this.prepared = true;
                 }
             });
     }
-
-  public onCustomItemCreating(event: any) {
-    if (!this.acceptCustomValue) {
-      event.cancel = true;
-      return;
-    }
-
-    if (this.lookup?.type === 'autocomplete') {
-      event.customItem = event.text;
-    } else {
-      const customValue = {
-
-      };
-
-      this._lookupItemKeyValueSetter?.(customValue, event.text);
-      this._lookupItemDisplayValueSetter?.(customValue, event.text);
-
-      event.customItem = customValue;
-    }
-  }
 }

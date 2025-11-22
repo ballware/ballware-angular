@@ -5,14 +5,14 @@
   [name]="livecycle.layoutItem.options.dataMember"
   [(value)]="value.value"
   [readOnly]="(readonly.readonly$ | async) ?? false"
-  [dataSource]="lookup.dataSource$ | async"
+  [dataSource]="(lookup.dataSource$ | async) ?? null"
   [searchEnabled]=true
   [showClearButton]=true
   [showSelectionControls]=true
   [showDropDownButton]=true
   [multiline]=false
-  [grouped]="lookup.grouped"
+  [grouped]="(lookup.grouped$ | async) ?? false"
   [acceptCustomValue]="true"
   (onFocusIn)="livecycle.onEntered()">
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
 </dx-tag-box>

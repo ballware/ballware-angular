@@ -12,8 +12,7 @@ import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
 import { BehaviorSubject, Observable, Subject, combineLatest, map } from 'rxjs';
-import { createColumnConfiguration } from '../../utils';
-import { DataSourceService } from '../../utils';
+import { createColumnConfiguration, DataSourceService } from '../../utils';
 import { DatagridComponent, DatagridSummary } from '../datagrid/datagrid.component';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -61,7 +60,7 @@ export class EntitygridComponent implements OnInit {
 
   public summary$: Observable<DatagridSummary|undefined>;
 
-  private _gridLayout$ = new BehaviorSubject<GridLayout|undefined>(undefined);
+  private readonly _gridLayout$ = new BehaviorSubject<GridLayout|undefined>(undefined);
 
   public columns$: Observable<Column[]|undefined>;
   public dataSource$: Observable<DataSource|undefined>;
@@ -87,13 +86,13 @@ export class EntitygridComponent implements OnInit {
   }
 
   constructor(
-    private destroy: DestroyRef,
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-    @Inject(META_SERVICE) private metaService: MetaService,
-    @Inject(CRUD_SERVICE) private crudService: CrudService,
-    private dataSourceService: DataSourceService,
-    @Inject(TRANSLATOR) private translator: Translator,
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService) {
+    private readonly destroy: DestroyRef,
+    @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+    @Inject(META_SERVICE) private readonly metaService: MetaService,
+    @Inject(CRUD_SERVICE) private readonly crudService: CrudService,
+    private readonly dataSourceService: DataSourceService,
+    @Inject(TRANSLATOR) private readonly translator: Translator,
+    @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService) {
 
     this.isMasterDetailExpandable = this.isMasterDetailExpandable.bind(this);
 
@@ -148,7 +147,7 @@ export class EntitygridComponent implements OnInit {
       this.crudService.functionExecute$
     ]).pipe(
       takeUntilDestroyed(this.destroy),
-      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
+      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (lookups && editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
         (key, options) => this.translator(key, options),
         gridLayout?.columns ?? [],
         lookups,
@@ -160,7 +159,7 @@ export class EntitygridComponent implements OnInit {
     );
 
     this.summary$ = this._gridLayout$.pipe(
-      map((gridLayout) => (gridLayout && gridLayout.summaries) ? createSummaryConfiguration(gridLayout) : undefined)
+      map((gridLayout) => gridLayout?.summaries ? createSummaryConfiguration(gridLayout) : undefined)
     );
 
     this.dataSource$ = this.dataSourceService.dataSource$;

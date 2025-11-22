@@ -430,9 +430,7 @@ const createTenantAllowedStateLookup = (
 
 const createGenericLookupByIdentifier = (
     api: MetaLookupApi,
-    lookupIdentifier: string,
-    valueMember: string,
-    displayMember: string
+    lookupIdentifier: string
   ): LookupDescriptor => {
     return {
       type: 'lookup',
@@ -441,16 +439,14 @@ const createGenericLookupByIdentifier = (
           api.selectListForLookupIdentifier(lookupIdentifier),
         byIdFunc: id =>
           api.selectByIdForLookupIdentifier(lookupIdentifier)(id),
-      } as LookupStoreDescriptor,
-      valueMember: valueMember,
-      displayMember: displayMember,
+      } as LookupStoreDescriptor
     } as LookupDescriptor;
   };
 
 
 export class LookupStore extends ComponentStore<LookupState> implements LookupService {
 
-  private destroyRef = inject(DestroyRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(private store: Store,
       private readonly userApi: IdentityUserApi,
@@ -507,7 +503,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
             lookups
         }));
 
-    readonly getGenericLookupByIdentifier$ = of((identifier: string, valueExpr: string, displayExpr: string) => createGenericLookupByIdentifier(this.lookupApi, identifier, valueExpr, displayExpr));
+    readonly getGenericLookupByIdentifier$ = of((identifier: string) => createGenericLookupByIdentifier(this.lookupApi, identifier));
 
     readonly requestLookups = (requests :LookupRequest[]) => {
       if (requests) {
@@ -539,8 +535,8 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
         newLookups['entityStateLookup'] = createMetaEntityStateLookup(this.processingstateApi);
         newLookups['entityPickvalueLookup'] = createMetaEntityPickvalueLookup(this.pickvalueApi);
 
-        requests?.forEach(l => {
-            switch (l.type) {
+        for (const l of requests ?? []) {
+          switch (l.type) {
             case 'lookup':
                 if (l.identifier && l.lookupId && l.valueMember && l.displayMember) {
                 newLookups[l.identifier] = createGenericLookup(
@@ -627,7 +623,7 @@ export class LookupStore extends ComponentStore<LookupState> implements LookupSe
                 );
                 break;
             }
-        });
+          }
 
           this.updateLookups(newLookups);
         } else {

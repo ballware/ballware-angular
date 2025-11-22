@@ -1,5 +1,5 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
-import { AutocompleteCreator, LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreator } from "@ballware/meta-services";
+import { AutocompleteCreator, LookupCreator, LookupDescriptor, PickvalueCreator } from "@ballware/meta-services";
 import { AsyncRule } from 'devextreme-angular/common';
 import { RequiredRule, ValidationCallbackData } from 'devextreme/common';
 import { DxElement } from "devextreme/core/element";
@@ -8,7 +8,7 @@ import { Column as DataGridColumn, ColumnCellTemplateData as DataGridColumnCellT
 import { Column as TreeListColumn, ColumnCellTemplateData as TreeListColumnCellTemplateData } from "devextreme/ui/tree_list";
 import { cloneDeep, get } from "lodash";
 import { firstValueFrom, Observable } from 'rxjs';
-import { createLookupDataSource } from "./datasource";
+import { createLookupDelegateBuilder } from './lookupbuilder';
 
 export type OptionButtons =
   | 'add'
@@ -23,12 +23,7 @@ export type OptionButtons =
     t: (id: string, param?: Record<string, unknown>) => string,
     c: GridLayoutColumn,
     editMode: 'row' | 'instant',
-    lookups:
-      | Record<
-          string,
-          LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
-        >
-      | undefined,
+    lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
     lookupParams: Record<string, unknown>
   ) {
     let type = c.type;
@@ -38,23 +33,6 @@ export type OptionButtons =
     }
 
     switch (type) {
-      case 'text':
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
       case 'bool':
         return {
           dataField: c.dataMember,
@@ -135,20 +113,17 @@ export type OptionButtons =
         } as ColumnType;
       case 'lookup':
       case 'pickvalue': {
-        const lookup = (lookups && c.lookup && c.lookupParam
-          ? (lookups[c.lookup] as LookupCreator)(
-              get(lookupParams, c.lookupParam) as string
-            )
-          : lookups && c.lookup
-          ? lookups[c.lookup]
-          : undefined) as LookupDescriptor;
+        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
 
-        const dataSource = lookup
-          ? createLookupDataSource(
-              (lookup.store as LookupStoreDescriptor).listFunc,
-              (lookup.store as LookupStoreDescriptor).byIdFunc
-            )
-          : undefined;
+        if (c.lookup) {
+          lookupDelegateBuilder.forIdentifier(c.lookup);
+        }
+
+        if (c.lookupParam) {
+          lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
+        }
+
+        const lookup = lookupDelegateBuilder.build();
 
         return {
           dataField: c.dataMember,
@@ -158,10 +133,10 @@ export type OptionButtons =
           fixedPosition: c.fixedPosition,
           allowEditing: c.editable ?? false,
           visible: c.visible ?? true,
-          sortOrder: c.sorting,          
+          sortOrder: c.sorting,
           editorOptions: {
             showClearButton: true,
-          },         
+          },
           validationRules: c.required ? [
             {
               type: 'required',
@@ -169,27 +144,24 @@ export type OptionButtons =
             } as RequiredRule
           ] : [],
           lookup: {
-            dataSource: dataSource?.store(),
-            displayExpr: lookup?.displayMember,
-            valueExpr: lookup?.valueMember,
+            dataSource: lookup.dataSource?.store(),
+            displayExpr: lookup?.displayExpr,
+            valueExpr: lookup?.valueExpr,
           },
         } as ColumnType;
       }
       case 'multilookup': {
-        const lookup = (lookups && c.lookup && c.lookupParam
-          ? (lookups[c.lookup] as LookupCreator)(
-              get(lookupParams, c.lookupParam) as string
-            )
-          : lookups && c.lookup
-          ? lookups[c.lookup]
-          : undefined) as LookupDescriptor;
+        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
 
-        const dataSource = lookup
-          ? createLookupDataSource(
-              (lookup.store as LookupStoreDescriptor).listFunc,
-              (lookup.store as LookupStoreDescriptor).byIdFunc
-            )
-          : undefined;
+        if (c.lookup) {
+          lookupDelegateBuilder.forIdentifier(c.lookup);
+        }
+
+        if (c.lookupParam) {
+          lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
+        }
+
+        const lookup = lookupDelegateBuilder.build();
 
         return {
           dataField: c.dataMember,
@@ -201,9 +173,9 @@ export type OptionButtons =
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           lookup: {
-            dataSource: dataSource?.store(),
-            displayExpr: lookup?.displayMember,
-            valueExpr: lookup?.valueMember,
+            dataSource: lookup.dataSource?.store(),
+            displayExpr: lookup.displayExpr,
+            valueExpr: lookup.valueExpr,
           },
           editorOptions: c,
           validationRules: c.required ? [
@@ -217,7 +189,7 @@ export type OptionButtons =
             const cellLookup = cellInfo.column?.lookup;
 
             const displayValues = (cellInfo.value || []).map(
-              (id: string) => (cellLookup && cellLookup.calculateCellValue) ? cellLookup.calculateCellValue(id) : id,
+              (id: string) => cellLookup?.calculateCellValue ? cellLookup.calculateCellValue(id) : id,
             );
             const text = displayValues.join(', ');
 
@@ -228,7 +200,18 @@ export type OptionButtons =
         } as ColumnType;
       }
       case 'staticlookup': {
-        const items = c.items;
+        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
+
+        if (c.items) {
+          lookupDelegateBuilder.forStaticItems(c.items);
+        } else if (c.lookupMember) {
+          lookupDelegateBuilder.forItemsFromMember(c.lookupMember, (member) => get(lookupParams, member) as Array<Record<string, unknown>>);
+        }
+
+        lookupDelegateBuilder.withValueExpr(c.valueExpr ?? 'Value');
+        lookupDelegateBuilder.withDisplayExpr(c.displayExpr ?? 'Text');
+
+        const lookup = lookupDelegateBuilder.build();
 
         return {
           dataField: c.dataMember,
@@ -240,9 +223,9 @@ export type OptionButtons =
           visible: c.visible ?? true,
           sortOrder: c.sorting,
           lookup: {
-            dataSource: items,
-            displayExpr: c.displayExpr ?? 'Text',
-            valueExpr: c.valueExpr ?? 'Value',
+            dataSource: lookup.dataSource?.store(),
+            displayExpr: lookup.displayExpr,
+            valueExpr: lookup.valueExpr,
           },
           validationRules: c.required ? [
             {
@@ -295,7 +278,8 @@ export type OptionButtons =
           cellTemplate: 'dynamic',
         } as ColumnType;
       }
-      default: {
+      case 'text':
+      default:
         return {
           dataField: c.dataMember,
           caption: c.caption,
@@ -312,7 +296,6 @@ export type OptionButtons =
             } as RequiredRule
           ] : [],
         } as ColumnType;
-      }
     }
   }
 
@@ -321,12 +304,7 @@ export function createColumnConfiguration<
 >(
   t: (id: string, param?: Record<string, unknown>) => string,
   columns: Array<GridLayoutColumn>,
-  lookups:
-    | Record<
-        string,
-        LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
-      >
-    | undefined,
+  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
   lookupParams: Record<string, unknown>,
   mode: 'small' | 'medium' | 'large' | 'detail',
   editMode: 'row' | 'instant',
@@ -455,27 +433,25 @@ export function createColumnConfiguration<
       }
       break;
     case 'detail':
-      {
-        if (onRowValidating) {
-          gridColumns.push({
-            visible: false,
-            validationRules: [
-              {
-                type: 'async',
-                validationCallback: async (e) => {
-                  const message = await firstValueFrom(onRowValidating(e));
+      if (onRowValidating) {
+        gridColumns.push({
+          visible: false,
+          validationRules: [
+            {
+              type: 'async',
+              validationCallback: async (e) => {
+                const message = await firstValueFrom(onRowValidating(e));
 
-                  if (message) {
-                    e.rule.message = message;
-                    return false;
-                  }
-
-                  return true;
+                if (message) {
+                  e.rule.message = message;
+                  return false;
                 }
-              } as AsyncRule
-            ]
-          } as ColumnType)
-        }
+
+                return true;
+              }
+            } as AsyncRule
+          ]
+        } as ColumnType)
       }
       break;
   }

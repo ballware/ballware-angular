@@ -7,26 +7,25 @@ import {
   ViewChild,
 } from '@angular/core';
 import { EditUtil, GridLayoutColumn } from "@ballware/meta-model";
-import { EditModes, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, META_SERVICE, MetaService, PickvalueCreator } from "@ballware/meta-services";
-import DataSource from "devextreme/data/data_source";
+import { EditModes, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService } from "@ballware/meta-services";
 import { ValueChangedEvent as BoolValueChangedEvent } from "devextreme/ui/check_box";
 import { ValueChangedEvent as DateValueChangedEvent } from "devextreme/ui/date_box";
 import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/number_box";
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep, get, set } from "lodash";
 import { combineLatest } from "rxjs";
-import { createLookupDataSource } from "../../utils";
+import { createLookupDelegateBuilder, LookupDelegate } from '../../utils';
 import { CommonModule } from "@angular/common";
 import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
-import { I18NextModule } from "angular-i18next";
+import { I18NextPipe } from "angular-i18next";
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'ballware-entity-dynamic-column',
     templateUrl: './entitydynamiccolumn.component.html',
     styleUrls: [],
-    imports: [CommonModule, I18NextModule, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule]
+    imports: [CommonModule, I18NextPipe, DetailEditPopupComponent, DxCheckBoxModule, DxNumberBoxModule, DxDateBoxModule, DxTagBoxModule]
 })
 export class EntityDynamicColumnComponent implements OnInit {
     @ViewChild('checkbox', { static: false }) checkbox?: DxCheckBoxComponent;
@@ -45,16 +44,15 @@ export class EntityDynamicColumnComponent implements OnInit {
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
     value: unknown|undefined = undefined;
-    lookupDatasource: DataSource|object[]|undefined;
-    lookupValueExpr: string|undefined;
-    lookupDisplayExpr: string|undefined;
+
+    lookup: LookupDelegate|undefined;
 
     onValueChanged: ((e: BoolValueChangedEvent|NumberValueChangedEvent|DateValueChangedEvent|MultiLookupValueChangedEvent) => void)|undefined;
 
     constructor(
-        private destroy: DestroyRef,
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(META_SERVICE) private metaService: MetaService) {
+        private readonly destroy: DestroyRef,
+        @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+        @Inject(META_SERVICE) private readonly metaService: MetaService) {
     }
 
     boolValue() {
@@ -142,49 +140,40 @@ export class EntityDynamicColumnComponent implements OnInit {
               this.preparedColumn = preparedColumn;
               this.prepared = true;
 
-              if (this.preparedColumn.type === 'staticmultilookup') {
-                  this.lookupDatasource = this.preparedColumn.items ??
-                      (this.preparedColumn.itemsMember ? get(this.item, this.preparedColumn.itemsMember)
-                          : (this.preparedColumn.lookupMember ? get(this.lookupParams, this.preparedColumn.lookupMember) : undefined)) as Array<object>;
+              let lookupBuilder = createLookupDelegateBuilder(lookups);
 
-                  this.lookupValueExpr = this.preparedColumn.valueExpr ?? 'Value';
-                  this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? 'Text';
-              } else if (this.preparedColumn.type === 'multilookup') {
-                  let lookup: LookupDescriptor|undefined = undefined;
+              if (this.preparedColumn.items) {
+                lookupBuilder.forStaticItems(this.preparedColumn.items);
+              } else if (this.preparedColumn.itemsMember) {
+                lookupBuilder.forItemsFromMember(this.preparedColumn.itemsMember, (member) => get(this.item, member) as Array<Record<string, unknown>>);
+              } else if (this.preparedColumn.lookupMember) {
+                lookupBuilder.forItemsFromMember(this.preparedColumn.lookupMember, (member) => get(this.lookupParams, member) as Array<Record<string, unknown>>);
+              } else if (this.preparedColumn.lookup) {
+                lookupBuilder.forIdentifier(this.preparedColumn.lookup);
 
-                  if (this.preparedColumn.lookup) {
-                      const foundLookup = lookups[this.preparedColumn.lookup];
-
-                      if (foundLookup as LookupCreator && this.preparedColumn.lookupParam) {
-                          const dynamicLookupParam = (get(this.lookupParams, this.preparedColumn.lookupParam) ?? this.preparedColumn.lookupParam) as string;
-
-                          lookup = (foundLookup as LookupCreator)(dynamicLookupParam);
-                      } else if (foundLookup as PickvalueCreator && this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
-                          const dynamicPickvalueEntity = (get(this.lookupParams, this.preparedColumn.pickvalueEntity) ?? this.preparedColumn.pickvalueEntity) as string;
-                          const dynamicPickvalueField = (get(this.lookupParams, this.preparedColumn.pickvalueField) ?? this.preparedColumn.pickvalueField) as string;
-
-                          lookup = (foundLookup as PickvalueCreator)(dynamicPickvalueEntity, dynamicPickvalueField);
-                      } else if (foundLookup as LookupDescriptor) {
-                          lookup = foundLookup as LookupDescriptor;
-                      }
-
-                      if (!lookup) {
-                          lookup = getGenericLookupByIdentifier(this.preparedColumn.lookup, this.preparedColumn.valueExpr ?? 'Id', this.preparedColumn.displayExpr ?? 'Name');
-                      }
-
-                      if (lookup) {
-                          this.lookupDatasource = createLookupDataSource(
-                              (lookup.store as LookupStoreDescriptor).listFunc,
-                              (lookup.store as LookupStoreDescriptor).byIdFunc
-                          );
-
-                          this.lookupValueExpr = this.preparedColumn.valueExpr ?? lookup.valueMember  ?? 'Id';
-                          this.lookupDisplayExpr = this.preparedColumn.displayExpr ?? lookup.displayMember ?? 'Name';
-                      } else {
-                          this.lookupDatasource = undefined;
-                      }
-                  }
+                if (this.preparedColumn.lookupParam) {
+                  lookupBuilder.withParamFromMember(this.preparedColumn.lookupParam, (member) => get(this.lookupParams, member) as string);
+                } else if (this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
+                  lookupBuilder.withPickvaluesForEntityAndField(this.preparedColumn.pickvalueEntity, this.preparedColumn.pickvalueField);
+                }
               }
+
+              lookupBuilder.withUnknownLookupFallback(getGenericLookupByIdentifier);
+
+              if (this.preparedColumn.type === 'staticmultilookup') {
+                lookupBuilder.withValueExpr(this.preparedColumn.valueExpr ?? 'Value');
+                lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr ?? 'Text');
+              } else {
+                if (this.preparedColumn.valueExpr) {
+                  lookupBuilder.withValueExpr(this.preparedColumn.valueExpr);
+                }
+
+                if (this.preparedColumn.displayExpr) {
+                  lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr);
+                }
+              }
+
+              this.lookup = lookupBuilder.build();
           }
       });
     }

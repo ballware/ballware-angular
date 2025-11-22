@@ -133,9 +133,7 @@ export interface LookupService {
     >|undefined>;
 
   getGenericLookupByIdentifier$: Observable<((
-      identifier: string,
-      valueExpr: string,
-      displayExpr: string
+      identifier: string
     ) => LookupDescriptor) | undefined>;
 
   requestLookups(request :LookupRequest[]): void;
