@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, DestroyRef, Inject, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
-import { BehaviorSubject, firstValueFrom, Subject } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Subject, take } from 'rxjs';
 import { EditItemLivecycle } from '@ballware/renderer-commons';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
 import { Lookup } from './lookup';
@@ -20,11 +20,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 })
 class EditLookupTestComponent implements OnInit {
 
-  public lookupItems$: Subject<Record<string, unknown>[]> = new Subject<Record<string, unknown>[]>();
+  public lookupItems$: Subject<(Record<string, unknown>[])|undefined> = new BehaviorSubject<(Record<string, unknown>[])|undefined>(undefined);
 
   constructor(
     private destroy: DestroyRef,
-    private lookup: Lookup,
+    public lookup: Lookup,
     @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
     @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService,
     @Inject(EDIT_SERVICE) private editService: EditService) {
@@ -107,6 +107,8 @@ describe('Lookup', () => {
     lookupFixture.componentRef.setInput('initialLayoutItem' ,layoutItem);
     lookupFixture.detectChanges();
 
+    await firstValueFrom(lookupComponent.lookup.ready$.pipe(take(1)));
+
     const receivedItems = await firstValueFrom(lookupComponent.lookupItems$);
 
     expect(lookupListFn).toHaveBeenCalledTimes(1);
@@ -149,6 +151,8 @@ describe('Lookup', () => {
     lookupFixture.componentRef.setInput('initialLayoutItem', layoutItem);
     lookupFixture.detectChanges();
 
+    await firstValueFrom(lookupComponent.lookup.ready$.pipe(take(1)));
+
     const receivedItems = await firstValueFrom(lookupComponent.lookupItems$);
 
     expect(lookupListFn).toHaveBeenCalledTimes(1);
@@ -167,6 +171,7 @@ describe('Lookup', () => {
         }
     } as EditLayoutItem;
 
+    mockedLookupService.lookups$.next({});
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
 
     lookupComponent = lookupFixture.componentInstance;
@@ -174,6 +179,8 @@ describe('Lookup', () => {
 
     lookupFixture.componentRef.setInput('initialLayoutItem', layoutItem);
     lookupFixture.detectChanges();
+
+    await firstValueFrom(lookupComponent.lookup.ready$.pipe(take(1)));
 
     const receivedItems = await firstValueFrom(lookupComponent.lookupItems$);
 

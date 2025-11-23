@@ -1,4 +1,4 @@
-<dx-select-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+<dx-select-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember && (lookup.ready$ | async)"
   class="mt-2"
   [label]="livecycle.layoutItem.options.caption ?? ''"
   [name]="livecycle.layoutItem.options.dataMember"

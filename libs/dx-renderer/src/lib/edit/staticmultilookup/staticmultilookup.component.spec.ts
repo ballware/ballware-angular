@@ -6,6 +6,7 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, Noti
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
 
 describe('EditLayoutStaticmultilookupComponent', () => {
   let component: EditLayoutStaticmultilookupComponent;
@@ -64,21 +65,27 @@ describe('EditLayoutStaticmultilookupComponent', () => {
     fixture = TestBed.createComponent(EditLayoutStaticmultilookupComponent);
 
     const layoutItem = {
+      type: 'staticmultilookup',
       options: {
-          dataMember: 'mockedmember',
-          required: false,
-          readonly: false,
-          visible: false
+        dataMember: 'mockedmember',
+        required: false,
+        readonly: false,
+        visible: false,
+        items: []
       }
     } as EditLayoutItem;
 
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+    mockedEditService.getValue.mockReturnValue([])
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
 
     component = fixture.componentInstance;
     expect(component).toBeTruthy();
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
 
     expect(component.livecycle.getOption('value')).toStrictEqual([]);
     expect(component.livecycle.getOption('required')).toBe(false);
@@ -97,7 +104,7 @@ describe('EditLayoutStaticmultilookupComponent', () => {
     component.livecycle.setOption('visible', true);
     expect(component.livecycle.getOption('visible')).toBe(true);
 
-    const itemsFixture = [{ Id: '1', Name: 'Item 1' }, { Id: '2', Name: 'Item 2' }];
+    const itemsFixture = [{ Value: '1', Text: 'Item 1' }, { Value: '2', Text: 'Item 2' }];
 
     component.livecycle.setOption('items', itemsFixture);
 

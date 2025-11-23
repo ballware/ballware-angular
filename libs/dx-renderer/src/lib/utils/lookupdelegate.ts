@@ -9,11 +9,13 @@ export interface LookupDelegate {
   displayExpr$: Observable<string|undefined>;
   valueExpr$: Observable<string|undefined>;
   hasLookupItemHint$: Observable<boolean>;
+  lookupItems$: Observable<Array<any>|undefined>;
   acceptCustomValue$: Observable<boolean>;
 
   dataSource: DataSource|undefined;
   displayExpr: string|undefined;
   valueExpr: string|undefined;
+  lookupItems: Array<any>|undefined;
   acceptCustomValue: boolean;
 
   getLookupItemKeyValue(item: Record<string, unknown>): string|undefined;

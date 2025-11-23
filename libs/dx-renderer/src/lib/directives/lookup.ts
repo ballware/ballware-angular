@@ -1,13 +1,12 @@
 import { ApiError } from "@ballware/meta-api";
 import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
-import { combineLatest } from "rxjs";
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import {
   createLookupDelegateBuilder, LookupDelegate
 } from '../utils';
 import { EditItemLivecycle } from "@ballware/renderer-commons";
 import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { UnsupportedOperationException } from '@zxing/library';
 
 @Directive({
   standalone: true
@@ -15,6 +14,7 @@ import { UnsupportedOperationException } from '@zxing/library';
 export class Lookup implements OnInit, LookupDelegate {
 
   private delegate!: LookupDelegate;
+  private readonly _ready$ = new BehaviorSubject(false);
 
   public getLookupItemKeyValue(item: Record<string, unknown>) {
     return this.delegate.getLookupItemKeyValue(item);
@@ -49,6 +49,10 @@ export class Lookup implements OnInit, LookupDelegate {
     return this.delegate.valueExpr$;
   }
 
+  public get lookupItems$() {
+    return this.delegate.lookupItems$;
+  }
+
   public get acceptCustomValue$() {
     return this.delegate.acceptCustomValue$;
   }
@@ -69,6 +73,10 @@ export class Lookup implements OnInit, LookupDelegate {
     return this.delegate.valueExpr;
   }
 
+  public get lookupItems() {
+    return this.delegate.lookupItems;
+  }
+
   public setLookupItems(items: Array<any>) {
     this.delegate.setLookupItems(items);
   }
@@ -79,6 +87,10 @@ export class Lookup implements OnInit, LookupDelegate {
 
   public setAcceptCustomValue(accept: boolean) {
     this.delegate.setAcceptCustomValue(accept);
+  }
+
+  public get ready$(): Observable<boolean> {
+    return this._ready$;
   }
 
   constructor(
@@ -93,7 +105,7 @@ export class Lookup implements OnInit, LookupDelegate {
   ngOnInit(): void {
 
     this.livecycle.registerOption('acceptCustomValue', () => this.acceptCustomValue, (value) => this.setAcceptCustomValue(value as boolean));
-    this.livecycle.registerOption('items', () => { throw new UnsupportedOperationException("Get items of lookup not supported") }, (value) => this.setLookupItems(value  as []));
+    this.livecycle.registerOption('items', () => this.lookupItems, (value) => this.setLookupItems(value  as []));
 
     this.livecycle.preparedLayoutItem$
       .pipe(takeUntilDestroyed(this.destroy))
@@ -117,31 +129,19 @@ export class Lookup implements OnInit, LookupDelegate {
                     this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
                   });
 
-                  if (layoutItem?.options?.displayExpr) {
-                    lookupBuilder.withDisplayExpr(layoutItem.options.displayExpr);
-                  }
-
-                  if (layoutItem?.options?.valueExpr) {
-                    lookupBuilder.withValueExpr(layoutItem.options.valueExpr);
-                  }
-
-                  if (layoutItem?.options?.hintExpr) {
-                    lookupBuilder.withHintExpr(layoutItem.options.hintExpr);
-                  }
-
-                  if (layoutItem?.options?.acceptCustomValue) {
-                    lookupBuilder.withAcceptCustomValue(layoutItem.options.acceptCustomValue);
-                  }
+                  lookupBuilder.withDisplayExpr(layoutItem?.options?.displayExpr);
+                  lookupBuilder.withValueExpr(layoutItem?.options?.valueExpr);
+                  lookupBuilder.withHintExpr(layoutItem?.options?.hintExpr);
+                  lookupBuilder.withAcceptCustomValue(layoutItem?.options?.acceptCustomValue);
 
                   if (layoutItem?.options?.lookupParam) {
                     lookupBuilder.withParamFromMember(layoutItem.options.lookupParam, (member) => getValue({ dataMember: member }) as string|string[]);
                   }
 
-                  if (layoutItem?.options?.lookupGroupBy) {
-                    lookupBuilder.withGroupBy(layoutItem.options.lookupGroupBy);
-                  }
+                  lookupBuilder.withGroupBy(layoutItem?.options?.lookupGroupBy);
 
                   this.delegate = lookupBuilder.build();
+                  this._ready$.next(true);
                 }
               });
         }

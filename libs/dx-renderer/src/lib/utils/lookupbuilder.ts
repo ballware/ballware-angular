@@ -73,6 +73,7 @@ const createDatasourceForAutocompleteLookup = (lookupInstance: LookupDescriptor,
 class LookupDelegateImpl implements LookupDelegate {
 
   private readonly _datasource$: BehaviorSubject<DataSource | undefined>;
+  private readonly _lookupItems$: BehaviorSubject<Array<any> | undefined>;
   private readonly _acceptCustomValue$: BehaviorSubject<boolean>;
   private readonly _valueExpr$: Observable<string|undefined>;
   private readonly _displayExpr$: Observable<string|undefined>;
@@ -87,6 +88,7 @@ class LookupDelegateImpl implements LookupDelegate {
   private _datasource: DataSource | undefined;
   private _valueExpr: string | undefined;
   private _displayExpr: string | undefined;
+  private _lookupItems: Array<any> | undefined;
   private _acceptCustomValue: boolean = false;
 
   constructor(params: {
@@ -100,6 +102,7 @@ class LookupDelegateImpl implements LookupDelegate {
     keyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined,
     displayValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined,
     groupBy: string | undefined,
+    staticLookupItems: Array<any> | undefined,
     acceptCustomValue: boolean
   }) {
     this._datasource$ = new BehaviorSubject(params.datasource);
@@ -107,6 +110,8 @@ class LookupDelegateImpl implements LookupDelegate {
     this._displayExpr$ = of(params.displayValueExpr);
     this._hasLookupItemHint$ = of(!!params.hintValueExpr);
     this._grouped$ = of(!!params.groupBy);
+
+    this._lookupItems$ = new BehaviorSubject(params.staticLookupItems);
     this._acceptCustomValue$ = new BehaviorSubject(params.acceptCustomValue);
     this._keyValueGetter = params.keyValueGetter;
     this._displayValueGetter = params.displayValueGetter;
@@ -125,6 +130,10 @@ class LookupDelegateImpl implements LookupDelegate {
     this._displayExpr$.subscribe((value) => {
       this._displayExpr = value;
     });
+
+    this._lookupItems$.subscribe((value) => {
+      this._lookupItems = value;
+    })
 
     this._acceptCustomValue$.subscribe((value) => {
       this._acceptCustomValue = value;
@@ -161,6 +170,14 @@ class LookupDelegateImpl implements LookupDelegate {
 
   get grouped$(): Observable<boolean> {
     return this._grouped$;
+  }
+
+  get lookupItems$(): Observable<Array<any> | undefined> {
+    return this._lookupItems$;
+  }
+
+  get lookupItems(): Array<any> | undefined {
+    return this._lookupItems;
   }
 
   get hasLookupItemHint$(): Observable<boolean> {
@@ -212,6 +229,7 @@ class LookupDelegateImpl implements LookupDelegate {
   }
 
   readonly setLookupItems = (items: Array<any>): void => {
+    this._lookupItems$.next(items);
     this._datasource$.next(createArrayDatasource(items));
   }
 }
@@ -251,17 +269,17 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
     return this;
   }
 
-  readonly withDisplayExpr = (displayExpr: string): LookupDelegateBuilder => {
+  readonly withDisplayExpr = (displayExpr: string|undefined): LookupDelegateBuilder => {
     this.displayExpr = displayExpr;
     return this;
   }
 
-  readonly withHintExpr = (hintExpr: string): LookupDelegateBuilder => {
+  readonly withHintExpr = (hintExpr: string|undefined): LookupDelegateBuilder => {
     this.hintExpr = hintExpr;
     return this;
   }
 
-  readonly withValueExpr = (valueExpr: string): LookupDelegateBuilder => {
+  readonly withValueExpr = (valueExpr: string|undefined): LookupDelegateBuilder => {
     this.valueExpr = valueExpr;
     return this;
   }
@@ -278,13 +296,13 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
     return this;
   }
 
-  readonly withGroupBy = (groupBy: string): LookupDelegateBuilder => {
+  readonly withGroupBy = (groupBy: string|undefined): LookupDelegateBuilder => {
     this.groupBy = groupBy;
     return this;
   }
 
-  readonly withAcceptCustomValue = (accept: boolean): LookupDelegateBuilder => {
-    this.acceptCustomValue = accept;
+  readonly withAcceptCustomValue = (accept: boolean|undefined): LookupDelegateBuilder => {
+    this.acceptCustomValue = accept ?? false;
     return this;
   }
 
@@ -328,12 +346,12 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
         lookupInstance = lookup as LookupDescriptor;
       }
 
-      if (lookupInstance && lookupInstance.type === 'lookup') {
+      if (lookupInstance?.type === 'lookup') {
         datasource = createDatasourceForRegularLookup(lookupInstance, this.groupBy, this.apiErrorHandler);
 
         keyValueExpr = this.valueExpr ?? lookupInstance.valueMember ?? 'Id';
         displayValueExpr = this.displayExpr ?? lookupInstance.displayMember ?? 'Name';
-      } else if (lookupInstance && lookupInstance.type === 'autocomplete') {
+      } else if (lookupInstance?.type === 'autocomplete') {
         datasource = createDatasourceForAutocompleteLookup(lookupInstance, this.apiErrorHandler);
 
         keyValueGetter = (item: unknown) => item as string;
@@ -367,6 +385,7 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
       keyValueSetter,
       displayValueSetter,
       groupBy: this.groupBy,
+      staticLookupItems: this.staticItems,
       acceptCustomValue: this.acceptCustomValue
     });
   }

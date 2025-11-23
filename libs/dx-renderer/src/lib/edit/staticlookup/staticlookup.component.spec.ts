@@ -6,6 +6,7 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, Noti
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
 
 describe('EditLayoutStaticlookupComponent', () => {
   let component: EditLayoutStaticlookupComponent;
@@ -64,14 +65,17 @@ describe('EditLayoutStaticlookupComponent', () => {
     fixture = TestBed.createComponent(EditLayoutStaticlookupComponent);
 
     const layoutItem = {
+      type: 'staticlookup',
       options: {
-          dataMember: 'mockedmember',
-          required: false,
-          readonly: false,
-          visible: false
+        dataMember: 'mockedmember',
+        required: false,
+        readonly: false,
+        visible: false,
+        items: []
       }
     } as EditLayoutItem;
 
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
 
     component = fixture.componentInstance;
@@ -79,6 +83,8 @@ describe('EditLayoutStaticlookupComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
 
     expect(component.livecycle.getOption('value')).toBe(null);
     expect(component.livecycle.getOption('required')).toBe(false);

@@ -6,6 +6,7 @@ import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, Noti
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
 
 describe('EditLayoutStaticButtonGroupComponent', () => {
   let component: EditLayoutStaticButtonGroupComponent;
@@ -41,7 +42,7 @@ describe('EditLayoutStaticButtonGroupComponent', () => {
     .compileComponents();
   });
 
-  it('should create', () => {
+  it('should create', async () => {
     fixture = TestBed.createComponent(EditLayoutStaticButtonGroupComponent);
 
     const layoutItem = {
@@ -51,6 +52,7 @@ describe('EditLayoutStaticButtonGroupComponent', () => {
       }
     } as EditLayoutItem;
 
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
 
     component = fixture.componentInstance;
@@ -58,6 +60,8 @@ describe('EditLayoutStaticButtonGroupComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
   });
 
   it('should apply options', async () => {
