@@ -15,7 +15,8 @@
   [multiline]=false
   [grouped]="(lookup.grouped$ | async) ?? false"
   [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
-  (onFocusIn)="livecycle.onEntered()">
+  (onFocusIn)="livecycle.onEntered()"
+  (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
   <div *dxTemplate="let item of 'item'">
     {{lookup.getLookupItemDisplayValue(item)}}
     <br *ngIf="lookup.hasLookupItemHint$ | async"/>
