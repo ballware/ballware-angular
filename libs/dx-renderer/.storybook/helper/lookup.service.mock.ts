@@ -16,14 +16,10 @@ export const createMockedLookupService = (options?: {
 
   // Create a mock function for getGenericLookupByIdentifier
   const getGenericLookupByIdentifier = (
-    identifier: string,
-    valueExpr: string,
-    displayExpr: string
+    identifier: string
   ): LookupDescriptor => {
     return {
       type: 'lookup',
-      displayMember: displayExpr,
-      valueMember: valueExpr,
       store: {
         listFunc: () => of([]),
         byIdFunc: (id: string) => of({}),
