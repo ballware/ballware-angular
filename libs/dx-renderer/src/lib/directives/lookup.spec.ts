@@ -2,7 +2,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { Component, DestroyRef, Inject, OnInit, Provider } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
-import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE, EditService, LOOKUP_SERVICE,
+  LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService,
+  PickvalueCreator
+} from '@ballware/meta-services';
 import { BehaviorSubject, firstValueFrom, Subject, take } from 'rxjs';
 import { EditItemLivecycle } from '@ballware/renderer-commons';
 import { mockedEditServiceContext } from '../../test/editservice.spec';
@@ -10,6 +15,7 @@ import { Lookup } from './lookup';
 import { mockedLookupServiceContext } from '../../test/lookupservice.spec';
 import { Mock } from 'moq.ts';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../utils';
 
 @Component({
     selector: 'ballware-edit-lookup-test',
@@ -66,7 +72,11 @@ describe('Lookup', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider
+        } as Provider,
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
+        }
       ]
     })
     .compileComponents();

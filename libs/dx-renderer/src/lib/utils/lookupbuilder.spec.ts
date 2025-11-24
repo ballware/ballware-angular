@@ -1,5 +1,5 @@
-import { createLookupDelegateBuilder, LookupDelegateBuilder } from './lookupbuilder';
-import { LookupDelegate } from './lookupdelegate';
+import { createLookupDelegateBuilder } from './lookupbuilder';
+import { LookupDelegate, LookupDelegateBuilder } from './lookupdelegate';
 import {
   LookupDescriptor,
   LookupCreator,

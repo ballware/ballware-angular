@@ -1,7 +1,16 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { ToolbarComponent } from './toolbar.component';
-import { LOOKUP_SERVICE, PAGE_SERVICE, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  LOOKUP_SERVICE,
+  LookupCreator,
+  LookupDescriptor,
+  PAGE_SERVICE,
+  PickvalueCreator,
+  TRANSLATOR
+} from '@ballware/meta-services';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
 
 // Simple test doubles for the required services
 class MockPageService {
@@ -16,21 +25,6 @@ class MockLookupService {
 }
 
 const translatorMock = jest.fn((key: string) => key);
-
-// Minimal mock of createLookupDelegateBuilder to avoid pulling in implementation
-jest.mock('../../utils', () => ({
-  createLookupDelegateBuilder: (lookups: any) => ({
-    forIdentifier: jest.fn().mockReturnThis(),
-    forStaticItems: jest.fn().mockReturnThis(),
-    withDisplayExpr: jest.fn().mockReturnThis(),
-    withValueExpr: jest.fn().mockReturnThis(),
-    build: jest.fn(() => ({
-      displayExpr: 'text',
-      valueExpr: 'value',
-      dataSource: [{ id: 1, text: 'A' }],
-    })),
-  }),
-}));
 
 describe('ToolbarComponent', () => {
   let component: ToolbarComponent;
@@ -47,6 +41,7 @@ describe('ToolbarComponent', () => {
         { provide: PAGE_SERVICE, useValue: pageService },
         { provide: LOOKUP_SERVICE, useValue: lookupService },
         { provide: TRANSLATOR, useValue: translatorMock },
+        { provide: LOOKUP_DELEGATE_BUILDER_FACTORY, useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups) }
       ],
     });
 

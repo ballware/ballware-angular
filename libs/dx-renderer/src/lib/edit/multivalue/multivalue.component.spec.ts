@@ -2,11 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutMultivalueComponent } from './multivalue.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE, LOOKUP_SERVICE, LookupCreator,
+  LookupDescriptor, LookupService, NOTIFICATION_SERVICE, NotificationService, PickvalueCreator, TRANSLATOR
+} from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
 import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
 
 describe('EditLayoutMultivalueComponent', () => {
   let component: EditLayoutMultivalueComponent;
@@ -36,7 +41,11 @@ describe('EditLayoutMultivalueComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider
+        } as Provider,
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
+        }
       ]
     })
     .compileComponents();
