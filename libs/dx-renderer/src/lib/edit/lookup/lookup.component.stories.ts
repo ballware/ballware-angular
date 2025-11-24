@@ -3,12 +3,19 @@ import { applicationConfig, moduleMetadata } from '@storybook/angular';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutLookupComponent } from './lookup.component';
 import { of } from 'rxjs';
-import { EDIT_SERVICE, LOOKUP_SERVICE, NOTIFICATION_SERVICE, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE,
+  LOOKUP_SERVICE, LookupCreator,
+  LookupDescriptor,
+  NOTIFICATION_SERVICE, PickvalueCreator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createMockedNotificationService } from '@storybook-helpers/notification.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
-import { createArrayDatasource } from '../../utils';
+import { createArrayDatasource, createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
 import { expect, within, userEvent } from 'storybook/test';
 
 const meta: Meta<EditLayoutLookupComponent> = {
@@ -34,6 +41,10 @@ const meta: Meta<EditLayoutLookupComponent> = {
         {
           provide: EDIT_SERVICE,
           useFactory: () => createMockedEditService().service
+        },
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
         }
       ],
     }),
