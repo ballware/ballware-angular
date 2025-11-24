@@ -14,7 +14,7 @@ import { ValueChangedEvent as NumberValueChangedEvent } from "devextreme/ui/numb
 import { ValueChangedEvent as MultiLookupValueChangedEvent } from "devextreme/ui/tag_box";
 import { cloneDeep, get, set } from "lodash";
 import { combineLatest } from "rxjs";
-import { createLookupDelegateBuilder, LookupDelegate } from '../../utils';
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
 import { CommonModule } from "@angular/common";
 import { DxCheckBoxComponent, DxCheckBoxModule, DxDateBoxComponent, DxDateBoxModule, DxNumberBoxComponent, DxNumberBoxModule, DxTagBoxComponent, DxTagBoxModule } from "devextreme-angular";
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
@@ -52,7 +52,9 @@ export class EntityDynamicColumnComponent implements OnInit {
     constructor(
         private readonly destroy: DestroyRef,
         @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
-        @Inject(META_SERVICE) private readonly metaService: MetaService) {
+        @Inject(META_SERVICE) private readonly metaService: MetaService,
+        @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY) private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory
+        ) {
     }
 
     boolValue() {
@@ -140,7 +142,7 @@ export class EntityDynamicColumnComponent implements OnInit {
               this.preparedColumn = preparedColumn;
               this.prepared = true;
 
-              let lookupBuilder = createLookupDelegateBuilder(lookups);
+              let lookupBuilder = this.createLookupDelegateBuilder(lookups);
 
               if (this.preparedColumn.items) {
                 lookupBuilder.forStaticItems(this.preparedColumn.items);

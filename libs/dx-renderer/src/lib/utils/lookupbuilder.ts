@@ -1,4 +1,4 @@
-import { LookupDelegate } from './lookupdelegate';
+import { LookupDelegate, LookupDelegateBuilder } from './lookupdelegate';
 import {
   AutocompleteCreator,
   LookupCreator,
@@ -12,22 +12,6 @@ import { BehaviorSubject, catchError, Observable, of } from 'rxjs';
 import { ApiError } from '@ballware/meta-api';
 import { compileGetter, compileSetter } from 'devextreme/utils';
 import DataSource from 'devextreme/data/data_source';
-
-export interface LookupDelegateBuilder {
-  forIdentifier(lookupIdentifier: string): LookupDelegateBuilder;
-  forStaticItems(items: Array<Record<string, unknown>>): LookupDelegateBuilder;
-  forItemsFromMember(dataMember: string, getDelegate: (dataMember: string) => Array<Record<string, unknown>>): LookupDelegateBuilder;
-  withUnknownLookupFallback(fallback: (identifier: string) => LookupDescriptor): LookupDelegateBuilder;
-  withDisplayExpr(displayExpr: string): LookupDelegateBuilder;
-  withValueExpr(valueExpr: string): LookupDelegateBuilder;
-  withHintExpr(hintExpr: string): LookupDelegateBuilder;
-  withParamFromMember(dataMember: string, getDelegate: (dataMember: string) => string|string[]): LookupDelegateBuilder;
-  withPickvaluesForEntityAndField(entity: string, field: string): LookupDelegateBuilder;
-  withGroupBy(groupBy: string): LookupDelegateBuilder;
-  withAcceptCustomValue(accept: boolean): LookupDelegateBuilder;
-  withApiErrorHandler(handler: (error: ApiError) => void): LookupDelegateBuilder;
-  build(): LookupDelegate;
-}
 
 const createDatasourceForRegularLookup = (lookupInstance: LookupDescriptor, groupBy: string|undefined, apiErrorHandler: ((error: ApiError) => void) | undefined) => {
   const { listFunc, byIdFunc } = (lookupInstance.store as LookupStoreDescriptor);
@@ -251,7 +235,7 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
   private unknownLookupFallbackHandler: ((identifier: string) => LookupDescriptor) | undefined;
   private apiErrorHandler: ((error: ApiError) => void) | undefined;
 
-  constructor(private readonly lookups: Record<string, unknown>) {}
+  constructor(private readonly lookups:  Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) {}
 
   readonly forIdentifier = (lookupIdentifier: string): LookupDelegateBuilder => {
     this.identifier = lookupIdentifier;

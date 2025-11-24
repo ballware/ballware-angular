@@ -2,7 +2,7 @@ import { ApiError } from "@ballware/meta-api";
 import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import {
-  createLookupDelegateBuilder, LookupDelegate
+  LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory
 } from '../utils';
 import { EditItemLivecycle } from "@ballware/renderer-commons";
 import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
@@ -98,7 +98,8 @@ export class Lookup implements OnInit, LookupDelegate {
     private readonly livecycle: EditItemLivecycle,
     @Inject(EDIT_SERVICE) private readonly editService: EditService,
     @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
-    @Inject(NOTIFICATION_SERVICE) private readonly notificationService: NotificationService
+    @Inject(NOTIFICATION_SERVICE) private readonly notificationService: NotificationService,
+    @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY) private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory
   ) {
   }
 
@@ -115,7 +116,7 @@ export class Lookup implements OnInit, LookupDelegate {
               .pipe(takeUntilDestroyed(this.destroy))
               .subscribe(([getValue, lookups]) => {
                 if (getValue && lookups) {
-                  let lookupBuilder = createLookupDelegateBuilder(lookups)
+                  let lookupBuilder = this.createLookupDelegateBuilder(lookups)
 
                   if (layoutItem?.options?.items) {
                     lookupBuilder.forStaticItems(layoutItem.options.items);

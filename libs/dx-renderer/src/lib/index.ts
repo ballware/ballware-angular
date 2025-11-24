@@ -1,10 +1,9 @@
 import {
   EnvironmentProviders,
-  importProvidersFrom,
   Injectable,
   makeEnvironmentProviders,
 } from '@angular/core';
-import { I18NextModule } from 'angular-i18next';
+import { provideI18Next } from 'angular-i18next';
 
 import { loadMessages, locale } from 'devextreme/localization';
 import deMessages from 'devextreme/localization/messages/de.json';
@@ -23,6 +22,13 @@ import {
 import { DefaultRedirectComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from './utils';
+import {
+  AutocompleteCreator,
+  LookupCreator,
+  LookupDescriptor,
+  PickvalueCreator
+} from '@ballware/meta-services';
 
 export * from './directives';
 export * from './page';
@@ -50,8 +56,12 @@ export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig):
   );
 
   return makeEnvironmentProviders([
-    importProvidersFrom(I18NextModule.forRoot()),
-    I18N_PROVIDERS
+    provideI18Next(),
+    I18N_PROVIDERS,
+    {
+      provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+      useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
+    }
   ]);
 }
 

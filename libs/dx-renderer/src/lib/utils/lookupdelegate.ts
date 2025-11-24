@@ -2,6 +2,9 @@ import { Observable } from 'rxjs';
 import DataSource from 'devextreme/data/data_source';
 import { CustomItemCreatingEvent as SelectBoxCustomItemCreatingEvent } from 'devextreme/ui/select_box';
 import { CustomItemCreatingEvent as TagBoxCustomItemCreatingEvent } from 'devextreme/ui/tag_box';
+import { AutocompleteCreator, LookupCreator, LookupDescriptor, PickvalueCreator } from '@ballware/meta-services';
+import { ApiError } from '@ballware/meta-api';
+import { InjectionToken } from '@angular/core';
 
 export interface LookupDelegate {
   grouped$: Observable<boolean>;
@@ -27,3 +30,23 @@ export interface LookupDelegate {
   setLookupItems(items: Array<any>): void;
   setAcceptCustomValue(accept: boolean): void;
 }
+
+export interface LookupDelegateBuilder {
+  forIdentifier(lookupIdentifier: string): LookupDelegateBuilder;
+  forStaticItems(items: Array<Record<string, unknown>>): LookupDelegateBuilder;
+  forItemsFromMember(dataMember: string, getDelegate: (dataMember: string) => Array<Record<string, unknown>>): LookupDelegateBuilder;
+  withUnknownLookupFallback(fallback: (identifier: string) => LookupDescriptor): LookupDelegateBuilder;
+  withDisplayExpr(displayExpr: string|undefined): LookupDelegateBuilder;
+  withValueExpr(valueExpr: string|undefined): LookupDelegateBuilder;
+  withHintExpr(hintExpr: string|undefined): LookupDelegateBuilder;
+  withParamFromMember(dataMember: string, getDelegate: (dataMember: string) => string|string[]): LookupDelegateBuilder;
+  withPickvaluesForEntityAndField(entity: string, field: string): LookupDelegateBuilder;
+  withGroupBy(groupBy: string|undefined): LookupDelegateBuilder;
+  withAcceptCustomValue(accept: boolean|undefined): LookupDelegateBuilder;
+  withApiErrorHandler(handler: (error: ApiError) => void): LookupDelegateBuilder;
+  build(): LookupDelegate;
+}
+
+export type LookupDelegateBuilderFactory = (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => LookupDelegateBuilder;
+
+export const LOOKUP_DELEGATE_BUILDER_FACTORY = new InjectionToken<LookupDelegateBuilderFactory>('Lookup delegate builder factory');

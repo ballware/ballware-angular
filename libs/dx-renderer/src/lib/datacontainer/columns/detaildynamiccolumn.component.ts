@@ -29,7 +29,7 @@ import { ColumnEditCellTemplateData as TreeListColumnEditCellTemplateData } from
 import { cloneDeep, get } from "lodash";
 import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
 import { DetailCollectionEditing } from "../../directives";
-import { createLookupDelegateBuilder, LookupDelegate } from '../../utils';
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
 import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
 
 @Component({
@@ -72,6 +72,7 @@ export class DetailDynamicColumnComponent implements OnInit {
         @Inject(TRANSLATOR) private readonly translator: Translator,
         @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
         @Inject(EDIT_SERVICE) private readonly editService: EditService,
+        @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY) private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory,
         private readonly destroy: DestroyRef,
         public readonly: Readonly,
         private readonly editing: DetailCollectionEditing) {
@@ -160,7 +161,7 @@ export class DetailDynamicColumnComponent implements OnInit {
 
                   this.requiredValidation$.next(this.preparedColumn.required ?? false);
 
-                  let lookupBuilder = createLookupDelegateBuilder(lookups);
+                  let lookupBuilder = this.createLookupDelegateBuilder(lookups);
 
                   if (this.preparedColumn.items) {
                     lookupBuilder.forStaticItems(this.preparedColumn.items);

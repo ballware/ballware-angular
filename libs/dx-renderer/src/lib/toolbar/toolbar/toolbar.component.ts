@@ -7,7 +7,7 @@ import { ButtonClickEvent as DropDownButtonClickEvent, InitializedEvent as DropD
 import { InitializedEvent as SelectBoxInitializedEvent, ValueChangedEvent as SelectBoxValueChangedEvent, Properties as SelectBoxProperties } from 'devextreme/ui/select_box';
 import { InitializedEvent as TagBoxInitializedEvent, ValueChangedEvent as TagBoxValueChangedEvent, Properties as TagBoxProperties } from 'devextreme/ui/tag_box';
 import { combineLatest } from 'rxjs';
-import { createLookupDelegateBuilder, LookupDelegate } from '../../utils';
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
 import { CommonModule } from '@angular/common';
 import { DxToolbarModule } from 'devextreme-angular';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,7 +27,8 @@ export class ToolbarComponent {
     private readonly destroy: DestroyRef,
     @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
     @Inject(PAGE_SERVICE) private readonly pageService: PageService,
-    @Inject(TRANSLATOR) private readonly translator: Translator) {
+    @Inject(TRANSLATOR) private readonly translator: Translator,
+    @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY) private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory) {
 
     combineLatest([this.pageService.layout$, this.lookupService.lookups$]).pipe(
       takeUntilDestroyed(this.destroy)
@@ -43,7 +44,7 @@ export class ToolbarComponent {
           let lookup: LookupDelegate | undefined;
 
           if (item.lookup || item.options?.['items']) {
-            const lookupBuilder = createLookupDelegateBuilder(lookups);
+            const lookupBuilder = this.createLookupDelegateBuilder(lookups);
 
             if (item.lookup) {
               lookupBuilder.forIdentifier(item.lookup);
