@@ -5,6 +5,7 @@ import { DxButtonGroupModule } from 'devextreme-angular';
 import { EditItemLivecycle, NullableStringValue, Readonly, Visible } from '@ballware/renderer-commons';
 import { Validation, Required, Lookup } from '../../directives';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { withLatestFrom } from 'rxjs';
 
 interface KeyedButtonGroupItem extends Item {
   key: string;
@@ -37,7 +38,7 @@ export class EditLayoutStaticButtonGroupComponent implements OnInit {
   }
 
   constructor(
-    private destroy: DestroyRef,
+    private readonly destroy: DestroyRef,
     public livecycle: EditItemLivecycle,
     public visible: Visible,
     public readonly: Readonly,
@@ -48,13 +49,14 @@ export class EditLayoutStaticButtonGroupComponent implements OnInit {
 
   ngOnInit(): void {
     this.lookup.dataSource$.pipe(
-      takeUntilDestroyed(this.destroy)
-    ).subscribe((dataSource) => {
+      takeUntilDestroyed(this.destroy),
+      withLatestFrom(this.lookup.hasLookupItemHint$)
+    ).subscribe(([dataSource, hasLookupItemHint]) => {
       dataSource?.on('changed', () => {
         this.items = dataSource?.items().map(item => ({
           key: this.lookup.getLookupItemKeyValue(item),
           text: this.lookup.getLookupItemDisplayValue(item),
-          hint: this.lookup.hasLookupItemHint ? this.lookup.getLookupItemHintValue(item) : undefined
+          hint: hasLookupItemHint ? this.lookup.getLookupItemHintValue(item) : undefined
         } as KeyedButtonGroupItem)) ?? [];
 
         if (!this.selectedItemKeys.length && this.items.length) {

@@ -42,16 +42,16 @@ export function createEditableGridDatasource(
 
         return result;
       });
-    },    
+    },
     byKey: function(key: string) {
       const item = items?.find(item => item.Id === key);
 
       if (!item) {
-        throw `Item with key ${key} not found`;
+        throw new Error(`Item with key ${key} not found`);
       }
 
       return Promise.resolve(item);
-    },    
+    },
     update: function(key: string, values: CrudItem) {
       let item = items?.find(item => item[keyProperty] === key);
 
@@ -61,7 +61,7 @@ export function createEditableGridDatasource(
         return save(item).then(() => ({ key: key, values: item }));
       }
 
-      return Promise.reject(`Item with key ${key} not found`);
+      return Promise.reject(new Error(`Item with key ${key} not found`));
     },
   });
 
@@ -72,23 +72,21 @@ export function createEditableGridDatasource(
   return dataSource;
 }
 
-export async function createArrayDatasource(
+export function createArrayDatasource(
   data: any[],
   options?: {
     keyProperty?: string,
     groupByProperty?: string
   }
-): Promise<DataSource> {
-  const dataSource = new DataSource({    
+): DataSource {
+  const dataSource = new DataSource({
     store: {
       type: 'array',
       key: options?.keyProperty ?? 'Id',
       data: data,
-    }, 
+    },
     group: options?.groupByProperty
   });
-
-  await dataSource.load();
 
   return dataSource;
 }

@@ -35,37 +35,38 @@
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="dateValue()">
 </dx-date-box>
-<dx-select-box *ngIf="preparedColumn && ('lookup' === preparedColumn.type || 'pickvalue' === preparedColumn.type)"
+<dx-select-box *ngIf="preparedColumn && ('lookup' === preparedColumn.type || 'pickvalue' === preparedColumn.type) && lookup"
     #selectbox
     [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="lookupValue()"
-    [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="lookupDisplayExpr ?? preparedColumn.displayExpr ?? 'Text'"
-    [valueExpr]="lookupValueExpr ?? preparedColumn.valueExpr ?? 'Value'"
+    [dataSource]="(lookup.dataSource$ | async) ?? null"
+    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+    [valueExpr]="(lookup.valueExpr$ | async) ?? ''"
     [showClearButton]="true"
-    [acceptCustomValue]="acceptCustomValue ?? false"
-    (onCustomItemCreating)="onCustomItemCreating($event)">
+    [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
+    (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
 </dx-select-box>
-<dx-tag-box *ngIf="preparedColumn && 'staticmultilookup' === preparedColumn.type"
+<dx-tag-box *ngIf="preparedColumn && 'staticmultilookup' === preparedColumn.type && lookup"
     #statictagbox
     [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="multiLookupValue()"
-    [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Text'"
-    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Value'">
+    [dataSource]="(lookup.dataSource$ | async) ?? null"
+    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+    [valueExpr]="(lookup.valueExpr$ | async) ?? ''">
 </dx-tag-box>
-<dx-tag-box *ngIf="preparedColumn && 'multilookup' === preparedColumn.type"
+<dx-tag-box *ngIf="preparedColumn && 'multilookup' === preparedColumn.type && lookup"
     #tagbox
     [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="multiLookupValue()"
-    [dataSource]="lookupDatasource ?? null"
-    [displayExpr]="lookupDisplayExpr ?? column.displayExpr ?? 'Name'"
-    [valueExpr]="lookupValueExpr ?? column.valueExpr ?? 'Id'"
-    [acceptCustomValue]="acceptCustomValue ?? false"
-    (onCustomItemCreating)="onCustomItemCreating($event)">
+    [dataSource]="(lookup.dataSource$ | async) ?? null"
+    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+    [valueExpr]="(lookup.valueExpr$ | async) ?? ''"
+    [showClearButton]="true"
+    [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
+    (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
 </dx-tag-box>
 <ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
     [column]="preparedColumn"

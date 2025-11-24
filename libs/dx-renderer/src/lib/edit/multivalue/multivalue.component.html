@@ -1,18 +1,18 @@
-<dx-tag-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+<dx-tag-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember && (lookup.ready$ | async)"
   class="mt-2"
   [visible]="(visible.visible$ | async) ?? false"
   [label]="livecycle.layoutItem.options.caption ?? ''"
   [name]="livecycle.layoutItem.options.dataMember"
   [(value)]="value.value"
   [readOnly]="(readonly.readonly$ | async) ?? false"
-  [dataSource]="lookup.dataSource$ | async"
+  [dataSource]="(lookup.dataSource$ | async) ?? null"
   [searchEnabled]=true
   [showClearButton]=true
   [showSelectionControls]=true
   [showDropDownButton]=true
   [multiline]=false
-  [grouped]="lookup.grouped"
+  [grouped]="(lookup.grouped$ | async) ?? false"
   [acceptCustomValue]="true"
   (onFocusIn)="livecycle.onEntered()">
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
 </dx-tag-box>

@@ -1,8 +1,8 @@
 <div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
-<dx-button-group 
+<dx-button-group *ngIf="lookup.ready$ | async"
     [visible]="((visible.visible$ | async) ?? false)"
-    [items]="items ?? []" 
-    selectionMode="single" 
-    keyExpr="key" 
+    [items]="items ?? []"
+    selectionMode="single"
+    keyExpr="key"
     [(selectedItemKeys)]="selectedItemKeys">
 </dx-button-group>

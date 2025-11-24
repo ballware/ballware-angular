@@ -2,10 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutLookupComponent } from './lookup.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE, LOOKUP_SERVICE, LookupCreator,
+  LookupDescriptor, LookupService, NOTIFICATION_SERVICE, NotificationService, PickvalueCreator, TRANSLATOR
+} from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
 
 describe('EditLayoutLookupComponent', () => {
   let component: EditLayoutLookupComponent;
@@ -35,7 +41,11 @@ describe('EditLayoutLookupComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider
+        } as Provider,
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
+        }
       ]
     })
     .compileComponents();
@@ -64,14 +74,17 @@ describe('EditLayoutLookupComponent', () => {
     fixture = TestBed.createComponent(EditLayoutLookupComponent);
 
     const layoutItem = {
+      type: 'lookup',
       options: {
           dataMember: 'mockedmember',
           required: false,
           readonly: false,
-          visible: false
+          visible: false,
+          items: []
       }
     } as EditLayoutItem;
 
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
 
     component = fixture.componentInstance;
@@ -79,6 +92,8 @@ describe('EditLayoutLookupComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
 
     expect(component.livecycle.getOption('value')).toBe(null);
     expect(component.livecycle.getOption('required')).toBe(false);

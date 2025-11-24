@@ -18,8 +18,6 @@ export { EditLayoutMultilookupComponent } from './multilookup/multilookup.compon
 export { EditLayoutMultivalueComponent } from './multivalue/multivalue.component';
 export { EditLayoutNumberComponent } from './number/number.component';
 export { EditLayoutStaticButtonGroupComponent } from './staticbuttongroup/staticbuttongroup.component';
-export { EditLayoutStaticlookupComponent } from './staticlookup/staticlookup.component';
-export { EditLayoutStaticmultilookupComponent } from './staticmultilookup/staticmultilookup.component';
 export { EditLayoutStatisticComponent } from './statistic/statistic.component';
 export { EditLayoutTabsComponent } from './tabs/tabs.component';
 export { EditLayoutTextComponent } from './text/text.component';

@@ -1,9 +1,9 @@
 import { ApiError } from "@ballware/meta-api";
-import { AutocompleteStoreDescriptor, EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupCreator, LookupDescriptor, LookupService, LookupStoreDescriptor, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
-import DataSource from "devextreme/data/data_source";
-import { compileGetter, compileSetter } from 'devextreme/utils';
-import { BehaviorSubject, catchError, combineLatest, of } from "rxjs";
-import { createArrayDatasource, createAutocompleteDataSource, createLookupDataSource } from "../utils";
+import { EDIT_SERVICE, EditService, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService } from "@ballware/meta-services";
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import {
+  LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory
+} from '../utils';
 import { EditItemLivecycle } from "@ballware/renderer-commons";
 import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -11,181 +11,138 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Directive({
   standalone: true
 })
-export class Lookup implements OnInit {
+export class Lookup implements OnInit, LookupDelegate {
 
-  private _lookup: LookupDescriptor|undefined;
-  private _dataSource$ = new BehaviorSubject<DataSource|null>(null);
-
-  private _acceptCustomValue!: boolean;
-  private _hasLookupItemHintValue!: boolean;
-  private _lookupGroupBy?: string;
-  private _grouped!: boolean;
-
-  private _lookupItemKeyValueGetter: ((item: Record<string, unknown>|unknown) => unknown)|undefined;
-  private _lookupItemDisplayValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
-  private _lookupItemHintValueGetter: ((item: Record<string, unknown>|unknown) => string)|undefined;
-
-  private _lookupItemKeyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
-  private _lookupItemDisplayValueSetter: ((item: Record<string, unknown>, value: string) => void)|undefined;
+  private delegate!: LookupDelegate;
+  private readonly _ready$ = new BehaviorSubject(false);
 
   public getLookupItemKeyValue(item: Record<string, unknown>) {
-    return this._lookupItemKeyValueGetter ? this._lookupItemKeyValueGetter(item) : undefined;
+    return this.delegate.getLookupItemKeyValue(item);
   }
 
   public getLookupItemDisplayValue(item: Record<string, unknown>) {
-    return this._lookupItemDisplayValueGetter ? this._lookupItemDisplayValueGetter(item) : undefined;
+    return this.delegate.getLookupItemDisplayValue(item);
   }
 
   public getLookupItemHintValue(item: Record<string, unknown>) {
-    return this._lookupItemHintValueGetter ? this._lookupItemHintValueGetter(item) : undefined;
+    return this.delegate.getLookupItemHintValue(item);
   }
+
 
   public onCustomItemCreating(event: any) {
-    if (!this._acceptCustomValue) {
-      event.cancel = true;
-      return;
-    }
-
-    if (this._lookup?.type === 'autocomplete') {
-      event.customItem = event.text;
-    } else {
-      const customValue = {
-
-      };
-
-      this._lookupItemKeyValueSetter?.(customValue, event.text);
-      this._lookupItemDisplayValueSetter?.(customValue, event.text);
-
-      event.customItem = customValue;
-    }
+    this.delegate.onCustomItemCreating(event);
   }
 
-  public get hasLookupItemHint() {
-    return !!this._hasLookupItemHintValue;
-  }
-
-  public get lookup() {
-    return this._lookup;
+  public get hasLookupItemHint$() {
+    return this.delegate.hasLookupItemHint$;
   }
 
   public get dataSource$() {
-    return this._dataSource$;
+    return this.delegate.dataSource$;
   }
 
-  public get acceptCustomValue() {
-    return this._acceptCustomValue;
+  public get displayExpr$() {
+    return this.delegate.displayExpr$;
   }
 
-  public get grouped() {
-    return this._grouped;
+  public get valueExpr$() {
+    return this.delegate.valueExpr$;
+  }
+
+  public get lookupItems$() {
+    return this.delegate.lookupItems$;
+  }
+
+  public get acceptCustomValue$() {
+    return this.delegate.acceptCustomValue$;
+  }
+
+  public get grouped$() {
+    return this.delegate.grouped$;
+  }
+
+  public get dataSource() {
+    return this.delegate.dataSource;
+  }
+
+  public get displayExpr() {
+    return this.delegate.displayExpr;
+  }
+
+  public get valueExpr() {
+    return this.delegate.valueExpr;
+  }
+
+  public get lookupItems() {
+    return this.delegate.lookupItems;
   }
 
   public setLookupItems(items: Array<any>) {
-    return createArrayDatasource(items, {
-      groupByProperty: this._lookupGroupBy
-    }).then(dataSource => this._dataSource$.next(dataSource));
+    this.delegate.setLookupItems(items);
+  }
+
+  public get acceptCustomValue() {
+    return this.delegate.acceptCustomValue;
+  }
+
+  public setAcceptCustomValue(accept: boolean) {
+    this.delegate.setAcceptCustomValue(accept);
+  }
+
+  public get ready$(): Observable<boolean> {
+    return this._ready$;
   }
 
   constructor(
-    private destroy: DestroyRef,
-    private livecycle: EditItemLivecycle,
-    @Inject(EDIT_SERVICE) private editService: EditService,
-    @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-    @Inject(NOTIFICATION_SERVICE) private notificationService: NotificationService
-  ) {}
+    private readonly destroy: DestroyRef,
+    private readonly livecycle: EditItemLivecycle,
+    @Inject(EDIT_SERVICE) private readonly editService: EditService,
+    @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+    @Inject(NOTIFICATION_SERVICE) private readonly notificationService: NotificationService,
+    @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY) private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory
+  ) {
+  }
 
   ngOnInit(): void {
 
-    this.livecycle.registerOption('acceptCustomValue', () => this._acceptCustomValue, (value) => this._acceptCustomValue = value as boolean)
-    this.livecycle.registerOption('items', () => this._dataSource$.getValue()?.items(), (value) => this.setLookupItems(value  as []));
+    this.livecycle.registerOption('acceptCustomValue', () => this.acceptCustomValue, (value) => this.setAcceptCustomValue(value as boolean));
+    this.livecycle.registerOption('items', () => this.lookupItems, (value) => this.setLookupItems(value  as []));
 
     this.livecycle.preparedLayoutItem$
       .pipe(takeUntilDestroyed(this.destroy))
       .subscribe((layoutItem) => {
         if (layoutItem) {
-          this._acceptCustomValue = layoutItem.options?.acceptCustomValue ?? false;
-
           combineLatest([this.editService.getValue$, this.lookupService.lookups$])
               .pipe(takeUntilDestroyed(this.destroy))
               .subscribe(([getValue, lookups]) => {
                 if (getValue && lookups) {
-                  const lookup = layoutItem?.options?.lookup;
-                  const lookupParam = layoutItem?.options?.lookupParam;
-                  this._lookupGroupBy = layoutItem?.options?.lookupGroupBy;
-                  this._grouped = !!this._lookupGroupBy;
+                  let lookupBuilder = this.createLookupDelegateBuilder(lookups)
 
-                  const myLookup = lookup && lookups ? (lookups[lookup] as LookupDescriptor|LookupCreator) : undefined;
-
-                  if (myLookup) {
-                    if (lookupParam && myLookup as LookupCreator) {
-                      this._lookup = (myLookup as LookupCreator)(getValue({ dataMember: lookupParam }) as string|string[]);
-                    } else if (myLookup as LookupDescriptor) {
-                      this._lookup = myLookup as LookupDescriptor;
-                    }
-
-                    if (this.lookup) {
-                      const currentLookup = this.lookup;
-
-                      if (currentLookup.type === 'lookup') {
-                        this._dataSource$.next(createLookupDataSource(
-                          () => (currentLookup.store as LookupStoreDescriptor).listFunc()
-                            .pipe(catchError((error: ApiError) => {
-                              this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-
-                              return of([]);
-                            })),
-                          (id) => (currentLookup.store as LookupStoreDescriptor).byIdFunc(id)
-                            .pipe(catchError((error: ApiError) => {
-                              this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-
-                              return of();
-                            })),
-                          {
-                            groupByProperty: this._lookupGroupBy
-                          }
-                        ));
-                      } else if (currentLookup.type === 'autocomplete') {
-                        this._dataSource$.next(createAutocompleteDataSource(
-                          () => (currentLookup.store as AutocompleteStoreDescriptor).listFunc()
-                            .pipe(catchError((error: ApiError) => {
-                              this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
-
-                              return of([]);
-                            }))
-                        ));
-                      }
-                    }
-                  } else if (layoutItem?.options?.items || layoutItem?.options?.itemsMember) {
-                    createArrayDatasource(layoutItem?.options?.items ?? (layoutItem?.options?.itemsMember ? getValue({ dataMember: layoutItem?.options?.itemsMember }) as any[] : []))
-                      .then(dataSource => this._dataSource$.next(dataSource));
+                  if (layoutItem?.options?.items) {
+                    lookupBuilder.forStaticItems(layoutItem.options.items);
+                  } else if (layoutItem?.options?.itemsMember) {
+                    lookupBuilder.forItemsFromMember(layoutItem.options.itemsMember, (member) => getValue({ dataMember: member }) as Array<Record<string, unknown>>);
+                  } else if (layoutItem?.options?.lookup) {
+                    lookupBuilder.forIdentifier(layoutItem.options.lookup);
                   }
 
-                  this.dataSource$
-                    .pipe(takeUntilDestroyed(this.destroy))
-                    .subscribe(dataSource => {
-                      if (this._lookup?.type === 'autocomplete') {
-                        this._lookupItemKeyValueGetter = (item) => item as string;
-                        this._lookupItemDisplayValueGetter = (item) => item as string;
-                      } else {
-                        this._hasLookupItemHintValue = !!layoutItem?.options?.hintExpr;
+                  lookupBuilder.withApiErrorHandler((error: ApiError) => {
+                    this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+                  });
 
-                        const keyValueGetter = compileGetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
-                        const keyValueSetter = compileSetter(layoutItem.options?.valueExpr ?? (myLookup as LookupDescriptor)?.valueMember ?? dataSource?.key() ?? 'Id');
+                  lookupBuilder.withDisplayExpr(layoutItem?.options?.displayExpr);
+                  lookupBuilder.withValueExpr(layoutItem?.options?.valueExpr);
+                  lookupBuilder.withHintExpr(layoutItem?.options?.hintExpr);
+                  lookupBuilder.withAcceptCustomValue(layoutItem?.options?.acceptCustomValue);
 
-                        this._lookupItemKeyValueGetter = (item) => keyValueGetter(item);
-                        this._lookupItemKeyValueSetter = (item, value) => keyValueSetter(item, value);
+                  if (layoutItem?.options?.lookupParam) {
+                    lookupBuilder.withParamFromMember(layoutItem.options.lookupParam, (member) => getValue({ dataMember: member }) as string|string[]);
+                  }
 
-                        const displayValueGetter = compileGetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');
-                        const displayValueSetter = compileSetter(layoutItem?.options?.displayExpr ?? (myLookup as LookupDescriptor)?.displayMember ?? 'Name');
+                  lookupBuilder.withGroupBy(layoutItem?.options?.lookupGroupBy);
 
-                        this._lookupItemDisplayValueGetter = (item) => displayValueGetter(item);
-                        this._lookupItemDisplayValueSetter = (item, value) => displayValueSetter(item, value);
-
-                        const hintValueGetter = layoutItem?.options?.hintExpr ? compileGetter(layoutItem.options.hintExpr) : undefined;
-
-                        this._lookupItemHintValueGetter = hintValueGetter ? (item) => hintValueGetter(item) : undefined;
-                      }
-                    });
+                  this.delegate = lookupBuilder.build();
+                  this._ready$.next(true);
                 }
               });
         }

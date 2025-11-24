@@ -2,10 +2,16 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditLayoutMultilookupComponent } from './multilookup.component';
 import { Provider } from '@angular/core';
-import { EDIT_SERVICE, LOOKUP_SERVICE, LookupService, NOTIFICATION_SERVICE, NotificationService, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE, LOOKUP_SERVICE, LookupCreator,
+  LookupDescriptor, LookupService, NOTIFICATION_SERVICE, NotificationService, PickvalueCreator, TRANSLATOR
+} from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
+import { BehaviorSubject, firstValueFrom, take } from 'rxjs';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
 
 describe('EditLayoutMultilookupComponent', () => {
   let component: EditLayoutMultilookupComponent;
@@ -35,7 +41,11 @@ describe('EditLayoutMultilookupComponent', () => {
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
-        } as Provider
+        } as Provider,
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
+        }
       ]
     })
     .compileComponents();
@@ -64,14 +74,17 @@ describe('EditLayoutMultilookupComponent', () => {
     fixture = TestBed.createComponent(EditLayoutMultilookupComponent);
 
     const layoutItem = {
+      type: 'multilookup',
       options: {
-          dataMember: 'mockedmember',
-          required: false,
-          readonly: false,
-          visible: false
+        dataMember: 'mockedmember',
+        required: false,
+        readonly: false,
+        visible: false,
+        items: []
       }
     } as EditLayoutItem;
 
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
     mockedEditService.editorPreparing.mockReturnValue(layoutItem);
 
     component = fixture.componentInstance;
@@ -79,6 +92,8 @@ describe('EditLayoutMultilookupComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
 
     expect(component.livecycle.getOption('value')).toStrictEqual([]);
     expect(component.livecycle.getOption('required')).toBe(false);
