@@ -89,4 +89,25 @@ describe('EditLayoutRichtextComponent', () => {
     expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
     expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
+
+  it('should match snapshot', () => {
+    fixture = TestBed.createComponent(EditLayoutRichtextComponent);
+
+    const layoutItem = {
+      options: {
+          dataMember: 'mockedmember',
+          required: true,
+          readonly: false,
+          visible: true
+      }
+    } as EditLayoutItem;
+
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
+    fixture.detectChanges();
+
+    expect(fixture).toMatchSnapshot();
+  });
 });

@@ -123,4 +123,35 @@ describe('EditLayoutMultilookupComponent', () => {
     expect(() => component.livecycle.getOption('undefined')).toThrowError('Unsupported option <undefined>');
     expect(() => component.livecycle.setOption('undefined', 'any value')).toThrowError('Unsupported option <undefined>');
   });
+
+  it('should match snapshot', async () => {
+    fixture = TestBed.createComponent(EditLayoutMultilookupComponent);
+
+    const layoutItem = {
+      type: 'multilookup',
+      options: {
+        dataMember: 'mockedmember',
+        lookup: 'mockedlookup',
+        required: true,
+        readonly: false,
+        visible: true,
+        items: [
+          { Value: '1', Text: 'Test Item 1' },
+          { Value: '2', Text: 'Test Item 2' }
+        ]
+      }
+    } as EditLayoutItem;
+
+    mockedLookupService.setup((s) => s.lookups$).returns(new BehaviorSubject<Record<string, unknown[]>>({}).asObservable());
+    mockedEditService.editorPreparing.mockReturnValue(layoutItem);
+
+    component = fixture.componentInstance;
+    fixture.componentRef.setInput('initialLayoutItem', layoutItem);
+    fixture.detectChanges();
+
+    await firstValueFrom(component.lookup.ready$.pipe(take(1)));
+    await fixture.whenStable();
+
+    expect(fixture.nativeElement).toMatchSnapshot();
+  });
 });

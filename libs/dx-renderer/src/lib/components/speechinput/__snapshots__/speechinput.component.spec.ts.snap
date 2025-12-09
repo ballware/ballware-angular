@@ -1,0 +1,133 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SpeechInputComponent should match snapshot 1`] = `
+<ballware-speechinput
+  availableChange={[Function EventEmitter_]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  enabled="false"
+  height={[Function String]}
+  recognizedValue$={[Function Observable]}
+  speechRecognitionService={[Function ]}
+  valueChange={[Function EventEmitter_]}
+  width={[Function String]}
+>
+  <div
+    class="d-flex flex-column align-items-center"
+  >
+    <dx-button
+      aria-label="bi bi-mic-mute"
+      class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon big-icon-button"
+      height="100px"
+      ngskiphydration="true"
+      role="button"
+      style="height: 100px; width: 100px;"
+      tabindex="0"
+      width="100px"
+    >
+      <div
+        class="dx-button-content"
+      >
+        <i
+          class="dx-icon bi bi-mic-mute"
+        />
+      </div>
+    </dx-button>
+    <dx-text-area
+      class="mt-2 w-100 dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-state-readonly dx-widget dx-visibility-change-handler"
+      ngskiphydration="true"
+    >
+      <div
+        class="dx-texteditor-container"
+      >
+        <div
+          class="dx-texteditor-input-container"
+        >
+          <textarea
+            aria-multiline="true"
+            aria-readonly="true"
+            autocomplete="off"
+            class="dx-texteditor-input"
+            readonly=""
+            role="textbox"
+            tabindex="0"
+          />
+          <div
+            class="dx-placeholder"
+            data-dx_placeholder=""
+          />
+        </div>
+        <div
+          class="dx-texteditor-buttons-container"
+        >
+          <div />
+        </div>
+      </div>
+    </dx-text-area>
+  </div>
+</ballware-speechinput>
+`;
+
+exports[`SpeechInputComponent should match snapshot when enabled 1`] = `
+<ballware-speechinput
+  availableChange={[Function EventEmitter_]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  enabled={[Function Boolean]}
+  recognizedValue$={[Function Observable]}
+  speechRecognitionService={[Function ]}
+  valueChange={[Function EventEmitter_]}
+>
+  <div
+    class="d-flex flex-column align-items-center"
+  >
+    <dx-button
+      aria-label="bi bi-mic"
+      class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon big-icon-button"
+      height="100px"
+      ngskiphydration="true"
+      role="button"
+      style="height: 100px; width: 100px;"
+      tabindex="0"
+      width="100px"
+    >
+      <div
+        class="dx-button-content"
+      >
+        <i
+          class="dx-icon bi bi-mic"
+        />
+      </div>
+    </dx-button>
+    <dx-text-area
+      class="mt-2 w-100 dx-show-invalid-badge dx-textarea dx-textbox dx-texteditor dx-editor-outlined dx-texteditor-empty dx-state-readonly dx-widget dx-visibility-change-handler"
+      ngskiphydration="true"
+    >
+      <div
+        class="dx-texteditor-container"
+      >
+        <div
+          class="dx-texteditor-input-container"
+        >
+          <textarea
+            aria-multiline="true"
+            aria-readonly="true"
+            autocomplete="off"
+            class="dx-texteditor-input"
+            readonly=""
+            role="textbox"
+            tabindex="0"
+          />
+          <div
+            class="dx-placeholder"
+            data-dx_placeholder=""
+          />
+        </div>
+        <div
+          class="dx-texteditor-buttons-container"
+        >
+          <div />
+        </div>
+      </div>
+    </dx-text-area>
+  </div>
+</ballware-speechinput>
+`;

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CodeMirrorComponent Browser Platform should match snapshot with all options 1`] = `
+<ballware-codemirror
+  _platformId={[Function String]}
+  editorHost={[Function ViewContainerRef2]}
+  height={[Function String]}
+  jsonStructuredMode="false"
+  mode={[Function String]}
+  options={[Function Object]}
+  readOnly="false"
+  value={[Function String]}
+  valueChange={[Function EventEmitter_]}
+  visible={[Function Boolean]}
+  width={[Function String]}
+>
+  <code>
+    // Prefix comment
+  </code><div
+    style="width: 800px; height: 600px;"
+  /><code>
+    // Suffix comment
+  </code>
+</ballware-codemirror>
+`;

@@ -1,6 +1,6 @@
 import { EditService } from '@ballware/meta-services';
 import { Mock } from 'moq.ts';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 
 export const mockedEditServiceContext = () => {
 
@@ -20,6 +20,20 @@ export const mockedEditServiceContext = () => {
     // Validation
     const editorValidating = jest.fn();
 
+    // Detail Grid
+    const detailGridCellPreparing = jest.fn((req) => req.options);
+    const detailGridRowValidating = jest.fn(() => of(undefined));
+    const initNewDetailItem = jest.fn();
+    const detailEditorInitialized = jest.fn();
+    const detailEditorValidating = jest.fn(() => of(true));
+    const detailEditorEntered = jest.fn();
+    const detailEditorEvent = jest.fn();
+    const detailEditorValueChanged = jest.fn();
+
+    // Mode and Item
+    const mode$ = new BehaviorSubject<any>('edit');
+    const item$ = new BehaviorSubject<any>({});
+
     return {
         editorPreparing,
         editorInitialized,
@@ -30,6 +44,18 @@ export const mockedEditServiceContext = () => {
         editorValueChanged,
 
         readonly$,
+        mode$,
+        item$,
+
+        editorValidating,
+        detailGridCellPreparing,
+        detailGridRowValidating,
+        initNewDetailItem,
+        detailEditorInitialized,
+        detailEditorValidating,
+        detailEditorEntered,
+        detailEditorEvent,
+        detailEditorValueChanged,
 
         mock: new Mock<EditService>()
             .setup(instance => instance.editorPreparing$).returns(new BehaviorSubject(editorPreparing))
@@ -40,6 +66,16 @@ export const mockedEditServiceContext = () => {
             .setup(instance => instance.editorValueChanged$).returns(new BehaviorSubject(editorValueChanged))
             .setup(instance => instance.readonly$).returns(readonly$)
             .setup(instance => instance.editorValidating$).returns(new BehaviorSubject(editorValidating))
+            .setup(instance => instance.mode$).returns(mode$)
+            .setup(instance => instance.item$).returns(item$)
+            .setup(instance => instance.detailGridCellPreparing$).returns(new BehaviorSubject(detailGridCellPreparing))
+            .setup(instance => instance.detailGridRowValidating$).returns(new BehaviorSubject(detailGridRowValidating))
+            .setup(instance => instance.initNewDetailItem$).returns(new BehaviorSubject(initNewDetailItem))
+            .setup(instance => instance.detailEditorInitialized$).returns(new BehaviorSubject(detailEditorInitialized))
+            .setup(instance => instance.detailEditorValidating$).returns(new BehaviorSubject(detailEditorValidating))
+            .setup(instance => instance.detailEditorEntered$).returns(new BehaviorSubject(detailEditorEntered))
+            .setup(instance => instance.detailEditorEvent$).returns(new BehaviorSubject(detailEditorEvent))
+            .setup(instance => instance.detailEditorValueChanged$).returns(new BehaviorSubject(detailEditorValueChanged))
     };
 }
 

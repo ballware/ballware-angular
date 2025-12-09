@@ -71,6 +71,8 @@ describe('EditLayoutStaticButtonGroupComponent', () => {
     fixture.detectChanges();
 
     await firstValueFrom(component.lookup.ready$.pipe(take(1)));
+
+    expect(fixture).toMatchSnapshot();
   });
 
   it('should apply options', async () => {

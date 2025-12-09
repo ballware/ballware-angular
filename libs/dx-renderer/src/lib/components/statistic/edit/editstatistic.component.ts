@@ -31,7 +31,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         } as Provider,
     ],
     imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
-    hostDirectives: [Breadcrumb, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
 })
 export class EditLayoutStatisticComponent implements OnInit {
 
