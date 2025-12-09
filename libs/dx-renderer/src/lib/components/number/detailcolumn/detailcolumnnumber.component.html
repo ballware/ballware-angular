@@ -1,0 +1,6 @@
+<dx-number-box *ngIf="preparedColumn && ('bool' === preparedColumn.type)"
+    #numberbox
+    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="value ?? 0">
+</dx-number-box>

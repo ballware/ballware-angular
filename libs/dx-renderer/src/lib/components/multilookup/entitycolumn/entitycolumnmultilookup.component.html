@@ -1,0 +1,9 @@
+<dx-tag-box *ngIf="preparedColumn && lookup"
+    #tagbox
+    [readOnly]="readonly"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="lookupValue()"
+    [dataSource]="(lookup.dataSource$ | async) ?? null"
+    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+    [valueExpr]="(lookup.valueExpr$ | async) ?? ''">
+</dx-tag-box>

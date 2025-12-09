@@ -44,7 +44,7 @@
     [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
     [valueExpr]="(lookup.valueExpr$ | async) ?? ''"
 ></dx-tag-box>
-<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
+<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'editpopup' === preparedColumn.type"
     [column]="preparedColumn"
     [readOnly]="false"
     [item]="item">

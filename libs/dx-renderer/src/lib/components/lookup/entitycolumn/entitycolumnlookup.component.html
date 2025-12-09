@@ -1,0 +1,9 @@
+<dx-select-box *ngIf="preparedColumn && lookup"
+    #selectbox
+    [readOnly]="readonly"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="lookupValue()"
+    [dataSource]="(lookup.dataSource$ | async) ?? null"
+    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
+    [valueExpr]="(lookup.valueExpr$ | async) ?? ''">
+</dx-select-box>

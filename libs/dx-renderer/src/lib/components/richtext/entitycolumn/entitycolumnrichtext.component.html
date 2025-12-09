@@ -1,0 +1,6 @@
+<dx-html-editor *ngIf="preparedColumn"
+    #textbox
+    [readOnly]="readonly"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="textValue()">
+</dx-html-editor>

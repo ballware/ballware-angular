@@ -1,0 +1,42 @@
+import { CommonModule, isPlatformBrowser } from "@angular/common";
+import { AfterViewInit, Component, EventEmitter, Inject, Input, Output, PLATFORM_ID, ViewChild, ViewContainerRef } from "@angular/core";
+import { ValueType } from "@ballware/meta-model";
+
+
+import { CodeMirrorEditorOptions } from "./options";
+
+@Component({
+    selector: 'ballware-codemirror',
+    templateUrl: './codemirror.component.html',
+    styleUrls: ['./codemirror.component.scss'],
+    imports: [CommonModule]
+})
+export class CodeMirrorComponent implements AfterViewInit {
+    @ViewChild('editor', { read: ViewContainerRef }) private readonly editorHost?: ViewContainerRef;
+
+    @Input() value!: unknown;
+    @Input() visible!: boolean|null;
+    @Input() readOnly!: boolean|null;
+    @Input() mode!: 'json' | 'javascript' | 'sql';
+    @Input() width: string|undefined;
+    @Input() height: string|undefined;
+    @Input() options: CodeMirrorEditorOptions|undefined;
+
+    @Output() valueChange = new EventEmitter<ValueType>();
+
+    jsonStructuredMode = false;
+
+    constructor(@Inject(PLATFORM_ID) private readonly _platformId: Object) {}
+
+    ngAfterViewInit(): void {
+        if (isPlatformBrowser(this._platformId)) {
+            import('./codemirror').then(({ initialize }) => {
+                if (this.editorHost?.element) {
+                    initialize(this.editorHost.element.nativeElement, this.mode, this.value, this.readOnly ?? false, this.options, (value) => {
+                        this.valueChange.emit(value);
+                    });
+                }
+            });
+        }
+    }
+}

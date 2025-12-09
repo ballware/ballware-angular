@@ -29,10 +29,10 @@ import { Template } from "./template";
 
   /**
    * Execute save operation for current edit session
-   * 
+   *
    * @param editUtil Instance of edit util
    * @param item Item to be saved
-   * @param continueAfterSave Continue editing after save   
+   * @param continueAfterSave Continue editing after save
    */
   apply: (editUtil: EditUtil, item: Record<string, unknown>, continueAfterSave: boolean) => void;
 
@@ -125,15 +125,15 @@ export type PrepareEditLayoutFunc = (
  * @param materializedItem Generated edit layout item instance of template
  */
 export type PrepareMaterializedEditItemFunc = (
-  mode: string, 
-  lookups: Record<string, unknown>, 
-  customParam: unknown, 
-  util: ScriptUtil, 
-  editLayout: EditLayout, 
-  scope: 'tenant' | 'meta', 
-  identifier: string, 
+  mode: string,
+  lookups: Record<string, unknown>,
+  customParam: unknown,
+  util: ScriptUtil,
+  editLayout: EditLayout,
+  scope: 'tenant' | 'meta',
+  identifier: string,
   materializedItem: EditLayoutItem
-) => void;  
+) => void;
 
 /**
  * Manipulate editor options before rendering
@@ -254,7 +254,7 @@ export type EditorValidatingFunc = (
 
 /**
  * Custom functionality on keyboard line input (via scanner, e.g.)
- *  
+ *
  * @param item Instance of business object for editing
  * @param editUtil Adapter for accessing editor components by data member
  * @param value Value entered via keyboard
@@ -679,7 +679,7 @@ export interface GridLayoutColumn extends EditLayoutItemOptions {
   editFunction?: string;
 
   /**
-   * Identifier of edit layout used in popup edit box
+   * Identifier of edit layout used in editpopup edit box
    */
   popuplayout?: string;
 }
@@ -774,7 +774,7 @@ export interface EditLayout {
   colCountByScreen?: { sm?: number; lg?: number };
 
   /**
-   * Display editor in full screen popup
+   * Display editor in full screen editpopup
    */
   fullscreen?: boolean;
 
@@ -794,7 +794,7 @@ export interface CompiledEntityCustomScripts {
   rightsCheck: EntityRightsCheckFunc;
 
   /**
-   * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object   
+   * Prepare custom param for extendedRightsCheck if operation is not connected to specific business object
    */
   rightsParamForHead: RightsParamForHeadFunc;
 
@@ -821,7 +821,7 @@ export interface CompiledEntityCustomScripts {
   /**
    * Manipulate materialized edit layout item template instance before rendering
    */
-  prepareMaterializedEditItem: PrepareMaterializedEditItemFunc;  
+  prepareMaterializedEditItem: PrepareMaterializedEditItemFunc;
 
   /**
    * Manipulate editor options before rendering
@@ -874,7 +874,7 @@ export interface CompiledEntityCustomScripts {
   initNewDetailItem: InitNewDetailItemFunc;
 
   /**
-   * Prepare custom function before execution   
+   * Prepare custom function before execution
    */
   prepareCustomFunction: PrepareCustomFunctionFunc;
 

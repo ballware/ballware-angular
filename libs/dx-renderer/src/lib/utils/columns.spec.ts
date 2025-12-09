@@ -532,7 +532,7 @@ describe('columns', () => {
       });
     });
 
-    describe('popup column', () => {
+    describe('editpopup column', () => {
       it('sollte eine Popup-Spalte erstellen', () => {
         const columns: Array<GridLayoutColumn> = [
           {
@@ -582,7 +582,7 @@ describe('columns', () => {
         expect(result[0].showEditorAlways).toBe(true);
       });
 
-      it('sollte popup-Spalten nicht als dynamic markieren', () => {
+      it('sollte editpopup-Spalten nicht als dynamic markieren', () => {
         const columns: Array<GridLayoutColumn> = [
           {
             dataMember: 'details',

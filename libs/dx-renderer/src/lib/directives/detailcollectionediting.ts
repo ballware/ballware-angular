@@ -81,16 +81,16 @@ export class DetailCollectionEditing implements OnInit {
     private detailEditorValidating: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, ruleIdentifier: string, value: ValueType) => Observable<boolean>)|undefined;
     public detailEditorValueChanged: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, value: unknown, notify: boolean) => void)|undefined;
     private detailEditorEntered: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string) => void)|undefined;
-    private detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
+    public detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
 
     constructor(
-        @Inject(TRANSLATOR) private translator: Translator,
-        @Inject(LOOKUP_SERVICE) private lookupService: LookupService,
-        @Inject(EDIT_SERVICE) private editService: EditService,
-        private destroy: DestroyRef,
-        private livecycle: EditItemLivecycle,
-        private readonly: Readonly,
-        private value: UnknownArrayValue
+        @Inject(TRANSLATOR) private readonly translator: Translator,
+        @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+        @Inject(EDIT_SERVICE) private readonly editService: EditService,
+        private readonly destroy: DestroyRef,
+        private readonly livecycle: EditItemLivecycle,
+        private readonly readonly: Readonly,
+        private readonly value: UnknownArrayValue
     ) {
         this.sourceToolbarItems = [
             {
@@ -125,7 +125,7 @@ export class DetailCollectionEditing implements OnInit {
             .pipe(takeUntilDestroyed(this.destroy))
             .subscribe(([layoutItem, readonly, mode, item, lookups,
                 detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
-                if (layoutItem && layoutItem.options?.dataMember && mode && item && lookups
+                if (layoutItem?.options?.dataMember && mode && item && lookups
                     && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem
                     && detailEditorInitialized && detailEditorValidating && detailEditorEntered && detailEditorEvent && detailEditorValueChanged) {
                     this.dataMember = layoutItem.options?.dataMember;
@@ -133,7 +133,7 @@ export class DetailCollectionEditing implements OnInit {
                     this.options = layoutItem.options?.itemoptions as DetailCollectionEditingOptions;
                     this.lookupParams = item;
 
-                    this.editMode = (!readonly) ? this.options?.editMode ?? 'row' : 'row';
+                    this.editMode = (readonly) ? 'row' : this.options?.editMode ?? 'row';
                     this.allowAdd = (!readonly && this.options?.add) ?? false;
                     this.allowUpdate = (!readonly && this.options?.update) ?? false;
                     this.allowDelete = (!readonly && this.options?.delete) ?? false;
@@ -230,10 +230,6 @@ export class DetailCollectionEditing implements OnInit {
 
           e.editorOptions.onFocusOut = (args: unknown) => {
             if (defaultFocusOut) defaultFocusOut(args);
-
-            //if (this.grid?.instance.hasEditData()) {
-            //  this.grid?.instance.saveEditData();
-            //}
           }
 
           e.editorOptions.onInitialized = (args: { component: EditComponentWithOptions }) => {

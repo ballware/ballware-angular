@@ -68,7 +68,7 @@
     [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
     (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
 </dx-tag-box>
-<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
+<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'editpopup' === preparedColumn.type"
     [column]="preparedColumn"
     [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
     [item]="detailItem">

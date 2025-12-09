@@ -1,0 +1,8 @@
+<dx-date-box *ngIf="preparedColumn"
+    #datebox
+    [readOnly]="readonly"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="dateValue() ?? null"
+    [type]="type"
+    [displayFormat]="displayFormat">
+</dx-date-box>

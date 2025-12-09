@@ -1,0 +1,30 @@
+<div [class]="!((visible.visible$ | async) ?? false) ? 'd-none' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
+<dx-data-grid *ngIf="!editing.showSource && editing.columns" #grid
+    [visible]="(visible.visible$ | async) ?? false"
+    [height]="editing.height"
+    width="100%"
+    [repaintChangesOnly]="true"
+    [columnAutoWidth]="true"
+    [columns]="columns"
+    [dataSource]="value.value"
+    (onToolbarPreparing)="editing.onToolbarPreparing($event)"
+    (onEditorPreparing)="editing.onIntegratedEditorPreparing($event)"
+    (onRowClick)="editing.onRowClick($event)"
+    (onInitNewRow)="editing.onInitNewRow($event)">
+    <dxo-editing [mode]="editing.editMode === 'row' ? 'row' : 'cell'" [useIcons]="true"
+        [allowAdding]="editing.allowAdd"
+        [allowUpdating]="editing.allowUpdate"
+        [allowDeleting]="editing.allowDelete"
+        [(editRowKey)]="editing.gridEditRowKey"
+        [(changes)]="editing.gridEditChanges">
+    </dxo-editing>
+    <div *dxTemplate="let cellInfo of 'dynamic'">
+        <ballware-detail-dynamic-column [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [cell]="cellInfo"></ballware-detail-dynamic-column>
+    </div>
+</dx-data-grid>
+<dx-validator [adapter]="editing.validationAdapterConfig">
+    <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
+</dx-validator>
+<dx-toolbar class="w-100" *ngIf="editing.showSource && editing.sourceToolbarItems" [items]="editing.sourceToolbarItems">
+</dx-toolbar>
+<ballware-edit-code *ngIf="editing.showSource" mode="json" [initialLayoutItem]="livecycle.layoutItem" ></ballware-edit-code>

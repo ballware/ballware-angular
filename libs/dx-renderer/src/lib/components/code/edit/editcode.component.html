@@ -1,0 +1,10 @@
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
+<ballware-codemirror *ngIf="!!mode"
+    [mode]="mode"
+    [visible]="((visible.visible$ | async) ?? false)"
+    [readOnly]="readonly.readonly$ | async"
+    width="100%"
+    [height]="height ?? '300px'"
+    [options]="options"
+    [(value)]="value.value">
+</ballware-codemirror>

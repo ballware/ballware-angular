@@ -33,11 +33,11 @@ export const Default: Story = {
 ```
 libs/dx-renderer/src/lib/edit/
   ├── bool/
-  │   └── bool.component.stories.ts (mit play-Funktionen)
+  │   └── editbool.component.stories.ts (mit play-Funktionen)
   ├── button/
-  │   └── button.component.stories.ts (mit play-Funktionen)
+  │   └── editbutton.component.stories.ts (mit play-Funktionen)
   └── detailgrid/
-      └── detailgrid.component.stories.ts (mit play-Funktionen)
+      └── editdetaildatagrid.component.stories.ts (mit play-Funktionen)
 ```
 
 ## Voraussetzungen
@@ -73,10 +73,10 @@ npx test-storybook --url file://$(pwd)/storybook-static
 
 ```bash
 # Nur Stories mit bestimmtem Pattern
-npx test-storybook --stories-glob="**/bool.component.stories.ts"
+npx test-storybook --stories-glob="**/editbool.component.stories.ts"
 
 # Einzelne Story testen
-npx test-storybook --stories-glob="**/button.component.stories.ts" --stories-pattern="**/Default"
+npx test-storybook --stories-glob="**/editbutton.component.stories.ts" --stories-pattern="**/Default"
 ```
 
 ### Watch-Modus (während Entwicklung)
