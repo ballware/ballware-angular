@@ -1,5 +1,5 @@
 <div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
-<dx-html-editor text-area *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+<dx-html-editor *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
   [visible]="(visible.visible$ | async) ?? false"
   [name]="livecycle.layoutItem.options.dataMember"
   [height]="livecycle.layoutItem.options.height ?? '300px'"
@@ -22,8 +22,8 @@
     <dxi-item name="separator" />
     <dxi-item name="orderedList" />
     <dxi-item name="bulletList" />
-    <dxi-item name="separator" />    
-    <dxi-item name="header" [acceptedValues]="[false, 1, 2, 3, 4]" />    
+    <dxi-item name="separator" />
+    <dxi-item name="header" [acceptedValues]="[false, 1, 2, 3, 4]" />
     <dxi-item name="separator" />
     <dxi-item name="color" />
     <dxi-item name="background" />
@@ -52,5 +52,5 @@
   <dxo-media-resizing
     [enabled]="true">
   </dxo-media-resizing>
-  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>  
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
 </dx-html-editor>

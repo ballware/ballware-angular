@@ -17,8 +17,8 @@ export class PageLayoutComponent {
   public layout?: PageLayout;
 
   constructor(
-    private destroy: DestroyRef,
-    @Inject(PAGE_SERVICE) private pageService: PageService
+    private readonly destroy: DestroyRef,
+    @Inject(PAGE_SERVICE) private readonly pageService: PageService
   ) {
     this.pageService.layout$.pipe(
       takeUntilDestroyed(this.destroy)

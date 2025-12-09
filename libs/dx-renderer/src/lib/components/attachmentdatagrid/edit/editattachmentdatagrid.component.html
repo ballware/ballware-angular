@@ -9,36 +9,8 @@
         [allowEditing]="false"
         [allowExporting]="false"
         [allowResizing]="false"
-        [buttons]="optionButtons$ | async">
+        [buttons]="(optionButtons$ | async) ?? []">
     </dxi-column>
-    <div *dxTemplate="let cell of 'optionsCell'">
-        <span
-          [title]="'attachment.actions.view' | i18next"
-          [style.marginRight]="'5px'"
-          (onClick)="fileOpen(cell.data)"
-          data-toggle="tooltip"
-        >
-            <span
-                [style.fontSize]="18" [style.textDecoration]="'none'"
-                class="bi bi-eye-fill">
-            </span>
-        </span>
-        <span
-            *ngIf="!((readonly.readonly$ | async) ?? false)"
-            [title]="'attachment.actions.remove' | i18next"
-            [style.marginRight]="'5px'"
-            (onClick)="fileDelete(cell.data)"
-            data-toggle="tooltip"
-          >
-            <span
-                [style.fontSize]="18" [style.textDecoration]="'none'"
-                class="bi bi-trash-fill">
-            </span>
-          </span>
-    </div>
-    <div *dxTemplate="let cell of 'optionsHeader'">
-        <p>Options header</p>
-    </div>
 </dx-data-grid>
 <dx-popup *ngIf="removeDialog"
   [visible]="true"
