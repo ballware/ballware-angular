@@ -15,7 +15,7 @@ import { createMockedEditService } from '@storybook-helpers/edit.service.mock';
 import { createMockedLookupService } from '@storybook-helpers/lookup.service.mock';
 import { createMockedNotificationService } from '@storybook-helpers/notification.service.mock';
 import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
-import { createArrayDatasource, createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
+import { createArrayDatasource, createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../../utils';
 import { expect, within, userEvent } from 'storybook/test';
 
 const meta: Meta<EditLayoutMultilookupComponent> = {

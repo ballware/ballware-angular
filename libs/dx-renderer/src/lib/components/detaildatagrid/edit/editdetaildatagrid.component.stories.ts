@@ -117,12 +117,22 @@ export const Default: Story = {
     const canvas = within(canvasElement);
 
     // Test: Grid should be visible
-    const grid = canvasElement.querySelector('.dx-detaildatagrid');
-    await expect(grid).toBeTruthy();
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
 
     // Test: Caption should be visible
-    const caption = canvas.getByText('Items');
-    await expect(caption).toBeTruthy();
+    await waitFor(
+      async () => {
+        const caption = canvas.queryByText('Items');
+        await expect(caption).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
 
     // Wait for data rows to be rendered (DevExtreme needs time to render)
     await waitFor(
@@ -134,8 +144,13 @@ export const Default: Story = {
     );
 
     // Test: Column headers should exist
-    const nameHeader = canvas.getByText('Name');
-    await expect(nameHeader).toBeTruthy();
+    await waitFor(
+      async () => {
+        const nameHeader = canvas.queryByText('Name');
+        await expect(nameHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
   },
 };
 
@@ -187,12 +202,22 @@ export const Empty: Story = {
   }),
   play: async ({ canvasElement }) => {
     // Test: Grid should be visible
-    const grid = canvasElement.querySelector('.dx-detaildatagrid');
-    await expect(grid).toBeTruthy();
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
 
     // Test: No data message or empty grid
-    const rows = canvasElement.querySelectorAll('.dx-data-row');
-    await expect(rows.length).toBe(0);
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(0);
+      },
+      { timeout: 3000 }
+    );
   },
 };
 
