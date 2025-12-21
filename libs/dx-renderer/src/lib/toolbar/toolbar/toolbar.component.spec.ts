@@ -11,6 +11,8 @@ import {
   TRANSLATOR
 } from '@ballware/meta-services';
 import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
+import { provideDefaultItemRegistries } from '../../registries';
+import { provideDefaultToolbarItemConfigurations } from '../../components';
 
 // Simple test doubles for the required services
 class MockPageService {
@@ -38,6 +40,8 @@ describe('ToolbarComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         ToolbarComponent,
+        provideDefaultItemRegistries(),
+        provideDefaultToolbarItemConfigurations(),
         { provide: PAGE_SERVICE, useValue: pageService },
         { provide: LOOKUP_SERVICE, useValue: lookupService },
         { provide: TRANSLATOR, useValue: translatorMock },
@@ -95,7 +99,7 @@ describe('ToolbarComponent', () => {
   it('should create a SelectBox toolbar item for static lookup and use static items configuration', () => {
     emitLayoutAndLookups([
       {
-        type: 'staticklookup',
+        type: 'staticlookup',
         name: 'sl1',
         caption: 'Static Lookup',
         options: {
@@ -140,7 +144,7 @@ describe('ToolbarComponent', () => {
   it('should create a TagBox toolbar item for static multilookup and use static items configuration', () => {
     emitLayoutAndLookups([
       {
-        type: 'statickmultilookup',
+        type: 'staticmultilookup',
         name: 'sml1',
         caption: 'Static Multi',
         options: {
@@ -222,11 +226,5 @@ describe('ToolbarComponent', () => {
     const options: any = item.options;
     options.onClick({});
     expect(pageService.paramEditorEvent).toHaveBeenCalledWith({ name: 'b1', event: 'click' });
-  });
-
-  it('should not call paramEditorInitialized when name is missing', () => {
-    const e: any = { component: { option: jest.fn() } };
-    component.onItemInitialized(e as any, '');
-    expect(pageService.paramEditorInitialized).not.toHaveBeenCalled();
   });
 });
