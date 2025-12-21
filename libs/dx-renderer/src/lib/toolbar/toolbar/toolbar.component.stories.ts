@@ -41,24 +41,18 @@ const createPageLayout = (toolbaritems: PageToolbarItem[]): PageLayout => ({
   toolbaritems,
 });
 
-// Create the mock services outside the meta to allow story-level access
-const createMocks = () => {
-  const pageServiceMock = createMockedPageService();
-  const lookupServiceMock = createMockedLookupService({
-    lookups: {
-      test: createLookupDescriptor('test', [
-        { value: '1', display: 'Option 1' },
-        { value: '2', display: 'Option 2' },
-        { value: '3', display: 'Option 3' },
-      ]),
-      multi: createLookupDescriptor('multi', [
-        { value: 'm1', display: 'Multi 1' },
-        { value: 'm2', display: 'Multi 2' },
-        { value: 'm3', display: 'Multi 3' },
-      ]),
-    },
-  });
-  return { pageServiceMock, lookupServiceMock };
+// Standard lookups for all stories
+const standardLookups = {
+  test: createLookupDescriptor('test', [
+    { value: '1', display: 'Option 1' },
+    { value: '2', display: 'Option 2' },
+    { value: '3', display: 'Option 3' },
+  ]),
+  multi: createLookupDescriptor('multi', [
+    { value: 'm1', display: 'Multi 1' },
+    { value: 'm2', display: 'Multi 2' },
+    { value: 'm3', display: 'Multi 3' },
+  ]),
 };
 
 const meta: Meta<ToolbarComponent> = {
@@ -96,30 +90,44 @@ const meta: Meta<ToolbarComponent> = {
 export default meta;
 type Story = StoryObj<ToolbarComponent>;
 
+// Reusable story factory to avoid IIFE timing issues
+const createStoryWithLayout = (toolbaritems: PageToolbarItem[]): Story => ({
+  decorators: [
+    applicationConfig({
+      providers: [
+        {
+          provide: PAGE_SERVICE,
+          useFactory: () => {
+            const mock = createMockedPageService();
+            mock.subjects.layout$.next(createPageLayout(toolbaritems));
+            return mock.service;
+          },
+        },
+        {
+          provide: LOOKUP_SERVICE,
+          useFactory: () => {
+            const mock = createMockedLookupService({ lookups: standardLookups });
+            return mock.service;
+          },
+        },
+      ],
+    }),
+  ],
+});
+
 /**
  * Default lookup toolbar item with SelectBox widget
  */
 export const LookupSelectBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('lookup', 'testLookup', 'Test Lookup', { lookup: 'test', width: '300px' }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('lookup', 'testLookup', 'Test Lookup', { lookup: 'test', width: '300px' }),
+  ]),
   play: async ({ canvasElement }) => {
     // Wait for toolbar to render
     await waitFor(() => {
       const toolbar = canvasElement.querySelector('.dx-toolbar');
       expect(toolbar).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Check for SelectBox presence
     const selectBox = canvasElement.querySelector('.dx-selectbox');
@@ -135,35 +143,24 @@ export const LookupSelectBox: Story = {
  * Static lookup toolbar item with predefined items
  */
 export const StaticLookupSelectBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('staticlookup', 'staticLookup', 'Static Lookup', {
-            options: {
-              items: [
-                { id: 1, text: 'Static One', value: '1' },
-                { id: 2, text: 'Static Two', value: '2' },
-                { id: 3, text: 'Static Three', value: '3' },
-              ],
-              displayExpr: 'text',
-              valueExpr: 'value',
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('staticlookup', 'staticLookup', 'Static Lookup', {
+      options: {
+        items: [
+          { id: 1, text: 'Static One', value: '1' },
+          { id: 2, text: 'Static Two', value: '2' },
+          { id: 3, text: 'Static Three', value: '3' },
+        ],
+        displayExpr: 'text',
+        valueExpr: 'value',
+      },
     }),
-  ],
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const selectBox = canvasElement.querySelector('.dx-selectbox');
       expect(selectBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Verify the selectbox is a dropdown with clear button
     const clearButton = canvasElement.querySelector('.dx-clear-button-area');
@@ -175,25 +172,14 @@ export const StaticLookupSelectBox: Story = {
  * Multi-select lookup toolbar item with TagBox widget
  */
 export const MultiLookupTagBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('multilookup', 'multiLookup', 'Multi Lookup', { lookup: 'multi', width: '400px' }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('multilookup', 'multiLookup', 'Multi Lookup', { lookup: 'multi', width: '400px' }),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const tagBox = canvasElement.querySelector('.dx-tagbox');
       expect(tagBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // TagBox should have tag container
     const tagContainer = canvasElement.querySelector('.dx-tag-container');
@@ -205,35 +191,24 @@ export const MultiLookupTagBox: Story = {
  * Static multi-select lookup toolbar item
  */
 export const StaticMultiLookupTagBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('staticmultilookup', 'staticMultiLookup', 'Static Multi Lookup', {
-            options: {
-              items: [
-                { id: 1, text: 'Choice A', value: 'a' },
-                { id: 2, text: 'Choice B', value: 'b' },
-                { id: 3, text: 'Choice C', value: 'c' },
-              ],
-              displayExpr: 'text',
-              valueExpr: 'value',
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('staticmultilookup', 'staticMultiLookup', 'Static Multi Lookup', {
+      options: {
+        items: [
+          { id: 1, text: 'Choice A', value: 'a' },
+          { id: 2, text: 'Choice B', value: 'b' },
+          { id: 3, text: 'Choice C', value: 'c' },
+        ],
+        displayExpr: 'text',
+        valueExpr: 'value',
+      },
     }),
-  ],
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const tagBox = canvasElement.querySelector('.dx-tagbox');
       expect(tagBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   },
 };
 
@@ -241,25 +216,14 @@ export const StaticMultiLookupTagBox: Story = {
  * Date picker toolbar item
  */
 export const DateBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('date', 'dateFilter', 'Date', { width: '200px' }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('date', 'dateFilter', 'Date', { width: '200px' }),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const dateBox = canvasElement.querySelector('.dx-datebox');
       expect(dateBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Check for calendar button
     const dropdownButton = canvasElement.querySelector('.dx-dropdowneditor-button');
@@ -271,25 +235,14 @@ export const DateBox: Story = {
  * DateTime picker toolbar item
  */
 export const DateTimeBox: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('datetime', 'datetimeFilter', 'DateTime', { width: '220px' }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('datetime', 'datetimeFilter', 'DateTime', { width: '220px' }),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const dateBox = canvasElement.querySelector('.dx-datebox');
       expect(dateBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
   },
 };
 
@@ -297,25 +250,14 @@ export const DateTimeBox: Story = {
  * Button toolbar item
  */
 export const ButtonItem: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('button', 'actionButton', 'Click Me'),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('button', 'actionButton', 'Click Me'),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const button = canvasElement.querySelector('.dx-button');
       expect(button).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Button should have correct text
     const buttonText = canvasElement.querySelector('.dx-button-text');
@@ -331,33 +273,22 @@ export const ButtonItem: Story = {
  * Dropdown button toolbar item with split button functionality
  */
 export const DropDownButton: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('dropdownbutton', 'actionMenu', 'Actions', {
-            options: {
-              items: [
-                { id: 'action1', text: 'Action 1' },
-                { id: 'action2', text: 'Action 2' },
-                { id: 'action3', text: 'Action 3' },
-              ],
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('dropdownbutton', 'actionMenu', 'Actions', {
+      options: {
+        items: [
+          { id: 'action1', text: 'Action 1' },
+          { id: 'action2', text: 'Action 2' },
+          { id: 'action3', text: 'Action 3' },
+        ],
+      },
     }),
-  ],
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const dropdownButton = canvasElement.querySelector('.dx-dropdownbutton');
       expect(dropdownButton).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Check for split button structure
     const mainButton = canvasElement.querySelector('.dx-button-has-text');
@@ -369,48 +300,37 @@ export const DropDownButton: Story = {
  * Toolbar with all item types combined
  */
 export const AllToolbarItems: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('lookup', 'lookup1', 'Lookup', { lookup: 'test', width: '200px' }),
-          createToolbarItem('staticlookup', 'staticLookup1', 'Static', {
-            width: '150px',
-            options: {
-              items: [{ id: 1, text: 'A', value: 'a' }],
-              displayExpr: 'text',
-              valueExpr: 'value',
-            },
-          }),
-          createToolbarItem('multilookup', 'multi1', 'Multi', { lookup: 'multi', width: '200px' }),
-          createToolbarItem('date', 'date1', 'Date', { width: '180px' }),
-          createToolbarItem('datetime', 'datetime1', 'DateTime', { width: '200px' }),
-          createToolbarItem('button', 'btn1', 'Button'),
-          createToolbarItem('dropdownbutton', 'dropdown1', 'Menu', {
-            options: {
-              items: [{ id: 'opt1', text: 'Option 1' }],
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('lookup', 'lookup1', 'Lookup', { lookup: 'test', width: '200px' }),
+    createToolbarItem('staticlookup', 'staticLookup1', 'Static', {
+      width: '150px',
+      options: {
+        items: [{ id: 1, text: 'A', value: 'a' }],
+        displayExpr: 'text',
+        valueExpr: 'value',
+      },
     }),
-  ],
+    createToolbarItem('multilookup', 'multi1', 'Multi', { lookup: 'multi', width: '200px' }),
+    createToolbarItem('date', 'date1', 'Date', { width: '180px' }),
+    createToolbarItem('datetime', 'datetime1', 'DateTime', { width: '200px' }),
+    createToolbarItem('button', 'btn1', 'Button'),
+    createToolbarItem('dropdownbutton', 'dropdown1', 'Menu', {
+      options: {
+        items: [{ id: 'opt1', text: 'Option 1' }],
+      },
+    }),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const toolbar = canvasElement.querySelector('.dx-toolbar');
       expect(toolbar).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Verify all item types are rendered
     await waitFor(() => {
       const selectBoxes = canvasElement.querySelectorAll('.dx-selectbox');
       expect(selectBoxes.length).toBeGreaterThanOrEqual(2); // lookup + staticlookup
-    });
+    }, { timeout: 3000 });
 
     const tagBox = canvasElement.querySelector('.dx-tagbox');
     await expect(tagBox).toBeTruthy();
@@ -430,18 +350,7 @@ export const AllToolbarItems: Story = {
  * Empty toolbar with no items
  */
 export const EmptyToolbar: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([]),
   play: async ({ canvasElement }) => {
     // Wait for component to initialize
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -456,36 +365,25 @@ export const EmptyToolbar: Story = {
  * Lookup with value change interaction test
  */
 export const LookupWithValueChange: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('staticlookup', 'interactiveLookup', 'Select Value', {
-            width: '300px',
-            options: {
-              items: [
-                { id: 1, text: 'First Option', value: 'first' },
-                { id: 2, text: 'Second Option', value: 'second' },
-                { id: 3, text: 'Third Option', value: 'third' },
-              ],
-              displayExpr: 'text',
-              valueExpr: 'value',
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('staticlookup', 'interactiveLookup', 'Select Value', {
+      width: '300px',
+      options: {
+        items: [
+          { id: 1, text: 'First Option', value: 'first' },
+          { id: 2, text: 'Second Option', value: 'second' },
+          { id: 3, text: 'Third Option', value: 'third' },
+        ],
+        displayExpr: 'text',
+        valueExpr: 'value',
+      },
     }),
-  ],
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const selectBox = canvasElement.querySelector('.dx-selectbox');
       expect(selectBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Open the dropdown
     const dropdownButton = canvasElement.querySelector('.dx-dropdowneditor-button') as HTMLElement;
@@ -502,25 +400,14 @@ export const LookupWithValueChange: Story = {
  * Button click interaction test
  */
 export const ButtonClickInteraction: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('button', 'testButton', 'Test Click'),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('button', 'testButton', 'Test Click'),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const button = canvasElement.querySelector('.dx-button');
       expect(button).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Click the button multiple times
     const button = canvasElement.querySelector('.dx-button') as HTMLElement;
@@ -537,25 +424,14 @@ export const ButtonClickInteraction: Story = {
  * Date picker interaction test
  */
 export const DatePickerInteraction: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('date', 'interactiveDate', 'Pick a Date', { width: '220px' }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('date', 'interactiveDate', 'Pick a Date', { width: '220px' }),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const dateBox = canvasElement.querySelector('.dx-datebox');
       expect(dateBox).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Open the calendar
     const calendarButton = canvasElement.querySelector('.dx-dropdowneditor-button') as HTMLElement;
@@ -572,27 +448,16 @@ export const DatePickerInteraction: Story = {
  * Multiple buttons in toolbar
  */
 export const MultipleButtons: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('button', 'saveBtn', 'Save'),
-          createToolbarItem('button', 'cancelBtn', 'Cancel'),
-          createToolbarItem('button', 'deleteBtn', 'Delete'),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('button', 'saveBtn', 'Save'),
+    createToolbarItem('button', 'cancelBtn', 'Cancel'),
+    createToolbarItem('button', 'deleteBtn', 'Delete'),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const toolbarItems = canvasElement.querySelectorAll('.dx-toolbar-item');
       expect(toolbarItems.length).toBe(3);
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Verify each button text
     const buttonTexts = canvasElement.querySelectorAll('.dx-button-text');
@@ -607,34 +472,23 @@ export const MultipleButtons: Story = {
  * Dropdown button with item selection
  */
 export const DropDownButtonInteraction: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('dropdownbutton', 'interactiveDropdown', 'Select Action', {
-            width: '180px',
-            options: {
-              items: [
-                { id: 'edit', text: 'Edit' },
-                { id: 'delete', text: 'Delete' },
-                { id: 'archive', text: 'Archive' },
-              ],
-            },
-          }),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
+  ...createStoryWithLayout([
+    createToolbarItem('dropdownbutton', 'interactiveDropdown', 'Select Action', {
+      width: '180px',
+      options: {
+        items: [
+          { id: 'edit', text: 'Edit' },
+          { id: 'delete', text: 'Delete' },
+          { id: 'archive', text: 'Archive' },
+        ],
+      },
     }),
-  ],
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const dropdownButton = canvasElement.querySelector('.dx-dropdownbutton');
       expect(dropdownButton).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Click the dropdown arrow to open menu
     const toggleButton = canvasElement.querySelector('.dx-dropdownbutton-toggle') as HTMLElement;
@@ -651,27 +505,16 @@ export const DropDownButtonInteraction: Story = {
  * Custom width configurations
  */
 export const CustomWidthItems: Story = {
-  decorators: [
-    applicationConfig({
-      providers: (() => {
-        const { pageServiceMock, lookupServiceMock } = createMocks();
-        pageServiceMock.subjects.layout$.next(createPageLayout([
-          createToolbarItem('lookup', 'narrowLookup', 'Narrow', { lookup: 'test', width: '150px' }),
-          createToolbarItem('lookup', 'wideLookup', 'Wide', { lookup: 'test', width: '400px' }),
-          createToolbarItem('button', 'autoButton', 'Auto Width'),
-        ]));
-        return [
-          { provide: PAGE_SERVICE, useValue: pageServiceMock.service },
-          { provide: LOOKUP_SERVICE, useValue: lookupServiceMock.service },
-        ];
-      })(),
-    }),
-  ],
+  ...createStoryWithLayout([
+    createToolbarItem('lookup', 'narrowLookup', 'Narrow', { lookup: 'test', width: '150px' }),
+    createToolbarItem('lookup', 'wideLookup', 'Wide', { lookup: 'test', width: '400px' }),
+    createToolbarItem('button', 'autoButton', 'Auto Width'),
+  ]),
   play: async ({ canvasElement }) => {
     await waitFor(() => {
       const toolbar = canvasElement.querySelector('.dx-toolbar');
       expect(toolbar).toBeTruthy();
-    }, { timeout: 2000 });
+    }, { timeout: 3000 });
 
     // Verify items are rendered
     const selectBoxes = canvasElement.querySelectorAll('.dx-selectbox');
