@@ -1,26 +1,28 @@
 import { PageToolbarItem } from '@ballware/meta-model';
 import { Item as ToolbarItem, LocateInMenuMode, ToolbarItemLocation } from 'devextreme/ui/toolbar';
 import {
+  AutocompleteCreator,
   LookupCreator,
-  LookupDescriptor,
-  PageService,
+  LookupDescriptor, PAGE_SERVICE,
   PickvalueCreator,
   ToolbarItemRef
 } from '@ballware/meta-services';
-import { LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate } from '../../utils';
 import {
   InitializedEvent as TagBoxInitializedEvent, Properties as TagBoxProperties,
   ValueChangedEvent as TagBoxValueChangedEvent
 } from 'devextreme/ui/tag_box';
+import { inject } from '@angular/core';
 
 export const createMultilookupToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
   locateInMenu: LocateInMenuMode,
-  pageService: PageService,
-  lookupDelegateBuilderFactory: LookupDelegateBuilderFactory,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator>,
+  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
 ) => {
+
+  const pageService = inject(PAGE_SERVICE);
+  const lookupDelegateBuilderFactory = inject(LOOKUP_DELEGATE_BUILDER_FACTORY);
 
   let lookup: LookupDelegate | undefined;
 
@@ -60,6 +62,9 @@ export const createMultilookupToolbarItem = (
       searchEnabled: true,
       showClearButton: true,
       showDropDownButton: true,
+      showSelectionControls: true,
+      multiline: false,
+      maxDisplayedTags: 3,
       displayExpr: lookup?.displayExpr,
       valueExpr: lookup?.valueExpr,
       dataSource: lookup?.dataSource,

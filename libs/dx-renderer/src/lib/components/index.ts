@@ -1,6 +1,6 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
-import { EDITITEM_REGISTRY, PAGEITEM_REGISTRY } from '../registries';
-import { EditLayoutButtonComponent } from './button';
+import { EDITITEM_REGISTRY, PAGEITEM_REGISTRY, TOOLBARITEMCONFIGURATION_REGISTRY } from '../registries';
+import { createButtonToolbarItem, EditLayoutButtonComponent } from './button';
 import { EditLayoutStaticButtonGroupComponent } from './buttongroup';
 import { createTextColumn, EditLayoutTextComponent } from './text';
 import { EditLayoutTextareaComponent } from './textarea';
@@ -8,9 +8,14 @@ import { EditLayoutRichtextComponent } from './richtext';
 import { createNumberColumn, EditLayoutNumberComponent } from './number';
 import { createBoolColumn, EditLayoutBoolComponent } from './bool';
 import { EditLayoutToggleComponent } from './toggle';
-import { createDatetimeColumn, EditLayoutDatetimeComponent } from './datetime';
-import { createLookupColumn, EditLayoutLookupComponent } from './lookup';
-import { createMultilookupColumn, EditLayoutMultilookupComponent } from './multilookup';
+import {
+  createDatetimeColumn,
+  createDatetimeToolbarItem,
+  createDateToolbarItem,
+  EditLayoutDatetimeComponent
+} from './datetime';
+import { createLookupColumn, createLookupToolbarItem, EditLayoutLookupComponent } from './lookup';
+import { createMultilookupColumn, createMultilookupToolbarItem, EditLayoutMultilookupComponent } from './multilookup';
 import { EditLayoutTabsComponent, PageLayoutTabsComponent } from './tabs';
 import { EditLayoutGroupComponent } from './group';
 import { EditLayoutMapComponent, PageLayoutMapComponent } from './map';
@@ -22,7 +27,8 @@ import { EditLayoutAttachmentDataGridComponent } from './attachmentdatagrid';
 import { EditLayoutStatisticComponent } from './statistic';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer';
 import { PageLayoutStatisticComponent } from './statistic/page/pagestatistic.component';
-import { COLUMNCONFIGURATION_REGISTRY } from '../registries/column.registry';
+import { COLUMNCONFIGURATION_REGISTRY } from '../registries';
+import { createDropDownButtonToolbarItem } from './dropdownbutton';
 
 export * from './barcodescanner';
 export * from './bool';
@@ -92,6 +98,23 @@ export const provideDefaultEditItems = (): EnvironmentProviders => {
   ]);
 }
 
+export const provideDefaultToolbarItemConfigurations = (): EnvironmentProviders => {
+  return makeEnvironmentProviders([
+    provideAppInitializer(() => {
+      const toolbarItemConfigurationRegistry = inject(TOOLBARITEMCONFIGURATION_REGISTRY);
+
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('lookup', createLookupToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('staticlookup', createLookupToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('multilookup', createMultilookupToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('staticmultilookup', createMultilookupToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('date', createDateToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('datetime', createDatetimeToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('button', createButtonToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('dropdownbutton', createDropDownButtonToolbarItem);
+    })
+  ]);
+}
+
 export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
   return makeEnvironmentProviders([
     provideAppInitializer(() => {
@@ -107,12 +130,6 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
       columnConfigurationRegistry.registerColumnConfigurationFactory('multilookup', createMultilookupColumn);
       columnConfigurationRegistry.registerColumnConfigurationFactory('staticmultilookup', createMultilookupColumn);
       columnConfigurationRegistry.registerColumnConfigurationFactory('text', createTextColumn);
-
-
-      /*
-case 'dynamic':
-case 'popup':
-       */
     })
   ]);
 }

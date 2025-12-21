@@ -1,21 +1,23 @@
 import { PageToolbarItem } from '@ballware/meta-model';
 import { Item as ToolbarItem, LocateInMenuMode, ToolbarItemLocation } from 'devextreme/ui/toolbar';
 import {
-  PageService,
-  ToolbarItemRef
+  PAGE_SERVICE,
+  ToolbarItemRef, TRANSLATOR
 } from '@ballware/meta-services';
 import {
   InitializedEvent as DateBoxInitializedEvent, Properties as DateBoxProperties,
   ValueChangedEvent as DateBoxValueChangedEvent
 } from 'devextreme/ui/date_box';
+import { inject } from '@angular/core';
 
 export const createDateToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
-  locateInMenu: LocateInMenuMode,
-  t: (id: string, param?: Record<string, unknown>) => string,
-  pageService: PageService
+  locateInMenu: LocateInMenuMode
 ) => {
+
+  const t = inject(TRANSLATOR);
+  const pageService = inject(PAGE_SERVICE);
 
   const onItemInitialized = (e: DateBoxInitializedEvent, name: string) => {
     if (name) {
@@ -52,10 +54,11 @@ export const createDateToolbarItem = (
 export const createDatetimeToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
-  locateInMenu: LocateInMenuMode,
-  t: (id: string, param?: Record<string, unknown>) => string,
-  pageService: PageService
+  locateInMenu: LocateInMenuMode
 ) => {
+
+  const t = inject(TRANSLATOR);
+  const pageService = inject(PAGE_SERVICE);
 
   const onItemInitialized = (e: DateBoxInitializedEvent, name: string) => {
     if (name) {

@@ -1,26 +1,28 @@
 import { PageToolbarItem } from '@ballware/meta-model';
 import { Item as ToolbarItem, LocateInMenuMode, ToolbarItemLocation } from 'devextreme/ui/toolbar';
 import {
+  AutocompleteCreator,
   LookupCreator,
-  LookupDescriptor,
-  PageService,
+  LookupDescriptor, PAGE_SERVICE,
   PickvalueCreator,
   ToolbarItemRef
 } from '@ballware/meta-services';
-import { LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate } from '../../utils';
 import {
   InitializedEvent as SelectBoxInitializedEvent, Properties as SelectBoxProperties,
   ValueChangedEvent as SelectBoxValueChangedEvent
 } from 'devextreme/ui/select_box';
+import { inject } from '@angular/core';
 
 export const createLookupToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
   locateInMenu: LocateInMenuMode,
-  pageService: PageService,
-  lookupDelegateBuilderFactory: LookupDelegateBuilderFactory,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator>,
+  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
 ) => {
+
+  const pageService = inject(PAGE_SERVICE);
+  const lookupDelegateBuilderFactory = inject(LOOKUP_DELEGATE_BUILDER_FACTORY);
 
   let lookup: LookupDelegate | undefined;
 

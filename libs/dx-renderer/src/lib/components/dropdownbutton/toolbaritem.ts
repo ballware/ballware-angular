@@ -5,18 +5,18 @@ import {
   ToolbarItemRef
 } from '@ballware/meta-services';
 import {
-  InitializedEvent as ButtonInitializedEvent, Properties as ButtonProperties
-} from 'devextreme/ui/button';
+  InitializedEvent as DropDownButtonInitializedEvent, Properties as DropDownButtonProperties, ButtonClickEvent as DropDownButtonClickEvent, ItemClickEvent as DropDownButtonItemClickEvent
+} from 'devextreme/ui/drop_down_button';
 import { inject } from '@angular/core';
 
-export const createButtonToolbarItem = (
+export const createDropDownButtonToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
   locateInMenu: LocateInMenuMode
 ) => {
   const pageService = inject(PAGE_SERVICE);
 
-  const onItemInitialized = (e: ButtonInitializedEvent, name: string) => {
+  const onItemInitialized = (e: DropDownButtonInitializedEvent, name: string) => {
     if (name) {
       const toolbarItemRef = {
         getOption: (option) => (e.component as any)?.option(option),
@@ -30,16 +30,25 @@ export const createButtonToolbarItem = (
   return {
     location,
     locateInMenu,
-    widget: 'dxButton',
+    widget: 'dxDropDownButton',
     options: {
-      width: item.width ?? 'auto',
+      width: item.width ?? '180px',
       text: item.caption ?? '',
+      keyExpr: "id",
+      displayExpr: "text",
+      splitButton: true,
+      dataSource: item.options['items'] as any[],
       onInitialized: (e) => onItemInitialized(e, item.name),
-      onClick: () => {
+      onButtonClick: (e: DropDownButtonClickEvent) => {
         if (item.name) {
-          pageService.paramEditorEvent({ name: item.name, event: 'click' });
+          pageService.paramEditorEvent({ name: item.name, event: 'click', param: undefined });
+        }
+      },
+      onItemClick: (e: DropDownButtonItemClickEvent) => {
+        if (item.name) {
+          pageService.paramEditorEvent({ name: item.name, event: 'click', param: e.itemData['id'] });
         }
       }
-    } as ButtonProperties
+    } as DropDownButtonProperties
   } as ToolbarItem;
 }
