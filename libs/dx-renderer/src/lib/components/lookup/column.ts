@@ -1,17 +1,26 @@
 import { Column as TreeListColumn } from 'devextreme/ui/tree_list';
 import { Column as DataGridColumn } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
-import { AutocompleteCreator, LookupCreator, LookupDescriptor, PickvalueCreator } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  LookupCreator,
+  LookupDescriptor,
+  PickvalueCreator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import { createLookupDelegateBuilder } from '../../utils';
 import { get } from 'lodash';
 import { RequiredRule } from 'devextreme/common';
+import { inject } from '@angular/core';
 
 export const createLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
-  t: (id: string, param?: Record<string, unknown>) => string,
   lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
   lookupParams: Record<string, unknown>
 ) => {
+
+  const t  = inject(TRANSLATOR);
+
   const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
 
   if (c.lookup) {

@@ -30,7 +30,7 @@ import {
   PickvalueCreator
 } from '@ballware/meta-services';
 import { provideDefaultItemRegistries } from './registries';
-import { provideDefaultEditItems, provideDefaultPageItems } from './components';
+import { provideDefaultColumnConfigurations, provideDefaultEditItems, provideDefaultPageItems } from './components';
 
 export * from './directives';
 export * from './page';
@@ -62,6 +62,7 @@ export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig):
     provideDefaultItemRegistries(),
     provideDefaultPageItems(),
     provideDefaultEditItems(),
+    provideDefaultColumnConfigurations(),
     {
       provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
       useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)

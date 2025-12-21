@@ -2,15 +2,15 @@ import { EnvironmentProviders, inject, makeEnvironmentProviders, provideAppIniti
 import { EDITITEM_REGISTRY, PAGEITEM_REGISTRY } from '../registries';
 import { EditLayoutButtonComponent } from './button';
 import { EditLayoutStaticButtonGroupComponent } from './buttongroup';
-import { EditLayoutTextComponent } from './text';
+import { createTextColumn, EditLayoutTextComponent } from './text';
 import { EditLayoutTextareaComponent } from './textarea';
 import { EditLayoutRichtextComponent } from './richtext';
-import { EditLayoutNumberComponent } from './number';
-import { EditLayoutBoolComponent } from './bool';
+import { createNumberColumn, EditLayoutNumberComponent } from './number';
+import { createBoolColumn, EditLayoutBoolComponent } from './bool';
 import { EditLayoutToggleComponent } from './toggle';
-import { EditLayoutDatetimeComponent } from './datetime';
-import { EditLayoutLookupComponent } from './lookup';
-import { EditLayoutMultilookupComponent } from './multilookup';
+import { createDatetimeColumn, EditLayoutDatetimeComponent } from './datetime';
+import { createLookupColumn, EditLayoutLookupComponent } from './lookup';
+import { createMultilookupColumn, EditLayoutMultilookupComponent } from './multilookup';
 import { EditLayoutTabsComponent, PageLayoutTabsComponent } from './tabs';
 import { EditLayoutGroupComponent } from './group';
 import { EditLayoutMapComponent, PageLayoutMapComponent } from './map';
@@ -22,6 +22,7 @@ import { EditLayoutAttachmentDataGridComponent } from './attachmentdatagrid';
 import { EditLayoutStatisticComponent } from './statistic';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer';
 import { PageLayoutStatisticComponent } from './statistic/page/pagestatistic.component';
+import { COLUMNCONFIGURATION_REGISTRY } from '../registries/column.registry';
 
 export * from './barcodescanner';
 export * from './bool';
@@ -87,6 +88,31 @@ export const provideDefaultEditItems = (): EnvironmentProviders => {
       editItemRegistry.registerItemType('attachments', EditLayoutAttachmentDataGridComponent);
       editItemRegistry.registerItemType('statistic', EditLayoutStatisticComponent);
 
+    })
+  ]);
+}
+
+export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
+  return makeEnvironmentProviders([
+    provideAppInitializer(() => {
+      const columnConfigurationRegistry = inject(COLUMNCONFIGURATION_REGISTRY);
+
+      columnConfigurationRegistry.registerColumnConfigurationFactory('bool', createBoolColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('number', createNumberColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('date', createDatetimeColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('datetime', createDatetimeColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('lookup', createLookupColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('pickvalue', createLookupColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('staticlookup', createLookupColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('multilookup', createMultilookupColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('staticmultilookup', createMultilookupColumn);
+      columnConfigurationRegistry.registerColumnConfigurationFactory('text', createTextColumn);
+
+
+      /*
+case 'dynamic':
+case 'popup':
+       */
     })
   ]);
 }

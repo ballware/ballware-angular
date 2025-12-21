@@ -1,12 +1,15 @@
+import { inject } from '@angular/core';
 import { Column as TreeListColumn } from 'devextreme/ui/tree_list';
 import { Column as DataGridColumn } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
 import { RequiredRule } from 'devextreme/common';
+import { TRANSLATOR } from '@ballware/meta-services';
 
 export const createBoolColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
-  c: GridLayoutColumn,
-  t: (id: string, param?: Record<string, unknown>) => string
+  c: GridLayoutColumn
 ) => {
+
+  const t = inject(TRANSLATOR);
 
   return {
     dataField: c.dataMember,
