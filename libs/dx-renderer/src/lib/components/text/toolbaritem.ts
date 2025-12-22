@@ -1,20 +1,22 @@
 import { PageToolbarItem } from '@ballware/meta-model';
 import { Item as ToolbarItem, LocateInMenuMode, ToolbarItemLocation } from 'devextreme/ui/toolbar';
 import {
-  PageService,
+  PAGE_SERVICE,
   ToolbarItemRef
 } from '@ballware/meta-services';
 import {
   InitializedEvent as TextBoxInitializedEvent, Properties as TextBoxProperties,
   ValueChangedEvent as TextBoxValueChangedEvent
 } from 'devextreme/ui/text_box';
+import { inject } from '@angular/core';
 
 export const createTextToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
-  locateInMenu: LocateInMenuMode,
-  pageService: PageService
+  locateInMenu: LocateInMenuMode
 ) => {
+
+  const pageService = inject(PAGE_SERVICE);
 
   const onItemInitialized = (e: TextBoxInitializedEvent, name: string) => {
     if (name) {

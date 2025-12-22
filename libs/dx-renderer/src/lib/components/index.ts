@@ -1,12 +1,12 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
-import { EDITITEM_REGISTRY, PAGEITEM_REGISTRY, TOOLBARITEMCONFIGURATION_REGISTRY } from '../registries';
+import { COLUMNCONFIGURATION_REGISTRY, EDITITEM_REGISTRY, PAGEITEM_REGISTRY, TOOLBARITEMCONFIGURATION_REGISTRY } from '../registries';
 import { createButtonToolbarItem, EditLayoutButtonComponent } from './button';
 import { EditLayoutStaticButtonGroupComponent } from './buttongroup';
-import { createTextColumn, EditLayoutTextComponent } from './text';
+import { createTextColumn, createTextToolbarItem, EditLayoutTextComponent } from './text';
 import { EditLayoutTextareaComponent } from './textarea';
 import { EditLayoutRichtextComponent } from './richtext';
-import { createNumberColumn, EditLayoutNumberComponent } from './number';
-import { createBoolColumn, EditLayoutBoolComponent } from './bool';
+import { createNumberColumn, createNumberToolbarItem, EditLayoutNumberComponent } from './number';
+import { createBoolColumn, createBoolToolbarItem, EditLayoutBoolComponent } from './bool';
 import { EditLayoutToggleComponent } from './toggle';
 import {
   createDatetimeColumn,
@@ -27,7 +27,6 @@ import { EditLayoutAttachmentDataGridComponent } from './attachmentdatagrid';
 import { EditLayoutStatisticComponent } from './statistic';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer';
 import { PageLayoutStatisticComponent } from './statistic/page/pagestatistic.component';
-import { COLUMNCONFIGURATION_REGISTRY } from '../registries';
 import { createDropDownButtonToolbarItem } from './dropdownbutton';
 
 export * from './barcodescanner';
@@ -107,6 +106,9 @@ export const provideDefaultToolbarItemConfigurations = (): EnvironmentProviders 
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('staticlookup', createLookupToolbarItem);
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('multilookup', createMultilookupToolbarItem);
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('staticmultilookup', createMultilookupToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('number', createNumberToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('text', createTextToolbarItem);
+      toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('bool', createBoolToolbarItem);
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('date', createDateToolbarItem);
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('datetime', createDatetimeToolbarItem);
       toolbarItemConfigurationRegistry.registerToolbarItemConfigurationFactory('button', createButtonToolbarItem);

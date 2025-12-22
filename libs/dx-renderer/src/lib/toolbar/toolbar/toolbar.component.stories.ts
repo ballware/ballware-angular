@@ -243,3 +243,76 @@ export const MixedConfiguration: Story = {
   },
 };
 
+/**
+ * Toolbar configuration with number input
+ */
+export const WithNumberConfig: Story = {
+  ...createStoryWithLayout([
+    createToolbarItem('number', 'quantityInput', 'Quantity', { width: '150px' }),
+  ]),
+  play: async ({ canvasElement }) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const component = canvasElement.querySelector('ballware-toolbar');
+    await expect(component).toBeTruthy();
+  },
+};
+
+/**
+ * Toolbar configuration with boolean checkbox
+ */
+export const WithBoolConfig: Story = {
+  ...createStoryWithLayout([
+    createToolbarItem('bool', 'activeFlag', 'Active'),
+  ]),
+  play: async ({ canvasElement }) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const component = canvasElement.querySelector('ballware-toolbar');
+    await expect(component).toBeTruthy();
+  },
+};
+
+/**
+ * Toolbar configuration with text input
+ */
+export const WithTextConfig: Story = {
+  ...createStoryWithLayout([
+    createToolbarItem('text', 'searchInput', 'Search', { width: '200px' }),
+  ]),
+  play: async ({ canvasElement }) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const component = canvasElement.querySelector('ballware-toolbar');
+    await expect(component).toBeTruthy();
+  },
+};
+
+/**
+ * Comprehensive toolbar with all input types
+ */
+export const AllInputTypes: Story = {
+  ...createStoryWithLayout([
+    createToolbarItem('button', 'submitBtn', 'Submit'),
+    createToolbarItem('text', 'searchField', 'Search'),
+    createToolbarItem('number', 'countField', 'Count'),
+    createToolbarItem('bool', 'enabledFlag', 'Enabled'),
+    createToolbarItem('date', 'startDate', 'Start Date'),
+    createToolbarItem('staticlookup', 'typeFilter', 'Type', {
+      options: {
+        items: [
+          { id: 1, text: 'Type A', value: 'a' },
+          { id: 2, text: 'Type B', value: 'b' },
+        ],
+        displayExpr: 'text',
+        valueExpr: 'value',
+      },
+    }),
+  ]),
+  play: async ({ canvasElement }) => {
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    const component = canvasElement.querySelector('ballware-toolbar');
+    await expect(component).toBeTruthy();
+  },
+};

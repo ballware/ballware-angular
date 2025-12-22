@@ -1,20 +1,22 @@
 import { PageToolbarItem } from '@ballware/meta-model';
 import { Item as ToolbarItem, LocateInMenuMode, ToolbarItemLocation } from 'devextreme/ui/toolbar';
 import {
-  PageService,
+  PAGE_SERVICE,
   ToolbarItemRef
 } from '@ballware/meta-services';
 import {
   InitializedEvent as NumberBoxInitializedEvent, Properties as NumberBoxProperties,
   ValueChangedEvent as NumberBoxValueChangedEvent
 } from 'devextreme/ui/number_box';
+import { inject } from '@angular/core';
 
 export const createNumberToolbarItem = (
   item: PageToolbarItem,
   location: ToolbarItemLocation,
-  locateInMenu: LocateInMenuMode,
-  pageService: PageService
+  locateInMenu: LocateInMenuMode
 ) => {
+
+  const pageService = inject(PAGE_SERVICE);
 
   const onItemInitialized = (e: NumberBoxInitializedEvent, name: string) => {
     if (name) {
