@@ -3,4 +3,3 @@ export { DetailColumnCodeComponent } from './detailcolumn/detailcolumncode.compo
 export { EditLayoutCodeComponent } from './edit/editcode.component';
 
 export { createCodeColumn } from './column';
-export { createCodeToolbarItem } from './toolbaritem';

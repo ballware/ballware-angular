@@ -3,4 +3,3 @@ export { DetailColumnRichtextComponent } from './detailcolumn/detailcolumnrichte
 export { EditLayoutRichtextComponent } from './edit/editrichtext.component';
 
 export { createRichtextColumn } from './column';
-export { createRichtextToolbarItem } from './toolbaritem';

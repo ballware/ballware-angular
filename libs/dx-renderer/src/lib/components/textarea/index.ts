@@ -3,4 +3,3 @@ export { DetailColumnTextareaComponent } from './detailcolumn/detailcolumntextar
 export { EditLayoutTextareaComponent } from './edit/edittextarea.component';
 
 export { createTextareaColumn } from './column';
-export { createTextareaToolbarItem } from './toolbaritem';
