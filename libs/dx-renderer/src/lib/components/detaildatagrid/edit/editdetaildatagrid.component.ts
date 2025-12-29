@@ -3,7 +3,6 @@ import { DxDataGridComponent, DxDataGridModule, DxToolbarModule, DxValidatorModu
 import { ValidationCallbackData } from "devextreme/common";
 import { Column } from "devextreme/ui/data_grid";
 import { CommonModule } from "@angular/common";
-import { DetailDynamicColumnComponent } from "../../../datacontainer";
 import { EditLayoutCodeComponent } from "../../code";
 import { I18NextPipe } from "angular-i18next";
 import { EditItemLivecycle, Readonly, UnknownArrayValue, Visible } from "@ballware/renderer-commons";
@@ -13,7 +12,7 @@ import { DetailCollectionEditing } from "../../../directives";
     selector: 'ballware-edit-detaildatagrid',
     templateUrl: './editdetaildatagrid.component.html',
     styleUrls: [],
-    imports: [CommonModule, I18NextPipe, DxDataGridModule, DxValidatorModule, DxToolbarModule, DetailDynamicColumnComponent, EditLayoutCodeComponent],
+    imports: [CommonModule, I18NextPipe, DxDataGridModule, DxValidatorModule, DxToolbarModule, EditLayoutCodeComponent],
     hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing]
 })
 export class EditLayoutDetailDataGridComponent {

@@ -21,9 +21,13 @@ exports[`EditLayoutDetailTreeListComponent should create 1`] = `
     width="100%"
   >
     <div
+      aria-label="Tree list with 0 rows and 1 columns. Press Ctrl + right arrow to expand the focused node and Ctrl + left arrow to collapse it"
       class="dx-treelist-container dx-gridbase-container"
       role="group"
     >
+      <div
+        class="dx-hidden"
+      />
       <div
         class="dx-gridbase-a11y-status-container"
         e2e-a11y-general-status-container="true"
@@ -31,9 +35,6 @@ exports[`EditLayoutDetailTreeListComponent should create 1`] = `
       />
       <div
         class="dx-treelist-columns-separator dx-treelist-columns-separator-transparent"
-      />
-      <div
-        class="dx-hidden"
       />
       <div
         class="dx-treelist-tracker dx-state-invisible"
@@ -59,39 +60,109 @@ exports[`EditLayoutDetailTreeListComponent should create 1`] = `
             </colgroup>
             <tbody
               role="presentation"
-            />
+            >
+              <tr
+                class="dx-row dx-column-lines dx-header-row"
+                role="row"
+              >
+                <td
+                  aria-colindex="1"
+                  aria-label="Column Field 1"
+                  aria-sort="none"
+                  class="dx-treelist-action dx-cell-focus-disabled"
+                  id="dx-col-1"
+                  role="columnheader"
+                  style="text-align: left;"
+                  tabindex="0"
+                >
+                  <div
+                    class="dx-column-indicators"
+                    role="presentation"
+                    style="float: right;"
+                  >
+                    <span
+                      class="dx-sort dx-sort-none"
+                    />
+                  </div>
+                  <div
+                    class="dx-treelist-text-content dx-text-content-alignment-left"
+                    role="presentation"
+                  >
+                    Field 1
+                  </div>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
       </div>
       <div
-        class="dx-bordered-bottom-view dx-treelist-rowsview dx-treelist-nowrap dx-empty"
+        class="dx-bordered-bottom-view dx-treelist-rowsview dx-treelist-nowrap dx-empty dx-scrollable dx-visibility-change-handler dx-scrollable-both dx-scrollable-simulated"
         role="presentation"
         tabindex="0"
       >
         <div
-          class="dx-treelist-content"
+          class="dx-scrollable-wrapper"
         >
-          <table
-            class="dx-treelist-table dx-treelist-table-fixed"
-            id=dx-normalized-id-0
-            role="presentation"
+          <div
+            class="dx-scrollable-container"
           >
-            <colgroup>
-              <col />
-            </colgroup>
-            <tbody
-              role="presentation"
+            <div
+              class="dx-scrollable-content"
+              style="left: 0px; top: 0px; transform: none;"
             >
-              <tr
-                class="dx-row dx-freespace-row dx-column-lines"
-                role="presentation"
+              <div
+                class="dx-treelist-content"
               >
-                <td
-                  style="text-align: left;"
+                <table
+                  class="dx-treelist-table dx-treelist-table-fixed"
+                  id=dx-normalized-id-0
+                  role="presentation"
+                >
+                  <colgroup>
+                    <col />
+                  </colgroup>
+                  <tbody
+                    role="presentation"
+                  >
+                    <tr
+                      class="dx-row dx-freespace-row dx-column-lines"
+                      role="presentation"
+                      style="height: 0px;"
+                    >
+                      <td
+                        style="text-align: left;"
+                      />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div
+              class="dx-scrollable-scrollbar dx-widget dx-scrollbar-horizontal dx-scrollbar-hoverable"
+            >
+              <div
+                class="dx-scrollable-scroll dx-state-invisible"
+                style="width: 15px; transform: translate(0px, 0px);"
+              >
+                <div
+                  class="dx-scrollable-scroll-content"
                 />
-              </tr>
-            </tbody>
-          </table>
+              </div>
+            </div>
+            <div
+              class="dx-scrollable-scrollbar dx-widget dx-scrollbar-vertical dx-scrollbar-hoverable"
+            >
+              <div
+                class="dx-scrollable-scroll dx-state-invisible"
+                style="height: 15px; transform: translate(0px, 0px);"
+              >
+                <div
+                  class="dx-scrollable-scroll-content"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div />

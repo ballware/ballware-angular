@@ -28,9 +28,10 @@ import { ValueChangedEvent as TextValueChangedEvent } from "devextreme/ui/text_b
 import { ColumnEditCellTemplateData as TreeListColumnEditCellTemplateData } from 'devextreme/ui/tree_list';
 import { cloneDeep, get } from "lodash";
 import { BehaviorSubject, combineLatest, map, Observable } from "rxjs";
-import { DetailCollectionEditing } from "../../directives";
-import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../../utils';
-import { DetailEditPopupComponent } from "../detaileditpopup/detaileditpopup.component";
+import { DetailCollectionEditing } from "../../../directives";
+import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../../../utils';
+import { DetailEditPopupComponent } from "../../popup";
+import { prepareLookupDelegateForGridLayoutColumn } from '../utils';
 
 @Component({
     selector: 'ballware-detail-dynamic-column',
@@ -59,7 +60,7 @@ export class DetailDynamicColumnComponent implements OnInit {
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
-    value: unknown|undefined = undefined;
+    value: unknown = undefined;
     lookup: LookupDelegate|undefined;
 
     public requiredValidation$ = new BehaviorSubject<boolean>(false);
@@ -103,6 +104,10 @@ export class DetailDynamicColumnComponent implements OnInit {
     }
 
     ngOnInit(): void {
+
+      this.destroy.onDestroy(() => {
+        console.log('DetailcolumnpopupComponent destroyed');
+      });
 
         this.validationRules$ = combineLatest([this.requiredValidation$]).pipe(
             takeUntilDestroyed(this.destroy),
@@ -161,44 +166,15 @@ export class DetailDynamicColumnComponent implements OnInit {
 
                   this.requiredValidation$.next(this.preparedColumn.required ?? false);
 
-                  let lookupBuilder = this.createLookupDelegateBuilder(lookups);
+                  this.lookup = prepareLookupDelegateForGridLayoutColumn(
+                    this.preparedColumn,
+                    this.createLookupDelegateBuilder,
+                    getGenericLookupByIdentifier,
+                    this.item,
+                    lookups,
+                    this.detailItem
+                  );
 
-                  if (this.preparedColumn.items) {
-                    lookupBuilder.forStaticItems(this.preparedColumn.items);
-                  } else if (this.preparedColumn.itemsMember) {
-                    lookupBuilder.forItemsFromMember(this.preparedColumn.itemsMember, (member) => get(this.item, member) as Array<Record<string, unknown>>);
-                  } else if (this.preparedColumn.lookupMember) {
-                    lookupBuilder.forItemsFromMember(this.preparedColumn.lookupMember, (member) => get(this.detailItem, member) as Array<Record<string, unknown>>);
-                  } else if (this.preparedColumn.lookup) {
-                    lookupBuilder.forIdentifier(this.preparedColumn.lookup);
-
-                    if (this.preparedColumn.lookupParam) {
-                      lookupBuilder.withParamFromMember(this.preparedColumn.lookupParam, (member) => get(this.item, member) as string);
-                    } else if (this.preparedColumn.pickvalueEntity && this.preparedColumn.pickvalueField) {
-                      lookupBuilder.withPickvaluesForEntityAndField(this.preparedColumn.pickvalueEntity, this.preparedColumn.pickvalueField);
-                    }
-                  }
-
-                  lookupBuilder.withUnknownLookupFallback(getGenericLookupByIdentifier);
-
-                  if (this.preparedColumn.type === 'staticmultilookup') {
-                    lookupBuilder.withValueExpr(this.preparedColumn.valueExpr ?? 'Value');
-                    lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr ?? 'Text');
-                  } else {
-                    if (this.preparedColumn.valueExpr) {
-                      lookupBuilder.withValueExpr(this.preparedColumn.valueExpr);
-                    }
-
-                    if (this.preparedColumn.displayExpr) {
-                      lookupBuilder.withDisplayExpr(this.preparedColumn.displayExpr);
-                    }
-                  }
-
-                  if (this.preparedColumn.acceptCustomValue) {
-                    lookupBuilder.withAcceptCustomValue(this.preparedColumn.acceptCustomValue);
-                  }
-
-                  this.lookup = lookupBuilder.build();
                   this.prepared = true;
                 }
             });

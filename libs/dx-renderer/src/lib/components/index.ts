@@ -28,6 +28,8 @@ import { EditLayoutStatisticComponent } from './statistic';
 import { PageLayoutCrudcontainerComponent } from './crudcontainer';
 import { PageLayoutStatisticComponent } from './statistic/page/pagestatistic.component';
 import { createDropDownButtonToolbarItem } from './dropdownbutton';
+import { createDetailDynamicColumn, createEntityDynamicColumn } from './dynamic';
+import { createPopupColumn } from './popup';
 
 export * from './barcodescanner';
 export * from './bool';
@@ -122,16 +124,32 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
     provideAppInitializer(() => {
       const columnConfigurationRegistry = inject(COLUMNCONFIGURATION_REGISTRY);
 
-      columnConfigurationRegistry.registerColumnConfigurationFactory('bool', createBoolColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('number', createNumberColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('date', createDatetimeColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('datetime', createDatetimeColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('lookup', createLookupColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('pickvalue', createLookupColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('staticlookup', createLookupColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('multilookup', createMultilookupColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('staticmultilookup', createMultilookupColumn);
-      columnConfigurationRegistry.registerColumnConfigurationFactory('text', createTextColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('bool', createBoolColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('number', createNumberColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('date', createDatetimeColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('datetime', createDatetimeColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('lookup', createLookupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('pickvalue', createLookupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('staticlookup', createLookupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('multilookup', createMultilookupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('staticmultilookup', createMultilookupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('string', createTextColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('text', createTextColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('popup', createPopupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('dynamic', createDetailDynamicColumn);
+
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('bool', createBoolColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('number', createNumberColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('date', createDatetimeColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('datetime', createDatetimeColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('lookup', (c, lookups, lookupParams) => createLookupColumn(c, undefined, lookups, lookupParams));
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('pickvalue', (c, lookups, lookupParams) => createLookupColumn(c, undefined, lookups, lookupParams));
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('staticlookup', (c, lookups, lookupParams) => createLookupColumn(c, undefined, lookups, lookupParams));
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('multilookup', (c, lookups, lookupParams) => createMultilookupColumn(c, undefined, lookups, lookupParams));
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('staticmultilookup', (c, lookups, lookupParams) => createMultilookupColumn(c, undefined, lookups, lookupParams));
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('string', createTextColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('text', createTextColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('dynamic', createEntityDynamicColumn);
     })
   ]);
 }

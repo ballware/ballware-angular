@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Provider } from '@angular/core';
 import { EditLayoutDetailTreeListComponent } from './editdetailtreelist.component';
 import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
@@ -7,6 +7,8 @@ import { mockedEditServiceContext } from '../../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
 import { BehaviorSubject } from 'rxjs';
 import { provideI18Next } from 'angular-i18next';
+import { provideDefaultItemRegistries } from '../../../registries';
+import { provideDefaultColumnConfigurations } from '../../index';
 
 describe('EditLayoutDetailTreeListComponent', () => {
   let component: EditLayoutDetailTreeListComponent;
@@ -33,6 +35,8 @@ describe('EditLayoutDetailTreeListComponent', () => {
           provide: TRANSLATOR,
           useValue: mockedTranslator
         },
+        provideDefaultItemRegistries(),
+        provideDefaultColumnConfigurations(),
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
@@ -45,7 +49,7 @@ describe('EditLayoutDetailTreeListComponent', () => {
     }).compileComponents();
   });
 
-  it('should create', () => {
+  it('should create', fakeAsync(() => {
     fixture = TestBed.createComponent(EditLayoutDetailTreeListComponent);
 
     const layoutItem = {
@@ -71,9 +75,11 @@ describe('EditLayoutDetailTreeListComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
 
     expect(fixture).toMatchSnapshot();
-  });
+  }));
 
   it('should initialize with columns', () => {
     fixture = TestBed.createComponent(EditLayoutDetailTreeListComponent);
@@ -387,7 +393,7 @@ describe('EditLayoutDetailTreeListComponent', () => {
     expect(component.editing.options?.editMode).toBe('instant');
   });
 
-  it('should support tree structure configuration', () => {
+  it('should support tree structure configuration', fakeAsync(() => {
     fixture = TestBed.createComponent(EditLayoutDetailTreeListComponent);
 
     const treeData = [
@@ -422,9 +428,11 @@ describe('EditLayoutDetailTreeListComponent', () => {
     component = fixture.componentInstance;
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
 
     expect(component.value).toBeDefined();
     expect(component.columns).toBeDefined();
-  });
+  }));
 });
 

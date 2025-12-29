@@ -123,13 +123,23 @@ export interface LookupRequest {
   field?: string;
 }
 
+/**
+ * Possible types for lookup elements
+ */
+export type LookupElementType =
+  | LookupDescriptor
+  | LookupCreator
+  | PickvalueCreator
+  | AutocompleteCreator
+  | Array<unknown>;
+
 export interface LookupService {
 
   setIdentifier(identifier: string): void;
 
   lookups$: Observable<Record<
       string,
-      LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>
+      LookupElementType
     >|undefined>;
 
   getGenericLookupByIdentifier$: Observable<((

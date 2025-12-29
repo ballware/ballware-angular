@@ -7,13 +7,12 @@ import { EditItemLivecycle, UnknownArrayValue, Readonly, Visible } from "@ballwa
 import { DetailCollectionEditing } from "../../../directives";
 import { ValidationCallbackData } from "devextreme/common";
 import { I18NextPipe } from "angular-i18next";
-import { DetailDynamicColumnComponent } from "../../../datacontainer";
 
 @Component({
     selector: 'ballware-edit-detailtreelist',
     templateUrl: './editdetailtreelist.component.html',
     styleUrls: [],
-    imports: [CommonModule, I18NextPipe, DxToolbarModule, DxTreeListModule, DxValidatorModule, DetailDynamicColumnComponent, EditLayoutCodeComponent],
+    imports: [CommonModule, I18NextPipe, DxToolbarModule, DxTreeListModule, DxValidatorModule, EditLayoutCodeComponent],
     hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, UnknownArrayValue, Readonly, Visible, DetailCollectionEditing]
 })
 export class EditLayoutDetailTreeListComponent {

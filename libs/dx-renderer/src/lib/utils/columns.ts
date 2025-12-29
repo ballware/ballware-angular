@@ -1,14 +1,28 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
-import { AutocompleteCreator, LookupCreator, LookupDescriptor, PickvalueCreator } from "@ballware/meta-services";
+import {
+  AutocompleteCreator,
+  LookupCreator,
+  LookupDescriptor, LookupElementType,
+  PickvalueCreator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import { AsyncRule } from 'devextreme-angular/common';
-import { RequiredRule, ValidationCallbackData } from 'devextreme/common';
-import { DxElement } from "devextreme/core/element";
-import { dxEvent } from "devextreme/events";
-import { Column as DataGridColumn, ColumnCellTemplateData as DataGridColumnCellTemplateData } from "devextreme/ui/data_grid";
-import { Column as TreeListColumn, ColumnCellTemplateData as TreeListColumnCellTemplateData } from "devextreme/ui/tree_list";
-import { cloneDeep, get } from "lodash";
+import { ValidationCallbackData } from 'devextreme/common';
+import { Column as DataGridColumn, ColumnButton as DataGridColumnButton } from 'devextreme/ui/data_grid';
+import { Column as TreeListColumn, ColumnButton as TreeListColumnButton } from "devextreme/ui/tree_list";
+import { cloneDeep } from "lodash";
 import { firstValueFrom, Observable } from 'rxjs';
-import { createLookupDelegateBuilder } from './lookupbuilder';
+import { inject } from '@angular/core';
+import { COLUMNCONFIGURATION_REGISTRY } from '../registries';
+
+type ButtonClickEvent = {
+  row?: { data: CrudItem; node?: { data: CrudItem } };
+  event?: { currentTarget?: EventTarget }
+};
+
+type ButtonVisibleOptions = {
+  row?: { data: CrudItem; node?: { data: CrudItem } }
+};
 
 export type OptionButtons =
   | 'add'
@@ -19,442 +33,204 @@ export type OptionButtons =
   | 'options'
   | 'customoptions';
 
-  function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
-    t: (id: string, param?: Record<string, unknown>) => string,
+const columnPositionComparer = (a: GridLayoutColumn, b: GridLayoutColumn) => {
+  if ((a.position ?? 0) < (b.position ?? 0)) {
+    return -1;
+  }
+
+  if ((a.position ?? 0) > (b.position ?? 0)) {
+    return 1;
+  }
+
+  return 0;
+}
+
+function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
+    mode: 'entity' | 'detail',
     c: GridLayoutColumn,
+    dataMember: string|undefined,
     editMode: 'row' | 'instant',
     lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
     lookupParams: Record<string, unknown>
   ) {
-    let type = c.type;
 
-    if (editMode === 'instant' && c.editable && type !== 'popup') {
-      type = 'dynamic';
-    }
+  const columnConfigurationRegistry = inject(COLUMNCONFIGURATION_REGISTRY);
 
-    switch (type) {
-      case 'bool':
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          dataType: 'boolean',
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-      case 'number':
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          dataType: 'number',
-          format: c.precision
-            ? { type: 'fixedPoint', precision: c.precision }
-            : null,
-          editorOptions: { showSpinButtons: true },
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-      case 'date':
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          dataType: 'date',
-          format: t('format.date'),
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-      case 'datetime':
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          dataType: 'datetime',
-          format: t('format.datetime'),
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-      case 'lookup':
-      case 'pickvalue': {
-        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
+  let type = c.type;
 
-        if (c.lookup) {
-          lookupDelegateBuilder.forIdentifier(c.lookup);
-        }
-
-        if (c.lookupParam) {
-          lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
-        }
-
-        const lookup = lookupDelegateBuilder.build();
-
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          editorOptions: {
-            showClearButton: true,
-          },
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-          lookup: {
-            dataSource: lookup.dataSource?.store(),
-            displayExpr: lookup?.displayExpr,
-            valueExpr: lookup?.valueExpr,
-          },
-        } as ColumnType;
-      }
-      case 'multilookup': {
-        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
-
-        if (c.lookup) {
-          lookupDelegateBuilder.forIdentifier(c.lookup);
-        }
-
-        if (c.lookupParam) {
-          lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
-        }
-
-        const lookup = lookupDelegateBuilder.build();
-
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          lookup: {
-            dataSource: lookup.dataSource?.store(),
-            displayExpr: lookup.displayExpr,
-            valueExpr: lookup.valueExpr,
-          },
-          editorOptions: c,
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-          cellTemplate: editMode === 'instant' && c.editable ? 'staticedit' : (cellElement: DxElement, cellInfo: DataGridColumnCellTemplateData | TreeListColumnCellTemplateData) => {
-            const noBreakSpace = '\u00A0';
-            const cellLookup = cellInfo.column?.lookup;
-
-            const displayValues = (cellInfo.value || []).map(
-              (id: string) => cellLookup?.calculateCellValue ? cellLookup.calculateCellValue(id) : id,
-            );
-            const text = displayValues.join(', ');
-
-            cellElement.textContent = text || noBreakSpace;
-            cellElement.title = text;
-          },
-          editCellTemplate: 'dynamic',
-        } as ColumnType;
-      }
-      case 'staticlookup': {
-        const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
-
-        if (c.items) {
-          lookupDelegateBuilder.forStaticItems(c.items);
-        } else if (c.lookupMember) {
-          lookupDelegateBuilder.forItemsFromMember(c.lookupMember, (member) => get(lookupParams, member) as Array<Record<string, unknown>>);
-        }
-
-        lookupDelegateBuilder.withValueExpr(c.valueExpr ?? 'Value');
-        lookupDelegateBuilder.withDisplayExpr(c.displayExpr ?? 'Text');
-
-        const lookup = lookupDelegateBuilder.build();
-
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          lookup: {
-            dataSource: lookup.dataSource?.store(),
-            displayExpr: lookup.displayExpr,
-            valueExpr: lookup.valueExpr,
-          },
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-      }
-      case 'staticmultilookup': {
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: (editMode === 'row' && c.editable) ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          editorOptions: c,
-          editCellTemplate: 'dynamic',
-          showEditorAlways: true
-        } as ColumnType;
-      }
-      case 'dynamic': {
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          editorOptions: c,
-          editCellTemplate: 'dynamic',
-          showEditorAlways: true
-        } as ColumnType;
-      }
-      case 'popup': {
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          editorOptions: c,
-          cellTemplate: 'dynamic',
-        } as ColumnType;
-      }
-      case 'text':
-      default:
-        return {
-          dataField: c.dataMember,
-          caption: c.caption,
-          width: c.width,
-          fixed: !!c.fixedPosition,
-          fixedPosition: c.fixedPosition,
-          allowEditing: c.editable ?? false,
-          visible: c.visible ?? true,
-          sortOrder: c.sorting,
-          validationRules: c.required ? [
-            {
-              type: 'required',
-              message: t('validation.messages.required', { label: c.caption })
-            } as RequiredRule
-          ] : [],
-        } as ColumnType;
-    }
+  if (editMode === 'instant' && c.editable && type !== 'popup') {
+    type = 'dynamic';
   }
 
-export function createColumnConfiguration<
-  ColumnType extends TreeListColumn | DataGridColumn
->(
-  t: (id: string, param?: Record<string, unknown>) => string,
+  return mode === 'detail' && dataMember
+    ? columnConfigurationRegistry.resolveDetailColumnConfiguration<ColumnType>(type, c, dataMember, lookups, lookupParams)
+    : columnConfigurationRegistry.resolveEntityColumnConfiguration<ColumnType>(type, c, lookups, lookupParams);
+}
+
+export const createColumnConfigurationForEntity = <ColumnType extends TreeListColumn | DataGridColumn>(
   columns: Array<GridLayoutColumn>,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  lookups: Record<string, LookupElementType>,
   lookupParams: Record<string, unknown>,
-  mode: 'small' | 'medium' | 'large' | 'detail',
+  mode: 'small' | 'medium' | 'large',
   editMode: 'row' | 'instant',
-  onButtonClick?: (
+  onButtonClick: (
     button: OptionButtons,
     data: CrudItem,
     target: Element
   ) => void,
-  onButtonAllowed?: (button: OptionButtons, data: CrudItem) => boolean,
-  onRowValidating?: (e: ValidationCallbackData) => Observable<string|undefined>
-): Array<ColumnType> {
+  onButtonAllowed: (button: OptionButtons, data: CrudItem) => boolean
+) => {
+  const t = inject(TRANSLATOR);
+
   const gridColumns =
     cloneDeep(columns ?? [])
-      .sort((a, b) => ((a.position ?? 0) < (b.position ?? 0) ? -1 : (a.position ?? 0) > (b.position ?? 0) ? 1 : 0))
-      .map(c => createColumn<ColumnType>(t, c, editMode, lookups, lookupParams)) ?? [];
+      .sort(columnPositionComparer)
+      .map(c => createColumn<ColumnType>('entity', c, undefined, editMode, lookups, lookupParams)) ?? [];
 
   switch (mode) {
     case 'small':
     case 'medium':
-      if (onButtonClick && onButtonAllowed) {
-        gridColumns.push({
-          type: 'buttons',
-          width: '40px',
-          buttons: [
-            {
-              hint: t('datacontainer.actions.options'),
-              icon: 'bi bi-three-dots-vertical',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'options',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'options',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-          ],
-        } as ColumnType);
-      }
+      gridColumns.push({
+        type: 'buttons',
+        width: '40px',
+        buttons: [
+          {
+            hint: t('datacontainer.actions.options'),
+            icon: 'bi bi-three-dots-vertical',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'options',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'options',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton
+        ],
+      } as ColumnType);
       break;
     case 'large':
-      if (onButtonClick && onButtonAllowed) {
-        gridColumns.push({
-          type: 'buttons',
-          buttons: [
-            {
-              hint: t('datacontainer.actions.show'),
-              icon: 'bi bi-eye-fill',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'view',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'view',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-            {
-              hint: t('datacontainer.actions.edit'),
-              icon: 'bi bi-pencil-fill',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'edit',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'edit',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-            {
-              hint: t('datacontainer.actions.remove'),
-              icon: 'bi bi-trash-fill',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'delete',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'delete',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-            {
-              hint: t('datacontainer.actions.print'),
-              icon: 'bi bi-printer-fill',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'print',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'print',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-            {
-              hint: t('datacontainer.actions.options'),
-              icon: 'bi bi-three-dots-vertical',
-              onClick: (e: any) =>
-                onButtonClick(
-                  'customoptions',
-                  e.row.data ?? e.row.node.data,
-                  (e.event as dxEvent).currentTarget
-                ),
-              visible: (options: any) =>
-                onButtonAllowed(
-                  'customoptions',
-                  options.row.data ?? options.row.node.data
-                ),
-            },
-          ],
-        } as ColumnType);
-      }
-      break;
-    case 'detail':
-      if (onRowValidating) {
-        gridColumns.push({
-          visible: false,
-          validationRules: [
-            {
-              type: 'async',
-              validationCallback: async (e) => {
-                const message = await firstValueFrom(onRowValidating(e));
-
-                if (message) {
-                  e.rule.message = message;
-                  return false;
-                }
-
-                return true;
-              }
-            } as AsyncRule
-          ]
-        } as ColumnType)
-      }
+      gridColumns.push({
+        type: 'buttons',
+        buttons: [
+          {
+            hint: t('datacontainer.actions.show'),
+            icon: 'bi bi-eye-fill',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'view',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'view',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton,
+          {
+            hint: t('datacontainer.actions.edit'),
+            icon: 'bi bi-pencil-fill',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'edit',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'edit',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton,
+          {
+            hint: t('datacontainer.actions.remove'),
+            icon: 'bi bi-trash-fill',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'delete',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'delete',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton,
+          {
+            hint: t('datacontainer.actions.print'),
+            icon: 'bi bi-printer-fill',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'print',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'print',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton,
+          {
+            hint: t('datacontainer.actions.options'),
+            icon: 'bi bi-three-dots-vertical',
+            onClick: (e: ButtonClickEvent) =>
+              onButtonClick(
+                'customoptions',
+                e.row?.data ?? e.row?.node?.data as CrudItem,
+                e.event?.currentTarget as Element
+              ),
+            visible: (options: ButtonVisibleOptions) =>
+              onButtonAllowed(
+                'customoptions',
+                options.row?.data ?? options.row?.node?.data as CrudItem
+              ),
+          } as DataGridColumnButton | TreeListColumnButton,
+        ],
+      } as ColumnType);
       break;
   }
+
+  return gridColumns;
+}
+
+export const createColumnConfigurationForDetail = <ColumnType extends TreeListColumn | DataGridColumn>(
+  columns: Array<GridLayoutColumn>,
+  dataMember: string,
+  lookups: Record<string, LookupElementType>,
+  lookupParams: Record<string, unknown>,
+  editMode: 'row' | 'instant',
+  onRowValidating: (e: ValidationCallbackData) => Observable<string|undefined>
+) => {
+
+  const gridColumns =
+    cloneDeep(columns ?? [])
+      .sort(columnPositionComparer)
+      .map(c => createColumn<ColumnType>('detail', c, dataMember, editMode, lookups, lookupParams)) ?? [];
+
+  gridColumns.push({
+    visible: false,
+    validationRules: [
+      {
+        type: 'async',
+        validationCallback: async (e) => {
+          const message = await firstValueFrom(onRowValidating(e));
+
+          if (message) {
+            e.rule.message = message;
+            return false;
+          }
+
+          return true;
+        }
+      } as AsyncRule
+    ]
+  } as ColumnType);
 
   return gridColumns;
 }

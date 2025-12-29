@@ -1,4 +1,4 @@
-import { DestroyRef, Directive, Inject, OnInit } from '@angular/core';
+import { DestroyRef, Directive, Inject, Injector, OnInit, runInInjectionContext } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EDIT_SERVICE, EditItemRef, EditService, LOOKUP_SERVICE, LookupService, Translator, TRANSLATOR } from "@ballware/meta-services";
 import { EditItemLivecycle, Readonly, UnknownArrayValue } from "@ballware/renderer-commons";
@@ -9,7 +9,7 @@ import { Column as DataGridColumn, DataChange as DataGridDataChange, EditorPrepa
 import { Item as ToolbarItem } from "devextreme/ui/toolbar";
 import { Column as TreeListColumn, DataChange as TreeListDataChange, EditorPreparingEvent as TreeListEditorPreparingEvent, InitNewRowEvent as TreeListInitNewRowEvent, RowClickEvent as TreelistRowClickEvent, ToolbarPreparingEvent as TreeListToolbarPreparingEvent } from "devextreme/ui/tree_list";
 import { combineLatest, Observable, of } from 'rxjs';
-import { createColumnConfiguration } from "../utils";
+import { createColumnConfigurationForDetail } from "../utils";
 
 type ColumnType = DataGridColumn | TreeListColumn;
 
@@ -84,6 +84,7 @@ export class DetailCollectionEditing implements OnInit {
     public detailEditorEvent: ((dataMember: string, detailItemIndex: number, detailItem: Record<string, unknown>, identifier: string, event: string) => void)|undefined;
 
     constructor(
+        private readonly injector: Injector,
         @Inject(TRANSLATOR) private readonly translator: Translator,
         @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
         @Inject(EDIT_SERVICE) private readonly editService: EditService,
@@ -149,17 +150,18 @@ export class DetailCollectionEditing implements OnInit {
                     this.detailEditorValueChanged = (dataMember, detailItemIndex, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItemIndex, detailItem, identifier, value, notify });
                     this.detailEditorEvent = (dataMember, detailItemIndex, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItemIndex, detailItem, identifier, event });
 
-                    this.columns = createColumnConfiguration<ColumnType>(
-                        (key, options) => this.translator(key, options),
-                        this.options.columns,
-                        lookups,
-                        item,
-                        'detail',
-                        this.options.editMode ?? 'row',
-                        undefined,
-                        undefined,
-                        this.onDetailRowValidating
-                    );
+                    runInInjectionContext(this.injector, () => {
+                      if (this.options && this.dataMember) {
+                        this.columns = createColumnConfigurationForDetail<ColumnType>(
+                          this.options.columns,
+                          this.dataMember,
+                          lookups,
+                          item,
+                          this.options.editMode ?? 'row',
+                          this.onDetailRowValidating
+                        );
+                      }
+                    });
                 }
         });
     }

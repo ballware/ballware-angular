@@ -1,6 +1,14 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutItemOptions } from '@ballware/meta-model';
-import { EDIT_SERVICE, LOOKUP_SERVICE, LookupDescriptor, TRANSLATOR } from '@ballware/meta-services';
+import {
+  AutocompleteCreator,
+  EDIT_SERVICE,
+  LOOKUP_SERVICE,
+  LookupCreator,
+  LookupDescriptor,
+  PickvalueCreator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import { applicationConfig, Meta, moduleMetadata, StoryObj } from '@storybook/angular';
 import { provideI18Next } from 'angular-i18next';
 import { BehaviorSubject, of } from 'rxjs';
@@ -11,6 +19,9 @@ import { createSimpleTranslator } from '@storybook-helpers/translator.mock';
 import { DetailCollectionEditingOptions } from '../../../directives';
 import { I18N_PROVIDERS } from '../../../i18n/i18n';
 import { EditLayoutDetailDataGridComponent } from './editdetaildatagrid.component';
+import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../../utils';
+import { provideDefaultItemRegistries } from '../../../registries';
+import { provideDefaultColumnConfigurations } from '../../index';
 
 const meta: Meta<EditLayoutDetailDataGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',
@@ -21,6 +32,8 @@ const meta: Meta<EditLayoutDetailDataGridComponent> = {
       providers: [
         provideAnimations(),
         provideI18Next(),
+        provideDefaultItemRegistries(),
+        provideDefaultColumnConfigurations(),
         I18N_PROVIDERS,
         {
           provide: TRANSLATOR,
@@ -33,6 +46,10 @@ const meta: Meta<EditLayoutDetailDataGridComponent> = {
         {
           provide: EDIT_SERVICE,
           useFactory: () => createMockedEditService().service
+        },
+        {
+          provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
+          useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
         }
       ],
     }),
@@ -563,7 +580,7 @@ export const RowEditing: Story = {
           }
         )
       },
-      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
       applicationConfig: {
       providers: [
         {
@@ -655,7 +672,7 @@ export const RowEditingGlobalReadonly: Story = {
           }
         )
       },
-      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
       applicationConfig: {
       providers: [
         {
@@ -746,7 +763,7 @@ export const InstantEditing: Story = {
           }
         )
       },
-      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
       applicationConfig: {
       providers: [
         {
@@ -838,7 +855,7 @@ export const InstantEditingGlobalReadonly: Story = {
           }
         )
       },
-      template: `<ballware-edit-detailgrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detailgrid>`,
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
       applicationConfig: {
       providers: [
         {

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Provider } from '@angular/core';
 import { EditLayoutDetailDataGridComponent } from './editdetaildatagrid.component';
 import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
@@ -7,6 +7,8 @@ import { mockedEditServiceContext } from '../../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
 import { BehaviorSubject } from 'rxjs';
 import { provideI18Next } from 'angular-i18next';
+import { provideDefaultItemRegistries } from '../../../registries';
+import { provideDefaultColumnConfigurations } from '../../index';
 
 describe('EditLayoutDetailDataGridComponent', () => {
   let component: EditLayoutDetailDataGridComponent;
@@ -33,6 +35,8 @@ describe('EditLayoutDetailDataGridComponent', () => {
           provide: TRANSLATOR,
           useValue: mockedTranslator
         },
+        provideDefaultItemRegistries(),
+        provideDefaultColumnConfigurations(),
         {
           provide: EDIT_SERVICE,
           useFactory: () => mockedEditService.mock.object()
@@ -45,10 +49,11 @@ describe('EditLayoutDetailDataGridComponent', () => {
     }).compileComponents();
   });
 
-  it('should create', () => {
+  it('should create', fakeAsync(() => {
     fixture = TestBed.createComponent(EditLayoutDetailDataGridComponent);
 
     const layoutItem = {
+      type: 'detailgrid',
       options: {
         dataMember: 'detailItems',
         itemoptions: {
@@ -71,9 +76,11 @@ describe('EditLayoutDetailDataGridComponent', () => {
 
     fixture.componentRef.setInput('initialLayoutItem', layoutItem);
     fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
 
     expect(fixture).toMatchSnapshot();
-  });
+  }));
 
   it('should initialize with columns', () => {
     fixture = TestBed.createComponent(EditLayoutDetailDataGridComponent);

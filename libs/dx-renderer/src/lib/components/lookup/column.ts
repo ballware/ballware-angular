@@ -15,6 +15,7 @@ import { inject } from '@angular/core';
 
 export const createLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
+  dataMember: string|undefined,
   lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
   lookupParams: Record<string, unknown>
 ) => {

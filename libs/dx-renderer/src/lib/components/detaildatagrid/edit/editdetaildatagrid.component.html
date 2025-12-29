@@ -18,9 +18,6 @@
         [(editRowKey)]="editing.gridEditRowKey"
         [(changes)]="editing.gridEditChanges">
     </dxo-editing>
-    <div *dxTemplate="let cellInfo of 'dynamic'">
-        <ballware-detail-dynamic-column [item]="editing.lookupParams ?? {}" [dataMember]="(value.dataMember$ | async) ?? ''" [cell]="cellInfo"></ballware-detail-dynamic-column>
-    </div>
 </dx-data-grid>
 <dx-validator [adapter]="editing.validationAdapterConfig">
     <dxi-validation-rule type="custom" [validationCallback]="onGridValidateNotEditing" [message]="'datacontainer.messages.validationfailure' | i18next"></dxi-validation-rule>
