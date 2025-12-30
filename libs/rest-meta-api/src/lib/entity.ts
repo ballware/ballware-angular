@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
-import { parse } from 'json5/lib';
+import JSON5 from 'json5';
 
 import { CompiledEntityMetadata, EditLayout, GridLayout, Template } from '@ballware/meta-model';
 import { compileDetailGridCellPreparing, compileDetailGridRowValidating, compileEditorEntered, compileEditorEvent, compileEditorInitialized, compileEditorPreparing, compileEditorValidating, compileEditorValueChanged, compileEvaluateCustomFunction, compileInitNewDetailItem, compileInteractionKeyboardLine, compileItemMapping, compilePrepareCustomFunction, compilePrepareCustomParam, compilePrepareEditLayout, compilePrepareGridLayout, compilePrepareMaterializedEditItem, compileRightsCheckFunc, compileRightsParamForHead, compileRightsParamForItem } from '@ballware/meta-scripting';
@@ -58,7 +58,7 @@ export const compileEntityMetadata = (
     stateColumn: metaData.StateColumn,
   } as CompiledEntityMetadata;
 
-  const customScripts = metaData.CustomScripts ? parse(
+  const customScripts = metaData.CustomScripts ? JSON5.parse(
     metaData.CustomScripts
   ) as EntityCustomScripts : {} as EntityCustomScripts;
 
@@ -66,34 +66,34 @@ export const compileEntityMetadata = (
   compiledMetaData.itemReverseMappingScript = compileItemMapping(metaData.ItemReverseMappingScript, customScripts.commonUtils);
 
   if (metaData.GridLayout) {
-    compiledMetaData.gridLayouts = parse(metaData.GridLayout) as Array<
+    compiledMetaData.gridLayouts = JSON5.parse(metaData.GridLayout) as Array<
       GridLayout
     >;
   }
 
   if (metaData.EditLayout) {
-    compiledMetaData.editLayouts = parse(metaData.EditLayout) as Array<
+    compiledMetaData.editLayouts = JSON5.parse(metaData.EditLayout) as Array<
       EditLayout
     >;
   }
 
   if (metaData.Lookups) {
-    compiledMetaData.lookups = parse(metaData.Lookups);
+    compiledMetaData.lookups = JSON5.parse(metaData.Lookups);
   }
 
   if (metaData.Picklists) {
-    compiledMetaData.picklists = parse(metaData.Picklists);
+    compiledMetaData.picklists = JSON5.parse(metaData.Picklists);
   }
 
   if (metaData.Templates) {
-    compiledMetaData.templates = (parse(metaData.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+    compiledMetaData.templates = (JSON5.parse(metaData.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
       identifier: t.identifier,
-      definition: parse(t.definition)
+      definition: JSON5.parse(t.definition)
     } as Template));
   }
 
   if (metaData.CustomFunctions) {
-    compiledMetaData.customFunctions = parse(metaData.CustomFunctions);
+    compiledMetaData.customFunctions = JSON5.parse(metaData.CustomFunctions);
   }
 
   compiledMetaData.compiledCustomScripts = {

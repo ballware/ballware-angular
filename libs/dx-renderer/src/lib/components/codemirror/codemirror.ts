@@ -9,7 +9,7 @@ import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
 import { json5, json5Language, json5ParseLinter } from 'codemirror-json5';
 import { js_beautify } from "js-beautify";
-import { parse, stringify } from "json5";
+import JSON5 from "json5";
 import { CodeMirrorEditorOptions } from './options';
 import { ValueType } from '@ballware/meta-model';
 
@@ -55,7 +55,7 @@ export function initialize(targetElement: Element, mode: 'json' | 'javascript' |
           keymap.of([indentWithTab]),
           EditorView.updateListener.of((e) => {
             if (e.docChanged) {
-                valueChanged(jsonStructuredMode ? parse(e.state.doc.toString()) : e.state.doc.toString());
+                valueChanged(jsonStructuredMode ? JSON5.parse(e.state.doc.toString()) : e.state.doc.toString());
             }
           })
         );
@@ -63,7 +63,7 @@ export function initialize(targetElement: Element, mode: 'json' | 'javascript' |
 
     const state = EditorState.create({
         extensions: extensions,
-        doc: (jsonStructuredMode ? js_beautify(stringify(value)) : value as string) ?? ""
+        doc: (jsonStructuredMode ? js_beautify(JSON5.stringify(value)) : value as string) ?? ""
     });
 
     new EditorView({ parent: targetElement, state }); // NOSONAR S1848

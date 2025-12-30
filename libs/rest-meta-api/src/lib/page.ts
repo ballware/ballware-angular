@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
-import { parse } from 'json5/lib';
+import JSON5 from 'json5';
 
 import { CompiledPageData } from '@ballware/meta-model';
 import { compilePrepareCustomParam, compileParamsInitialized, compileParamEditorInitialized, compileParamEditorValueChanged, compileParamEditorEvent } from '@ballware/meta-scripting';
@@ -28,11 +28,11 @@ export const compilePage = (pageData: PageData): CompiledPageData => {
   const compiledPageData = {
     identifier: pageData.Identifier,
     name: pageData.Name,
-    lookups: pageData.Lookups ? parse(pageData.Lookups) : [],
-    layout: pageData.Layout ? parse(pageData.Layout) : {},
+    lookups: pageData.Lookups ? JSON5.parse(pageData.Lookups) : [],
+    layout: pageData.Layout ? JSON5.parse(pageData.Layout) : {},
   } as CompiledPageData;
 
-  const customScripts = parse(
+  const customScripts = JSON5.parse(
     pageData.CustomScripts ?? '{}'
   ) as PageCustomScripts;
 
