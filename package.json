@@ -7,7 +7,8 @@
     "postinstall": "node ./decorate-angular-cli.js",
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx run-many --target test --junit --coverage --coverageReporters=lcov"
+    "test": "nx run-many --target test --junit --coverage --coverageReporters=lcov",
+    "serve-ssr": "node --max-old-space-size=8192 node_modules/nx/bin/nx serve-ssr"
   },
   "private": true,
   "dependencies": {
