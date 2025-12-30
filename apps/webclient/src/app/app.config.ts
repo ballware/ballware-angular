@@ -21,10 +21,6 @@ declare let window :any;
 
 export const appConfig: ApplicationConfig = {
     providers: [
-        {
-          provide: LOCALE_ID,
-          useFactory: () => navigator.language || 'de'
-        },
         importProvidersFrom(LayoutModule),
         provideHttpClient(withInterceptors([BearerTokenInterceptor]), withFetch()),
         provideStore(routerReducer),

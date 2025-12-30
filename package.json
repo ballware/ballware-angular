@@ -53,6 +53,7 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "i18next": "24.2.3",
+    "i18next-browser-languagedetector": "^8.2.0",
     "js-beautify": "^1.15.4",
     "json5": "^2.2.3",
     "lodash": "^4.17.21",

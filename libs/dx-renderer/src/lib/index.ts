@@ -2,7 +2,7 @@ import {
   EnvironmentProviders,
   inject,
   Injectable, LOCALE_ID,
-  makeEnvironmentProviders
+  makeEnvironmentProviders, provideAppInitializer
 } from '@angular/core';
 import { provideI18Next } from 'angular-i18next';
 
@@ -46,15 +46,6 @@ export interface DxRenderFactoryConfig {
 
 export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig): EnvironmentProviders {
 
-  const locale_id = inject(LOCALE_ID);
-
-  loadMessages(deMessages);
-  locale(locale_id);
-
-  moment.locale(
-    locale_id
-  );
-
   globalConfig(
     {
       licenseKey: config.licenseKey,
@@ -65,6 +56,16 @@ export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig):
   return makeEnvironmentProviders([
     provideI18Next(),
     I18N_PROVIDERS,
+    provideAppInitializer(() => {
+      const locale_id = inject(LOCALE_ID);
+
+      loadMessages(deMessages);
+      locale(locale_id);
+
+      moment.locale(
+        locale_id
+      );
+    }),
     provideDefaultItemRegistries(),
     provideDefaultPageItems(),
     provideDefaultEditItems(),

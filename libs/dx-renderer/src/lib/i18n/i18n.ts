@@ -1,16 +1,17 @@
-import { LOCALE_ID, provideAppInitializer, Provider, inject } from '@angular/core';
-import { I18NEXT_SERVICE, ITranslationService, interpolationFormat, defaultInterpolationFormat } from 'angular-i18next';
+import { LOCALE_ID, provideAppInitializer, Provider, inject, EnvironmentProviders } from '@angular/core';
+import { I18NEXT_SERVICE, interpolationFormat, defaultInterpolationFormat, ITranslationService } from 'angular-i18next';
 import { ResourceLanguage } from 'i18next';
 import * as languageDe from './de/translate.json';
 import * as languageEn from './en/translate.json';
+import I18nextBrowserLanguageDetector from 'i18next-browser-languagedetector';
 
 function appInit() {
-  const localeId = inject(LOCALE_ID);
   const i18next = inject(I18NEXT_SERVICE);
 
-  return i18next.init({
+  return i18next
+    .use(I18nextBrowserLanguageDetector)
+    .init({
       supportedLngs: ['en', 'de'],
-      lng: localeId,
       fallbackLng: 'en',
       resources: {
         en: languageEn as ResourceLanguage,
@@ -28,16 +29,14 @@ function appInit() {
     });
 }
 
-function localeIdFactory(i18next: ITranslationService)  {
-  return i18next.language;
-}
-
 export const I18N_PROVIDERS = [
   provideAppInitializer(appInit),
   {
     provide: LOCALE_ID,
-    deps: [I18NEXT_SERVICE],
-    useFactory: localeIdFactory
-  } as Provider
-] as Provider[];
+    useFactory: (i18next: ITranslationService) => {
+      return i18next.language;
+    },
+    deps: [I18NEXT_SERVICE]
+  }
+] as EnvironmentProviders[];
 
