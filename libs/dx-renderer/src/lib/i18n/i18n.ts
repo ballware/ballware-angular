@@ -5,11 +5,12 @@ import * as languageDe from './de/translate.json';
 import * as languageEn from './en/translate.json';
 
 function appInit() {
-  const i18next = inject(I18NEXT_SERVICE)
+  const localeId = inject(LOCALE_ID);
+  const i18next = inject(I18NEXT_SERVICE);
 
   return i18next.init({
       supportedLngs: ['en', 'de'],
-      lng: navigator.language,
+      lng: localeId,
       fallbackLng: 'en',
       resources: {
         en: languageEn as ResourceLanguage,

@@ -1,11 +1,11 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID } from '@angular/core';
 
 import { provideNgrxMetaServices, provideNgrxOidcIdentityService } from '@ballware/ngrx-meta-services';
 import { provideStore } from '@ngrx/store';
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideIdentityKeycloakRestApi, provideMetaBackendRestApi, provideGenericBackendRestApi, provideDocumentBackendRestApi } from '@ballware/rest-meta-api';
 import { provideDxRenderFactoryComponents, provideDxRenderFactoryRoutes } from '@ballware/dx-renderer';
@@ -21,8 +21,12 @@ declare let window :any;
 
 export const appConfig: ApplicationConfig = {
     providers: [
+        {
+          provide: LOCALE_ID,
+          useFactory: () => navigator.language || 'de'
+        },
         importProvidersFrom(LayoutModule),
-        provideHttpClient(withInterceptors([BearerTokenInterceptor])),
+        provideHttpClient(withInterceptors([BearerTokenInterceptor]), withFetch()),
         provideStore(routerReducer),
         provideRouterStore(),
         provideEffects(),

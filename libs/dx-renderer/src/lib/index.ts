@@ -1,7 +1,8 @@
 import {
   EnvironmentProviders,
-  Injectable,
-  makeEnvironmentProviders,
+  inject,
+  Injectable, LOCALE_ID,
+  makeEnvironmentProviders
 } from '@angular/core';
 import { provideI18Next } from 'angular-i18next';
 
@@ -45,11 +46,13 @@ export interface DxRenderFactoryConfig {
 
 export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig): EnvironmentProviders {
 
+  const locale_id = inject(LOCALE_ID);
+
   loadMessages(deMessages);
-  locale(navigator.language);
+  locale(locale_id);
 
   moment.locale(
-    navigator.languages ? navigator.languages[0] : navigator.language
+    locale_id
   );
 
   globalConfig(
