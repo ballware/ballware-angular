@@ -1,10 +1,12 @@
-import { mergeApplicationConfig, ApplicationConfig, LOCALE_ID, REQUEST } from '@angular/core';
+import { mergeApplicationConfig, ApplicationConfig, LOCALE_ID, REQUEST, importProvidersFrom } from '@angular/core';
 import { provideServerRendering } from '@angular/platform-server';
 import { sharedConfig } from './app.config';
 import { ENV } from './env';
+import { DxServerModule } from 'devextreme-angular/server';
+import pkg from '../../package.json';
 
 const runtimeEnv = {
-  BALLWARE_VERSION: process.env['BALLWARE_VERSION'],
+  BALLWARE_VERSION: pkg.version,
   BALLWARE_BASEURL: process.env['BALLWARE_BASEURL'],
   BALLWARE_IDENTITYURL: process.env['BALLWARE_IDENTITYURL'],
   BALLWARE_METAURL: process.env['BALLWARE_METAURL'],
@@ -36,10 +38,11 @@ const serverConfig: ApplicationConfig = {
     {
       provide: LOCALE_ID,
       useFactory: (req: Request) =>
-        req.headers.get('accept-language')?.split(',')[0] ?? 'de',
+        req?.headers.get('accept-language')?.split(',')[0] ?? 'de',
       deps: [REQUEST]
     },
-    provideServerRendering()
+    provideServerRendering(),
+    importProvidersFrom(DxServerModule)
   ]
 };
 export const config = mergeApplicationConfig(sharedConfig, serverConfig);
