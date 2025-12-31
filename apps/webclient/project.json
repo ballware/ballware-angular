@@ -132,7 +132,8 @@
         "outputPath": "dist/webclient/server",
         "main": "apps/webclient/src/ssr.server.ts",
         "tsConfig": "apps/webclient/tsconfig.server.json",
-        "inlineStyleLanguage": "scss"
+        "inlineStyleLanguage": "scss",
+        "indexTransform": "apps/webclient/index-html-transform.ts"
       },
       "configurations": {
         "production": {
@@ -179,16 +180,12 @@
           "browserTarget": "webclient:build:development",
           "serverTarget": "webclient:server:development"
         },
-        "onprem": {
-          "browserTarget": "webclient:build:onprem",
-          "serverTarget": "webclient:server:onprem"
-        },
         "production": {
           "browserTarget": "webclient:build:production",
           "serverTarget": "webclient:server:production"
         }
       },
-      "defaultConfiguration": "onprem",
+      "defaultConfiguration": "development",
       "continuous": true
     },
     "collect-vars": {

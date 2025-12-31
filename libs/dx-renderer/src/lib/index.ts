@@ -1,7 +1,7 @@
 import {
   EnvironmentProviders,
   inject,
-  Injectable, LOCALE_ID,
+  Injectable, InjectionToken, LOCALE_ID,
   makeEnvironmentProviders, provideAppInitializer
 } from '@angular/core';
 import { provideI18Next } from 'angular-i18next';
@@ -44,20 +44,23 @@ export interface DxRenderFactoryConfig {
   licenseKey: string
 }
 
-export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig): EnvironmentProviders {
+export const DX_RENDERFACTORY_CONFIG = new InjectionToken<DxRenderFactoryConfig>('DxRenderFactoryConfig');
 
-  globalConfig(
-    {
-      licenseKey: config.licenseKey,
-      editorStylingMode: 'underlined'
-    }
-  );
+export function provideDxRenderFactoryComponents(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     provideI18Next(),
     I18N_PROVIDERS,
     provideAppInitializer(() => {
+      const config = inject(DX_RENDERFACTORY_CONFIG);
       const locale_id = inject(LOCALE_ID);
+
+      globalConfig(
+        {
+          licenseKey: config.licenseKey,
+          editorStylingMode: 'underlined'
+        }
+      );
 
       loadMessages(deMessages);
       locale(locale_id);
