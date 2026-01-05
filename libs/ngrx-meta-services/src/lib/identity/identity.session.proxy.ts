@@ -1,21 +1,26 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
-import { identityInitializeOidc, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
+import {
+  identityUserLogin,
+} from './identity.actions';
 import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
-import { OidcIdentityConfig } from '@ballware/ngrx-meta-services';
+import { IdentitySessionApi } from '@ballware/meta-api';
 
-export class IdentityOidcServiceProxy implements IdentityService {
+export class IdentitySessionServiceProxy implements IdentityService {
 
-    constructor(private readonly store: Store, config: OidcIdentityConfig) {
-      this.store.dispatch(identityInitializeOidc({
-        issuer: config.issuer,
-        client: config.client,
-        scopes: config.scopes,
-        tenantClaim: config.tenantClaim,
-        usernameClaim: config.usernameClaim,
-        profileUrl: config.profileUrl,
-        accessTokenAutoRefresh: config.accessTokenAutoRefresh
-      }));
+    constructor(private readonly store: Store, private readonly sessionApi: IdentitySessionApi) {
+
+      sessionApi.current().subscribe((session) => {
+        this.store.dispatch(identityUserLogin({
+          idToken: 'static-user-id-token',
+          refreshToken: 'static-user-refresh-token',
+          accessToken: 'static-user-access-token',
+          accessTokenExpiration: new Date(Date.now() + session.expiration),
+          currentUser: session.user,
+          tenant: session.tenant,
+          userName: session.userName
+        }));
+      });
     }
 
     public readonly profileUrl$ = this.store.select(selectProfileUrl);
@@ -58,22 +63,22 @@ export class IdentityOidcServiceProxy implements IdentityService {
     }
 
     public refreshToken() {
-        this.store.dispatch(identityRefreshToken());
+        // noop
     }
 
     public manageProfile() {
-        this.store.dispatch(identityManageProfile());
+        // noop
     }
 
     public logout() {
-        this.store.dispatch(identityUserLogout());
+        // noop
     }
 
     public expired() {
-        this.store.dispatch(identityUserExpired());
+        // noop
     }
 
     public switchTenant(tenant: string): void {
-        this.store.dispatch(identitySwitchTenant({ tenant }));
+        // noop
     }
 }

@@ -1,6 +1,24 @@
 import { HttpClient } from "@angular/common/http";
 import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
-import { GENERIC_ENTITY_API_FACTORY, IDENTITY_ROLE_API, IDENTITY_USER_API, META_ATTACHMENT_API_FACTORY, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_LOOKUP_API, META_MLMODEL_API, META_NOTIFICATION_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, META_SUBSCRIPTION_API, META_TENANT_API } from "@ballware/meta-api";
+import {
+  GENERIC_ENTITY_API_FACTORY,
+  IDENTITY_ROLE_API,
+  IDENTITY_SESSION_API,
+  IDENTITY_USER_API,
+  META_ATTACHMENT_API_FACTORY,
+  META_DOCUMENT_API,
+  META_DOCUMENTATION_API,
+  META_ENTITY_API,
+  META_LOOKUP_API,
+  META_MLMODEL_API,
+  META_NOTIFICATION_API,
+  META_PAGE_API,
+  META_PICKVALUE_API,
+  META_PROCESSINGSTATE_API,
+  META_STATISTIC_API,
+  META_SUBSCRIPTION_API,
+  META_TENANT_API
+} from '@ballware/meta-api';
 import { createKeycloakUserApi } from "./user";
 import { createKeycloakRoleApi } from "./role";
 import { createMetaBackendDocumentApi } from "./document";
@@ -17,6 +35,7 @@ import { createMetaBackendSubscriptionApi } from "./subscription";
 import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
+import { createSessionApi } from './session';
 
 export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
 export { PageData, PageCustomScripts, compilePage } from './page';
@@ -41,6 +60,17 @@ export function provideIdentityKeycloakRestApi(): EnvironmentProviders {
             useFactory: (client: HttpClient, config: IdentityKeycloakRestApiConfig) => createKeycloakRoleApi(client, config.serviceBaseUrl),
             deps: [ HttpClient, IDENTITY_KEYCLOAK_REST_API_CONFIG ]
         },
+    ]);
+}
+
+export function provideIdentitySessionRestApi(): EnvironmentProviders {
+  return makeEnvironmentProviders(
+    [
+      {
+        provide: IDENTITY_SESSION_API,
+        useFactory: (client: HttpClient) => createSessionApi(client),
+        deps: [ HttpClient ]
+      }
     ]);
 }
 

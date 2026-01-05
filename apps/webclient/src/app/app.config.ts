@@ -1,12 +1,10 @@
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 
-import { provideNgrxMetaServices, provideNgrxOidcIdentityService } from '@ballware/ngrx-meta-services';
+import { provideNgrxMetaServices } from '@ballware/ngrx-meta-services';
 import { provideStore } from '@ngrx/store';
 import { provideRouterStore, routerReducer } from '@ngrx/router-store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideOAuthClient } from 'angular-oauth2-oidc';
 import {
   provideIdentityKeycloakRestApi,
   provideMetaBackendRestApi,
@@ -23,7 +21,6 @@ import {
 import { provideServiceWorker } from '@angular/service-worker';
 
 import { environment } from '../environments/environment';
-import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 import { provideCommonMetaServices} from '@ballware/common-meta-services';
 import { provideRendererCommonsServices } from '@ballware/renderer-commons';
 import { LayoutModule } from '@angular/cdk/layout';
@@ -80,7 +77,6 @@ export const sharedConfig: ApplicationConfig = {
         deps: [ENV]
       },
         importProvidersFrom(LayoutModule),
-        provideHttpClient(withInterceptors([BearerTokenInterceptor]), withFetch()),
         provideStore(routerReducer),
         provideRouterStore(),
         provideEffects(),
@@ -92,7 +88,6 @@ export const sharedConfig: ApplicationConfig = {
           traceLimit: 75,
           connectInZone: true
         }),
-        provideOAuthClient(),
         provideServiceWorker('ngsw-worker.js', {
             enabled: environment.production,
             // Register the ServiceWorker as soon as the application is stable
@@ -100,7 +95,6 @@ export const sharedConfig: ApplicationConfig = {
             registrationStrategy: 'registerWhenStable:30000'
         }),
         provideCommonMetaServices(),
-        provideNgrxOidcIdentityService(),
         provideNgrxMetaServices(),
         provideRendererCommonsServices(),
         provideDxRenderFactoryComponents(),

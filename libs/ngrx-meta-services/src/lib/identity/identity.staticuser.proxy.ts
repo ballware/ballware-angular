@@ -1,7 +1,6 @@
 import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
 import {
-  identityInitializeOidc,
   identityUserLogin,
 } from './identity.actions';
 import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
@@ -57,12 +56,6 @@ export class IdentityStaticUserServiceProxy implements IdentityService {
 
     public get allowedTenants$() {
         return this.store.select(selectAllowedTenants);
-    }
-
-    public initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean) {
-        this.store.dispatch(identityInitializeOidc({
-            issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh
-        }));
     }
 
     public refreshToken() {

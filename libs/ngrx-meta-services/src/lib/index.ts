@@ -1,7 +1,41 @@
 import { HttpClient } from '@angular/common/http';
-import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
+import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
 import { Router } from '@angular/router';
-import { GENERIC_ENTITY_API_FACTORY, GenericEntityApiFactory, IDENTITY_ROLE_API, IDENTITY_USER_API, IdentityRoleApi, IdentityUserApi, META_ATTACHMENT_API_FACTORY, META_DOCUMENT_API, META_DOCUMENTATION_API, META_ENTITY_API, META_LOOKUP_API, META_MLMODEL_API, META_NOTIFICATION_API, META_PAGE_API, META_PICKVALUE_API, META_PROCESSINGSTATE_API, META_STATISTIC_API, META_SUBSCRIPTION_API, META_TENANT_API, MetaAttachmentApiFactory, MetaDocumentApi, MetaDocumentationApi, MetaEntityApi, MetaLookupApi, MetaMlModelApi, MetaNotificationApi, MetaPageApi, MetaPickvalueApi, MetaProcessingstateApi, MetaStatisticApi, MetaSubscriptionApi, MetaTenantApi } from '@ballware/meta-api';
+import {
+  GENERIC_ENTITY_API_FACTORY,
+  GenericEntityApiFactory,
+  IDENTITY_ROLE_API,
+  IDENTITY_SESSION_API,
+  IDENTITY_USER_API,
+  IdentityRoleApi, IdentitySessionApi,
+  IdentityUserApi,
+  META_ATTACHMENT_API_FACTORY,
+  META_DOCUMENT_API,
+  META_DOCUMENTATION_API,
+  META_ENTITY_API,
+  META_LOOKUP_API,
+  META_MLMODEL_API,
+  META_NOTIFICATION_API,
+  META_PAGE_API,
+  META_PICKVALUE_API,
+  META_PROCESSINGSTATE_API,
+  META_STATISTIC_API,
+  META_SUBSCRIPTION_API,
+  META_TENANT_API,
+  MetaAttachmentApiFactory,
+  MetaDocumentApi,
+  MetaDocumentationApi,
+  MetaEntityApi,
+  MetaLookupApi,
+  MetaMlModelApi,
+  MetaNotificationApi,
+  MetaPageApi,
+  MetaPickvalueApi,
+  MetaProcessingstateApi,
+  MetaStatisticApi,
+  MetaSubscriptionApi,
+  MetaTenantApi
+} from '@ballware/meta-api';
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { provideComponentFeature } from './component';
@@ -26,6 +60,19 @@ import { EditStore } from './edit/edit.store';
 import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY, IDENTITY_SERVICE, IdentityService, INTERACTION_SERVICE, InteractionService, LOOKUP_SERVICE_FACTORY, LookupService, META_SERVICE_FACTORY, MetaService, NOTIFICATION_SERVICE, NotificationService, PAGE_SERVICE_FACTORY, SCRIPT_UTIL, SETTINGS_SERVICE, STATISTIC_SERVICE_FACTORY, TENANT_SERVICE, TenantService, TOOLBAR_SERVICE, ToolbarService, Translator, TRANSLATOR } from '@ballware/meta-services';
 import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
+import { IdentitySessionServiceProxy } from './identity/identity.session.proxy';
+
+export interface OidcIdentityConfig {
+  issuer: string,
+  client: string,
+  scopes: string,
+  tenantClaim: string,
+  usernameClaim: string,
+  profileUrl: string,
+  accessTokenAutoRefresh: boolean
+}
+
+export const OIDC_IDENTITY_CONFIG = new InjectionToken<OidcIdentityConfig>('OidcIdentityConfig');
 
 export function provideNgrxOidcIdentityService(): EnvironmentProviders {
   return makeEnvironmentProviders(
@@ -34,8 +81,8 @@ export function provideNgrxOidcIdentityService(): EnvironmentProviders {
       provideIdentityOidcEffects(),
       {
         provide: IDENTITY_SERVICE,
-        useFactory: (store: Store) => new IdentityOidcServiceProxy(store),
-        deps: [ Store ]
+        useFactory: (store: Store, config: OidcIdentityConfig) => new IdentityOidcServiceProxy(store, config),
+        deps: [ Store, OIDC_IDENTITY_CONFIG ]
       },
     ]
   );
@@ -54,7 +101,18 @@ export function provideNgrxStaticUserIdentityService(user: Record<string, unknow
   );
 }
 
-
+export function provideNgrxSessionIdentityService(): EnvironmentProviders {
+  return makeEnvironmentProviders(
+    [
+      provideIdentityFeature(),
+      {
+        provide: IDENTITY_SERVICE,
+        useFactory: (store: Store, sessionApi: IdentitySessionApi) => new IdentitySessionServiceProxy(store, sessionApi),
+        deps: [ Store, IDENTITY_SESSION_API ]
+      },
+    ]
+  );
+}
 
 export function provideNgrxMetaServices(): EnvironmentProviders {
   return makeEnvironmentProviders(

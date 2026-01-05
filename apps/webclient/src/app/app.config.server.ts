@@ -4,6 +4,11 @@ import { sharedConfig } from './app.config';
 import { ENV } from './env';
 import { DxServerModule } from 'devextreme-angular/server';
 import pkg from '../../package.json';
+import { provideNgrxSessionIdentityService } from '@ballware/ngrx-meta-services';
+import { provideIdentitySessionRestApi } from '@ballware/rest-meta-api';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import { SessionCookieInterceptor } from './shared/interceptors/sessioncookie.interceptor';
+import { IncomingMessage } from 'node:http';
 
 const runtimeEnv = {
   BALLWARE_VERSION: pkg.version,
@@ -37,11 +42,20 @@ const serverConfig: ApplicationConfig = {
     },
     {
       provide: LOCALE_ID,
-      useFactory: (req: Request) =>
-        req?.headers.get('accept-language')?.split(',')[0] ?? 'de',
+      useFactory: (req: IncomingMessage) => {
+        const raw = req?.headers?.['accept-language'];
+
+        const header =
+          Array.isArray(raw) ? raw[0] : raw;
+
+        return header?.split(',')[0]?.trim() || 'de';
+      },
       deps: [REQUEST]
     },
+    provideHttpClient(withInterceptors([SessionCookieInterceptor]), withFetch()),
+    provideIdentitySessionRestApi(),
     provideServerRendering(),
+    provideNgrxSessionIdentityService(),
     importProvidersFrom(DxServerModule)
   ]
 };

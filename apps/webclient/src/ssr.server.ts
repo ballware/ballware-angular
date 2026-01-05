@@ -2,12 +2,16 @@ import {APP_BASE_HREF} from '@angular/common';
 import {CommonEngine} from '@angular/ssr/node';
 import express, { Request, Response, NextFunction, RequestHandler } from 'express';
 import session from 'express-session';
+import createMemoryStore from 'memorystore';
 import { authorizationCodeGrant, randomPKCECodeVerifier, calculatePKCECodeChallenge, randomState, buildAuthorizationUrl } from 'openid-client';
 import { getOidcConfiguration } from './auth/oidc.client';
 import { redirectUnauthenticated } from './middleware/require.auth';
 import {fileURLToPath} from 'node:url';
 import {dirname, join, resolve} from 'node:path';
 import bootstrap from './main.server';
+import { BROWSER_REQUEST } from './app/shared/interceptors/sessioncookie.interceptor';
+
+const MemoryStore = createMemoryStore(session);
 
 function getFullUrl(req: Request): URL {
   const base = process.env['BALLWARE_BASEURL'];
@@ -27,18 +31,31 @@ export function app(): express.Express {
   server.use(express.json());
 
   const sessionMiddleware: RequestHandler = session({
+    name: 'ballware.sid',
     secret: process.env['SESSION_SECRET'] || 'change-me',
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
+    store: new MemoryStore({
+      checkPeriod: 1000 * 60 * 60 // 1 hour
+    }),
     cookie: {
       httpOnly: true,
       secure: process.env['COOKIE_SECURE'] === 'true', // in Prod auf true mit HTTPS
       sameSite: 'lax',
       maxAge: 1000 * 60 * 60, // 1h
+      path: '/'
     },
   });
 
   server.use(sessionMiddleware);
+
+  server.use((req, res, next) => {
+    console.log('Request URL:', req.originalUrl);
+    console.log('Request cookies:', req.headers.cookie);
+    console.log('Session ID:', req.sessionID);
+    console.log('Session data:', req.session);
+    next();
+  });
 
   server.get('/login', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -109,9 +126,24 @@ export function app(): express.Express {
         expires_at: new Date(Date.now() + (tokenResponse.expires_in ?? 0)).getTime()
       };
 
-      // Nach erfolgreichem Login zurück zu Angular (Root o.ä.)
-      const redirectAfterLogin = '/';
-      res.redirect(redirectAfterLogin);
+      req.session.save((err) => {
+        if (err) {
+          return next(err);
+        }
+        res.redirect('/');
+      });
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  server.get('/me', async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      if (req.session) {
+        res.json({
+          user: req.session.user
+        });
+      }
     } catch (err) {
       next(err);
     }
@@ -167,7 +199,10 @@ export function app(): express.Express {
         documentFilePath: indexHtml,
         url: `${protocol}://${headers.host}${originalUrl}`,
         publicPath: browserDistFolder,
-        providers: [{provide: APP_BASE_HREF, useValue: baseUrl}],
+        providers: [
+          { provide: APP_BASE_HREF, useValue: baseUrl },
+          { provide: BROWSER_REQUEST, useValue: req }
+        ],
       })
       .then((html) => res.send(html))
       .catch((err) => next(err));
