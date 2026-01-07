@@ -66,6 +66,8 @@ import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
 import { IdentitySessionServiceProxy } from './identity/identity.session.proxy';
 
+export { OidcIdentityConfig } from './identity';
+
 export const OIDC_IDENTITY_CONFIG = new InjectionToken<OidcIdentityConfig>('OidcIdentityConfig');
 
 export function provideNgrxOidcIdentityService(): EnvironmentProviders {

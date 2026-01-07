@@ -5,6 +5,9 @@ import { OIDC_IDENTITY_CONFIG, OidcIdentityConfig, provideNgrxOidcIdentityServic
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
+import {
+  provideDxRenderFactoryBrowserRoutes
+} from '@ballware/dx-renderer';
 
 declare let window :any;
 
@@ -12,25 +15,27 @@ export const browserConfig: ApplicationConfig = {
   providers: [
     {
       provide: ENV,
-      useValue: window.ENV as RuntimeEnv
+      useValue: window.ENV as RuntimeEnv,
     },
     {
       provide: OIDC_IDENTITY_CONFIG,
-      useFactory: (env: RuntimeEnv) => ({
-        issuer: env.BALLWARE_IDENTITYURL,
-        client: env.BALLWARE_CLIENTID,
-        scopes: env.BALLWARE_IDENTITYSCOPES,
-        tenantClaim: env.BALLWARE_TENANTCLAIM,
-        usernameClaim: env.BALLWARE_USERNAMECLAIM,
-        profileUrl: env.BALLWARE_ACCOUNTURL,
-        accessTokenAutoRefresh: env.BALLWARE_IDENTITYAUTOREFRESH === '1'
-      } as OidcIdentityConfig),
-      deps: [ ENV ]
+      useFactory: (env: RuntimeEnv) =>
+        ({
+          issuer: env.BALLWARE_IDENTITYURL,
+          client: env.BALLWARE_CLIENTID,
+          scopes: env.BALLWARE_IDENTITYSCOPES,
+          tenantClaim: env.BALLWARE_TENANTCLAIM,
+          usernameClaim: env.BALLWARE_USERNAMECLAIM,
+          profileUrl: env.BALLWARE_ACCOUNTURL,
+          accessTokenAutoRefresh: env.BALLWARE_IDENTITYAUTOREFRESH === '1',
+        } as OidcIdentityConfig),
+      deps: [ENV],
     },
     provideHttpClient(withInterceptors([BearerTokenInterceptor])),
     provideOAuthClient(),
-    provideNgrxOidcIdentityService()
-  ]
+    provideNgrxOidcIdentityService(),
+    provideDxRenderFactoryBrowserRoutes(),
+  ],
 };
 
 export const config = mergeApplicationConfig(sharedConfig, browserConfig);

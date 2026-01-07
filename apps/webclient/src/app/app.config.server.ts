@@ -6,9 +6,11 @@ import { DxServerModule } from 'devextreme-angular/server';
 import pkg from '../../package.json';
 import { provideNgrxSessionIdentityService } from '@ballware/ngrx-meta-services';
 import { provideIdentitySessionRestApi } from '@ballware/rest-meta-api';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { SessionCookieInterceptor } from './shared/interceptors/sessioncookie.interceptor';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 import { IncomingMessage } from 'node:http';
+import {
+  provideDxRenderFactoryServerRoutes,
+} from '@ballware/dx-renderer';
 
 const runtimeEnv = {
   BALLWARE_VERSION: pkg.version,
@@ -38,25 +40,25 @@ const serverConfig: ApplicationConfig = {
   providers: [
     {
       provide: ENV,
-      useValue: runtimeEnv
+      useValue: runtimeEnv,
     },
     {
       provide: LOCALE_ID,
       useFactory: (req: IncomingMessage) => {
         const raw = req?.headers?.['accept-language'];
 
-        const header =
-          Array.isArray(raw) ? raw[0] : raw;
+        const header = Array.isArray(raw) ? raw[0] : raw;
 
         return header?.split(',')[0]?.trim() || 'de';
       },
-      deps: [REQUEST]
+      deps: [REQUEST],
     },
-    provideHttpClient(withInterceptors([SessionCookieInterceptor]), withFetch()),
+    provideHttpClient(withFetch()),
     provideIdentitySessionRestApi(),
     provideServerRendering(),
     provideNgrxSessionIdentityService(),
-    importProvidersFrom(DxServerModule)
-  ]
+    provideDxRenderFactoryServerRoutes(),
+    importProvidersFrom(DxServerModule),
+  ],
 };
 export const config = mergeApplicationConfig(sharedConfig, serverConfig);

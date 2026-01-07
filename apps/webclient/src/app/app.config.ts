@@ -15,8 +15,7 @@ import {
 } from '@ballware/rest-meta-api';
 import {
   DX_RENDERFACTORY_CONFIG,
-  provideDxRenderFactoryComponents,
-  provideDxRenderFactoryRoutes
+  provideDxRenderFactoryComponents
 } from '@ballware/dx-renderer';
 import { provideServiceWorker } from '@angular/service-worker';
 
@@ -98,7 +97,6 @@ export const sharedConfig: ApplicationConfig = {
         provideNgrxMetaServices(),
         provideRendererCommonsServices(),
         provideDxRenderFactoryComponents(),
-        provideDxRenderFactoryRoutes(),
         provideIdentityKeycloakRestApi(),
         provideMetaBackendRestApi(),
         provideDocumentBackendRestApi(),

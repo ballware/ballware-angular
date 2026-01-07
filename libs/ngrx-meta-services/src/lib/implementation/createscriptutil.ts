@@ -1,5 +1,5 @@
 import JSON5 from 'json5';
-import * as moment from 'moment';
+import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
 import { ScriptUtil } from '@ballware/meta-model';

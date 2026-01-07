@@ -1,8 +1,11 @@
 import {
   EnvironmentProviders,
   inject,
-  Injectable, InjectionToken, LOCALE_ID,
-  makeEnvironmentProviders, provideAppInitializer
+  Injectable,
+  InjectionToken,
+  LOCALE_ID,
+  makeEnvironmentProviders,
+  provideAppInitializer,
 } from '@angular/core';
 import { provideI18Next } from 'angular-i18next';
 
@@ -23,18 +26,24 @@ import {
 import { DefaultRedirectComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
-import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from './utils';
+import {
+  createLookupDelegateBuilder,
+  LOOKUP_DELEGATE_BUILDER_FACTORY,
+} from './utils';
 import {
   AutocompleteCreator,
   LookupCreator,
   LookupDescriptor,
-  PickvalueCreator
+  PickvalueCreator,
 } from '@ballware/meta-services';
 import { provideDefaultItemRegistries } from './registries';
 import {
-  provideDefaultColumnConfigurations, provideDefaultEditItems, provideDefaultPageItems,
-  provideDefaultToolbarItemConfigurations
+  provideDefaultColumnConfigurations,
+  provideDefaultEditItems,
+  provideDefaultPageItems,
+  provideDefaultToolbarItemConfigurations,
 } from './components';
+import { provideServerRouting, RenderMode, ServerRoute } from '@angular/ssr';
 
 export * from './directives';
 export * from './page';
@@ -81,7 +90,7 @@ export function provideDxRenderFactoryComponents(): EnvironmentProviders {
   ]);
 }
 
-const routes: Routes = [
+const browserRoutes: Routes = [
   {
     path: 'print',
     component: PrintComponent
@@ -95,6 +104,21 @@ const routes: Routes = [
       path: '**',
       component: DefaultRedirectComponent
   }
+];
+
+const serverRoutes: ServerRoute[] = [
+  {
+    path: 'print',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'page/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: '**',
+    renderMode: RenderMode.Client,
+  },
 ];
 
 @Injectable()
@@ -125,12 +149,24 @@ export class NoReuseOnParamChangeStrategy implements RouteReuseStrategy {
   }
 }
 
-export function provideDxRenderFactoryRoutes(): EnvironmentProviders {
+export function provideDxRenderFactoryBrowserRoutes(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     {
-      provide: RouteReuseStrategy, useClass: NoReuseOnParamChangeStrategy,
+      provide: RouteReuseStrategy,
+      useClass: NoReuseOnParamChangeStrategy,
     },
-    provideRouter(routes, withComponentInputBinding())]
-  );
+    provideRouter(browserRoutes, withComponentInputBinding()),
+  ]);
+}
+
+export function provideDxRenderFactoryServerRoutes(): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: RouteReuseStrategy,
+      useClass: NoReuseOnParamChangeStrategy,
+    },
+    provideRouter(browserRoutes, withComponentInputBinding()),
+    provideServerRouting(serverRoutes),
+  ]);
 }

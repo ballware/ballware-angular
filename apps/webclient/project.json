@@ -7,13 +7,14 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular-builders/custom-webpack:browser",
+      "executor": "@nx/angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
+        "outputMode": "static",
         "outputPath": "dist/webclient/browser",
         "index": "apps/webclient/src/index.html",
-        "main": "apps/webclient/src/main.ts",
-        "polyfills": "apps/webclient/src/polyfills.ts",
+        "browser": "apps/webclient/src/main.ts",
+        "polyfills": ["apps/webclient/src/polyfills.ts"],
         "tsConfig": "apps/webclient/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -30,9 +31,8 @@
           "apps/webclient/src/styles.scss"
         ],
         "scripts": [],
-        "serviceWorker": true,
-        "ngswConfigPath": "apps/webclient/ngsw-config.json",
-        "indexTransform": "apps/webclient/index-html-transform.ts"
+        "serviceWorker": "apps/webclient/ngsw-config.json",
+        "indexHtmlTransformer": "apps/webclient/index-html-transform.ts"
       },
       "configurations": {
         "production": {
@@ -57,7 +57,6 @@
           ]
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true,
@@ -68,34 +67,18 @@
               "with": "apps/webclient/src/environments/environment.dev.ts"
             }
           ]
-        },
-        "onprem": {
-          "buildOptimizer": false,
-          "optimization": false,
-          "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true,
-          "fileReplacements": [
-            {
-              "replace": "apps/webclient/src/environments/environment.ts",
-              "with": "apps/webclient/src/environments/environment.onprem.ts"
-            }
-          ]
         }
       },
       "defaultConfiguration": "production"
     },
     "serve": {
-      "executor": "@angular-builders/custom-webpack:dev-server",
+      "executor": "@nx/angular:dev-server",
       "configurations": {
         "production": {
           "buildTarget": "webclient:build:production"
         },
         "development": {
           "buildTarget": "webclient:build:development"
-        },
-        "onprem": {
-          "buildTarget": "webclient:build:onprem"
         }
       },
       "defaultConfiguration": "development",
@@ -109,7 +92,7 @@
       }
     },
     "extract-i18n": {
-      "executor": "@angular-builders/custom-webpack:extract-i18n",
+      "executor": "@nx/angular:extract-i18n",
       "options": {
         "buildTarget": "webclient:build"
       }
@@ -127,49 +110,78 @@
       }
     },
     "server": {
-      "executor": "@angular-builders/custom-webpack:server",
+      "executor": "@nx/angular:application",
+      "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/webclient/server",
-        "main": "apps/webclient/src/ssr.server.ts",
+        "outputMode": "server",
+        "outputPath": "dist/webclient/browser",
+        "index": "apps/webclient/src/index.html",
+        "browser": "apps/webclient/src/main.ts",
+        "server": "apps/webclient/src/main.server.ts",
+        "polyfills": ["apps/webclient/src/polyfills.ts"],
         "tsConfig": "apps/webclient/tsconfig.server.json",
         "inlineStyleLanguage": "scss",
-        "indexTransform": "apps/webclient/index-html-transform.ts"
+        "assets": [
+          "apps/webclient/src/favicon.ico",
+          "apps/webclient/src/assets",
+          "apps/webclient/src/manifest.webmanifest"
+        ],
+        "styles": [
+          "node_modules/bootstrap/scss/bootstrap-grid.scss",
+          "node_modules/bootstrap/scss/bootstrap-utilities.scss",
+          "node_modules/bootstrap/scss/bootstrap-reboot.scss",
+          "node_modules/bootstrap-icons/font/bootstrap-icons.scss",
+          "node_modules/devextreme/dist/css/dx.material.blue.light.css",
+          "apps/webclient/src/styles.scss"
+        ],
+        "scripts": [],
+        "serviceWorker": "apps/webclient/ngsw-config.json",
+        "indexHtmlTransformer": "apps/webclient/index-html-transform.ts",
+        "ssr": {
+          "entry": "apps/webclient/src/ssr.server.ts"
+        }
       },
       "configurations": {
         "production": {
-          "outputHashing": "media"
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "10mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all",
+          "fileReplacements": [
+            {
+              "replace": "apps/webclient/src/environments/environment.ts",
+              "with": "apps/webclient/src/environments/environment.prod.ts"
+            }
+          ]
         },
         "development": {
           "optimization": false,
-          "sourceMap": true,
           "extractLicenses": false,
-          "buildOptimizer": false
-        },
-        "onprem": {
-          "optimization": false,
           "sourceMap": true,
-          "extractLicenses": false,
-          "buildOptimizer": false
+          "namedChunks": true,
+          "fileReplacements": [
+            {
+              "replace": "apps/webclient/src/environments/environment.ts",
+              "with": "apps/webclient/src/environments/environment.dev.ts"
+            }
+          ]
         }
       },
-      "defaultConfiguration": "production",
-      "production": {
-        "outputHashing": "media"
-      },
-      "development": {
-        "optimization": false,
-        "sourceMap": true,
-        "extractLicenses": false
-      },
-      "onprem": {
-        "optimization": false,
-        "sourceMap": true,
-        "extractLicenses": false
-      }
+      "defaultConfiguration": "production"
     },
     "serve-ssr": {
-      "executor": "@angular-devkit/build-angular:ssr-dev-server",
+      "executor": "@nx/angular:dev-server",
       "options": {
+        "host": "0.0.0.0",
         "port": 3000,
         "ssl": true,
         "sslCert": "localhost+2.pem",
@@ -177,12 +189,10 @@
       },
       "configurations": {
         "development": {
-          "browserTarget": "webclient:build:development",
-          "serverTarget": "webclient:server:development"
+          "buildTarget": "webclient:server:development"
         },
         "production": {
-          "browserTarget": "webclient:build:production",
-          "serverTarget": "webclient:server:production"
+          "buildTarget": "webclient:server:production"
         }
       },
       "defaultConfiguration": "development",
