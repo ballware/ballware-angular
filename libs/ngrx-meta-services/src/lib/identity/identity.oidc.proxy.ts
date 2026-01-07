@@ -2,7 +2,7 @@ import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
 import { identityInitializeOidc, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
 import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
-import { OidcIdentityConfig } from '@ballware/ngrx-meta-services';
+import { OidcIdentityConfig } from './identity.oidc.config';
 
 export class IdentityOidcServiceProxy implements IdentityService {
 

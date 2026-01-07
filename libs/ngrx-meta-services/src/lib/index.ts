@@ -39,7 +39,11 @@ import {
 import { Store } from '@ngrx/store';
 import { I18NextPipe } from 'angular-i18next';
 import { provideComponentFeature } from './component';
-import { provideIdentityOidcEffects, provideIdentityFeature } from './identity';
+import {
+  provideIdentityOidcEffects,
+  provideIdentityFeature,
+  OidcIdentityConfig,
+} from './identity';
 import { IdentityOidcServiceProxy } from './identity/identity.oidc.proxy';
 import { IdentityStaticUserServiceProxy } from './identity/identity.staticuser.proxy';
 import { provideNotificationFeature } from './notification';
@@ -61,16 +65,6 @@ import { ATTACHMENT_SERVICE_FACTORY, CRUD_SERVICE_FACTORY, EDIT_SERVICE_FACTORY,
 import { createUtil } from './implementation/createscriptutil';
 import { ScriptUtil } from '@ballware/meta-model';
 import { IdentitySessionServiceProxy } from './identity/identity.session.proxy';
-
-export interface OidcIdentityConfig {
-  issuer: string,
-  client: string,
-  scopes: string,
-  tenantClaim: string,
-  usernameClaim: string,
-  profileUrl: string,
-  accessTokenAutoRefresh: boolean
-}
 
 export const OIDC_IDENTITY_CONFIG = new InjectionToken<OidcIdentityConfig>('OidcIdentityConfig');
 

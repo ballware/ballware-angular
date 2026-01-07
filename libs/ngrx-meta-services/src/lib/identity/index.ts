@@ -4,5 +4,7 @@ import { fetchAllowedTenants, initializeOidc, logoutOAuth, manageProfile, notify
 import { identityReducer } from './identity.reducer';
 import { identityFeatureKey } from './identity.state';
 
+export { OidcIdentityConfig } from './identity.oidc.config';
+
 export const provideIdentityFeature = () => provideState(identityFeatureKey, identityReducer);
 export const provideIdentityOidcEffects = () => provideEffects({ initializeOidc, logoutOAuth, refreshToken, userExpired, userIdle, userBusy, manageProfile, notifyUserLogin, fetchAllowedTenants, switchTenant });
