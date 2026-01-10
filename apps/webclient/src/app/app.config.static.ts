@@ -1,23 +1,17 @@
 import { ENV, RuntimeEnv } from './env';
 import { ApplicationConfig, mergeApplicationConfig } from '@angular/core';
 import { sharedConfig } from './app.config';
-import {
-  OIDC_IDENTITY_CONFIG,
-  OidcIdentityConfig,
-  provideNgrxOidcIdentityService,
-  provideNgrxSessionIdentityService,
-} from '@ballware/ngrx-meta-services';
+import { OIDC_IDENTITY_CONFIG, OidcIdentityConfig, provideNgrxOidcIdentityService } from '@ballware/ngrx-meta-services';
 import { provideOAuthClient } from 'angular-oauth2-oidc';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { BearerTokenInterceptor } from './shared/interceptors/bearertoken.interceptor';
 import {
   provideDxRenderFactoryBrowserRoutes
 } from '@ballware/dx-renderer';
-import { provideIdentitySessionRestApi } from '@ballware/rest-meta-api';
 
 declare let window :any;
 
-export const browserConfig: ApplicationConfig = {
+export const staticConfig: ApplicationConfig = {
   providers: [
     {
       provide: ENV,
@@ -37,11 +31,11 @@ export const browserConfig: ApplicationConfig = {
         } as OidcIdentityConfig),
       deps: [ENV],
     },
-    provideHttpClient(),
-    provideIdentitySessionRestApi(),
-    provideNgrxSessionIdentityService(),
+    provideHttpClient(withInterceptors([BearerTokenInterceptor])),
+    provideOAuthClient(),
+    provideNgrxOidcIdentityService(),
     provideDxRenderFactoryBrowserRoutes(),
   ],
 };
 
-export const config = mergeApplicationConfig(sharedConfig, browserConfig);
+export const config = mergeApplicationConfig(sharedConfig, staticConfig);

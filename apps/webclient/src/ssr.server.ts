@@ -1,236 +1,46 @@
-import {
-  AngularNodeAppEngine,
-  createNodeRequestHandler,
-  writeResponseToNodeResponse,
-} from '@angular/ssr/node';
-import express, { Request, Response, NextFunction, RequestHandler } from 'express';
-import session from 'express-session';
-import createMemoryStore from 'memorystore';
-import { authorizationCodeGrant, randomPKCECodeVerifier, calculatePKCECodeChallenge, randomState, buildAuthorizationUrl } from 'openid-client';
-import { getOidcConfiguration } from './auth/oidc.client';
-import { redirectUnauthenticated } from './middleware/require.auth';
-import {fileURLToPath} from 'node:url';
-import {dirname, resolve} from 'node:path';
+import { Hono } from 'hono';
 import bootstrap from './main.server';
+import {
+  getAuth,
+  initOidcAuthMiddleware,
+  oidcAuthMiddleware,
+  processOAuthCallback,
+} from '@hono/oidc-auth';
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
 
-const MemoryStore = createMemoryStore(session);
+const app = new Hono();
 
-function getFullUrl(req: Request): URL {
-  const base = process.env['BALLWARE_BASEURL'];
-  if (!base) {
-    throw new Error('BALLWARE_BASEURL not set');
-  }
-  return new URL(req.originalUrl, base);
-}
+const angularAppEngine = new AngularAppEngine();
 
-const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-const browserDistFolder = resolve(serverDistFolder, '../browser');
+app.use(initOidcAuthMiddleware({
+  OIDC_AUTH_SECRET: process.env['AUTH_SECRET'],
+  OIDC_ISSUER: process.env['BALLWARE_IDENTITYURL'],
+  OIDC_CLIENT_ID: process.env['BALLWARE_CLIENTID'],
+  OIDC_CLIENT_SECRET: 'change_me',
+  OIDC_REDIRECT_URI: '/signin-oidc',
+  OIDC_SCOPES: process.env['BALLWARE_IDENTITYSCOPES']
+}));
 
-const app = express();
-const angularApp = new AngularNodeAppEngine();
+app.get('/signin-oidc', processOAuthCallback);
 
-app.use(express.json());
+app.get('/me', oidcAuthMiddleware(), async (c) => {
+  const auth = await getAuth(c);
 
-const sessionMiddleware: RequestHandler = session({
-  name: 'ballware.sid',
-  secret: process.env['SESSION_SECRET'] || 'change-me',
-  resave: false,
-  saveUninitialized: true,
-  store: new MemoryStore({
-    checkPeriod: 1000 * 60 * 60, // 1 hour
-  }),
-  cookie: {
-    httpOnly: true,
-    secure: process.env['COOKIE_SECURE'] === 'true', // in Prod auf true mit HTTPS
-    sameSite: 'lax',
-    maxAge: 1000 * 60 * 60, // 1h
-    path: '/',
-  },
+  console.log('/me', c, 'auth:', auth);
+  // TODO: return user info
+
+  return c.json({}, 200);
 });
 
-app.use(sessionMiddleware);
-
-app.use((req, res, next) => {
-  console.log('Request URL:', req.originalUrl);
-  console.log('Request cookies:', req.headers.cookie);
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  next();
+app.get('/*', oidcAuthMiddleware(), async (c) => {
+  const res = await angularAppEngine.handle(c.req.raw, { server: 'hono' });
+  if (!res) {
+    // gracefuly fail with a 404 (probably because static failed)
+    return c.text('Not found ---', { status: 404 });
+  }
+  return res;
 });
 
-app.get(
-  '/login',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const config = await getOidcConfiguration();
-      const redirectUri = process.env['BALLWARE_BASEURL'] + '/signin-oidc';
-
-      if (!redirectUri) {
-        throw new Error('OIDC_REDIRECT_URI nicht gesetzt');
-      }
-
-      // PKCE + state
-      const codeVerifier = randomPKCECodeVerifier();
-      const codeChallenge = await calculatePKCECodeChallenge(codeVerifier);
-      const state = randomState();
-
-      req.session.codeVerifier = codeVerifier;
-      req.session.state = state;
-
-      const authorizationUrl = buildAuthorizationUrl(config, {
-        redirect_uri: redirectUri,
-        scope: 'openid profile email',
-        code_challenge: codeChallenge,
-        code_challenge_method: 'S256',
-        state,
-      });
-
-      res.redirect(authorizationUrl.toString());
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-app.get(
-  '/signin-oidc',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const config = await getOidcConfiguration();
-
-      // Muss exakt der Redirect-URL entsprechen, die beim Provider registriert ist
-      const callbackUrl = getFullUrl(req);
-
-      if (!req.session.codeVerifier || !req.session.state) {
-        throw new Error('PKCE- oder State-Informationen fehlen in der Session');
-      }
-
-      const tokenResponse = await authorizationCodeGrant(config, callbackUrl, {
-        pkceCodeVerifier: req.session.codeVerifier,
-        expectedState: req.session.state,
-      });
-
-      const claims = tokenResponse.claims ? tokenResponse.claims() : undefined;
-
-      const roles =
-        (claims as any)?.roles || (claims as any)?.realm_access?.roles || [];
-
-      req.session.user = {
-        sub: claims?.sub as string,
-        //name: claims?.name as string | undefined,
-        //email: claims?.email as string | undefined,
-        roles: Array.isArray(roles) ? roles : [],
-        rawClaims: (claims || {}) as Record<string, unknown>,
-      };
-
-      req.session.tokens = {
-        id_token: tokenResponse.id_token,
-        access_token: tokenResponse.access_token,
-        refresh_token: tokenResponse.refresh_token,
-        expires_at: new Date(
-          Date.now() + (tokenResponse.expires_in ?? 0)
-        ).getTime(),
-      };
-
-      req.session.save((err) => {
-        if (err) {
-          return next(err);
-        }
-        res.redirect('/');
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-app.get('/me', async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    if (req.session) {
-      res.json({
-        user: req.session.user,
-      });
-    }
-  } catch (err) {
-    next(err);
-  }
-});
-
-app.post(
-  '/logout',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const config = await getOidcConfiguration();
-      const postLogoutRedirectUri =
-        process.env['POST_LOGOUT_REDIRECT_URI'] || '/';
-      const idToken = req.session?.tokens?.id_token;
-
-      req.session.destroy(async (err) => {
-        if (err) {
-          next(err);
-          return;
-        }
-
-        const end_session_endpoint =
-          config.serverMetadata().end_session_endpoint;
-
-        if (end_session_endpoint && idToken) {
-          const endSessionUrl = new URL(end_session_endpoint);
-          endSessionUrl.searchParams.set('id_token_hint', idToken);
-          endSessionUrl.searchParams.set(
-            'post_logout_redirect_uri',
-            postLogoutRedirectUri
-          );
-
-          res.redirect(endSessionUrl.toString());
-          return;
-        }
-
-        res.status(204).send();
-      });
-    } catch (err) {
-      next(err);
-    }
-  }
-);
-
-app.use(
-  (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
-    console.error(err);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-);
-
-app.set('view engine', 'html');
-app.set('views', browserDistFolder);
-
-// Serve static files from /browser
-app.use(express.static(browserDistFolder));
-
-app.use('{*splat}', redirectUnauthenticated, (req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response) => {
-      if (response) {
-        writeResponseToNodeResponse(response, res);
-      } else {
-        next(); // Pass control to the next middleware
-      }
-    })
-    .catch(next);
-});
-/**
- * The request handler used by the Angular CLI (dev-server and during build).
- */
-export const reqHandler = createNodeRequestHandler(app);
-
-/*
-const port = process.env['PORT'] || 4000;
-
-app.listen(port, () => {
-  console.log(`Node Express server listening on http://localhost:${port}`);
-});
-*/
-
+export const reqHandler = createRequestHandler(app.fetch);
 
 export default bootstrap;

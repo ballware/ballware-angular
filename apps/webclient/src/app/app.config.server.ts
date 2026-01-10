@@ -54,7 +54,6 @@ const serverConfig: ApplicationConfig = {
       deps: [REQUEST],
     },
     provideHttpClient(withFetch()),
-    provideIdentitySessionRestApi(),
     provideServerRendering(),
     provideNgrxSessionIdentityService(),
     provideDxRenderFactoryServerRoutes(),
