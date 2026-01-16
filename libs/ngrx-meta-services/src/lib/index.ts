@@ -103,8 +103,8 @@ export function provideNgrxSessionIdentityService(): EnvironmentProviders {
       provideIdentityFeature(),
       {
         provide: IDENTITY_SERVICE,
-        useFactory: (store: Store, sessionApi: IdentitySessionApi) => new IdentitySessionServiceProxy(store, sessionApi),
-        deps: [ Store, IDENTITY_SESSION_API ]
+        useFactory: (store: Store, router: Router, sessionApi: IdentitySessionApi) => new IdentitySessionServiceProxy(store, router, sessionApi),
+        deps: [ Store, Router, IDENTITY_SESSION_API ]
       },
     ]
   );

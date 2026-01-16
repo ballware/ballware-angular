@@ -5,12 +5,16 @@ import {
 } from './identity.actions';
 import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
 import { IdentitySessionApi } from '@ballware/meta-api';
+import { Router } from '@angular/router';
 
 export class IdentitySessionServiceProxy implements IdentityService {
 
-    constructor(private readonly store: Store, private readonly sessionApi: IdentitySessionApi) {
+    constructor(
+      private readonly store: Store,
+      private readonly router: Router,
+      private readonly sessionApi: IdentitySessionApi) {
 
-      sessionApi.current().subscribe((session) => {
+      this.sessionApi.current().subscribe((session) => {
         this.store.dispatch(identityUserLogin({
           idToken: 'static-user-id-token',
           refreshToken: 'static-user-refresh-token',
@@ -71,7 +75,7 @@ export class IdentitySessionServiceProxy implements IdentityService {
     }
 
     public logout() {
-        // noop
+        this.router.navigate(['/auth/signout']);
     }
 
     public expired() {
