@@ -7,7 +7,7 @@
     "useDefineForClassFields": false
   },
   "files": [
-    "src/main.browser.ts", "src/polyfills.ts"],
+    "src/main.static.ts", "src/polyfills.ts"],
   "include": ["src/**/*.d.ts"],
   "exclude": [
     "jest.config.ts",
