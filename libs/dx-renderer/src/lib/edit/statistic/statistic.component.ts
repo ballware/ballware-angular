@@ -9,9 +9,7 @@ import { StatisticOptions } from '@ballware/meta-model';
 import { LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, STATISTIC_SERVICE, STATISTIC_SERVICE_FACTORY, StatisticService, StatisticServiceFactory } from '@ballware/meta-services';
 import { Observable, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { StatisticChartComponent } from '../../statistic';
-import { StatisticMapComponent } from '../../statistic';
-import { StatisticPivotgridComponent } from '../../statistic';
+import { StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent } from '../../statistic';
 import {
   Breadcrumb,
   EditItemLivecycle,
@@ -31,19 +29,19 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
         } as Provider,
     ],
     imports: [CommonModule, StatisticChartComponent, StatisticMapComponent, StatisticPivotgridComponent],
-    hostDirectives: [Breadcrumb, { directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Visible]
 })
 export class EditLayoutStatisticComponent implements OnInit {
 
   type$: Observable<'chart' | 'map' | 'pivot' | undefined>;
 
   constructor(
-    @Inject(META_SERVICE) private metaService: MetaService,
-    @Inject(STATISTIC_SERVICE) private statisticService: StatisticService,
-    private breadcrumb: Breadcrumb,
-    private destroy: DestroyRef,
-    public livecycle: EditItemLivecycle,
-    public visible: Visible
+    @Inject(META_SERVICE) private readonly metaService: MetaService,
+    @Inject(STATISTIC_SERVICE) private readonly statisticService: StatisticService,
+    private readonly breadcrumb: Breadcrumb,
+    private readonly destroy: DestroyRef,
+    public readonly livecycle: EditItemLivecycle,
+    public readonly visible: Visible
   ) {
 
     this.type$ = this.statisticService.layout$.pipe(map((layout) => layout?.type));
