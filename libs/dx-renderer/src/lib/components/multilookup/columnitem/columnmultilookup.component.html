@@ -1,6 +1,6 @@
-<dx-tag-box *ngIf="preparedColumn && ('multilookup' === preparedColumn.type) && lookup"
+<dx-tag-box *ngIf="prepared && preparedColumn && lookup"
     #tagbox
-    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
+    [readOnly]="(editing.readonly$ | async) ?? false"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="value"
     [dataSource]="(lookup.dataSource$ | async) ?? null"
