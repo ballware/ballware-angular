@@ -49,7 +49,7 @@ export const createDetailMultilookupColumn = <
   lookups: Record<string, LookupElementType>,
   lookupParams: Record<string, unknown>
 ) => {
-  const t = inject(TRANSLATOR);
+
   const injector = inject(Injector);
   const envInjector = inject(EnvironmentInjector);
 
