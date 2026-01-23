@@ -1,6 +1,6 @@
-<dx-select-box *ngIf="preparedColumn && ('lookup' === preparedColumn.type || 'pickvalue' === preparedColumn.type) && lookup"
-    #selectbox
-    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
+<dx-select-box *ngIf="prepared && preparedColumn && lookup"
+    #element
+    [readOnly]="(editing.readonly$ | async) ?? false"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="value"
     [dataSource]="(lookup.dataSource$ | async) ?? null"
@@ -9,4 +9,5 @@
     [showClearButton]="true"
     [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
     (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
+  <dx-validator [validationRules]="(editing.validationRules$ | async) ?? []"></dx-validator>
 </dx-select-box>

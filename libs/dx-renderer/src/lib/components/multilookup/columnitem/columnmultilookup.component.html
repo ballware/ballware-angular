@@ -1,5 +1,5 @@
 <dx-tag-box *ngIf="prepared && preparedColumn && lookup"
-    #tagbox
+    #element
     [readOnly]="(editing.readonly$ | async) ?? false"
     (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
     [value]="value"
@@ -9,4 +9,5 @@
     [showClearButton]="true"
     [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
     (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
+  <dx-validator [validationRules]="(editing.validationRules$ | async) ?? []"></dx-validator>
 </dx-tag-box>

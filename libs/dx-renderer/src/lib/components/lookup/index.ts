@@ -1,6 +1,5 @@
-export { EntityColumnLookupComponent } from './entitycolumn/entitycolumnlookup.component';
-export { DetailColumnLookupComponent } from './detailcolumn/detailcolumnlookup.component';
+export { ColumnLookupComponent } from './columnitem/columnlookup.component';
 export { EditLayoutLookupComponent } from './edit/editlookup.component';
 
-export { createLookupColumn } from './column';
+export { createDetailLookupColumn, createEntityLookupColumn } from './column';
 export { createLookupToolbarItem } from './toolbaritem';

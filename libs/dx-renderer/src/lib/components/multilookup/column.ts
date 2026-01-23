@@ -8,24 +8,18 @@ import {
 } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
 import {
-  AutocompleteCreator,
   EDIT_SERVICE,
   EditService,
   LOOKUP_SERVICE,
-  LookupCreator,
-  LookupDescriptor,
+  LookupElementType,
   LookupService,
-  PickvalueCreator,
   Translator,
   TRANSLATOR,
 } from '@ballware/meta-services';
 import {
-  createLookupDelegateBuilder,
   LOOKUP_DELEGATE_BUILDER_FACTORY,
   LookupDelegateBuilderFactory,
 } from '../../utils';
-import { get } from 'lodash';
-import { RequiredRule } from 'devextreme/common';
 import {
   createComponent,
   DestroyRef,
@@ -45,40 +39,29 @@ import {
   EntityColumnEditorDelegateService,
 } from '../../directives';
 import { ColumnMultiLookupComponent } from './columnitem/columnmultilookup.component';
+import { createDefaultColumn } from '../utils';
 
-export const createDetailMultilookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
+export const createDetailMultilookupColumn = <
+  ColumnType extends TreeListColumn | DataGridColumn
+>(
   c: GridLayoutColumn,
-  dataMember: string|undefined,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  dataMember: string | undefined,
+  lookups: Record<string, LookupElementType>,
   lookupParams: Record<string, unknown>
 ) => {
   const t = inject(TRANSLATOR);
   const injector = inject(Injector);
   const envInjector = inject(EnvironmentInjector);
 
-  const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
-
-  if (c.lookup) {
-    lookupDelegateBuilder.forIdentifier(c.lookup);
-  }
-
-  if (c.lookupParam) {
-    lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
-  }
-
-  const lookup = lookupDelegateBuilder.build();
-
   return {
-    dataField: c.dataMember,
-    caption: c.caption,
-    width: c.width,
-    fixed: !!c.fixedPosition,
-    fixedPosition: c.fixedPosition,
-    allowEditing: c.editable ?? false,
-    visible: c.visible ?? true,
-    sortOrder: c.sorting,
+    ...createDefaultColumn(c),
     editorOptions: c,
-    editCellTemplate: (cellElement: HTMLElement, cellInfo: DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData) => {
+    editCellTemplate: (
+      cellElement: HTMLElement,
+      cellInfo:
+        | DataGridColumnEditCellTemplateData
+        | TreeListColumnEditCellTemplateData
+    ) => {
       cellElement.innerHTML = '';
 
       const editorInjector = Injector.create({
@@ -86,27 +69,58 @@ export const createDetailMultilookupColumn = <ColumnType extends TreeListColumn 
         providers: [
           {
             provide: DETAIL_COLUMN_DATAMEMBER,
-            useValue: dataMember
+            useValue: dataMember,
           },
           {
             provide: COLUMN_LOOKUP_PARAMS,
-            useValue: lookupParams
+            useValue: lookupParams,
           },
           {
             provide: COLUMN_EDITOR_CELL,
-            useValue: cellInfo
+            useValue: cellInfo,
           },
           {
             provide: COLUMN_EDITOR_DELEGATE,
-            useFactory: (t: Translator, lookupService: LookupService, editService: EditService, lookupFactory: LookupDelegateBuilderFactory, dataMember: string, lookupParams: Record<string, unknown>, cell: ColumnEditCellTemplateData, editing: DetailCollectionEditing, destroyRef: DestroyRef) => new DetailColumnEditorDelegateService(t, lookupService, editService, lookupFactory, dataMember, lookupParams, cell, editing, destroyRef),
-            deps: [TRANSLATOR, LOOKUP_SERVICE, EDIT_SERVICE, LOOKUP_DELEGATE_BUILDER_FACTORY, DETAIL_COLUMN_DATAMEMBER, COLUMN_LOOKUP_PARAMS, COLUMN_EDITOR_CELL, DetailCollectionEditing, DestroyRef]
-          }
-        ]
+            useFactory: (
+              t: Translator,
+              lookupService: LookupService,
+              editService: EditService,
+              lookupFactory: LookupDelegateBuilderFactory,
+              dataMember: string,
+              lookupParams: Record<string, unknown>,
+              cell: ColumnEditCellTemplateData,
+              editing: DetailCollectionEditing,
+              destroyRef: DestroyRef
+            ) =>
+              new DetailColumnEditorDelegateService(
+                t,
+                lookupService,
+                editService,
+                lookupFactory,
+                dataMember,
+                lookupParams,
+                cell,
+                editing,
+                destroyRef
+              ),
+            deps: [
+              TRANSLATOR,
+              LOOKUP_SERVICE,
+              EDIT_SERVICE,
+              LOOKUP_DELEGATE_BUILDER_FACTORY,
+              DETAIL_COLUMN_DATAMEMBER,
+              COLUMN_LOOKUP_PARAMS,
+              COLUMN_EDITOR_CELL,
+              DetailCollectionEditing,
+              DestroyRef,
+            ],
+          },
+        ],
       });
 
       const compRef = createComponent(ColumnMultiLookupComponent, {
         environmentInjector: envInjector,
-        elementInjector: editorInjector
+        elementInjector: editorInjector,
       });
 
       cellElement.appendChild(compRef.location.nativeElement);
@@ -118,52 +132,20 @@ export const createDetailMultilookupColumn = <ColumnType extends TreeListColumn 
       });
     },
     showEditorAlways: true,
-    validationRules: c.required ? [
-      {
-        type: 'required',
-        message: t('validation.messages.required', { label: c.caption })
-      } as RequiredRule
-    ] : [],
-    lookup: {
-      dataSource: lookup.dataSource?.store(),
-      displayExpr: lookup?.displayExpr,
-      valueExpr: lookup?.valueExpr,
-    }
   } as ColumnType;
-}
+};
 
 
 export const createEntityMultilookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
-  dataMember: string|undefined,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  lookups: Record<string, LookupElementType>,
   lookupParams: Record<string, unknown>
 ) => {
-  const t = inject(TRANSLATOR);
   const injector = inject(Injector);
   const envInjector = inject(EnvironmentInjector);
 
-  const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
-
-  if (c.lookup) {
-    lookupDelegateBuilder.forIdentifier(c.lookup);
-  }
-
-  if (c.lookupParam) {
-    lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
-  }
-
-  const lookup = lookupDelegateBuilder.build();
-
   return {
-    dataField: c.dataMember,
-    caption: c.caption,
-    width: c.width,
-    fixed: !!c.fixedPosition,
-    fixedPosition: c.fixedPosition,
-    allowEditing: c.editable ?? false,
-    visible: c.visible ?? true,
-    sortOrder: c.sorting,
+    ...createDefaultColumn(c),
     editorOptions: c,
     editCellTemplate: (cellElement: HTMLElement, cellInfo: DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData) => {
       cellElement.innerHTML = '';
@@ -199,17 +181,6 @@ export const createEntityMultilookupColumn = <ColumnType extends TreeListColumn 
         compRef.destroy();
       });
     },
-    showEditorAlways: true,
-    validationRules: c.required ? [
-      {
-        type: 'required',
-        message: t('validation.messages.required', { label: c.caption })
-      } as RequiredRule
-    ] : [],
-    lookup: {
-      dataSource: lookup.dataSource?.store(),
-      displayExpr: lookup?.displayExpr,
-      valueExpr: lookup?.valueExpr,
-    }
+    showEditorAlways: true
   } as ColumnType;
 }

@@ -5,58 +5,51 @@ import {
   AutocompleteCreator,
   LookupCreator,
   LookupDescriptor,
+  NOTIFICATION_SERVICE,
   PickvalueCreator,
-  TRANSLATOR
 } from '@ballware/meta-services';
-import { createLookupDelegateBuilder } from '../../utils';
-import { get } from 'lodash';
-import { RequiredRule } from 'devextreme/common';
 import { inject } from '@angular/core';
+import { createColumnLookupDelegate, createDefaultColumn } from '../utils';
 
-export const createLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
+export const createDetailLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
   dataMember: string|undefined,
   lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
   lookupParams: Record<string, unknown>
 ) => {
 
-  const t  = inject(TRANSLATOR);
+  const notificationService = inject(NOTIFICATION_SERVICE);
 
-  const lookupDelegateBuilder = createLookupDelegateBuilder(lookups);
-
-  if (c.lookup) {
-    lookupDelegateBuilder.forIdentifier(c.lookup);
-  }
-
-  if (c.lookupParam) {
-    lookupDelegateBuilder.withParamFromMember(c.lookupParam, (member) => get(lookupParams, member) as string);
-  }
-
-  const lookup = lookupDelegateBuilder.build();
+  const lookupDelegate = createColumnLookupDelegate(c, lookups, lookupParams, notificationService);
 
   return {
-    dataField: c.dataMember,
-    caption: c.caption,
-    width: c.width,
-    fixed: !!c.fixedPosition,
-    fixedPosition: c.fixedPosition,
-    allowEditing: c.editable ?? false,
-    visible: c.visible ?? true,
-    sortOrder: c.sorting,
+    ...createDefaultColumn(c, lookupDelegate),
     editorOptions: {
       showClearButton: true,
-    },
-    validationRules: c.required ? [
-      {
-        type: 'required',
-        message: t('validation.messages.required', { label: c.caption })
-      } as RequiredRule
-    ] : [],
-    lookup: {
-      dataSource: lookup.dataSource?.store(),
-      displayExpr: lookup?.displayExpr,
-      valueExpr: lookup?.valueExpr,
-    },
+    }
+  } as ColumnType;
+}
+
+export const createEntityLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
+  c: GridLayoutColumn,
+  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  lookupParams: Record<string, unknown>
+) => {
+
+  const notificationService = inject(NOTIFICATION_SERVICE);
+
+  const lookupDelegate = createColumnLookupDelegate(
+    c,
+    lookups,
+    lookupParams,
+    notificationService
+  );
+
+  return {
+    ...createDefaultColumn(c, lookupDelegate),
+    editorOptions: {
+      showClearButton: true,
+    }
   } as ColumnType;
 }
 

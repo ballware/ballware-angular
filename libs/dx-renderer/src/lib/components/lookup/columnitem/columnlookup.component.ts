@@ -11,9 +11,11 @@ import {
   EditItemRef,
 } from '@ballware/meta-services';
 import {
-    DxTagBoxComponent, DxTagBoxModule, DxValidatorModule
+  DxSelectBoxComponent,
+  DxSelectBoxModule,
+  DxValidatorModule,
 } from 'devextreme-angular';
-import { ValueChangedEvent as LookupValueChangedEvent } from "devextreme/ui/tag_box";
+import { ValueChangedEvent as LookupValueChangedEvent } from "devextreme/ui/select_box";
 import {
   LookupDelegate,
 } from '../../../utils';
@@ -23,17 +25,17 @@ import {
 } from '../../../directives';
 
 @Component({
-    selector: 'ballware-column-multilookup',
-    templateUrl: './columnmultilookup.component.html',
-    styleUrls: ['./columnmultilookup.component.scss'],
-    imports: [CommonModule, DxTagBoxModule, DxValidatorModule]
+    selector: 'ballware-column-lookup',
+    templateUrl: './columnlookup.component.html',
+    styleUrls: ['./columnlookup.component.scss'],
+    imports: [CommonModule, DxSelectBoxModule, DxValidatorModule]
 })
-export class ColumnMultiLookupComponent {
-    @ViewChild('element', { static: false }) element?: DxTagBoxComponent;
+export class ColumnLookupComponent {
+    @ViewChild('element', { static: false }) element?: DxSelectBoxComponent;
 
     prepared = false;
     preparedColumn: GridLayoutColumn|undefined;
-    value: unknown[] = [];
+    value: unknown;
     lookup: LookupDelegate|undefined;
 
     onValueChanged: ((e: LookupValueChangedEvent) => void)|undefined;
