@@ -1,0 +1,6 @@
+<dx-text-box *ngIf="prepared"
+    #element
+    [readOnly]="(editing.readonly$ | async) ?? false"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="value ?? ''">
+</dx-text-box>

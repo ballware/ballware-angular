@@ -1,5 +1,4 @@
-export { EntityColumnButtonComponent } from './entitycolumn/entitycolumnbutton.component';
-export { DetailColumnButtonComponent } from './detailcolumn/detailcolumnbutton.component';
+export { ColumnButtonComponent } from './columnitem/columnbutton.component';
 export { EditLayoutButtonComponent } from './edit/editbutton.component';
 
 export { createButtonColumn } from './column';

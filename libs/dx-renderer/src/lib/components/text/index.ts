@@ -1,5 +1,4 @@
-export { EntityColumnTextComponent } from './entitycolumn/entitycolumntext.component';
-export { DetailColumnTextComponent } from './detailcolumn/detailcolumntext.component';
+export { ColumnTextComponent } from './columnitem/columntext.component';
 export { EditLayoutTextComponent } from './edit/edittext.component';
 
 export { createTextColumn } from './column';

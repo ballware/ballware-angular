@@ -39,7 +39,7 @@ import { PageLayoutCrudcontainerComponent } from './crudcontainer';
 import { PageLayoutStatisticComponent } from './statistic/page/pagestatistic.component';
 import { createDropDownButtonToolbarItem } from './dropdownbutton';
 import { createDetailDynamicColumn, createEntityDynamicColumn } from './dynamic';
-import { createPopupColumn } from './popup';
+import { createDetailPopupColumn, createEntityPopupColumn } from './popup';
 
 export * from './barcodescanner';
 export * from './bool';
@@ -145,7 +145,7 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('staticmultilookup', createDetailMultilookupColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('string', createTextColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('text', createTextColumn);
-      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('popup', createPopupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('popup', createDetailPopupColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('dynamic', createDetailDynamicColumn);
 
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('bool', createBoolColumn);
@@ -159,6 +159,7 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('staticmultilookup', createEntityMultilookupColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('string', createTextColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('text', createTextColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('popup', createEntityPopupColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('dynamic', createEntityDynamicColumn);
     })
   ]);

@@ -1,5 +1,4 @@
-export { EntityColumnBoolComponent } from './entitycolumn/entitycolumnbool.component';
-export { DetailColumnBoolComponent } from './detailcolumn/detailcolumnbool.component';
+export { ColumnBoolComponent  } from './columnitem/columnbool.component';
 export { EditLayoutBoolComponent } from './edit/editbool.component';
 
 export { createBoolColumn } from './column';

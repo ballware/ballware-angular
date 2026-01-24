@@ -1,0 +1,8 @@
+<dx-date-box *ngIf="prepared"
+    #element
+    [readOnly]="(editing.readonly$ | async) ?? false"
+    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
+    [value]="value ?? null"
+    [type]="type"
+    [displayFormat]="displayFormat">
+</dx-date-box>

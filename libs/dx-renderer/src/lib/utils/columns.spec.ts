@@ -6,7 +6,7 @@ import {
   PickvalueCreator,
   AutocompleteCreator,
   LookupStoreDescriptor,
-  TRANSLATOR,
+  TRANSLATOR, NOTIFICATION_SERVICE,
 } from '@ballware/meta-services';
 import { Column as DataGridColumn } from 'devextreme/ui/data_grid';
 import { Column as TreeListColumn } from 'devextreme/ui/tree_list';
@@ -15,6 +15,7 @@ import { TestBed } from '@angular/core/testing';
 import { EnvironmentInjector, runInInjectionContext } from '@angular/core';
 import { provideDefaultItemRegistries } from '../registries';
 import { provideDefaultColumnConfigurations } from '../components';
+import { createMockedNotificationService } from '@storybook-helpers/notification.service.mock';
 
 describe('columns', () => {
   let mockTranslate: jest.Mock;
@@ -61,6 +62,7 @@ describe('columns', () => {
     await TestBed.configureTestingModule({
       providers: [
         { provide: TRANSLATOR, useValue: mockTranslate },
+        { provide: NOTIFICATION_SERVICE, useValue: createMockedNotificationService() },
         provideDefaultItemRegistries(),
         provideDefaultColumnConfigurations(),
       ],
@@ -415,7 +417,7 @@ describe('columns', () => {
           () => true
         ));
 
-        expect(result[0].lookup).toBeDefined();
+        expect(result[0].showEditorAlways).toBe(true);
         expect(typeof result[0].editCellTemplate).toBe('function');
       });
 
@@ -625,16 +627,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForDetail<DataGridColumn>(
-          columns,
-          'details',
-          mockLookups,
-          mockLookupParams,
-          'instant',
-          () => of(undefined)
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForDetail<DataGridColumn>(
+            columns,
+            'details',
+            mockLookups,
+            mockLookupParams,
+            'instant',
+            () => of(undefined)
+          )
+        );
 
-        expect(result[0].allowEditing).toBe(false);
+        expect(result[0].showEditorAlways).toBe(true);
         expect(result[0].editCellTemplate).toBeInstanceOf(Function);
       });
     });

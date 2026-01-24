@@ -8,6 +8,7 @@ import {
 } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
 import {
+  CRUD_SERVICE, CrudService,
   EDIT_SERVICE,
   EditService,
   LOOKUP_SERVICE,
@@ -84,6 +85,7 @@ export const createDetailMultilookupColumn = <
             useFactory: (
               t: Translator,
               lookupService: LookupService,
+              crudService: CrudService,
               editService: EditService,
               lookupFactory: LookupDelegateBuilderFactory,
               dataMember: string,
@@ -95,6 +97,7 @@ export const createDetailMultilookupColumn = <
               new DetailColumnEditorDelegateService(
                 t,
                 lookupService,
+                crudService,
                 editService,
                 lookupFactory,
                 dataMember,
@@ -106,6 +109,7 @@ export const createDetailMultilookupColumn = <
             deps: [
               TRANSLATOR,
               LOOKUP_SERVICE,
+              CRUD_SERVICE,
               EDIT_SERVICE,
               LOOKUP_DELEGATE_BUILDER_FACTORY,
               DETAIL_COLUMN_DATAMEMBER,

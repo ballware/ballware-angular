@@ -1,5 +1,0 @@
-<ballware-edit-detaileditpopup *ngIf="preparedColumn && 'popup' === preparedColumn.type"
-    [column]="preparedColumn"
-    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
-    [item]="detailItem">
-</ballware-edit-detaileditpopup>

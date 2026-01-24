@@ -16,6 +16,9 @@ export interface ColumnEditorDelegateService {
 
   value$: Observable<unknown>;
   valueChanged$: Observable<((editor: EditItemRef, value: unknown) => void)|undefined>;
+  raiseEvent$: Observable<((editor: EditItemRef, identifier: string) => void)|undefined>;
+
+  openColumnPopup$: Observable<(() => void)|undefined>;
 
   validationRules$: Observable<Array<ValidationRule>>|undefined;
 }

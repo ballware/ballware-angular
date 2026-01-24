@@ -1,0 +1,10 @@
+<ballware-column-text *ngIf="preparedColumn && 'string' === preparedColumn.type"></ballware-column-text>
+<ballware-column-bool *ngIf="preparedColumn && 'bool' === preparedColumn.type"></ballware-column-bool>
+<ballware-column-button *ngIf="preparedColumn && 'button' === preparedColumn.type"></ballware-column-button>
+<ballware-column-number *ngIf="preparedColumn && 'number' === preparedColumn.type"></ballware-column-number>
+<ballware-column-datetime *ngIf="preparedColumn && ('date' === preparedColumn.type || 'datetime' === preparedColumn.type)"></ballware-column-datetime>
+<ballware-column-lookup *ngIf="preparedColumn && ('lookup' === preparedColumn.type || 'pickvalue' === preparedColumn.type)">
+</ballware-column-lookup>
+<ballware-column-multilookup *ngIf="preparedColumn && ('multilookup' === preparedColumn.type || 'staticmultilookup' === preparedColumn.type)">
+</ballware-column-multilookup>
+<ballware-column-popup *ngIf="preparedColumn && 'editpopup' === preparedColumn.type"></ballware-column-popup>
