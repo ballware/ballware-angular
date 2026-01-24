@@ -1,6 +1,0 @@
-<dx-text-area *ngIf="preparedColumn && ('textarea' === preparedColumn.type)"
-    #textbox
-    [readOnly]="((readonly.readonly$ | async) ?? false) || !(preparedColumn.editable ?? false)"
-    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
-    [value]="value ?? ''">
-</dx-text-area>
