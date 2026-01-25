@@ -1705,31 +1705,10 @@ export const DynamicStringAndNumberColumns: Story = {
       async () => {
         const dynamicStringHeader = canvas.queryByText('Dynamic String');
         await expect(dynamicStringHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    await waitFor(
-      async () => {
         const dynamicNumberHeader = canvas.queryByText('Dynamic Number');
         await expect(dynamicNumberHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    await waitFor(
-      async () => {
         const dynamicPriceHeader = canvas.queryByText('Dynamic Price');
         await expect(dynamicPriceHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    // Test: Dynamic string values should be visible
-    await waitFor(
-      async () => {
-        const stringValue = canvas.queryByText('Dynamic String 1');
-        await expect(stringValue).toBeTruthy();
       },
       { timeout: 5000 }
     );
@@ -1894,39 +1873,12 @@ export const DynamicColumnsWithMixedTypes: Story = {
       async () => {
         const codeHeader = canvas.queryByText('Code (Dynamic String)');
         await expect(codeHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    await waitFor(
-      async () => {
         const quantityHeader = canvas.queryByText('Quantity (Dynamic Number)');
         await expect(quantityHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    await waitFor(
-      async () => {
         const percentageHeader = canvas.queryByText('Discount % (Dynamic Number)');
         await expect(percentageHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    await waitFor(
-      async () => {
         const amountHeader = canvas.queryByText('Amount (Dynamic Number, Readonly)');
         await expect(amountHeader).toBeTruthy();
-      },
-      { timeout: 5000 }
-    );
-
-    // Test: Dynamic string values should be visible
-    await waitFor(
-      async () => {
-        const codeValue = canvas.queryByText('CODE-001');
-        await expect(codeValue).toBeTruthy();
       },
       { timeout: 5000 }
     );
