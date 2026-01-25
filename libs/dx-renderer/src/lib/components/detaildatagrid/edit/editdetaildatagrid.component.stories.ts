@@ -102,6 +102,8 @@ export const Default: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string' },
               { dataMember: 'quantity', caption: 'Quantity', type: 'number' },
               { dataMember: 'price', caption: 'Price', type: 'number' },
+              { dataMember: 'orderDate', caption: 'Order Date', type: 'date' },
+              { dataMember: 'deliveryDateTime', caption: 'Delivery', type: 'datetime' },
               { dataMember: 'active', caption: 'Active', type: 'bool' },
               { dataMember: 'action', caption: 'Action', type: 'button', hint: 'Details', editable: true },
             ]
@@ -114,9 +116,9 @@ export const Default: Story = {
       value: {
         dataMember$: of('items'),
         value: [
-          { name: 'Item 1', quantity: 2, price: 10.99, active: true },
-          { name: 'Item 2', quantity: 1, price: 25.5, active: false },
-          { name: 'Item 3', quantity: 5, price: 5, active: true },
+          { name: 'Item 1', quantity: 2, price: 10.99, orderDate: new Date('2024-01-15'), deliveryDateTime: new Date('2024-01-20T14:30:00'), active: true },
+          { name: 'Item 2', quantity: 1, price: 25.5, orderDate: new Date('2024-02-10'), deliveryDateTime: new Date('2024-02-15T09:00:00'), active: false },
+          { name: 'Item 3', quantity: 5, price: 5, orderDate: new Date('2024-03-05'), deliveryDateTime: new Date('2024-03-10T16:45:00'), active: true },
         ],
       },
       editing: {
@@ -124,6 +126,8 @@ export const Default: Story = {
           { dataField: 'name', caption: 'Name', dataType: 'string' },
           { dataField: 'quantity', caption: 'Quantity', dataType: 'number' },
           { dataField: 'price', caption: 'Price', dataType: 'number' },
+          { dataField: 'orderDate', caption: 'Order Date', dataType: 'date' },
+          { dataField: 'deliveryDateTime', caption: 'Delivery', dataType: 'datetime' },
           { dataField: 'active', caption: 'Active', dataType: 'boolean' },
           { dataField: 'action', caption: 'Action', dataType: 'button' },
         ],
@@ -580,6 +584,16 @@ export const RowEditing: Story = {
             options.editable = true;
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_date') {
+            // For even IDs: date, for odd IDs: datetime
+            if ((detailItem['id'] as number) % 2 === 0) {
+              options.type = 'date';
+            } else {
+              options.type = 'datetime';
+            }
+            options.editable = true;
+          }
+
           return options;
         })
       }
@@ -587,9 +601,9 @@ export const RowEditing: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', editable: true, dynamic_bool_value: true },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', editable: false, dynamic_bool_value: false },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', editable: true, dynamic_bool_value: true },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', editable: true, dynamic_bool_value: true, createdDate: new Date('2024-01-10'), dynamic_date: new Date('2024-02-15T10:30:00') },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', editable: false, dynamic_bool_value: false, createdDate: new Date('2024-02-15'), dynamic_date: new Date('2024-03-20') },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', editable: true, dynamic_bool_value: true, createdDate: new Date('2024-03-20'), dynamic_date: new Date('2024-04-25T14:45:00') },
       ]
     });
 
@@ -608,9 +622,11 @@ export const RowEditing: Story = {
               { dataMember: 'id', caption: 'ID', type: 'number' },
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
+              { dataMember: 'createdDate', caption: 'Created', type: 'date', editable: true },
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
               { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
               { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_date', caption: 'Dynamic Date/DateTime', type: 'dynamic', editable: true },
               { dataMember: 'static_button', caption: 'Info', type: 'button', hint: 'Show Info', editable: true },
               { dataMember: 'dynamic_button', caption: 'Dynamic Action', type: 'dynamic' },
               { dataMember: 'editable', caption: 'Editable', type: 'bool', editable: true }
@@ -618,21 +634,21 @@ export const RowEditing: Story = {
           }
         )
       },
-      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
-      applicationConfig: {
-      providers: [
-        {
-          provide: LOOKUP_SERVICE,
-          useValue: mockLookupService.service
-        },
-        {
-          provide: EDIT_SERVICE,
-          useValue: mockEditService.service
-        }
-      ]
-    }
-    };
-  },
+    template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+    applicationConfig: {
+    providers: [
+      {
+        provide: LOOKUP_SERVICE,
+        useValue: mockLookupService.service
+      },
+      {
+        provide: EDIT_SERVICE,
+        useValue: mockEditService.service
+      }
+    ]
+  }
+  };
+},
 };
 
 export const RowEditingGlobalReadonly: Story = {
@@ -717,21 +733,21 @@ export const RowEditingGlobalReadonly: Story = {
           }
         )
       },
-      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
-      applicationConfig: {
-      providers: [
-        {
-          provide: LOOKUP_SERVICE,
-          useValue: mockLookupService.service
-        },
-        {
-          provide: EDIT_SERVICE,
-          useValue: mockEditService.service
-        }
-      ]
-    }
-    };
-  },
+    template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+    applicationConfig: {
+    providers: [
+      {
+        provide: LOOKUP_SERVICE,
+        useValue: mockLookupService.service
+      },
+      {
+        provide: EDIT_SERVICE,
+        useValue: mockEditService.service
+      }
+    ]
+  }
+  };
+},
 };
 
 export const InstantEditing: Story = {
@@ -785,6 +801,11 @@ export const InstantEditing: Story = {
             options.editable = true;
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_datetime') {
+            options.type = 'datetime';
+            options.editable = true;
+          }
+
           return options;
         })
       }
@@ -792,9 +813,9 @@ export const InstantEditing: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', enabled: true, dynamic_bool_value: true },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', enabled: false, dynamic_bool_value: false },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', enabled: true, dynamic_bool_value: true },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', enabled: true, dynamic_bool_value: true, dynamic_datetime: new Date('2024-01-15T10:30:00') },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', enabled: false, dynamic_bool_value: false, dynamic_datetime: new Date('2024-02-20T14:15:00') },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', enabled: true, dynamic_bool_value: true, dynamic_datetime: new Date('2024-03-25T16:45:00') },
       ]
     });
 
@@ -816,27 +837,28 @@ export const InstantEditing: Story = {
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
               { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
               { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_datetime', caption: 'Dynamic DateTime', type: 'dynamic', editable: true },
               { dataMember: 'dynamic_button', caption: 'Actions', type: 'dynamic' },
               { dataMember: 'enabled', caption: 'Enabled', type: 'bool', editable: true }
             ],
           }
         )
       },
-      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
-      applicationConfig: {
-      providers: [
-        {
-          provide: LOOKUP_SERVICE,
-          useValue: mockLookupService.service
-        },
-        {
-          provide: EDIT_SERVICE,
-          useValue: mockEditService.service
-        }
-      ]
-    }
-    };
-  },
+    template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+    applicationConfig: {
+    providers: [
+      {
+        provide: LOOKUP_SERVICE,
+        useValue: mockLookupService.service
+      },
+      {
+        provide: EDIT_SERVICE,
+        useValue: mockEditService.service
+      }
+    ]
+  }
+  };
+},
 };
 
 export const InstantEditingGlobalReadonly: Story = {
@@ -921,21 +943,21 @@ export const InstantEditingGlobalReadonly: Story = {
           }
         )
       },
-      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
-      applicationConfig: {
-      providers: [
-        {
-          provide: LOOKUP_SERVICE,
-          useValue: mockLookupService.service
-        },
-        {
-          provide: EDIT_SERVICE,
-          useValue: mockEditService.service
-        }
-      ]
-    }
-    };
-  },
+    template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+    applicationConfig: {
+    providers: [
+      {
+        provide: LOOKUP_SERVICE,
+        useValue: mockLookupService.service
+      },
+      {
+        provide: EDIT_SERVICE,
+        useValue: mockEditService.service
+      }
+    ]
+  }
+  };
+},
 };
 
 export const DynamicBoolColumn: Story = {
@@ -1177,3 +1199,86 @@ export const DynamicButtonTypes: Story = {
     };
   },
 };
+
+export const DateTimeColumns: Story = {
+  render: (args) => {
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['title'] = 'New Event';
+          detailItem['category'] = 'meeting';
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          // Dynamic column that becomes date or datetime based on category
+          if (dataMember === 'items' && identifier === 'dynamic_datetime_field') {
+            switch(detailItem['category']) {
+              case 'meeting':
+              case 'appointment':
+                options.type = 'datetime';
+                options.editable = true;
+                break;
+              case 'deadline':
+              case 'birthday':
+                options.type = 'date';
+                options.editable = true;
+                break;
+              default:
+                options.type = 'string';
+                options.editable = false;
+                break;
+            }
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, title: 'Team Meeting', category: 'meeting', startDate: new Date('2024-06-15'), timestamp: new Date('2024-06-15T14:00:00'), dynamic_datetime_field: new Date('2024-06-15T14:00:00') },
+        { id: 2, title: 'Doctor Appointment', category: 'appointment', startDate: new Date('2024-07-10'), timestamp: new Date('2024-07-10T10:30:00'), dynamic_datetime_field: new Date('2024-07-10T10:30:00') },
+        { id: 3, title: 'Project Deadline', category: 'deadline', startDate: new Date('2024-08-01'), timestamp: new Date('2024-08-01T23:59:00'), dynamic_datetime_field: new Date('2024-08-01') },
+        { id: 4, title: 'Birthday Party', category: 'birthday', startDate: new Date('2024-09-20'), timestamp: new Date('2024-09-20T18:00:00'), dynamic_datetime_field: new Date('2024-09-20') },
+        { id: 5, title: 'Note', category: 'other', startDate: new Date('2024-10-05'), timestamp: new Date('2024-10-05T12:00:00'), dynamic_datetime_field: 'No specific time' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Date and DateTime Columns Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'title', caption: 'Title', type: 'string', editable: true },
+              { dataMember: 'category', caption: 'Category', type: 'string', editable: true },
+              { dataMember: 'startDate', caption: 'Date', type: 'date', editable: true },
+              { dataMember: 'timestamp', caption: 'Date & Time', type: 'datetime', editable: true },
+              { dataMember: 'dynamic_datetime_field', caption: 'Dynamic Date/DateTime Field', type: 'dynamic', editable: true }
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+};
+

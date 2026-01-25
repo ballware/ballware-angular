@@ -1,8 +1,8 @@
-<dx-date-box *ngIf="prepared"
+<dx-date-box *ngIf="editing.prepared$ | async"
     #element
     [readOnly]="(editing.readonly$ | async) ?? false"
-    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
-    [value]="value ?? null"
-    [type]="type"
-    [displayFormat]="displayFormat">
+    (onValueChanged)="valueChanged($event)"
+    [value]="(value$ | async) ?? null"
+    [type]="(type$ | async) ?? 'datetime'"
+    [displayFormat]="(displayFormat$ | async) ?? 'shortDateShortTime'">
 </dx-date-box>

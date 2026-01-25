@@ -1,18 +1,16 @@
 import { CommonModule } from "@angular/common";
 import {
   Component,
-  DestroyRef,
-  Inject,
+  inject,
   ViewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { GridLayoutColumn } from "@ballware/meta-model";
-import { EditItemRef, Translator, TRANSLATOR } from "@ballware/meta-services";
+import { EditItemRef, TRANSLATOR } from "@ballware/meta-services";
 import {
     DxDateBoxComponent, DxDateBoxModule, DxValidatorModule
 } from 'devextreme-angular';
 import { DateType, ValueChangedEvent as DateValueChangedEvent } from 'devextreme/ui/date_box';
-import { COLUMN_EDITOR_DELEGATE, ColumnEditorDelegateService } from "../../../directives";
+import { COLUMN_EDITOR_DELEGATE } from "../../../directives";
+import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'ballware-column-datetime',
@@ -20,66 +18,39 @@ import { COLUMN_EDITOR_DELEGATE, ColumnEditorDelegateService } from "../../../di
   styleUrls: ['./columndatetime.component.scss'],
   imports: [CommonModule, DxDateBoxModule, DxValidatorModule],
 })
-export class ColumnDatetimeComponent {
+export class ColumnDatetimeComponent implements EditItemRef {
   @ViewChild('element', { static: false }) element?: DxDateBoxComponent;
 
-  prepared = false;
-  preparedColumn: GridLayoutColumn | undefined;
-  value: Date | undefined = undefined;
+  readonly editing = inject(COLUMN_EDITOR_DELEGATE);
+  readonly translator = inject(TRANSLATOR);
 
-  public type!: DateType;
-  public displayFormat!: string;
+  readonly value$: Observable<Date> = this.editing.value$.pipe(
+    map((value) => value as Date)
+  );
 
-  onValueChanged: ((e: DateValueChangedEvent) => void) | undefined;
+  readonly valueChanged = (e: DateValueChangedEvent) =>
+    this.editing.valueChanged(this, e.value);
+  readonly getOption = (option: string) =>
+    this.element?.instance.option(option);
+  readonly setOption = (option: string, value: unknown) =>
+    this.element?.instance.option(option, value);
 
-  constructor(
-    private readonly destroy: DestroyRef,
-    @Inject(TRANSLATOR) private readonly translator: Translator,
-    @Inject(COLUMN_EDITOR_DELEGATE)
-    readonly editing: ColumnEditorDelegateService
-  ) {
-    this.editing.value$
-      .pipe(takeUntilDestroyed(this.destroy))
-      .subscribe((value) => (this.value = value as Date));
+  public type$: Observable<DateType> = this.editing.preparedColumn$.pipe(
+    map(
+      (preparedColumn) =>
+        preparedColumn?.type as DateType
+    )
+  );
 
-    this.editing.valueChanged$
-      .pipe(takeUntilDestroyed(this.destroy))
-      .subscribe((valueChanged) => {
-        if (valueChanged) {
-          this.onValueChanged = (e: DateValueChangedEvent) => {
-            const editorRef = {
-              getOption: (option: string) =>
-                this.element?.instance.option(option),
-              setOption: (option: string, value: unknown) =>
-                this.element?.instance.option(option, value),
-            } as EditItemRef;
-
-            valueChanged(editorRef, e.value);
-          };
-        } else {
-          this.onValueChanged = undefined;
-        }
-      });
-
-    this.editing.preparedColumn$
-      .pipe(takeUntilDestroyed(this.destroy))
-      .subscribe((preparedColumn) => {
-        this.preparedColumn = preparedColumn;
-
-        this.type = this.preparedColumn?.type as DateType;
-
-        switch (this.preparedColumn?.type) {
-          case 'datetime':
-            this.displayFormat = this.translator('format.datetime');
-            break;
-          case 'date':
-          default:
-            this.displayFormat = this.translator('format.date');
-        }
-      });
-
-    this.editing.prepared$
-      .pipe(takeUntilDestroyed(this.destroy))
-      .subscribe((prepared) => (this.prepared = prepared));
-  }
+  public displayFormat$: Observable<string> = this.editing.preparedColumn$.pipe(
+    map((preparedColumn) => {
+      switch (preparedColumn?.type) {
+        case 'datetime':
+          return this.translator('format.datetime');
+        case 'date':
+        default:
+          return this.translator('format.date');
+      }
+    })
+  );
 }
