@@ -1282,3 +1282,291 @@ export const DateTimeColumns: Story = {
   },
 };
 
+export const MultilookupColumn: Story = {
+  render: (args) => {
+
+    const categoryLookupValues = [
+      { value: 'cat-1', text: 'Electronics' },
+      { value: 'cat-2', text: 'Books' },
+      { value: 'cat-3', text: 'Clothing' },
+      { value: 'cat-4', text: 'Food' },
+      { value: 'cat-5', text: 'Sports' },
+    ];
+
+    const tagLookupValues = [
+      { value: 'tag-1', text: 'New' },
+      { value: 'tag-2', text: 'Popular' },
+      { value: 'tag-3', text: 'Sale' },
+      { value: 'tag-4', text: 'Limited' },
+      { value: 'tag-5', text: 'Featured' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        categoryLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(categoryLookupValues),
+            byIdFunc: (id) => of(categoryLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor,
+        tagLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(tagLookupValues),
+            byIdFunc: (id) => of(tagLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New Product';
+          detailItem['categories'] = [];
+          detailItem['tags'] = [];
+        }),
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Laptop', description: 'High-performance laptop', categories: ['cat-1', 'cat-3'], tags: ['tag-2', 'tag-5'] },
+        { id: 2, name: 'Novel', description: 'Bestselling novel', categories: ['cat-2'], tags: ['tag-1', 'tag-2'] },
+        { id: 3, name: 'Running Shoes', description: 'Comfortable running shoes', categories: ['cat-3', 'cat-5'], tags: ['tag-3', 'tag-4'] },
+        { id: 4, name: 'Organic Apple', description: 'Fresh organic apples', categories: ['cat-4'], tags: ['tag-1'] },
+        { id: 5, name: 'Smartphone', description: 'Latest smartphone model', categories: ['cat-1'], tags: ['tag-1', 'tag-2', 'tag-5'] },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Multilookup Columns Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Product Name', type: 'string', editable: true },
+              { dataMember: 'description', caption: 'Description', type: 'string', editable: true },
+              { dataMember: 'categories', caption: 'Categories', type: 'multilookup', editable: true, lookup: 'categoryLookup', displayExpr: 'text', valueExpr: 'value' },
+              { dataMember: 'tags', caption: 'Tags', type: 'multilookup', editable: true, lookup: 'tagLookup', displayExpr: 'text', valueExpr: 'value' },
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Data rows should be rendered
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(5);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Column headers should exist
+    await waitFor(
+      async () => {
+        const categoriesHeader = canvas.queryByText('Categories');
+        await expect(categoriesHeader).toBeTruthy();
+        const tagsHeader = canvas.queryByText('Tags');
+        await expect(tagsHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+  },
+};
+
+export const DynamicMultilookupColumn: Story = {
+  render: (args) => {
+
+    const categoryLookupValues = [
+      { value: 'cat-1', text: 'Electronics' },
+      { value: 'cat-2', text: 'Books' },
+      { value: 'cat-3', text: 'Clothing' },
+      { value: 'cat-4', text: 'Food' },
+      { value: 'cat-5', text: 'Sports' },
+    ];
+
+    const skillLookupValues = [
+      { value: 'skill-1', text: 'JavaScript' },
+      { value: 'skill-2', text: 'TypeScript' },
+      { value: 'skill-3', text: 'Angular' },
+      { value: 'skill-4', text: 'React' },
+      { value: 'skill-5', text: 'Node.js' },
+    ];
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {
+        categoryLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(categoryLookupValues),
+            byIdFunc: (id) => of(categoryLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor,
+        skillLookup: {
+          type: 'lookup',
+          store: {
+            listFunc: () => of(skillLookupValues),
+            byIdFunc: (id) => of(skillLookupValues.find(v => v.value === id))
+          },
+          displayMember: 'text',
+          valueMember: 'value'
+        } as LookupDescriptor
+      }
+    });
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New Item';
+          detailItem['type'] = 'Product';
+          detailItem['dynamic_multilookup'] = [];
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          // Dynamic column that becomes multilookup based on item type
+          if (dataMember === 'items' && identifier === 'dynamic_multilookup') {
+            if (detailItem['type'] === 'Product') {
+              options.type = 'multilookup';
+              options.lookup = 'categoryLookup';
+              options.displayExpr = 'text';
+              options.valueExpr = 'value';
+              options.editable = true;
+            } else if (detailItem['type'] === 'Person') {
+              options.type = 'multilookup';
+              options.lookup = 'skillLookup';
+              options.displayExpr = 'text';
+              options.valueExpr = 'value';
+              options.editable = true;
+            } else {
+              options.type = 'string';
+              options.editable = false;
+            }
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Laptop', type: 'Product', description: 'Gaming laptop', dynamic_multilookup: ['cat-1', 'cat-3'] },
+        { id: 2, name: 'John Doe', type: 'Person', description: 'Full-stack Developer', dynamic_multilookup: ['skill-1', 'skill-2', 'skill-3'] },
+        { id: 3, name: 'Smartphone', type: 'Product', description: 'Latest model', dynamic_multilookup: ['cat-1'] },
+        { id: 4, name: 'Jane Smith', type: 'Person', description: 'Frontend Developer', dynamic_multilookup: ['skill-2', 'skill-4'] },
+        { id: 5, name: 'Generic Item', type: 'Other', description: 'Miscellaneous', dynamic_multilookup: 'N/A' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Dynamic Multilookup Column Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'type', caption: 'Type', type: 'string', editable: true },
+              { dataMember: 'description', caption: 'Description', type: 'string', editable: true },
+              { dataMember: 'dynamic_multilookup', caption: 'Dynamic Multilookup', type: 'dynamic', editable: true },
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Data rows should be rendered
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(5);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Column headers should exist
+    await waitFor(
+      async () => {
+        const dynamicMultilookupHeader = canvas.queryByText('Dynamic Multilookup');
+        await expect(dynamicMultilookupHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+  },
+};
+

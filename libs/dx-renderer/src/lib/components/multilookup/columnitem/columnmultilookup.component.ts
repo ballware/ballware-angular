@@ -2,79 +2,81 @@ import { CommonModule } from "@angular/common";
 import {
   Component,
   DestroyRef,
-  Inject,
+  inject,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { GridLayoutColumn } from '@ballware/meta-model';
-import {
-  EditItemRef,
-} from '@ballware/meta-services';
 import {
     DxTagBoxComponent, DxTagBoxModule, DxValidatorModule
 } from 'devextreme-angular';
-import { ValueChangedEvent as LookupValueChangedEvent } from "devextreme/ui/tag_box";
+import {
+  ValueChangedEvent as LookupValueChangedEvent,
+  CustomItemCreatingEvent,
+} from 'devextreme/ui/tag_box';
 import {
   LookupDelegate,
 } from '../../../utils';
 import {
   COLUMN_EDITOR_DELEGATE,
-  ColumnEditorDelegateService,
 } from '../../../directives';
+import { map, Observable } from 'rxjs';
+import { EditItemRef } from '@ballware/meta-services';
 
 @Component({
-    selector: 'ballware-column-multilookup',
-    templateUrl: './columnmultilookup.component.html',
-    styleUrls: ['./columnmultilookup.component.scss'],
-    imports: [CommonModule, DxTagBoxModule, DxValidatorModule]
+  selector: 'ballware-column-multilookup',
+  templateUrl: './columnmultilookup.component.html',
+  styleUrls: ['./columnmultilookup.component.scss'],
+  imports: [CommonModule, DxTagBoxModule, DxValidatorModule],
 })
-export class ColumnMultiLookupComponent {
-    @ViewChild('element', { static: false }) element?: DxTagBoxComponent;
+export class ColumnMultiLookupComponent implements EditItemRef, OnInit {
+  @ViewChild('element', { static: false }) element?: DxTagBoxComponent;
 
-    prepared = false;
-    preparedColumn: GridLayoutColumn|undefined;
-    value: unknown[] = [];
-    lookup: LookupDelegate|undefined;
+  readonly destroyRef = inject(DestroyRef);
+  readonly editing = inject(COLUMN_EDITOR_DELEGATE);
 
-    onValueChanged: ((e: LookupValueChangedEvent) => void)|undefined;
+  readonly value$: Observable<unknown[]> = this.editing.value$.pipe(
+    map((value) => value as unknown[]),
+  );
 
-    constructor(
-        private readonly destroy: DestroyRef,
-        @Inject(COLUMN_EDITOR_DELEGATE) readonly editing: ColumnEditorDelegateService) {
-      this.editing.lookup$.pipe(
-        takeUntilDestroyed(this.destroy),
-      ).subscribe(lookup => this.lookup = lookup);
+  readonly valueChanged = (e: LookupValueChangedEvent) =>
+    this.editing.valueChanged(this, e.value);
+  readonly getOption = (option: string) =>
+    this.element?.instance.option(option);
+  readonly setOption = (option: string, value: unknown) =>
+    this.element?.instance.option(option, value);
 
-      this.editing.value$.pipe(
-        takeUntilDestroyed(this.destroy),
-      ).subscribe(value => this.value = value as unknown[]);
+  readonly datasource$ = this.editing.lookup$.pipe(
+    map((lookup) => lookup?.dataSource)
+  );
 
-      this.editing.valueChanged$.pipe(
-        takeUntilDestroyed(this.destroy),
-      ).subscribe(valueChanged => {
-        if (valueChanged) {
-          this.onValueChanged = (e: LookupValueChangedEvent) => {
-            const editorRef = {
-              getOption: (option: string) =>
-                this.element?.instance.option(option),
-              setOption: (option: string, value: unknown) =>
-                this.element?.instance.option(option, value),
-            } as EditItemRef;
+  readonly displayExpr$ = this.editing.lookup$.pipe(
+    map((lookup) => lookup?.displayExpr)
+  );
 
-            valueChanged(editorRef, e.value);
-          }
-        } else {
-          this.onValueChanged = undefined;
-        }
+  readonly valueExpr$ = this.editing.lookup$.pipe(
+    map((lookup) => lookup?.valueExpr)
+  );
 
-      });
+  readonly acceptCustomValue$ = this.editing.lookup$.pipe(
+    map((lookup) => lookup?.acceptCustomValue)
+  );
 
-      this.editing.preparedColumn$.pipe(
-        takeUntilDestroyed(this.destroy),
-      ).subscribe(preparedColumn => this.preparedColumn = preparedColumn);
+  private _lookup: LookupDelegate | undefined;
 
-      this.editing.prepared$.pipe(
-        takeUntilDestroyed(this.destroy),
-      ).subscribe(prepared => this.prepared = prepared);
+  customItemCreating(event: CustomItemCreatingEvent): void {
+    if (!this._lookup) {
+      throw new Error('LookupDelegate not initialized');
     }
+
+    this._lookup.onCustomItemCreating(event);
+  }
+
+  ngOnInit(): void {
+    this.editing.lookup$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((lookup) => {
+        this._lookup = lookup;
+      });
+  }
 }

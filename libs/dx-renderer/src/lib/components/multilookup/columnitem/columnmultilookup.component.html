@@ -1,13 +1,13 @@
-<dx-tag-box *ngIf="prepared && preparedColumn && lookup"
+<dx-tag-box *ngIf="editing.prepared$ | async"
     #element
     [readOnly]="(editing.readonly$ | async) ?? false"
-    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
-    [value]="value"
-    [dataSource]="(lookup.dataSource$ | async) ?? null"
-    [displayExpr]="(lookup.displayExpr$ | async) ?? ''"
-    [valueExpr]="(lookup.valueExpr$ | async) ?? ''"
+    (onValueChanged)="valueChanged($event)"
+    [value]="(value$ | async) ?? []"
+    [dataSource]="(datasource$ | async) ?? null"
+    [displayExpr]="(displayExpr$ | async) ?? ''"
+    [valueExpr]="(valueExpr$ | async) ?? ''"
     [showClearButton]="true"
-    [acceptCustomValue]="(lookup.acceptCustomValue$ | async) ?? false"
-    (onCustomItemCreating)="lookup.onCustomItemCreating($event)">
+    [acceptCustomValue]="(acceptCustomValue$ | async) ?? false"
+    (onCustomItemCreating)="customItemCreating($event)">
   <dx-validator [validationRules]="(editing.validationRules$ | async) ?? []"></dx-validator>
 </dx-tag-box>
