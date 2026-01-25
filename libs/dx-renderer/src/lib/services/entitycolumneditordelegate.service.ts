@@ -38,15 +38,6 @@ export class EntityColumnEditorDelegateService
   );
 
   private _value$ = new BehaviorSubject<unknown>(undefined);
-  private _valueChanged$ = new BehaviorSubject<
-    ((editor: EditItemRef, value: unknown) => void) | undefined
-  >(undefined);
-  private _raiseEvent$ = new BehaviorSubject<
-    ((editor: EditItemRef, identifier: string) => void) | undefined
-  >(undefined);
-  private _openColumnPopup$ = new BehaviorSubject<(() => void) | undefined>(
-    undefined
-  );
 
   private _readonly$ = new BehaviorSubject<boolean | undefined>(undefined);
   private _lookup$ = new BehaviorSubject<LookupDelegate | undefined>(undefined);
@@ -86,18 +77,6 @@ export class EntityColumnEditorDelegateService
 
   get value$() {
     return this._value$;
-  }
-
-  get valueChanged$() {
-    return this._valueChanged$;
-  }
-
-  get raiseEvent$() {
-    return this._raiseEvent$;
-  }
-
-  get openColumnPopup$() {
-    return this._openColumnPopup$;
   }
 
   get readonly$() {
@@ -189,63 +168,6 @@ export class EntityColumnEditorDelegateService
             const preparedColumn = cloneDeep(
               this.cell.column.editorOptions
             ) as GridLayoutColumn;
-
-            this._valueChanged$.next((e, value) => {
-              const editUtil = {
-                getEditorOption: (dataMember, option) =>
-                  dataMember === this.identifier
-                    ? e.getOption(option)
-                    : undefined,
-                setEditorOption: (dataMember, option, value) =>
-                  dataMember === this.identifier && e.setOption(option, value),
-                apply: () =>
-                  console.warn(
-                    'Apply in DynamicColumnComponent not implemented'
-                  ),
-                cancel: () =>
-                  console.warn(
-                    'Cancel in DynamicColumnComponent not implemented'
-                  ),
-              } as EditUtil;
-
-              set(this.row, this.identifier, value);
-              this._value$.next(get(this.row, this.identifier));
-
-              editorValueChanged(
-                this.cell.column.allowEditing ? EditModes.EDIT : EditModes.VIEW,
-                this.row,
-                editUtil,
-                this.identifier,
-                value as ValueType
-              );
-            });
-
-            this._raiseEvent$.next((e, identifier) => {
-              const editUtil = {
-                getEditorOption: (dataMember, option) =>
-                  dataMember === this.identifier
-                    ? e.getOption(option)
-                    : undefined,
-                setEditorOption: (dataMember, option, value) =>
-                  dataMember === this.identifier && e.setOption(option, value),
-                apply: () =>
-                  console.warn(
-                    'Apply in DynamicColumnComponent not implemented'
-                  ),
-                cancel: () =>
-                  console.warn(
-                    'Cancel in DynamicColumnComponent not implemented'
-                  ),
-              } as EditUtil;
-
-              editorEvent(
-                this.cell.column.allowEditing ? EditModes.EDIT : EditModes.VIEW,
-                this.row,
-                editUtil,
-                this.identifier,
-                identifier
-              );
-            });
 
             this._preparedColumn$.next(preparedColumn);
             this._readonly$.next(!this.cell.column.allowEditing);

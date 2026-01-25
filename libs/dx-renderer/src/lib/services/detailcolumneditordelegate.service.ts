@@ -34,16 +34,6 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
   );
 
   private _value$ = new BehaviorSubject<unknown>(undefined);
-  private _valueChanged$ = new BehaviorSubject<
-    ((editor: EditItemRef, value: unknown) => void) | undefined
-  >(undefined);
-  private _raiseEvent$ = new BehaviorSubject<
-    ((editor: EditItemRef, identifier: string) => void) | undefined
-  >(undefined);
-
-  private _openColumnPopup$ = new BehaviorSubject<(() => void) | undefined>(
-    undefined
-  );
 
   private _readonly$ = new BehaviorSubject<boolean | undefined>(undefined);
   private _lookup$ = new BehaviorSubject<LookupDelegate | undefined>(undefined);
@@ -58,18 +48,6 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
 
   get value$() {
     return this._value$;
-  }
-
-  get valueChanged$() {
-    return this._valueChanged$;
-  }
-
-  get raiseEvent$() {
-    return this._raiseEvent$;
-  }
-
-  get openColumnPopup$() {
-    return this._openColumnPopup$;
   }
 
   get readonly$() {
@@ -168,44 +146,6 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
             });
 
             this._preparedColumn$.next(preparedColumn);
-
-            this._valueChanged$.next((e, value) => {
-              this.cell.setValue(value);
-
-              if (this.editing.detailEditorValueChanged) {
-                this.editing.detailEditorValueChanged(
-                  this.dataMember,
-                  this.rowIndex,
-                  this.row,
-                  this.identifier,
-                  value,
-                  true
-                );
-              }
-            });
-
-            this._raiseEvent$.next((e, identifier) => {
-              if (this.editing.detailEditorEvent) {
-                this.editing.detailEditorEvent(
-                  this.dataMember,
-                  this.rowIndex,
-                  this.row,
-                  this.identifier,
-                  identifier
-                );
-              }
-            });
-
-            this._openColumnPopup$.next(() => {
-              this.crudService.detailColumnEdit({
-                mode:
-                  !this.cell.column.allowEditing || !preparedColumn.editable
-                    ? EditModes.EDIT
-                    : EditModes.VIEW,
-                column: preparedColumn,
-                item: this.row,
-              });
-            });
 
             this.requiredValidation$.next(preparedColumn.required ?? false);
             this._readonly$.next(
