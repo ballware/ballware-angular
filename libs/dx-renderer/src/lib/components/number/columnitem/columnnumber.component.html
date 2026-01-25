@@ -1,6 +1,6 @@
-<dx-number-box *ngIf="prepared"
+<dx-number-box *ngIf="editing.prepared$"
     #element
     [readOnly]="(editing.readonly$ | async) ?? false"
-    (onValueChanged)="onValueChanged ? onValueChanged($event) : undefined"
-    [value]="value ?? 0">
+    (onValueChanged)="valueChanged($event)"
+    [value]="(value$ | async) ?? 0">
 </dx-number-box>

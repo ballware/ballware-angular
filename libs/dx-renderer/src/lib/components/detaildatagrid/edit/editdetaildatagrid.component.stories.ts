@@ -1570,3 +1570,367 @@ export const DynamicMultilookupColumn: Story = {
   },
 };
 
+export const DynamicStringAndNumberColumns: Story = {
+  render: (args) => {
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {}
+    });
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New Item';
+          detailItem['description'] = '';
+          detailItem['dynamic_string_value'] = '';
+          detailItem['dynamic_number_value'] = 0;
+          detailItem['dynamic_price'] = 0;
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, options}) => {
+
+          // Dynamic column that becomes a string
+          if (dataMember === 'items' && identifier === 'dynamic_string_value') {
+            options.type = 'string';
+            options.editable = true;
+          }
+
+          // Dynamic column that becomes a number
+          if (dataMember === 'items' && identifier === 'dynamic_number_value') {
+            options.type = 'number';
+            options.editable = true;
+          }
+
+          // Dynamic column that becomes a formatted number (price)
+          if (dataMember === 'items' && identifier === 'dynamic_price') {
+            options.type = 'number';
+            options.editable = true;
+            options.precision = 2;
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        {
+          id: 1,
+          name: 'Product A',
+          description: 'Description for Product A',
+          dynamic_string_value: 'Dynamic String 1',
+          dynamic_number_value: 100,
+          dynamic_price: 19.99
+        },
+        {
+          id: 2,
+          name: 'Product B',
+          description: 'Description for Product B',
+          dynamic_string_value: 'Dynamic String 2',
+          dynamic_number_value: 250,
+          dynamic_price: 49.95
+        },
+        {
+          id: 3,
+          name: 'Product C',
+          description: 'Description for Product C',
+          dynamic_string_value: 'Dynamic String 3',
+          dynamic_number_value: 75,
+          dynamic_price: 9.99
+        },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Dynamic String and Number Columns',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Product Name', type: 'string', editable: true },
+              { dataMember: 'description', caption: 'Description', type: 'string', editable: true },
+              { dataMember: 'dynamic_string_value', caption: 'Dynamic String', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_number_value', caption: 'Dynamic Number', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_price', caption: 'Dynamic Price', type: 'dynamic', editable: true },
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Data rows should be rendered
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(3);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Column headers should exist
+    await waitFor(
+      async () => {
+        const dynamicStringHeader = canvas.queryByText('Dynamic String');
+        await expect(dynamicStringHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    await waitFor(
+      async () => {
+        const dynamicNumberHeader = canvas.queryByText('Dynamic Number');
+        await expect(dynamicNumberHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    await waitFor(
+      async () => {
+        const dynamicPriceHeader = canvas.queryByText('Dynamic Price');
+        await expect(dynamicPriceHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Dynamic string values should be visible
+    await waitFor(
+      async () => {
+        const stringValue = canvas.queryByText('Dynamic String 1');
+        await expect(stringValue).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+  },
+};
+
+export const DynamicColumnsWithMixedTypes: Story = {
+  render: (args) => {
+
+    const mockLookupService = createMockedLookupService({
+      lookups: {}
+    });
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['dynamic_code'] = '';
+          detailItem['dynamic_quantity'] = 0;
+          detailItem['dynamic_percentage'] = 0;
+          detailItem['dynamic_amount'] = 0;
+          detailItem['dynamic_comment'] = '';
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, options}) => {
+
+          // Dynamic column that becomes a string (code)
+          if (dataMember === 'items' && identifier === 'dynamic_code') {
+            options.type = 'string';
+            options.editable = true;
+            options.required = true;
+          }
+
+          // Dynamic column that becomes a number (quantity)
+          if (dataMember === 'items' && identifier === 'dynamic_quantity') {
+            options.type = 'number';
+            options.editable = true;
+            options.precision = 0;
+          }
+
+          // Dynamic column that becomes a number (percentage)
+          if (dataMember === 'items' && identifier === 'dynamic_percentage') {
+            options.type = 'number';
+            options.editable = true;
+            options.precision = 2;
+          }
+
+          // Dynamic column that becomes a number (amount) - readonly in this case
+          if (dataMember === 'items' && identifier === 'dynamic_amount') {
+            options.type = 'number';
+            options.editable = false;
+            options.precision = 2;
+          }
+
+          // Dynamic column that becomes a string (comment) - multiline
+          if (dataMember === 'items' && identifier === 'dynamic_comment') {
+            options.type = 'string';
+            options.editable = true;
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        {
+          id: 1,
+          dynamic_code: 'CODE-001',
+          dynamic_quantity: 10,
+          dynamic_percentage: 0.15,
+          dynamic_amount: 150.00,
+          dynamic_comment: 'First item comment'
+        },
+        {
+          id: 2,
+          dynamic_code: 'CODE-002',
+          dynamic_quantity: 25,
+          dynamic_percentage: 0.20,
+          dynamic_amount: 500.00,
+          dynamic_comment: 'Second item comment'
+        },
+        {
+          id: 3,
+          dynamic_code: 'CODE-003',
+          dynamic_quantity: 5,
+          dynamic_percentage: 0.10,
+          dynamic_amount: 50.00,
+          dynamic_comment: 'Third item comment'
+        },
+        {
+          id: 4,
+          dynamic_code: 'CODE-004',
+          dynamic_quantity: 100,
+          dynamic_percentage: 0.25,
+          dynamic_amount: 2500.00,
+          dynamic_comment: 'Fourth item comment'
+        },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Dynamic Columns with Mixed Types',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'dynamic_code', caption: 'Code (Dynamic String)', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_quantity', caption: 'Quantity (Dynamic Number)', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_percentage', caption: 'Discount % (Dynamic Number)', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_amount', caption: 'Amount (Dynamic Number, Readonly)', type: 'dynamic', editable: false },
+              { dataMember: 'dynamic_comment', caption: 'Comment (Dynamic String)', type: 'dynamic', editable: true },
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: LOOKUP_SERVICE,
+          useValue: mockLookupService.service
+        },
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Test: Grid should be visible
+    await waitFor(
+      async () => {
+        const grid = canvasElement.querySelector('dx-data-grid');
+        await expect(grid).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Data rows should be rendered
+    await waitFor(
+      async () => {
+        const rows = canvasElement.querySelectorAll('.dx-data-row');
+        await expect(rows.length).toBe(4);
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Column headers should exist
+    await waitFor(
+      async () => {
+        const codeHeader = canvas.queryByText('Code (Dynamic String)');
+        await expect(codeHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    await waitFor(
+      async () => {
+        const quantityHeader = canvas.queryByText('Quantity (Dynamic Number)');
+        await expect(quantityHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    await waitFor(
+      async () => {
+        const percentageHeader = canvas.queryByText('Discount % (Dynamic Number)');
+        await expect(percentageHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    await waitFor(
+      async () => {
+        const amountHeader = canvas.queryByText('Amount (Dynamic Number, Readonly)');
+        await expect(amountHeader).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+
+    // Test: Dynamic string values should be visible
+    await waitFor(
+      async () => {
+        const codeValue = canvas.queryByText('CODE-001');
+        await expect(codeValue).toBeTruthy();
+      },
+      { timeout: 5000 }
+    );
+  },
+};
+
+
