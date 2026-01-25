@@ -1,6 +1,10 @@
 import { EnvironmentProviders, inject, makeEnvironmentProviders, provideAppInitializer } from '@angular/core';
 import { COLUMNCONFIGURATION_REGISTRY, EDITITEM_REGISTRY, PAGEITEM_REGISTRY, TOOLBARITEMCONFIGURATION_REGISTRY } from '../registries';
-import { createButtonToolbarItem, EditLayoutButtonComponent } from './button';
+import {
+  createButtonColumn,
+  createButtonToolbarItem,
+  EditLayoutButtonComponent,
+} from './button';
 import { EditLayoutStaticButtonGroupComponent } from './buttongroup';
 import { createTextColumn, createTextToolbarItem, EditLayoutTextComponent } from './text';
 import { EditLayoutTextareaComponent } from './textarea';
@@ -146,6 +150,7 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('string', createTextColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('text', createTextColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('popup', createDetailPopupColumn);
+      columnConfigurationRegistry.registerDetailColumnConfigurationFactory('button', createButtonColumn);
       columnConfigurationRegistry.registerDetailColumnConfigurationFactory('dynamic', createDetailDynamicColumn);
 
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('bool', createBoolColumn);
@@ -160,6 +165,7 @@ export const provideDefaultColumnConfigurations = (): EnvironmentProviders => {
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('string', createTextColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('text', createTextColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('popup', createEntityPopupColumn);
+      columnConfigurationRegistry.registerEntityColumnConfigurationFactory('button', createButtonColumn);
       columnConfigurationRegistry.registerEntityColumnConfigurationFactory('dynamic', createEntityDynamicColumn);
     })
   ]);

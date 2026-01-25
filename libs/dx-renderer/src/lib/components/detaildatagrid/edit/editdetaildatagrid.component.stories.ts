@@ -103,6 +103,7 @@ export const Default: Story = {
               { dataMember: 'quantity', caption: 'Quantity', type: 'number' },
               { dataMember: 'price', caption: 'Price', type: 'number' },
               { dataMember: 'active', caption: 'Active', type: 'bool' },
+              { dataMember: 'action', caption: 'Action', type: 'button', hint: 'Details', editable: true },
             ]
           }
         ),
@@ -124,6 +125,7 @@ export const Default: Story = {
           { dataField: 'quantity', caption: 'Quantity', dataType: 'number' },
           { dataField: 'price', caption: 'Price', dataType: 'number' },
           { dataField: 'active', caption: 'Active', dataType: 'boolean' },
+          { dataField: 'action', caption: 'Action', dataType: 'button' },
         ],
         height: 400,
         editMode: 'cell',
@@ -572,6 +574,12 @@ export const RowEditing: Story = {
             options.editable = detailItem['id'] !== 2
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_button') {
+            options.type = 'button';
+            options.hint = detailItem['id'] === 1 ? 'View' : detailItem['id'] === 2 ? 'Edit' : 'Delete';
+            options.editable = true;
+          }
+
           return options;
         })
       }
@@ -603,6 +611,8 @@ export const RowEditing: Story = {
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
               { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
               { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'static_button', caption: 'Info', type: 'button', hint: 'Show Info', editable: true },
+              { dataMember: 'dynamic_button', caption: 'Dynamic Action', type: 'dynamic' },
               { dataMember: 'editable', caption: 'Editable', type: 'bool', editable: true }
             ],
           }
@@ -769,6 +779,12 @@ export const InstantEditing: Story = {
             options.editable = detailItem['id'] === 3
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_button') {
+            options.type = 'button';
+            options.hint = `Process ${detailItem['id']}`;
+            options.editable = true;
+          }
+
           return options;
         })
       }
@@ -800,6 +816,7 @@ export const InstantEditing: Story = {
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
               { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
               { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_button', caption: 'Actions', type: 'dynamic' },
               { dataMember: 'enabled', caption: 'Enabled', type: 'bool', editable: true }
             ],
           }
@@ -995,3 +1012,168 @@ export const DynamicBoolColumn: Story = {
   },
 };
 
+export const ButtonColumns: Story = {
+  render: (args) => {
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['status'] = 'pending';
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          // Dynamic button column with different actions based on status
+          if (dataMember === 'items' && identifier === 'dynamic_action') {
+            options.type = 'button';
+            options.editable = true;
+
+            switch(detailItem['status']) {
+              case 'pending':
+                options.hint = 'Approve';
+                break;
+              case 'approved':
+                options.hint = 'Process';
+                break;
+              case 'processed':
+                options.hint = 'Complete';
+                break;
+              case 'completed':
+                options.hint = 'Archive';
+                break;
+              default:
+                options.hint = 'View';
+            }
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Order #1001', status: 'pending', amount: 150.00 },
+        { id: 2, name: 'Order #1002', status: 'approved', amount: 275.50 },
+        { id: 3, name: 'Order #1003', status: 'processed', amount: 89.99 },
+        { id: 4, name: 'Order #1004', status: 'completed', amount: 450.00 },
+        { id: 5, name: 'Order #1005', status: 'pending', amount: 320.00 },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Button Columns Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'status', caption: 'Status', type: 'string', editable: true },
+              { dataMember: 'amount', caption: 'Amount', type: 'number', editable: true },
+              { dataMember: 'static_view', caption: '', type: 'button', hint: 'View Details', editable: true },
+              { dataMember: 'dynamic_action', caption: 'Action', type: 'dynamic' }
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+};
+
+export const DynamicButtonTypes: Story = {
+  render: (args) => {
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['type'] = 'info';
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          // Dynamic column that can be button, bool, or string based on row type
+          if (dataMember === 'items' && identifier === 'dynamic_field') {
+            switch(detailItem['type']) {
+              case 'action':
+                options.type = 'button';
+                options.hint = 'Execute';
+                options.editable = true;
+                break;
+              case 'toggle':
+                options.type = 'bool';
+                options.editable = true;
+                break;
+              case 'info':
+              default:
+                options.type = 'string';
+                options.editable = false;
+                break;
+            }
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Task A', type: 'action', dynamic_field: null },
+        { id: 2, name: 'Task B', type: 'toggle', dynamic_field: true },
+        { id: 3, name: 'Task C', type: 'info', dynamic_field: 'Read-only information' },
+        { id: 4, name: 'Task D', type: 'action', dynamic_field: null },
+        { id: 5, name: 'Task E', type: 'toggle', dynamic_field: false },
+        { id: 6, name: 'Task F', type: 'info', dynamic_field: 'Additional notes' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Dynamic Button Types Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'type', caption: 'Type', type: 'string', editable: true },
+              { dataMember: 'dynamic_field', caption: 'Dynamic Field (Button/Bool/String)', type: 'dynamic', editable: true }
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+};
