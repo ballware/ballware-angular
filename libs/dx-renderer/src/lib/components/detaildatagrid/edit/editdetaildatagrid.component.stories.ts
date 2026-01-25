@@ -1,11 +1,11 @@
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { EditLayoutItemOptions } from '@ballware/meta-model';
 import {
-  AutocompleteCreator,
+  AutocompleteCreator, CRUD_SERVICE,
   EDIT_SERVICE,
   LOOKUP_SERVICE,
   LookupCreator,
-  LookupDescriptor,
+  LookupDescriptor, NOTIFICATION_SERVICE,
   PickvalueCreator,
   TRANSLATOR
 } from '@ballware/meta-services';
@@ -22,6 +22,8 @@ import { EditLayoutDetailDataGridComponent } from './editdetaildatagrid.componen
 import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../../utils';
 import { provideDefaultItemRegistries } from '../../../registries';
 import { provideDefaultColumnConfigurations } from '../../index';
+import { createMockedNotificationService } from '@storybook-helpers/notification.service.mock';
+import { createMockedCrudService } from '@storybook-helpers/crud.service.mock';
 
 const meta: Meta<EditLayoutDetailDataGridComponent> = {
   title: 'DX Renderer/Edit/DetailGrid',
@@ -40,8 +42,16 @@ const meta: Meta<EditLayoutDetailDataGridComponent> = {
           useValue: createSimpleTranslator()
         },
         {
+          provide: NOTIFICATION_SERVICE,
+          useFactory: () => createMockedNotificationService().service
+        },
+        {
           provide: LOOKUP_SERVICE,
           useFactory: () => createMockedLookupService().service
+        },
+        {
+          provide: CRUD_SERVICE,
+          useFactory: () => createMockedCrudService().service
         },
         {
           provide: EDIT_SERVICE,
@@ -92,6 +102,7 @@ export const Default: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string' },
               { dataMember: 'quantity', caption: 'Quantity', type: 'number' },
               { dataMember: 'price', caption: 'Price', type: 'number' },
+              { dataMember: 'active', caption: 'Active', type: 'bool' },
             ]
           }
         ),
@@ -102,9 +113,9 @@ export const Default: Story = {
       value: {
         dataMember$: of('items'),
         value: [
-          { name: 'Item 1', quantity: 2, price: 10.99 },
-          { name: 'Item 2', quantity: 1, price: 25.5 },
-          { name: 'Item 3', quantity: 5, price: 5 },
+          { name: 'Item 1', quantity: 2, price: 10.99, active: true },
+          { name: 'Item 2', quantity: 1, price: 25.5, active: false },
+          { name: 'Item 3', quantity: 5, price: 5, active: true },
         ],
       },
       editing: {
@@ -112,6 +123,7 @@ export const Default: Story = {
           { dataField: 'name', caption: 'Name', dataType: 'string' },
           { dataField: 'quantity', caption: 'Quantity', dataType: 'number' },
           { dataField: 'price', caption: 'Price', dataType: 'number' },
+          { dataField: 'active', caption: 'Active', dataType: 'boolean' },
         ],
         height: 400,
         editMode: 'cell',
@@ -184,6 +196,7 @@ export const Empty: Story = {
             columns: [
               { dataMember: 'name', caption: 'Name', type: 'string' },
               { dataMember: 'description', caption: 'Description', type: 'string' },
+              { dataMember: 'isAvailable', caption: 'Available', type: 'bool' },
             ]
           }
         ),
@@ -199,6 +212,7 @@ export const Empty: Story = {
         columns: [
           { dataField: 'name', caption: 'Name', dataType: 'string' },
           { dataField: 'description', caption: 'Description', dataType: 'string' },
+          { dataField: 'isAvailable', caption: 'Available', dataType: 'boolean' },
         ],
         height: 300,
         editMode: 'cell',
@@ -252,6 +266,7 @@ export const Readonly: Story = {
               { dataMember: 'id', caption: 'ID', type: 'number' },
               { dataMember: 'status', caption: 'Status', type: 'string' },
               { dataMember: 'date', caption: 'Date', type: 'date' },
+              { dataMember: 'enabled', caption: 'Enabled', type: 'bool' },
             ]
           }
         ),
@@ -262,9 +277,9 @@ export const Readonly: Story = {
       value: {
         dataMember$: of('readonlyItems'),
         value: [
-          { id: 1, status: 'Active', date: new Date('2024-01-15') },
-          { id: 2, status: 'Pending', date: new Date('2024-02-20') },
-          { id: 3, status: 'Completed', date: new Date('2024-03-10') },
+          { id: 1, status: 'Active', date: new Date('2024-01-15'), enabled: true },
+          { id: 2, status: 'Pending', date: new Date('2024-02-20'), enabled: false },
+          { id: 3, status: 'Completed', date: new Date('2024-03-10'), enabled: true },
         ],
       },
       editing: {
@@ -272,6 +287,7 @@ export const Readonly: Story = {
           { dataField: 'id', caption: 'ID', dataType: 'number' },
           { dataField: 'status', caption: 'Status', dataType: 'string' },
           { dataField: 'date', caption: 'Date', dataType: 'date' },
+          { dataField: 'enabled', caption: 'Enabled', dataType: 'boolean' },
         ],
         height: 350,
         editMode: 'cell',
@@ -306,6 +322,7 @@ export const RowEditMode: Story = {
               { dataMember: 'product', caption: 'Product', type: 'string' },
               { dataMember: 'category', caption: 'Category', type: 'string' },
               { dataMember: 'stock', caption: 'Stock', type: 'number' },
+              { dataMember: 'inStock', caption: 'In Stock', type: 'bool' },
             ]
           }
         ),
@@ -316,9 +333,9 @@ export const RowEditMode: Story = {
       value: {
         dataMember$: of('rowEditItems'),
         value: [
-          { product: 'Laptop', category: 'Electronics', stock: 15 },
-          { product: 'Mouse', category: 'Accessories', stock: 50 },
-          { product: 'Keyboard', category: 'Accessories', stock: 30 },
+          { product: 'Laptop', category: 'Electronics', stock: 15, inStock: true },
+          { product: 'Mouse', category: 'Accessories', stock: 50, inStock: true },
+          { product: 'Keyboard', category: 'Accessories', stock: 30, inStock: false },
         ],
       },
       editing: {
@@ -326,6 +343,7 @@ export const RowEditMode: Story = {
           { dataField: 'product', caption: 'Product', dataType: 'string' },
           { dataField: 'category', caption: 'Category', dataType: 'string' },
           { dataField: 'stock', caption: 'Stock', dataType: 'number' },
+          { dataField: 'inStock', caption: 'In Stock', dataType: 'boolean' },
         ],
         height: 400,
         editMode: 'row',
@@ -466,6 +484,7 @@ export const WithLargeDataset: Story = {
               { dataMember: 'id', caption: 'ID', type: 'number' },
               { dataMember: 'name', caption: 'Name', type: 'string' },
               { dataMember: 'value', caption: 'Value', type: 'number' },
+              { dataMember: 'isActive', caption: 'Active', type: 'bool' },
             ]
           }
         ),
@@ -479,6 +498,7 @@ export const WithLargeDataset: Story = {
           id: i + 1,
           name: `Item ${i + 1}`,
           value: Math.random() * 1000,
+          isActive: i % 2 === 0,
         })),
       },
       editing: {
@@ -486,6 +506,7 @@ export const WithLargeDataset: Story = {
           { dataField: 'id', caption: 'ID', dataType: 'number' },
           { dataField: 'name', caption: 'Name', dataType: 'string' },
           { dataField: 'value', caption: 'Value', dataType: 'number' },
+          { dataField: 'isActive', caption: 'Active', dataType: 'boolean' },
         ],
         height: 500,
         editMode: 'cell',
@@ -546,6 +567,11 @@ export const RowEditing: Story = {
             options.editable = detailItem['id'] === 2
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_bool_value') {
+            options.type = 'bool';
+            options.editable = detailItem['id'] !== 2
+          }
+
           return options;
         })
       }
@@ -553,9 +579,9 @@ export const RowEditing: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', editable: true, dynamic_bool_value: true },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', editable: false, dynamic_bool_value: false },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', editable: true, dynamic_bool_value: true },
       ]
     });
 
@@ -575,7 +601,9 @@ export const RowEditing: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
-              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'editable', caption: 'Editable', type: 'bool', editable: true }
             ],
           }
         )
@@ -638,6 +666,11 @@ export const RowEditingGlobalReadonly: Story = {
             options.editable = detailItem['id'] === 2
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_bool_value') {
+            options.type = 'bool';
+            options.editable = detailItem['id'] === 1
+          }
+
           return options;
         })
       }
@@ -645,9 +678,9 @@ export const RowEditingGlobalReadonly: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', active: true, dynamic_bool_value: false },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', active: false, dynamic_bool_value: true },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', active: true, dynamic_bool_value: false },
       ]
     });
 
@@ -667,7 +700,9 @@ export const RowEditingGlobalReadonly: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
-              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'active', caption: 'Active', type: 'bool', editable: true }
             ],
           }
         )
@@ -729,6 +764,11 @@ export const InstantEditing: Story = {
             options.editable = detailItem['id'] === 2
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_bool_value') {
+            options.type = 'bool';
+            options.editable = detailItem['id'] === 3
+          }
+
           return options;
         })
       }
@@ -736,9 +776,9 @@ export const InstantEditing: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', enabled: true, dynamic_bool_value: true },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', enabled: false, dynamic_bool_value: false },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', enabled: true, dynamic_bool_value: true },
       ]
     });
 
@@ -758,7 +798,9 @@ export const InstantEditing: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
-              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'enabled', caption: 'Enabled', type: 'bool', editable: true }
             ],
           }
         )
@@ -821,6 +863,11 @@ export const InstantEditingGlobalReadonly: Story = {
             options.editable = detailItem['id'] === 2
           }
 
+          if (dataMember === 'items' && identifier === 'dynamic_bool_value') {
+            options.type = 'bool';
+            options.editable = false
+          }
+
           return options;
         })
       }
@@ -828,9 +875,9 @@ export const InstantEditingGlobalReadonly: Story = {
 
     mockEditService.subjects.item$.next({
       items: [
-        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e' },
-        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d' },
-        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247' },
+        { id: 1, name: 'Dynamic Item 1', value: 100, lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', dynamic_lookup_value: '7f6b2c98-8eec-4092-aa7c-977d874e4f9e', isActive: true, dynamic_bool_value: false },
+        { id: 2, name: 'Dynamic Item 2', value: 200, lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', dynamic_lookup_value: '33acc2c2-e69f-48f2-871b-77377f01a34d', isActive: false, dynamic_bool_value: true },
+        { id: 3, name: 'Dynamic Item 3', value: 300, lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', dynamic_lookup_value: '938877a7-db27-4ab7-be75-713239d8a247', isActive: true, dynamic_bool_value: false },
       ]
     });
 
@@ -850,7 +897,9 @@ export const InstantEditingGlobalReadonly: Story = {
               { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
               { dataMember: 'value', caption: 'Value', type: 'number', editable: true },
               { dataMember: 'lookup_value', caption: 'Lookup', type: 'lookup', editable: true, lookup: 'simpleLookup', displayExpr: 'text', valueExpr: 'value', required: true },
-              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true }
+              { dataMember: 'dynamic_lookup_value', caption: 'Dynamic Lookup', type: 'dynamic', editable: true },
+              { dataMember: 'dynamic_bool_value', caption: 'Dynamic Bool', type: 'dynamic', editable: true },
+              { dataMember: 'isActive', caption: 'Active', type: 'bool', editable: true }
             ],
           }
         )
@@ -871,3 +920,78 @@ export const InstantEditingGlobalReadonly: Story = {
     };
   },
 };
+
+export const DynamicBoolColumn: Story = {
+  render: (args) => {
+
+    const mockEditService = createMockedEditService({
+      overrides: {
+        initNewDetailItem$: new BehaviorSubject(({ detailItem }) => {
+          detailItem['id'] = 0;
+          detailItem['name'] = 'New item';
+          detailItem['type'] = 'TypeA';
+        }),
+        detailGridCellPreparing$: new BehaviorSubject(({ dataMember, identifier, detailItem, options}) => {
+
+          // Dynamic column that becomes a boolean based on row data
+          if (dataMember === 'items' && identifier === 'dynamic_field') {
+            // For TypeA and TypeB items, show as boolean
+            if (detailItem['type'] === 'TypeA' || detailItem['type'] === 'TypeB') {
+              options.type = 'bool';
+              options.editable = true;
+            } else {
+              // For TypeC items, show as string
+              options.type = 'string';
+              options.editable = false;
+            }
+          }
+
+          return options;
+        })
+      }
+    });
+
+    mockEditService.subjects.item$.next({
+      items: [
+        { id: 1, name: 'Item A1', type: 'TypeA', dynamic_field: true },
+        { id: 2, name: 'Item A2', type: 'TypeA', dynamic_field: false },
+        { id: 3, name: 'Item B1', type: 'TypeB', dynamic_field: true },
+        { id: 4, name: 'Item B2', type: 'TypeB', dynamic_field: false },
+        { id: 5, name: 'Item C1', type: 'TypeC', dynamic_field: 'N/A' },
+        { id: 6, name: 'Item C2', type: 'TypeC', dynamic_field: 'N/A' },
+      ]
+    });
+
+    return {
+      props: {
+        ...args,
+        initialLayoutItem: createDetailGridLayoutItem(
+          'items',
+          'Dynamic Bool Column Demo',
+          {
+            editMode: 'instant',
+            add: true,
+            update: true,
+            delete: true,
+            columns: [
+              { dataMember: 'id', caption: 'ID', type: 'number' },
+              { dataMember: 'name', caption: 'Name', type: 'string', editable: true },
+              { dataMember: 'type', caption: 'Type', type: 'string', editable: true },
+              { dataMember: 'dynamic_field', caption: 'Dynamic Field (Bool for TypeA/B, String for TypeC)', type: 'dynamic', editable: true }
+            ],
+          }
+        )
+      },
+      template: `<ballware-edit-detaildatagrid [initialLayoutItem]='initialLayoutItem'></ballware-edit-detaildatagrid>`,
+      applicationConfig: {
+      providers: [
+        {
+          provide: EDIT_SERVICE,
+          useValue: mockEditService.service
+        }
+      ]
+    }
+    };
+  },
+};
+

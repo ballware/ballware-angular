@@ -41,7 +41,9 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
     ((editor: EditItemRef, identifier: string) => void) | undefined
   >(undefined);
 
-  private _openColumnPopup$ = new BehaviorSubject<(() => void)|undefined>(undefined);
+  private _openColumnPopup$ = new BehaviorSubject<(() => void) | undefined>(
+    undefined
+  );
 
   private _readonly$ = new BehaviorSubject<boolean | undefined>(undefined);
   private _lookup$ = new BehaviorSubject<LookupDelegate | undefined>(undefined);
@@ -82,6 +84,7 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
   column!: GridLayoutColumn;
   row!: Record<string, unknown>;
   rowIndex!: number;
+  preparedColumn!: GridLayoutColumn | undefined;
 
   public requiredValidation$ = new BehaviorSubject<boolean>(false);
 
@@ -102,6 +105,10 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
     private readonly editing: DetailCollectionEditing,
     private readonly destroy: DestroyRef
   ) {
+    this.preparedColumn$.pipe(
+      takeUntilDestroyed(this.destroy),
+    ).subscribe(column => this.preparedColumn = column);
+
     this.validationRules$ = combineLatest([
       this.requiredValidation$,
       this.preparedColumn$,
@@ -179,13 +186,22 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
 
             this._raiseEvent$.next((e, identifier) => {
               if (this.editing.detailEditorEvent) {
-                this.editing.detailEditorEvent(this.dataMember, this.rowIndex, this.row, this.identifier, identifier);
+                this.editing.detailEditorEvent(
+                  this.dataMember,
+                  this.rowIndex,
+                  this.row,
+                  this.identifier,
+                  identifier
+                );
               }
             });
 
             this._openColumnPopup$.next(() => {
               this.crudService.detailColumnEdit({
-                mode: !this.cell.column.allowEditing || !preparedColumn.editable ? EditModes.EDIT : EditModes.VIEW,
+                mode:
+                  !this.cell.column.allowEditing || !preparedColumn.editable
+                    ? EditModes.EDIT
+                    : EditModes.VIEW,
                 column: preparedColumn,
                 item: this.row,
               });
@@ -247,5 +263,47 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
           }
         }
       );
+  }
+
+  readonly valueChanged = (editor: EditItemRef, value: unknown) => {
+    this.cell.setValue(value);
+
+    if (this.editing.detailEditorValueChanged) {
+      this.editing.detailEditorValueChanged(
+        this.dataMember,
+        this.rowIndex,
+        this.row,
+        this.identifier,
+        value,
+        true
+      );
+    }
+  }
+
+  readonly raiseEvent = (editor: EditItemRef, event: string) => {
+    if (this.editing.detailEditorEvent) {
+      this.editing.detailEditorEvent(
+        this.dataMember,
+        this.rowIndex,
+        this.row,
+        this.identifier,
+        event
+      );
+    }
+  };
+
+  readonly openColumnPopup = (): void => {
+    if (!this.preparedColumn) {
+      throw new Error('Column not initialized');
+    }
+
+    this.crudService.detailColumnEdit({
+      mode:
+        !this.cell.column.allowEditing || !this.column.editable
+          ? EditModes.EDIT
+          : EditModes.VIEW,
+      column: this.preparedColumn,
+      item: this.row,
+    });
   }
 }

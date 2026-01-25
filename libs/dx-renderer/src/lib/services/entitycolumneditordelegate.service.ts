@@ -51,6 +51,26 @@ export class EntityColumnEditorDelegateService
   private _readonly$ = new BehaviorSubject<boolean | undefined>(undefined);
   private _lookup$ = new BehaviorSubject<LookupDelegate | undefined>(undefined);
 
+  private _editorValueChanged:
+    | ((
+        mode: EditModes,
+        item: Record<string, unknown>,
+        editUtil: EditUtil,
+        identifier: string,
+        value: ValueType
+      ) => void)
+    | undefined;
+
+  private _editorEvent:
+    | ((
+        mode: EditModes,
+        item: Record<string, unknown>,
+        editUtil: EditUtil,
+        identifier: string,
+        event: string
+      ) => void)
+    | undefined;
+
   identifier!: string;
   column!: GridLayoutColumn;
   row!: Record<string, unknown>;
@@ -104,6 +124,16 @@ export class EntityColumnEditorDelegateService
     @Inject(COLUMN_EDITOR_CELL)
     private readonly cell: ColumnEditCellTemplateData
   ) {
+    this.metaService.editorValueChanged$
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe(
+        (editorValueChanged) => (this._editorValueChanged = editorValueChanged)
+      );
+
+    this.metaService.editorEvent$
+      .pipe(takeUntilDestroyed(this.destroy))
+      .subscribe(editorEvent => this._editorEvent = editorEvent);
+
     this.validationRules$ = combineLatest([
       this.requiredValidation$,
       this.preparedColumn$,
@@ -269,4 +299,62 @@ export class EntityColumnEditorDelegateService
         }
       );
   }
+
+  readonly valueChanged = (editor: EditItemRef, value: unknown) => {
+    if (!this._editorValueChanged) {
+      throw new Error('Editor not initialized');
+    }
+
+    const editUtil = {
+      getEditorOption: (dataMember, option) =>
+        dataMember === this.identifier ? editor.getOption(option) : undefined,
+      setEditorOption: (dataMember, option, value) =>
+        dataMember === this.identifier && editor.setOption(option, value),
+      apply: () =>
+        console.warn('Apply in DynamicColumnComponent not implemented'),
+      cancel: () =>
+        console.warn('Cancel in DynamicColumnComponent not implemented'),
+    } as EditUtil;
+
+    set(this.row, this.identifier, value);
+    this._value$.next(get(this.row, this.identifier));
+
+    this._editorValueChanged(
+      this.cell.column.allowEditing ? EditModes.EDIT : EditModes.VIEW,
+      this.row,
+      editUtil,
+      this.identifier,
+      value as ValueType
+    );
+  };
+
+  readonly raiseEvent = (editor: EditItemRef, event: string) => {
+
+    if (!this._editorEvent) {
+      throw new Error('Editor not initialized');
+    }
+
+    const editUtil = {
+      getEditorOption: (dataMember, option) =>
+        dataMember === this.identifier ? editor.getOption(option) : undefined,
+      setEditorOption: (dataMember, option, value) =>
+        dataMember === this.identifier && editor.setOption(option, value),
+      apply: () =>
+        console.warn('Apply in DynamicColumnComponent not implemented'),
+      cancel: () =>
+        console.warn('Cancel in DynamicColumnComponent not implemented'),
+    } as EditUtil;
+
+    this._editorEvent(
+      this.cell.column.allowEditing ? EditModes.EDIT : EditModes.VIEW,
+      this.row,
+      editUtil,
+      this.identifier,
+      event
+    );
+  };
+
+  readonly openColumnPopup = (): void => {
+    throw new Error('openColumnPopup not implemented for entity columns');
+  };
 }

@@ -9,18 +9,26 @@ import { GridLayoutColumn } from '@ballware/meta-model';
 
 export interface ColumnEditorDelegateService {
   prepared$: Observable<boolean>;
-  preparedColumn$: Observable<GridLayoutColumn|undefined>;
-  lookup$: Observable<LookupDelegate|undefined>;
+  preparedColumn$: Observable<GridLayoutColumn | undefined>;
+  lookup$: Observable<LookupDelegate | undefined>;
 
-  readonly$: Observable<boolean|undefined>;
+  readonly$: Observable<boolean | undefined>;
 
   value$: Observable<unknown>;
-  valueChanged$: Observable<((editor: EditItemRef, value: unknown) => void)|undefined>;
-  raiseEvent$: Observable<((editor: EditItemRef, identifier: string) => void)|undefined>;
+  valueChanged$: Observable<
+    ((editor: EditItemRef, value: unknown) => void) | undefined
+  >;
+  raiseEvent$: Observable<
+    ((editor: EditItemRef, identifier: string) => void) | undefined
+  >;
 
-  openColumnPopup$: Observable<(() => void)|undefined>;
+  openColumnPopup$: Observable<(() => void) | undefined>;
 
-  validationRules$: Observable<Array<ValidationRule>>|undefined;
+  validationRules$: Observable<Array<ValidationRule>> | undefined;
+
+  valueChanged(editor: EditItemRef, value: unknown): void;
+  raiseEvent(editor: EditItemRef, event: string): void;
+  openColumnPopup(): void;
 }
 
 export type ColumnEditCellTemplateData = DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData;
