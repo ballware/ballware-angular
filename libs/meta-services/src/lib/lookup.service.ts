@@ -133,20 +133,18 @@ export type LookupElementType =
   | AutocompleteCreator
   | Array<unknown>;
 
-export interface LookupService {
+export type LookupByIdentifierFunc = (
+  identifier: string
+) => LookupDescriptor | undefined;
 
+export interface LookupService {
   setIdentifier(identifier: string): void;
 
-  lookups$: Observable<Record<
-      string,
-      LookupElementType
-    >|undefined>;
+  lookups$: Observable<Record<string, LookupElementType> | undefined>;
 
-  getGenericLookupByIdentifier$: Observable<((
-      identifier: string
-    ) => LookupDescriptor) | undefined>;
+  getGenericLookupByIdentifier$: Observable<LookupByIdentifierFunc | undefined>;
 
-  requestLookups(request :LookupRequest[]): void;
+  requestLookups(request: LookupRequest[]): void;
 }
 
 export type LookupServiceFactory = () => LookupService;

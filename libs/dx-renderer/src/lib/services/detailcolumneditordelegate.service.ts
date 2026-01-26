@@ -15,15 +15,18 @@ import {
   EditService,
   LOOKUP_SERVICE,
   LookupService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
   Translator,
-  TRANSLATOR
+  TRANSLATOR,
 } from '@ballware/meta-services';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
-import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegate, LookupDelegateBuilderFactory } from '../utils';
+import { LookupDelegate } from '../utils';
 import { DetailCollectionEditing } from '../directives';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RequiredRule, ValidationRule } from 'devextreme/common';
 import { cloneDeep, get } from 'lodash';
+import { createColumnLookupDelegate } from '../components/utils';
 
 export const DETAIL_COLUMN_DATAMEMBER = new InjectionToken<string>('Detail column data member');
 
@@ -70,11 +73,10 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
 
   constructor(
     @Inject(TRANSLATOR) private readonly translator: Translator,
+    @Inject(NOTIFICATION_SERVICE) private readonly notificationService: NotificationService,
     @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
     @Inject(CRUD_SERVICE) private readonly crudService: CrudService,
     @Inject(EDIT_SERVICE) private readonly editService: EditService,
-    @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY)
-    private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory,
     @Inject(DETAIL_COLUMN_DATAMEMBER) public readonly dataMember: string,
     @Inject(COLUMN_LOOKUP_PARAMS)
     private readonly lookupParams: Record<string, unknown>,
@@ -152,53 +154,9 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
               !this.cell.column.allowEditing || !preparedColumn.editable
             );
 
-            const lookupBuilder = this.createLookupDelegateBuilder(lookups);
+            const lookupDelegate = createColumnLookupDelegate(preparedColumn, lookups, getGenericLookupByIdentifier, this.lookupParams, this.row, this.notificationService);
 
-            if (preparedColumn.items) {
-              lookupBuilder.forStaticItems(preparedColumn.items);
-            } else if (preparedColumn.itemsMember) {
-              lookupBuilder.forItemsFromMember(
-                preparedColumn.itemsMember,
-                (member) =>
-                  get(this.row, member) as Array<Record<string, unknown>>
-              );
-            } else if (preparedColumn.lookupMember) {
-              lookupBuilder.forItemsFromMember(
-                preparedColumn.lookupMember,
-                (member) =>
-                  get(this.lookupParams, member) as Array<
-                    Record<string, unknown>
-                  >
-              );
-            } else if (preparedColumn.lookup) {
-              lookupBuilder.forIdentifier(preparedColumn.lookup);
-
-              if (preparedColumn.lookupParam) {
-                lookupBuilder.withParamFromMember(
-                  preparedColumn.lookupParam,
-                  (member) => get(this.lookupParams, member) as string
-                );
-              } else if (
-                preparedColumn.pickvalueEntity &&
-                preparedColumn.pickvalueField
-              ) {
-                lookupBuilder.withPickvaluesForEntityAndField(
-                  preparedColumn.pickvalueEntity,
-                  preparedColumn.pickvalueField
-                );
-              }
-            }
-
-            lookupBuilder.withUnknownLookupFallback(
-              getGenericLookupByIdentifier
-            );
-            lookupBuilder.withValueExpr(preparedColumn.valueExpr);
-            lookupBuilder.withDisplayExpr(preparedColumn.displayExpr);
-            lookupBuilder.withAcceptCustomValue(
-              preparedColumn.acceptCustomValue
-            );
-
-            this._lookup$.next(lookupBuilder.build());
+            this._lookup$.next(lookupDelegate);
             this._prepared$.next(true);
           }
         }

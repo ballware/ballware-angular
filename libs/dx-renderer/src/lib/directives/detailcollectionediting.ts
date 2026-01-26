@@ -113,57 +113,176 @@ export class DetailCollectionEditing implements OnInit {
     }
 
     ngOnInit(): void {
-        combineLatest([this.livecycle.preparedLayoutItem$, this.readonly.readonly$, this.editService.mode$, this.editService.item$,
-            this.lookupService.lookups$,
-            this.editService.detailGridCellPreparing$,
-            this.editService.detailGridRowValidating$,
-            this.editService.initNewDetailItem$,
-            this.editService.detailEditorInitialized$,
-            this.editService.detailEditorValidating$,
-            this.editService.detailEditorEntered$,
-            this.editService.detailEditorEvent$,
-            this.editService.detailEditorValueChanged$])
-            .pipe(takeUntilDestroyed(this.destroy))
-            .subscribe(([layoutItem, readonly, mode, item, lookups,
-                detailGridCellPreparing, detailGridRowValidating, initNewDetailItem, detailEditorInitialized, detailEditorValidating, detailEditorEntered, detailEditorEvent, detailEditorValueChanged]) => {
-                if (layoutItem?.options?.dataMember && mode && item && lookups
-                    && detailGridCellPreparing && detailGridRowValidating && initNewDetailItem
-                    && detailEditorInitialized && detailEditorValidating && detailEditorEntered && detailEditorEvent && detailEditorValueChanged) {
-                    this.dataMember = layoutItem.options?.dataMember;
-                    this.height = layoutItem.options?.height;
-                    this.options = layoutItem.options?.itemoptions as DetailCollectionEditingOptions;
-                    this.lookupParams = item;
+        combineLatest([
+          this.livecycle.preparedLayoutItem$,
+          this.readonly.readonly$,
+          this.editService.mode$,
+          this.editService.item$,
+          this.lookupService.lookups$,
+          this.lookupService.getGenericLookupByIdentifier$,
+          this.editService.detailGridCellPreparing$,
+          this.editService.detailGridRowValidating$,
+          this.editService.initNewDetailItem$,
+          this.editService.detailEditorInitialized$,
+          this.editService.detailEditorValidating$,
+          this.editService.detailEditorEntered$,
+          this.editService.detailEditorEvent$,
+          this.editService.detailEditorValueChanged$,
+        ])
+          .pipe(takeUntilDestroyed(this.destroy))
+          .subscribe(
+            ([
+              layoutItem,
+              readonly,
+              mode,
+              item,
+              lookups,
+              getLookupByIdentifier,
+              detailGridCellPreparing,
+              detailGridRowValidating,
+              initNewDetailItem,
+              detailEditorInitialized,
+              detailEditorValidating,
+              detailEditorEntered,
+              detailEditorEvent,
+              detailEditorValueChanged,
+            ]) => {
+              if (
+                layoutItem?.options?.dataMember &&
+                mode &&
+                item &&
+                lookups &&
+                getLookupByIdentifier &&
+                detailGridCellPreparing &&
+                detailGridRowValidating &&
+                initNewDetailItem &&
+                detailEditorInitialized &&
+                detailEditorValidating &&
+                detailEditorEntered &&
+                detailEditorEvent &&
+                detailEditorValueChanged
+              ) {
+                this.dataMember = layoutItem.options?.dataMember;
+                this.height = layoutItem.options?.height;
+                this.options = layoutItem.options
+                  ?.itemoptions as DetailCollectionEditingOptions;
+                this.lookupParams = item;
 
-                    this.editMode = (readonly) ? 'row' : this.options?.editMode ?? 'row';
-                    this.allowAdd = (!readonly && this.options?.add) ?? false;
-                    this.allowUpdate = (!readonly && this.options?.update) ?? false;
-                    this.allowDelete = (!readonly && this.options?.delete) ?? false;
-                    this.allowShowSource = this.options?.showSource ?? false;
+                this.editMode = readonly
+                  ? 'row'
+                  : this.options?.editMode ?? 'row';
+                this.allowAdd = (!readonly && this.options?.add) ?? false;
+                this.allowUpdate = (!readonly && this.options?.update) ?? false;
+                this.allowDelete = (!readonly && this.options?.delete) ?? false;
+                this.allowShowSource = this.options?.showSource ?? false;
 
-                    this.detailGridCellPreparing = (dataMember, detailItem, identifier, column) => detailGridCellPreparing({ dataMember, detailItem, identifier, options: column });
-                    this.detailGridRowValidating = (dataMember, detailItem) => detailGridRowValidating({ dataMember, detailItem });
-                    this.initNewDetailItem = (dataMember, detailItem) => initNewDetailItem({ dataMember, detailItem });
+                this.detailGridCellPreparing = (
+                  dataMember,
+                  detailItem,
+                  identifier,
+                  column
+                ) =>
+                  detailGridCellPreparing({
+                    dataMember,
+                    detailItem,
+                    identifier,
+                    options: column,
+                  });
+                this.detailGridRowValidating = (dataMember, detailItem) =>
+                  detailGridRowValidating({ dataMember, detailItem });
+                this.initNewDetailItem = (dataMember, detailItem) =>
+                  initNewDetailItem({ dataMember, detailItem });
 
-                    this.detailEditorInitialized = (dataMember, detailItemIndex, detailItem, identifier, component) => detailEditorInitialized({ dataMember, detailItemIndex, detailItem, identifier, component });
-                    this.detailEditorValidating = (dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value) => detailEditorValidating({ dataMember, detailItemIndex, detailItem, identifier, ruleIdentifier, value });
-                    this.detailEditorEntered = (dataMember, detailItemIndex, detailItem, identifier) => detailEditorEntered({ dataMember, detailItemIndex, detailItem, identifier });
-                    this.detailEditorValueChanged = (dataMember, detailItemIndex, detailItem, identifier, value, notify) => detailEditorValueChanged({ dataMember, detailItemIndex, detailItem, identifier, value, notify });
-                    this.detailEditorEvent = (dataMember, detailItemIndex, detailItem, identifier, event) => detailEditorEvent({ dataMember, detailItemIndex, detailItem, identifier, event });
+                this.detailEditorInitialized = (
+                  dataMember,
+                  detailItemIndex,
+                  detailItem,
+                  identifier,
+                  component
+                ) =>
+                  detailEditorInitialized({
+                    dataMember,
+                    detailItemIndex,
+                    detailItem,
+                    identifier,
+                    component,
+                  });
+                this.detailEditorValidating = (
+                  dataMember,
+                  detailItemIndex,
+                  detailItem,
+                  identifier,
+                  ruleIdentifier,
+                  value
+                ) =>
+                  detailEditorValidating({
+                    dataMember,
+                    detailItemIndex,
+                    detailItem,
+                    identifier,
+                    ruleIdentifier,
+                    value,
+                  });
+                this.detailEditorEntered = (
+                  dataMember,
+                  detailItemIndex,
+                  detailItem,
+                  identifier
+                ) =>
+                  detailEditorEntered({
+                    dataMember,
+                    detailItemIndex,
+                    detailItem,
+                    identifier,
+                  });
+                this.detailEditorValueChanged = (
+                  dataMember,
+                  detailItemIndex,
+                  detailItem,
+                  identifier,
+                  value,
+                  notify
+                ) =>
+                  detailEditorValueChanged({
+                    dataMember,
+                    detailItemIndex,
+                    detailItem,
+                    identifier,
+                    value,
+                    notify,
+                  });
+                this.detailEditorEvent = (
+                  dataMember,
+                  detailItemIndex,
+                  detailItem,
+                  identifier,
+                  event
+                ) =>
+                  detailEditorEvent({
+                    dataMember,
+                    detailItemIndex,
+                    detailItem,
+                    identifier,
+                    event,
+                  });
 
-                    runInInjectionContext(this.injector, () => {
-                      if (this.options && this.dataMember) {
-                        this.columns = createColumnConfigurationForDetail<ColumnType>(
-                          this.options.columns,
-                          this.dataMember,
-                          lookups,
-                          item,
-                          this.options.editMode ?? 'row',
-                          this.onDetailRowValidating
-                        );
-                      }
-                    });
-                }
-        });
+                runInInjectionContext(this.injector, () => {
+                  if (this.options && this.dataMember) {
+                    this.columns =
+                      createColumnConfigurationForDetail<ColumnType>(
+                        this.options.columns,
+                        this.dataMember,
+                        lookups,
+                        getLookupByIdentifier,
+                        item,
+                        this.options.editMode ?? 'row',
+                        this.onDetailRowValidating
+                      );
+                  }
+                });
+              }
+            }
+          );
     }
 
     public onToolbarPreparing(e: DataGridToolbarPreparingEvent|TreeListToolbarPreparingEvent) {

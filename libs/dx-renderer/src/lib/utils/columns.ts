@@ -1,9 +1,7 @@
 import { CrudItem, GridLayoutColumn } from "@ballware/meta-model";
 import {
-  AutocompleteCreator,
-  LookupCreator,
-  LookupDescriptor, LookupElementType,
-  PickvalueCreator,
+  LookupByIdentifierFunc,
+  LookupElementType,
   TRANSLATOR
 } from '@ballware/meta-services';
 import { AsyncRule } from 'devextreme-angular/common';
@@ -46,14 +44,17 @@ const columnPositionComparer = (a: GridLayoutColumn, b: GridLayoutColumn) => {
 }
 
 function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
-    mode: 'entity' | 'detail',
-    c: GridLayoutColumn,
-    dataMember: string|undefined,
-    editMode: 'row' | 'instant',
-    lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
-    lookupParams: Record<string, unknown>
-  ) {
-
+  mode: 'entity' | 'detail',
+  c: GridLayoutColumn,
+  dataMember: string | undefined,
+  editMode: 'row' | 'instant',
+  lookups: Record<
+    string,
+    LookupElementType
+  >,
+  getlookupByIdentifier: LookupByIdentifierFunc,
+  lookupParams: Record<string, unknown>
+) {
   const columnConfigurationRegistry = inject(COLUMNCONFIGURATION_REGISTRY);
 
   let type = c.type;
@@ -63,13 +64,27 @@ function createColumn<ColumnType extends TreeListColumn | DataGridColumn>(
   }
 
   return mode === 'detail' && dataMember
-    ? columnConfigurationRegistry.resolveDetailColumnConfiguration<ColumnType>(type, c, dataMember, lookups, lookupParams)
-    : columnConfigurationRegistry.resolveEntityColumnConfiguration<ColumnType>(type, c, lookups, lookupParams);
+    ? columnConfigurationRegistry.resolveDetailColumnConfiguration<ColumnType>(
+        type,
+        c,
+        dataMember,
+        lookups,
+        getlookupByIdentifier,
+        lookupParams
+      )
+    : columnConfigurationRegistry.resolveEntityColumnConfiguration<ColumnType>(
+        type,
+        c,
+        lookups,
+        getlookupByIdentifier,
+        lookupParams
+      );
 }
 
 export const createColumnConfigurationForEntity = <ColumnType extends TreeListColumn | DataGridColumn>(
   columns: Array<GridLayoutColumn>,
   lookups: Record<string, LookupElementType>,
+  getlookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>,
   mode: 'small' | 'medium' | 'large',
   editMode: 'row' | 'instant',
@@ -85,7 +100,7 @@ export const createColumnConfigurationForEntity = <ColumnType extends TreeListCo
   const gridColumns =
     cloneDeep(columns ?? [])
       .sort(columnPositionComparer)
-      .map(c => createColumn<ColumnType>('entity', c, undefined, editMode, lookups, lookupParams)) ?? [];
+      .map(c => createColumn<ColumnType>('entity', c, undefined, editMode, lookups, getlookupByIdentifier, lookupParams)) ?? [];
 
   switch (mode) {
     case 'small':
@@ -203,6 +218,7 @@ export const createColumnConfigurationForDetail = <ColumnType extends TreeListCo
   columns: Array<GridLayoutColumn>,
   dataMember: string,
   lookups: Record<string, LookupElementType>,
+  getlookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>,
   editMode: 'row' | 'instant',
   onRowValidating: (e: ValidationCallbackData) => Observable<string|undefined>
@@ -211,7 +227,7 @@ export const createColumnConfigurationForDetail = <ColumnType extends TreeListCo
   const gridColumns =
     cloneDeep(columns ?? [])
       .sort(columnPositionComparer)
-      .map(c => createColumn<ColumnType>('detail', c, dataMember, editMode, lookups, lookupParams)) ?? [];
+      .map(c => createColumn<ColumnType>('detail', c, dataMember, editMode, lookups, getlookupByIdentifier, lookupParams)) ?? [];
 
   gridColumns.push({
     visible: false,

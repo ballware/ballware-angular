@@ -8,19 +8,19 @@ import {
 } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
 import {
-  CRUD_SERVICE, CrudService,
+  CRUD_SERVICE,
+  CrudService,
   EDIT_SERVICE,
   EditService,
-  LOOKUP_SERVICE,
+  LOOKUP_SERVICE, LookupByIdentifierFunc,
   LookupElementType,
   LookupService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
   Translator,
   TRANSLATOR,
 } from '@ballware/meta-services';
-import {
-  LOOKUP_DELEGATE_BUILDER_FACTORY,
-  LookupDelegateBuilderFactory,
-} from '../../utils';
+
 import {
   createComponent,
   DestroyRef,
@@ -48,6 +48,7 @@ export const createDetailMultilookupColumn = <
   c: GridLayoutColumn,
   dataMember: string | undefined,
   lookups: Record<string, LookupElementType>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
 
@@ -84,10 +85,10 @@ export const createDetailMultilookupColumn = <
             provide: COLUMN_EDITOR_DELEGATE,
             useFactory: (
               t: Translator,
+              notificationService: NotificationService,
               lookupService: LookupService,
               crudService: CrudService,
               editService: EditService,
-              lookupFactory: LookupDelegateBuilderFactory,
               dataMember: string,
               lookupParams: Record<string, unknown>,
               cell: ColumnEditCellTemplateData,
@@ -96,10 +97,10 @@ export const createDetailMultilookupColumn = <
             ) =>
               new DetailColumnEditorDelegateService(
                 t,
+                notificationService,
                 lookupService,
                 crudService,
                 editService,
-                lookupFactory,
                 dataMember,
                 lookupParams,
                 cell,
@@ -108,10 +109,10 @@ export const createDetailMultilookupColumn = <
               ),
             deps: [
               TRANSLATOR,
+              NOTIFICATION_SERVICE,
               LOOKUP_SERVICE,
               CRUD_SERVICE,
               EDIT_SERVICE,
-              LOOKUP_DELEGATE_BUILDER_FACTORY,
               DETAIL_COLUMN_DATAMEMBER,
               COLUMN_LOOKUP_PARAMS,
               COLUMN_EDITOR_CELL,
@@ -143,6 +144,7 @@ export const createDetailMultilookupColumn = <
 export const createEntityMultilookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
   lookups: Record<string, LookupElementType>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
   const injector = inject(Injector);

@@ -9,16 +9,23 @@ import {
 import { GridLayoutColumn } from '@ballware/meta-model';
 import { createComponent, DestroyRef, EnvironmentInjector, inject, Injector } from '@angular/core';
 import {
-  AutocompleteCreator, CRUD_SERVICE, CrudService, EDIT_SERVICE, EditService, LOOKUP_SERVICE,
-  LookupCreator,
-  LookupDescriptor, LookupService,
-  PickvalueCreator, TRANSLATOR, Translator,
+  CRUD_SERVICE,
+  CrudService,
+  EDIT_SERVICE,
+  EditService,
+  LOOKUP_SERVICE,
+  LookupByIdentifierFunc,
+  LookupElementType,
+  LookupService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
+  TRANSLATOR,
+  Translator,
 } from '@ballware/meta-services';
 
 import { one } from 'devextreme/events';
 
 import { DynamicColumnComponent } from './columnitem/dynamiccolumn.component';
-import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegateBuilderFactory } from '../../utils';
 import {
   COLUMN_EDITOR_CELL,
   COLUMN_EDITOR_DELEGATE,
@@ -33,7 +40,8 @@ import { DetailCollectionEditing } from '../../directives';
 export const createDetailDynamicColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
   dataMember: string,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  lookups: Record<string, LookupElementType>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
 
@@ -71,10 +79,10 @@ export const createDetailDynamicColumn = <ColumnType extends TreeListColumn | Da
             provide: COLUMN_EDITOR_DELEGATE,
             useFactory: (
               t: Translator,
+              notificationService: NotificationService,
               lookupService: LookupService,
               crudService: CrudService,
               editService: EditService,
-              lookupFactory: LookupDelegateBuilderFactory,
               dataMember: string,
               lookupParams: Record<string, unknown>,
               cell: ColumnEditCellTemplateData,
@@ -83,10 +91,10 @@ export const createDetailDynamicColumn = <ColumnType extends TreeListColumn | Da
             ) =>
               new DetailColumnEditorDelegateService(
                 t,
+                notificationService,
                 lookupService,
                 crudService,
                 editService,
-                lookupFactory,
                 dataMember,
                 lookupParams,
                 cell,
@@ -95,10 +103,10 @@ export const createDetailDynamicColumn = <ColumnType extends TreeListColumn | Da
               ),
             deps: [
               TRANSLATOR,
+              NOTIFICATION_SERVICE,
               LOOKUP_SERVICE,
               CRUD_SERVICE,
               EDIT_SERVICE,
-              LOOKUP_DELEGATE_BUILDER_FACTORY,
               DETAIL_COLUMN_DATAMEMBER,
               COLUMN_LOOKUP_PARAMS,
               COLUMN_EDITOR_CELL,
@@ -125,12 +133,17 @@ export const createDetailDynamicColumn = <ColumnType extends TreeListColumn | Da
   } as ColumnType;
 }
 
-export const createEntityDynamicColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
+export const createEntityDynamicColumn = <
+  ColumnType extends TreeListColumn | DataGridColumn
+>(
   c: GridLayoutColumn,
-  lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  lookups: Record<
+    string,
+    LookupElementType
+  >,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
-
   const injector = inject(Injector);
   const envInjector = inject(EnvironmentInjector);
 
@@ -143,7 +156,12 @@ export const createEntityDynamicColumn = <ColumnType extends TreeListColumn | Da
     visible: c.visible ?? true,
     sortOrder: c.sorting,
     editorOptions: c,
-    editCellTemplate: (cellElement: HTMLElement, cellInfo: DataGridColumnEditCellTemplateData | TreeListColumnEditCellTemplateData) => {
+    editCellTemplate: (
+      cellElement: HTMLElement,
+      cellInfo:
+        | DataGridColumnEditCellTemplateData
+        | TreeListColumnEditCellTemplateData
+    ) => {
       cellElement.innerHTML = '';
 
       const editorInjector = Injector.create({
@@ -176,6 +194,6 @@ export const createEntityDynamicColumn = <ColumnType extends TreeListColumn | Da
         compRef.destroy();
       });
     },
-    showEditorAlways: true
+    showEditorAlways: true,
   } as ColumnType;
-}
+};

@@ -2,7 +2,7 @@ import { Column as TreeListColumn } from 'devextreme/ui/tree_list';
 import { Column as DataGridColumn } from 'devextreme/ui/data_grid';
 import { GridLayoutColumn } from '@ballware/meta-model';
 import {
-  AutocompleteCreator,
+  AutocompleteCreator, LookupByIdentifierFunc,
   LookupCreator,
   LookupDescriptor,
   NOTIFICATION_SERVICE,
@@ -15,12 +15,13 @@ export const createDetailLookupColumn = <ColumnType extends TreeListColumn | Dat
   c: GridLayoutColumn,
   dataMember: string|undefined,
   lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
 
   const notificationService = inject(NOTIFICATION_SERVICE);
 
-  const lookupDelegate = createColumnLookupDelegate(c, lookups, lookupParams, notificationService);
+  const lookupDelegate = createColumnLookupDelegate(c, lookups, getLookupByIdentifier, lookupParams, undefined, notificationService);
 
   return {
     ...createDefaultColumn(c, lookupDelegate),
@@ -33,6 +34,7 @@ export const createDetailLookupColumn = <ColumnType extends TreeListColumn | Dat
 export const createEntityLookupColumn = <ColumnType extends TreeListColumn | DataGridColumn>(
   c: GridLayoutColumn,
   lookups: Record<string, LookupDescriptor | LookupCreator | PickvalueCreator | AutocompleteCreator | Array<unknown>>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
 
@@ -41,7 +43,9 @@ export const createEntityLookupColumn = <ColumnType extends TreeListColumn | Dat
   const lookupDelegate = createColumnLookupDelegate(
     c,
     lookups,
+    getLookupByIdentifier,
     lookupParams,
+    undefined,
     notificationService
   );
 

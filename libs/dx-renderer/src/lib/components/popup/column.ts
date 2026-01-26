@@ -12,15 +12,18 @@ import { one } from 'devextreme/events';
 import { ColumnPopupComponent  } from './columnitem/columnpopup.component';
 import { createDefaultColumn } from '../utils';
 import {
-  CRUD_SERVICE, CrudService,
+  CRUD_SERVICE,
+  CrudService,
   EDIT_SERVICE,
   EditService,
-  LOOKUP_SERVICE, LookupElementType,
+  LOOKUP_SERVICE, LookupByIdentifierFunc,
+  LookupElementType,
   LookupService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
   TRANSLATOR,
   Translator,
 } from '@ballware/meta-services';
-import { LOOKUP_DELEGATE_BUILDER_FACTORY, LookupDelegateBuilderFactory } from '../../utils';
 import {
   COLUMN_EDITOR_CELL,
   COLUMN_EDITOR_DELEGATE,
@@ -40,6 +43,7 @@ export const createDetailPopupColumn = <
   c: GridLayoutColumn,
   dataMember: string,
   lookups: Record<string, LookupElementType>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
   const injector = inject(Injector);
@@ -75,10 +79,10 @@ export const createDetailPopupColumn = <
             provide: COLUMN_EDITOR_DELEGATE,
             useFactory: (
               t: Translator,
+              notificationService: NotificationService,
               lookupService: LookupService,
               crudService: CrudService,
               editService: EditService,
-              lookupFactory: LookupDelegateBuilderFactory,
               dataMember: string,
               lookupParams: Record<string, unknown>,
               cell: ColumnEditCellTemplateData,
@@ -87,10 +91,10 @@ export const createDetailPopupColumn = <
             ) =>
               new DetailColumnEditorDelegateService(
                 t,
+                notificationService,
                 lookupService,
                 crudService,
                 editService,
-                lookupFactory,
                 dataMember,
                 lookupParams,
                 cell,
@@ -99,10 +103,10 @@ export const createDetailPopupColumn = <
               ),
             deps: [
               TRANSLATOR,
+              NOTIFICATION_SERVICE,
               LOOKUP_SERVICE,
               CRUD_SERVICE,
               EDIT_SERVICE,
-              LOOKUP_DELEGATE_BUILDER_FACTORY,
               DETAIL_COLUMN_DATAMEMBER,
               COLUMN_LOOKUP_PARAMS,
               COLUMN_EDITOR_CELL,
@@ -135,6 +139,7 @@ export const createEntityPopupColumn = <
 >(
   c: GridLayoutColumn,
   lookups: Record<string, LookupElementType>,
+  getLookupByIdentifier: LookupByIdentifierFunc,
   lookupParams: Record<string, unknown>
 ) => {
   const injector = inject(Injector);

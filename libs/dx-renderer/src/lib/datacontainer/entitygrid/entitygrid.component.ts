@@ -170,14 +170,16 @@ export class EntitygridComponent implements OnInit {
       this.metaService.headParams$,
       this._gridLayout$,
       this.lookupService.lookups$,
+      this.lookupService.getGenericLookupByIdentifier$,
       this.crudService.functionAllowed$,
       this.crudService.functionExecute$
     ]).pipe(
       takeUntilDestroyed(this.destroy),
-      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (lookups && editLayoutIdentifier && headParams && buttonAllowed && buttonClicked)
+      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, getLookupByIdentifier, buttonAllowed, buttonClicked]) => (lookups && getLookupByIdentifier && editLayoutIdentifier && headParams && buttonAllowed && buttonClicked)
         ? runInInjectionContext(this.injector, () => createColumnConfigurationForEntity<Column>(
         gridLayout?.columns ?? [],
         lookups,
+        getLookupByIdentifier,
         headParams,
         gridModeForScreenSize(screenSize),
         'row',

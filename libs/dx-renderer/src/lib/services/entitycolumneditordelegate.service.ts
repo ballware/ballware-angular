@@ -12,19 +12,20 @@ import {
   LookupService,
   META_SERVICE,
   MetaService,
+  NOTIFICATION_SERVICE,
+  NotificationService,
   Translator,
   TRANSLATOR,
 } from '@ballware/meta-services';
 import {
-  LOOKUP_DELEGATE_BUILDER_FACTORY,
-  LookupDelegate,
-  LookupDelegateBuilderFactory,
+  LookupDelegate
 } from '../utils';
 import { cloneDeep, get, set } from 'lodash';
 import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EditUtil, GridLayoutColumn, ValueType } from '@ballware/meta-model';
 import { RequiredRule, ValidationRule } from 'devextreme/common';
+import { createColumnLookupDelegate } from '../components/utils';
 
 @Directive({
   standalone: true,
@@ -94,10 +95,9 @@ export class EntityColumnEditorDelegateService
   constructor(
     private readonly destroy: DestroyRef,
     @Inject(TRANSLATOR) private readonly translator: Translator,
+    @Inject(NOTIFICATION_SERVICE) private readonly notificationService: NotificationService,
     @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
     @Inject(META_SERVICE) private readonly metaService: MetaService,
-    @Inject(LOOKUP_DELEGATE_BUILDER_FACTORY)
-    private readonly createLookupDelegateBuilder: LookupDelegateBuilderFactory,
     @Inject(COLUMN_LOOKUP_PARAMS)
     private readonly lookupParams: Record<string, unknown>,
     @Inject(COLUMN_EDITOR_CELL)
@@ -172,50 +172,9 @@ export class EntityColumnEditorDelegateService
             this._preparedColumn$.next(preparedColumn);
             this._readonly$.next(!this.cell.column.allowEditing);
 
-            const lookupBuilder = this.createLookupDelegateBuilder(lookups);
+            const lookupDelegate = createColumnLookupDelegate(preparedColumn, lookups, getGenericLookupByIdentifier, this.lookupParams, this.row, this.notificationService);
 
-            if (preparedColumn.items) {
-              lookupBuilder.forStaticItems(preparedColumn.items);
-            } else if (preparedColumn.itemsMember) {
-              lookupBuilder.forItemsFromMember(
-                preparedColumn.itemsMember,
-                (member) =>
-                  get(this.row, member) as Array<Record<string, unknown>>
-              );
-            } else if (preparedColumn.lookupMember) {
-              lookupBuilder.forItemsFromMember(
-                preparedColumn.lookupMember,
-                (member) =>
-                  get(this.lookupParams, member) as Array<
-                    Record<string, unknown>
-                  >
-              );
-            } else if (preparedColumn.lookup) {
-              lookupBuilder.forIdentifier(preparedColumn.lookup);
-
-              if (preparedColumn.lookupParam) {
-                lookupBuilder.withParamFromMember(
-                  preparedColumn.lookupParam,
-                  (member) => get(this.lookupParams, member) as string
-                );
-              } else if (
-                preparedColumn.pickvalueEntity &&
-                preparedColumn.pickvalueField
-              ) {
-                lookupBuilder.withPickvaluesForEntityAndField(
-                  preparedColumn.pickvalueEntity,
-                  preparedColumn.pickvalueField
-                );
-              }
-            }
-
-            lookupBuilder.withUnknownLookupFallback(
-              getGenericLookupByIdentifier
-            );
-            lookupBuilder.withValueExpr(preparedColumn.valueExpr);
-            lookupBuilder.withDisplayExpr(preparedColumn.displayExpr);
-
-            this._lookup$.next(lookupBuilder.build());
+            this._lookup$.next(lookupDelegate);
             this._prepared$.next(true);
           }
         }
@@ -226,6 +185,8 @@ export class EntityColumnEditorDelegateService
     if (!this._editorValueChanged) {
       throw new Error('Editor not initialized');
     }
+
+    this.cell.setValue(value);
 
     const editUtil = {
       getEditorOption: (dataMember, option) =>
