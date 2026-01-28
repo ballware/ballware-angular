@@ -6,7 +6,7 @@ import {
   PickvalueCreator,
   AutocompleteCreator,
   LookupStoreDescriptor,
-  TRANSLATOR, NOTIFICATION_SERVICE,
+  TRANSLATOR, NOTIFICATION_SERVICE, LookupByIdentifierFunc,
 } from '@ballware/meta-services';
 import { Column as DataGridColumn } from 'devextreme/ui/data_grid';
 import { Column as TreeListColumn } from 'devextreme/ui/tree_list';
@@ -27,6 +27,7 @@ describe('columns', () => {
     | AutocompleteCreator
     | Array<unknown>
   >;
+  let mockGetLookupByIdentifier: jest.MockedFn<LookupByIdentifierFunc> = jest.fn();
   let mockLookupParams: Record<string, unknown>;
   let environmentInjector: EnvironmentInjector;
 
@@ -104,15 +105,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result).toHaveLength(2); // 1 Datenspalte + 1 Button-Spalte
         expect(result[0].dataField).toBe('name');
@@ -132,15 +136,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].validationRules).toHaveLength(1);
         expect(result[0].validationRules?.[0].type).toBe('required');
@@ -157,15 +164,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].fixed).toBe(true);
         expect(result[0].fixedPosition).toBe('left');
@@ -183,15 +193,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].dataType).toBe('boolean');
       });
@@ -208,15 +221,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].dataType).toBe('number');
         expect(result[0].format).toBeNull();
@@ -234,15 +250,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].format).toEqual({ type: 'fixedPoint', precision: 2 });
       });
@@ -259,15 +278,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].dataType).toBe('date');
         expect(result[0].format).toBe('dd.MM.yyyy');
@@ -285,15 +307,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].dataType).toBe('datetime');
         expect(result[0].format).toBe('dd.MM.yyyy HH:mm');
@@ -312,15 +337,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].lookup).toBeDefined();
         expect(result[0].editorOptions).toEqual({ showClearButton: true });
@@ -355,15 +383,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].lookup).toBeDefined();
       });
@@ -381,15 +412,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].lookup).toBeDefined();
       });
@@ -407,15 +441,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].showEditorAlways).toBe(true);
         expect(typeof result[0].editCellTemplate).toBe('function');
@@ -433,15 +470,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'instant',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'instant',
+            () => {},
+            () => true
+          )
+        );
 
         // Im instant-Modus mit editable wird der Typ zu 'dynamic' geändert
         // und hat editCellTemplate: 'dynamic' und showEditorAlways: true
@@ -467,15 +507,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].lookup).toBeDefined();
       });
@@ -498,15 +541,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].lookup).toBeDefined();
       });
@@ -524,15 +570,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].editCellTemplate).toBeInstanceOf(Function);
         expect(result[0].showEditorAlways).toBe(true);
@@ -550,15 +599,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].editCellTemplate).toBeInstanceOf(Function);
         expect(result[0].showEditorAlways).toBe(true);
@@ -576,14 +628,17 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForDetail<DataGridColumn>(
-          columns,
-          'details',
-          mockLookups,
-          {},
-          'row',
-          () => of(undefined)
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForDetail<DataGridColumn>(
+            columns,
+            'details',
+            mockLookups,
+            mockGetLookupByIdentifier,
+            {},
+            'row',
+            () => of(undefined)
+          )
+        );
 
         expect(result[0].allowEditing).toBe(false);
         expect(result[0].editCellTemplate).toBeInstanceOf(Function);
@@ -602,15 +657,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'instant',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'instant',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].editCellTemplate).toBeInstanceOf(Function);
         expect(result[0].showEditorAlways).toBe(true);
@@ -632,6 +690,7 @@ describe('columns', () => {
             columns,
             'details',
             mockLookups,
+            mockGetLookupByIdentifier,
             mockLookupParams,
             'instant',
             () => of(undefined)
@@ -666,15 +725,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].dataField).toBe('first');
         expect(result[1].dataField).toBe('second');
@@ -692,15 +754,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].sortOrder).toBe('asc');
       });
@@ -712,15 +777,18 @@ describe('columns', () => {
           const onButtonClick = jest.fn();
           const onButtonAllowed = jest.fn().mockReturnValue(true);
 
-          const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-            [],
-            mockLookups,
-            mockLookupParams,
-            'small',
-            'row',
-            onButtonClick,
-            onButtonAllowed
-          ));
+          const result = runInInjectionContext(environmentInjector, () =>
+            createColumnConfigurationForEntity<DataGridColumn>(
+              [],
+              mockLookups,
+              mockGetLookupByIdentifier,
+              mockLookupParams,
+              'small',
+              'row',
+              onButtonClick,
+              onButtonAllowed
+            )
+          );
 
           expect(result).toHaveLength(1);
           expect(result[0].type).toBe('buttons');
@@ -734,15 +802,18 @@ describe('columns', () => {
           const onButtonClick = jest.fn();
           const onButtonAllowed = jest.fn().mockReturnValue(true);
 
-          const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-            [],
-            mockLookups,
-            mockLookupParams,
-            'medium',
-            'row',
-            onButtonClick,
-            onButtonAllowed
-          ));
+          const result = runInInjectionContext(environmentInjector, () =>
+            createColumnConfigurationForEntity<DataGridColumn>(
+              [],
+              mockLookups,
+              mockGetLookupByIdentifier,
+              mockLookupParams,
+              'medium',
+              'row',
+              onButtonClick,
+              onButtonAllowed
+            )
+          );
 
           expect(result).toHaveLength(1);
           expect(result[0].type).toBe('buttons');
@@ -754,15 +825,18 @@ describe('columns', () => {
           const onButtonClick = jest.fn();
           const onButtonAllowed = jest.fn().mockReturnValue(true);
 
-          const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-            [],
-            mockLookups,
-            mockLookupParams,
-            'large',
-            'row',
-            onButtonClick,
-            onButtonAllowed
-          ));
+          const result = runInInjectionContext(environmentInjector, () =>
+            createColumnConfigurationForEntity<DataGridColumn>(
+              [],
+              mockLookups,
+              mockGetLookupByIdentifier,
+              mockLookupParams,
+              'large',
+              'row',
+              onButtonClick,
+              onButtonAllowed
+            )
+          );
 
           expect(result).toHaveLength(1);
           expect(result[0].type).toBe('buttons');
@@ -777,15 +851,18 @@ describe('columns', () => {
         const onButtonAllowed = jest.fn().mockReturnValue(true);
         const testData = { Id: '123' } as CrudItem;
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          [],
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          onButtonClick,
-          onButtonAllowed
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            [],
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            onButtonClick,
+            onButtonAllowed
+          )
+        );
 
         const viewButton = (result[0].buttons as any)[0];
         viewButton.onClick({
@@ -805,15 +882,18 @@ describe('columns', () => {
         const onButtonAllowed = jest.fn().mockReturnValue(false);
         const testData = { Id: '123' } as CrudItem;
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          [],
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          onButtonClick,
-          onButtonAllowed
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            [],
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            onButtonClick,
+            onButtonAllowed
+          )
+        );
 
         const editButton = (result[0].buttons as any)[1];
         const isVisible = editButton.visible({ row: { data: testData } });
@@ -827,15 +907,18 @@ describe('columns', () => {
         const onButtonAllowed = jest.fn().mockReturnValue(true);
         const testData = { Id: '123' } as CrudItem;
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<TreeListColumn>(
-          [],
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          onButtonClick,
-          onButtonAllowed
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<TreeListColumn>(
+            [],
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            onButtonClick,
+            onButtonAllowed
+          )
+        );
 
         const deleteButton = (result[0].buttons as any)[2];
         deleteButton.onClick({
@@ -863,15 +946,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].width).toBe('200px');
       });
@@ -887,15 +973,18 @@ describe('columns', () => {
           } as GridLayoutColumn,
         ];
 
-        const result = runInInjectionContext(environmentInjector, () => createColumnConfigurationForEntity<DataGridColumn>(
-          columns,
-          mockLookups,
-          mockLookupParams,
-          'large',
-          'row',
-          () => {},
-          () => true
-        ));
+        const result = runInInjectionContext(environmentInjector, () =>
+          createColumnConfigurationForEntity<DataGridColumn>(
+            columns,
+            mockLookups,
+            mockGetLookupByIdentifier,
+            mockLookupParams,
+            'large',
+            'row',
+            () => {},
+            () => true
+          )
+        );
 
         expect(result[0].visible).toBe(false);
       });
