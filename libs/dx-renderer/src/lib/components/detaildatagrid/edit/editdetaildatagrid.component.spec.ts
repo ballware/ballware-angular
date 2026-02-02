@@ -1,7 +1,12 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { Provider } from '@angular/core';
 import { EditLayoutDetailDataGridComponent } from './editdetaildatagrid.component';
-import { EDIT_SERVICE, LOOKUP_SERVICE, TRANSLATOR } from '@ballware/meta-services';
+import {
+  EDIT_SERVICE,
+  LOOKUP_SERVICE,
+  LookupByIdentifierFunc,
+  TRANSLATOR,
+} from '@ballware/meta-services';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { mockedEditServiceContext } from '../../../../test/editservice.spec';
 import { Mock } from 'moq.ts';
@@ -16,14 +21,15 @@ describe('EditLayoutDetailDataGridComponent', () => {
 
   const mockedTranslator = jest.fn((key: string) => key);
   const mockedEditService = mockedEditServiceContext();
+  const mockGetLookupByIdentifier: jest.MockedFn<LookupByIdentifierFunc> = jest.fn();
   const mockedLookupService = new Mock<any>()
-    .setup(instance => instance.lookups$)
+    .setup((instance) => instance.lookups$)
     .returns(new BehaviorSubject({}))
-    .setup(instance => instance.getGenericLookupByIdentifier$)
-    .returns(new BehaviorSubject(undefined))
-    .setup(instance => instance.setIdentifier)
+    .setup((instance) => instance.getGenericLookupByIdentifier$)
+    .returns(new BehaviorSubject(mockGetLookupByIdentifier))
+    .setup((instance) => instance.setIdentifier)
     .returns(jest.fn())
-    .setup(instance => instance.requestLookups)
+    .setup((instance) => instance.requestLookups)
     .returns(jest.fn());
 
   beforeEach(async () => {
