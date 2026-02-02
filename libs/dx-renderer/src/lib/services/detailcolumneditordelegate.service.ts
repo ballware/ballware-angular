@@ -198,8 +198,8 @@ export class DetailColumnEditorDelegateService implements ColumnEditorDelegateSe
     this.crudService.detailColumnEdit({
       mode:
         !this.cell.column.allowEditing || !this.column.editable
-          ? EditModes.EDIT
-          : EditModes.VIEW,
+          ? EditModes.VIEW
+          : EditModes.EDIT,
       column: this.preparedColumn,
       item: this.row,
     });
