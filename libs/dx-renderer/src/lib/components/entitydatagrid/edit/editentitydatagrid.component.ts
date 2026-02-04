@@ -1,0 +1,132 @@
+import {
+  Component,
+  DestroyRef,
+  forwardRef,
+  Inject,
+  OnInit,
+  Provider,
+} from '@angular/core';
+import { GridLayout } from '@ballware/meta-model';
+import { ATTACHMENT_SERVICE, ATTACHMENT_SERVICE_FACTORY, AttachmentServiceFactory, CrudService, LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, MasterdetailService, MetaService, NOTIFICATION_SERVICE, NotificationService, META_SERVICE, META_SERVICE_FACTORY, MetaServiceFactory, CRUD_SERVICE, CRUD_SERVICE_FACTORY, CrudServiceFactory } from '@ballware/meta-services';
+import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
+import { DataSourceService } from '../../../utils';
+import { Router } from '@angular/router';
+import { EntitygridComponent } from '../../../datacontainer';
+import { CrudActionsComponent } from '../../crud';
+import { CommonModule } from '@angular/common';
+import { EditDetailComponent } from '../../layout';
+import {
+  Breadcrumb,
+  EditItemLivecycle,
+  Readonly,
+  Visible,
+} from '@ballware/renderer-commons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+interface EntityDataGridItemOptions {
+  uniqueKey?: string;
+  query?: string;
+  layout?: string;
+  fetchParams?: Record<string, unknown>;
+  headParams?: Record<string, unknown>;
+  readOnly?: boolean;
+  customParam?: Record<string, unknown>;
+}
+
+@Component({
+    selector: 'ballware-edit-entitydatagrid',
+    templateUrl: './editentitydatagrid.component.html',
+    styleUrls: [],
+    providers: [
+        {
+            provide: LOOKUP_SERVICE,
+            useFactory: (serviceFactory: LookupServiceFactory) => serviceFactory(),
+            deps: [LOOKUP_SERVICE_FACTORY]
+        } as Provider,
+        {
+            provide: META_SERVICE,
+            useFactory: (serviceFactory: MetaServiceFactory, lookupService: LookupService) => serviceFactory(lookupService),
+            deps: [META_SERVICE_FACTORY, LOOKUP_SERVICE]
+        } as Provider,
+        {
+            provide: ATTACHMENT_SERVICE,
+            useFactory: (serviceFactory: AttachmentServiceFactory) => serviceFactory(),
+            deps: [ATTACHMENT_SERVICE_FACTORY]
+        } as Provider,
+        {
+            provide: CRUD_SERVICE,
+            useFactory: (serviceFactory: CrudServiceFactory, router: Router, metaService: MetaService) => serviceFactory(router, metaService),
+            deps: [CRUD_SERVICE_FACTORY, Router, META_SERVICE]
+        } as Provider,
+        {
+            provide: DataSourceService,
+            useFactory: (notificationService: NotificationService, metaService: MetaService, crudService: CrudService) => new DataSourceService(notificationService, metaService, crudService),
+            deps: [NOTIFICATION_SERVICE, META_SERVICE, CRUD_SERVICE]
+        },
+        {
+            provide: MasterdetailService, useClass: MasterdetailService
+        }
+    ],
+    imports: [CommonModule, EntitygridComponent, forwardRef(() => CrudActionsComponent), EditDetailComponent],
+    hostDirectives: [{ directive: EditItemLivecycle, inputs: ['initialLayoutItem'] }, Readonly, Visible]
+})
+export class EditLayoutEntityDataGridComponent implements OnInit {
+
+  public gridLayout$: Observable<GridLayout|undefined>;
+
+  public storageIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
+  public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
+  public height$ = new BehaviorSubject<string|undefined>('100%');
+
+  constructor(
+    @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
+    @Inject(META_SERVICE) private readonly metaService: MetaService,
+    @Inject(CRUD_SERVICE) private readonly crudService: CrudService,
+    private readonly breadcrumb: Breadcrumb,
+    private readonly destroy: DestroyRef,
+    public readonly livecycle: EditItemLivecycle,
+    public readonly: Readonly,
+    public readonly visible: Visible
+  ) {
+    combineLatest([this.metaService.headParams$]).pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe(([fetchParams]) => {
+      if (fetchParams) {
+        this.crudService.reload();
+      }
+    });
+
+    this.gridLayout$ = combineLatest([this.layoutIdentifier$, this.metaService.getGridLayout$]).pipe(
+      takeUntilDestroyed(this.destroy),
+      map(([layoutIdentifier, getGridLayout]) => (layoutIdentifier && getGridLayout) ? getGridLayout(layoutIdentifier) : undefined)
+    );
+  }
+
+  ngOnInit(): void {
+
+    this.livecycle.preparedLayoutItem$.pipe(
+      takeUntilDestroyed(this.destroy)
+    ).subscribe((layoutItem) => {
+      const gridOptions = layoutItem?.options?.itemoptions as EntityDataGridItemOptions;
+
+      if (layoutItem?.options?.dataMember) {
+        this.breadcrumb.setIdentifier(layoutItem?.options?.dataMember);
+
+        this.lookupService.setIdentifier(this.breadcrumb.pathString);
+        this.metaService.setIdentifier(this.breadcrumb.pathString);
+        this.crudService.setIdentifier(this.breadcrumb.pathString);
+
+        this.metaService.setEntity(layoutItem.options?.dataMember);
+      }
+
+      this.metaService.setInitialCustomParam(gridOptions?.customParam ?? {});
+      this.metaService.setReadOnly(gridOptions?.readOnly ?? false);
+      this.metaService.setHeadParams(gridOptions?.headParams ?? {});
+
+      this.crudService.setQuery(gridOptions?.query ?? 'primary');
+
+      this.layoutIdentifier$.next(gridOptions?.layout ?? 'primary');
+      this.height$.next(layoutItem?.options?.height);
+    });
+  }
+}

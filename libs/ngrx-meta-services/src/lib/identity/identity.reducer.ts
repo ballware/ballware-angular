@@ -10,7 +10,7 @@ import {
   identityUserLogout
 } from './identity.actions';
 import { IdentityState } from "./identity.state";
-import * as moment from "moment";
+import moment from "moment";
 
 const initialState = {
 

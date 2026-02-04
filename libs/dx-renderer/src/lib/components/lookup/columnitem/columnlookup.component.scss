@@ -1,0 +1,8 @@
+.dx-state-readonly {
+  background-color: inherit !important;    
+  cursor: default !important;
+}
+
+::ng-deep .dx-state-readonly .dx-texteditor-input {
+  color: inherit !important;
+}

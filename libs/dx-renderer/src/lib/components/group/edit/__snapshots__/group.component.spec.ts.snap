@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutGroupComponent should match snapshot 1`] = `
+<ballware-edit-group
+  initialLayoutItem={[Function Object]}
+>
+  <div
+    class="dx-fieldset"
+  >
+    <div
+      class="dx-fieldset-header"
+    >
+       Test Group Snapshot 
+    </div>
+    <ballware-edit-container>
+      <div
+        class="w-100 container-fluid"
+        style="height: auto;"
+      >
+        <div
+          class="row row-cols-1 row-cols-xl-2"
+        >
+          <div
+            class="col col-xl-6"
+            style="height: auto;"
+          >
+            <ballware-edit-item>
+            </ballware-edit-item>
+          </div>
+          <div
+            class="col col-xl-6"
+            style="height: auto;"
+          >
+            <ballware-edit-item>
+            </ballware-edit-item>
+          </div>
+        </div>
+      </div>
+    </ballware-edit-container>
+  </div>
+</ballware-edit-group>
+`;

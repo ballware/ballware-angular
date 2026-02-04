@@ -1,10 +1,9 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ApplicationComponent } from '@ballware/dx-renderer';
-import { IDENTITY_SERVICE, IdentityService, SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
+import { SETTINGS_SERVICE, SettingsService } from '@ballware/meta-services';
 
 import { CommonModule } from '@angular/common';
-
-declare let window :any;
+import { ENV, RuntimeEnv } from './env';
 
 @Component({
     selector: 'ballware-root',
@@ -16,24 +15,17 @@ declare let window :any;
 export class AppComponent implements OnInit {
   title = 'ballware';
 
-  constructor(@Inject(SETTINGS_SERVICE) private settingsService: SettingsService, @Inject(IDENTITY_SERVICE) private identityService: IdentityService) {}
+  constructor(
+    @Inject(ENV) private readonly env: RuntimeEnv,
+    @Inject(SETTINGS_SERVICE) private readonly settingsService: SettingsService
+  ) {}
 
   ngOnInit(): void {
-    console.log(`Version ${window.ENV.BALLWARE_VERSION}`);
+    console.log(`Version ${this.env.BALLWARE_VERSION}`);
 
     this.settingsService.initialize(
-      window.ENV.BALLWARE_VERSION,
-      window.ENV.BALLWARE_GOOGLEKEY
-    );
-
-    this.identityService.initialize(
-      window.ENV.BALLWARE_IDENTITYURL,
-      window.ENV.BALLWARE_CLIENTID,
-      window.ENV.BALLWARE_IDENTITYSCOPES,
-      window.ENV.BALLWARE_TENANTCLAIM,
-      window.ENV.BALLWARE_USERNAMECLAIM,
-      window.ENV.BALLWARE_ACCOUNTURL,
-      window.ENV.BALLWARE_IDENTITYAUTOREFRESH === '1'
+      this.env.BALLWARE_VERSION,
+      this.env.BALLWARE_GOOGLEKEY
     );
   }
 }

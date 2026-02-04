@@ -2,17 +2,32 @@ import {
   Component,
   DestroyRef,
   Inject,
+  Injector,
   Input,
   OnInit,
-  TemplateRef,
+  runInInjectionContext,
+  TemplateRef
 } from '@angular/core';
 import { CrudItem, EntityCustomFunction, GridLayout } from '@ballware/meta-model';
-import { CRUD_SERVICE, CrudService, FunctionIdentifier, LOOKUP_SERVICE, LookupService, META_SERVICE, MetaService, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE, Translator, TRANSLATOR } from '@ballware/meta-services';
+import {
+  CRUD_SERVICE,
+  CrudService,
+  FunctionIdentifier,
+  LOOKUP_SERVICE,
+  LookupService,
+  META_SERVICE,
+  MetaService,
+  RESPONSIVE_SERVICE,
+  ResponsiveService,
+  SCREEN_SIZE,
+  Translator,
+  TRANSLATOR
+} from '@ballware/meta-services';
 import DataSource from 'devextreme/data/data_source';
 import { Column } from 'devextreme/ui/data_grid';
 import moment from 'moment';
-import { BehaviorSubject, Observable, Subject, combineLatest, map } from 'rxjs';
-import { createColumnConfiguration, DataSourceService } from '../../utils';
+import { BehaviorSubject, combineLatest, map, Observable, Subject } from 'rxjs';
+import { createColumnConfigurationForEntity, DataSourceService } from '../../utils';
 import { DatagridComponent, DatagridSummary } from '../datagrid/datagrid.component';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -40,6 +55,18 @@ const createSummaryConfiguration = (gridLayout: GridLayout) => {
   } as DatagridSummary;
 };
 
+const gridModeForScreenSize = (screenSize: SCREEN_SIZE) => {
+  if (screenSize >= SCREEN_SIZE.LG) {
+    return 'large';
+  }
+
+  if (screenSize >= SCREEN_SIZE.MD) {
+    return 'medium';
+  }
+
+  return 'small';
+}
+
 @Component({
     selector: 'ballware-entitygrid',
     templateUrl: './entitygrid.component.html',
@@ -56,7 +83,6 @@ export class EntitygridComponent implements OnInit {
 
   public height$ = new BehaviorSubject<string|undefined>('100%');
   public storageIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
-  public layoutIdentifier$ = new BehaviorSubject<string|undefined>(undefined);
 
   public summary$: Observable<DatagridSummary|undefined>;
 
@@ -77,7 +103,7 @@ export class EntitygridComponent implements OnInit {
   public showExport$: Observable<boolean>;
   public showSearchScanner$: Observable<boolean>;
 
-  private selectAddRequest$ = new Subject<{ target: Element }>();
+  private readonly selectAddRequest$ = new Subject<{ target: Element }>();
 
   private functionAllowed: ((identifier: FunctionIdentifier, data: CrudItem) => boolean)|undefined;
 
@@ -86,6 +112,7 @@ export class EntitygridComponent implements OnInit {
   }
 
   constructor(
+    private readonly injector: Injector,
     private readonly destroy: DestroyRef,
     @Inject(LOOKUP_SERVICE) private readonly lookupService: LookupService,
     @Inject(META_SERVICE) private readonly metaService: MetaService,
@@ -98,7 +125,7 @@ export class EntitygridComponent implements OnInit {
 
     this.mode$ = this.responsiveService.onResize$.pipe(
       takeUntilDestroyed(this.destroy),
-      map((screenSize) => (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')))
+      map(gridModeForScreenSize)
     );
 
     this.exportFileName$ = this.metaService.displayName$.pipe(
@@ -143,19 +170,21 @@ export class EntitygridComponent implements OnInit {
       this.metaService.headParams$,
       this._gridLayout$,
       this.lookupService.lookups$,
+      this.lookupService.getGenericLookupByIdentifier$,
       this.crudService.functionAllowed$,
       this.crudService.functionExecute$
     ]).pipe(
       takeUntilDestroyed(this.destroy),
-      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, buttonAllowed, buttonClicked]) => (lookups && editLayoutIdentifier && headParams && buttonAllowed && buttonClicked) ? createColumnConfiguration<Column>(
-        (key, options) => this.translator(key, options),
+      map(([screenSize, editLayoutIdentifier, headParams, gridLayout, lookups, getLookupByIdentifier, buttonAllowed, buttonClicked]) => (lookups && getLookupByIdentifier && editLayoutIdentifier && headParams && buttonAllowed && buttonClicked)
+        ? runInInjectionContext(this.injector, () => createColumnConfigurationForEntity<Column>(
         gridLayout?.columns ?? [],
         lookups,
+        getLookupByIdentifier,
         headParams,
-        (screenSize >= SCREEN_SIZE.LG ? 'large' : (screenSize >= SCREEN_SIZE.MD ? 'medium' : 'small')),
+        gridModeForScreenSize(screenSize),
         'row',
         (button, data, target) => buttonClicked(button, editLayoutIdentifier, data, target),
-        buttonAllowed) : undefined)
+        buttonAllowed)) : undefined)
     );
 
     this.summary$ = this._gridLayout$.pipe(
@@ -212,7 +241,7 @@ export class EntitygridComponent implements OnInit {
   }
 
   public isMasterDetailExpandable(e: { data: CrudItem }): boolean {
-    return (this.functionAllowed && this.functionAllowed('view', e.data)) ?? false;
+    return (this.functionAllowed?.('view', e.data)) ?? false;
   }
 
   ngOnInit(): void {

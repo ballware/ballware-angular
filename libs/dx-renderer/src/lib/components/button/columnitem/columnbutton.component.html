@@ -1,0 +1,6 @@
+<dx-button *ngIf="editing.prepared$ | async"
+    #element
+    [text]="(text$ | async) ?? ''"
+    [disabled]="(editing.readonly$ | async) ?? false"
+    (onClick)="clicked()">
+</dx-button>

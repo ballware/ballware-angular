@@ -1,0 +1,13 @@
+<dx-tag-box *ngIf="editing.prepared$ | async"
+    #element
+    [readOnly]="(editing.readonly$ | async) ?? false"
+    (onValueChanged)="valueChanged($event)"
+    [value]="(value$ | async) ?? []"
+    [dataSource]="(datasource$ | async) ?? null"
+    [displayExpr]="(displayExpr$ | async) ?? ''"
+    [valueExpr]="(valueExpr$ | async) ?? ''"
+    [showClearButton]="true"
+    [acceptCustomValue]="(acceptCustomValue$ | async) ?? false"
+    (onCustomItemCreating)="customItemCreating($event)">
+  <dx-validator [validationRules]="(editing.validationRules$ | async) ?? []"></dx-validator>
+</dx-tag-box>

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
-import { parse } from 'json5/lib';
+import JSON5 from 'json5';
 
 import { CompiledTenant, NavigationLayout, Template } from '@ballware/meta-model';
 import { compileTenantRightsCheck } from '@ballware/meta-scripting';
@@ -20,14 +20,14 @@ const compileTenant = (tenant: Tenant): CompiledTenant => {
     id: tenant.Id,
     name: tenant.Name,
     navigation: tenant.Navigation
-      ? (parse(tenant.Navigation) as NavigationLayout)
+      ? (JSON5.parse(tenant.Navigation) as NavigationLayout)
       : ({} as NavigationLayout),
-    templates: tenant.Templates 
-      ? (parse(tenant.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
+    templates: tenant.Templates
+      ? (JSON5.parse(tenant.Templates) as Array<{ identifier: string, definition: string }>).map(t => ({
             identifier: t.identifier,
-            definition: parse(t.definition)
-          } as Template))        
-      : ([]),      
+            definition: JSON5.parse(t.definition)
+          } as Template))
+      : ([]),
       hasRight: compileTenantRightsCheck(tenant.RightsCheckScript)
   } as CompiledTenant;
 
@@ -71,7 +71,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendTenantApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   serviceBaseUrl: string
 ): MetaTenantApi {
   return {

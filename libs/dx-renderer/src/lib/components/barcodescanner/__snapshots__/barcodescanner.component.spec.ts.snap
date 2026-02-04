@@ -1,0 +1,504 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BarcodeScannerComponent Snapshot tests should match snapshot with active camera and torch 1`] = `
+<ballware-barcodescanner
+  activeDevice={[Function Object]}
+  allowedFormats={[Function Array]}
+  autofocusEnabled={[Function Boolean]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  devices={[Function Array]}
+  enabled={[Function Boolean]}
+  interactionService={[Function Object]}
+  scanner={[Function _ZXingScannerComponent]}
+  torchCompatible={[Function Boolean]}
+  torchEnabled={[Function Boolean]}
+  valueChange={[Function EventEmitter_]}
+>
+  <dx-toolbar
+    class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection"
+    ngskiphydration="true"
+    role="toolbar"
+  >
+    <div
+      class="dx-toolbar-items-container"
+    >
+      <div
+        class="dx-toolbar-before"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-select-box
+              class="dx-show-invalid-badge dx-selectbox dx-textbox dx-texteditor dx-dropdowneditor-button-visible dx-editor-outlined dx-widget dx-dropdowneditor dx-dropdowneditor-field-clickable"
+              displayexpr="label"
+              ngskiphydration="true"
+              style="width: auto;"
+              width="auto"
+            >
+              <div
+                class="dx-dropdowneditor-input-wrapper dx-selectbox-container"
+              >
+                <input
+                  type="hidden"
+                  value="Camera 1"
+                />
+                <div
+                  class="dx-texteditor-container"
+                >
+                  <div
+                    class="dx-texteditor-input-container"
+                  >
+                    <input
+                      aria-autocomplete="none"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      autocomplete="off"
+                      class="dx-texteditor-input"
+                      placeholder="Select..."
+                      readonly=""
+                      role="combobox"
+                      tabindex="0"
+                      type="text"
+                    />
+                    <div
+                      class="dx-placeholder dx-state-invisible"
+                      data-dx_placeholder="Select..."
+                      id=dx-normalized-id-0
+                    />
+                  </div>
+                  <div
+                    class="dx-texteditor-buttons-container"
+                  >
+                    <div />
+                    <div
+                      aria-label="Select"
+                      class="dx-widget dx-button-normal dx-dropdowneditor-button"
+                      role="button"
+                    >
+                      <div
+                        class="dx-button-content"
+                      >
+                        <div
+                          class="dx-dropdowneditor-icon"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </dx-select-box>
+          </div>
+        </div>
+      </div>
+      <div
+        class="dx-toolbar-center"
+        role="presentation"
+      />
+      <div
+        class="dx-toolbar-after"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-label="bi bi-binoculars"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+              icon="bi bi-binoculars"
+              ngskiphydration="true"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-binoculars"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-label="bi bi-lightning"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+              icon="bi bi-lightning"
+              ngskiphydration="true"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-lightning"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-toolbar><zxing-scanner>
+    <video
+      poster=""
+      style="object-fit: cover;"
+    >
+      <p>
+         Your browser does not support this feature, please try to upgrade it. 
+      </p>
+      <p>
+         Seu navegador não suporta este recurso, por favor tente atualizá-lo. 
+      </p>
+    </video>
+  </zxing-scanner>
+</ballware-barcodescanner>
+`;
+
+exports[`BarcodeScannerComponent Snapshot tests should match snapshot with default state 1`] = `
+<ballware-barcodescanner
+  activeDevice="null"
+  allowedFormats={[Function Array]}
+  autofocusEnabled="false"
+  destroy={[Function NodeInjectorDestroyRef]}
+  devices={[Function Array]}
+  interactionService={[Function Object]}
+  scanner={[Function _ZXingScannerComponent]}
+  torchCompatible="false"
+  torchEnabled="false"
+  valueChange={[Function EventEmitter_]}
+>
+  <dx-toolbar
+    class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection"
+    ngskiphydration="true"
+    role="toolbar"
+  >
+    <div
+      class="dx-toolbar-items-container"
+    >
+      <div
+        class="dx-toolbar-before"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-select-box
+              class="dx-show-invalid-badge dx-selectbox dx-textbox dx-texteditor dx-dropdowneditor-button-visible dx-editor-outlined dx-texteditor-empty dx-widget dx-dropdowneditor dx-dropdowneditor-field-clickable"
+              displayexpr="label"
+              ngskiphydration="true"
+              style="width: auto;"
+              width="auto"
+            >
+              <div
+                class="dx-dropdowneditor-input-wrapper dx-selectbox-container"
+              >
+                <input
+                  type="hidden"
+                  value=""
+                />
+                <div
+                  class="dx-texteditor-container"
+                >
+                  <div
+                    class="dx-texteditor-input-container"
+                  >
+                    <input
+                      aria-autocomplete="none"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      autocomplete="off"
+                      class="dx-texteditor-input"
+                      placeholder="Select..."
+                      readonly=""
+                      role="combobox"
+                      tabindex="0"
+                      type="text"
+                    />
+                    <div
+                      class="dx-placeholder"
+                      data-dx_placeholder="Select..."
+                      id=dx-normalized-id-0
+                    />
+                  </div>
+                  <div
+                    class="dx-texteditor-buttons-container"
+                  >
+                    <div />
+                    <div
+                      aria-label="Select"
+                      class="dx-widget dx-button-normal dx-dropdowneditor-button"
+                      role="button"
+                    >
+                      <div
+                        class="dx-button-content"
+                      >
+                        <div
+                          class="dx-dropdowneditor-icon"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </dx-select-box>
+          </div>
+        </div>
+      </div>
+      <div
+        class="dx-toolbar-center"
+        role="presentation"
+      />
+      <div
+        class="dx-toolbar-after"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-label="bi bi-binoculars"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+              icon="bi bi-binoculars"
+              ngskiphydration="true"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-binoculars"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-disabled="true"
+              aria-label="bi bi-lightning"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon dx-state-disabled"
+              icon="bi bi-lightning"
+              ngskiphydration="true"
+              role="button"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-lightning"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-toolbar><zxing-scanner>
+    <video
+      poster=""
+      style="object-fit: cover;"
+    >
+      <p>
+         Your browser does not support this feature, please try to upgrade it. 
+      </p>
+      <p>
+         Seu navegador não suporta este recurso, por favor tente atualizá-lo. 
+      </p>
+    </video>
+  </zxing-scanner>
+</ballware-barcodescanner>
+`;
+
+exports[`BarcodeScannerComponent Snapshot tests should match snapshot with enabled scanner 1`] = `
+<ballware-barcodescanner
+  activeDevice="undefined"
+  allowedFormats={[Function Array]}
+  autofocusEnabled="false"
+  destroy={[Function NodeInjectorDestroyRef]}
+  devices={[Function Array]}
+  enabled={[Function Boolean]}
+  interactionService={[Function Object]}
+  scanner={[Function _ZXingScannerComponent]}
+  torchCompatible="false"
+  torchEnabled="false"
+  valueChange={[Function EventEmitter_]}
+>
+  <dx-toolbar
+    class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection"
+    ngskiphydration="true"
+    role="toolbar"
+  >
+    <div
+      class="dx-toolbar-items-container"
+    >
+      <div
+        class="dx-toolbar-before"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-select-box
+              class="dx-show-invalid-badge dx-selectbox dx-textbox dx-texteditor dx-dropdowneditor-button-visible dx-editor-outlined dx-texteditor-empty dx-widget dx-dropdowneditor dx-dropdowneditor-field-clickable"
+              displayexpr="label"
+              ngskiphydration="true"
+              style="width: auto;"
+              width="auto"
+            >
+              <div
+                class="dx-dropdowneditor-input-wrapper dx-selectbox-container"
+              >
+                <input
+                  type="hidden"
+                  value=""
+                />
+                <div
+                  class="dx-texteditor-container"
+                >
+                  <div
+                    class="dx-texteditor-input-container"
+                  >
+                    <input
+                      aria-autocomplete="none"
+                      aria-expanded="false"
+                      aria-haspopup="listbox"
+                      autocomplete="off"
+                      class="dx-texteditor-input"
+                      placeholder="Select..."
+                      readonly=""
+                      role="combobox"
+                      tabindex="0"
+                      type="text"
+                    />
+                    <div
+                      class="dx-placeholder"
+                      data-dx_placeholder="Select..."
+                      id=dx-normalized-id-0
+                    />
+                  </div>
+                  <div
+                    class="dx-texteditor-buttons-container"
+                  >
+                    <div />
+                    <div
+                      aria-label="Select"
+                      class="dx-widget dx-button-normal dx-dropdowneditor-button"
+                      role="button"
+                    >
+                      <div
+                        class="dx-button-content"
+                      >
+                        <div
+                          class="dx-dropdowneditor-icon"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </dx-select-box>
+          </div>
+        </div>
+      </div>
+      <div
+        class="dx-toolbar-center"
+        role="presentation"
+      />
+      <div
+        class="dx-toolbar-after"
+        role="presentation"
+      >
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-label="bi bi-binoculars"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon"
+              icon="bi bi-binoculars"
+              ngskiphydration="true"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-binoculars"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+        <div
+          class="dx-item dx-toolbar-item dx-toolbar-button"
+        >
+          <div
+            class="dx-template-wrapper dx-item-content dx-toolbar-item-content"
+          >
+            <dx-button
+              aria-disabled="true"
+              aria-label="bi bi-lightning"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-icon dx-state-disabled"
+              icon="bi bi-lightning"
+              ngskiphydration="true"
+              role="button"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <i
+                  class="dx-icon bi bi-lightning"
+                />
+              </div>
+            </dx-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-toolbar><zxing-scanner>
+    <video
+      poster=""
+      style="object-fit: cover;"
+    >
+      <p>
+         Your browser does not support this feature, please try to upgrade it. 
+      </p>
+      <p>
+         Seu navegador não suporta este recurso, por favor tente atualizá-lo. 
+      </p>
+    </video>
+  </zxing-scanner>
+</ballware-barcodescanner>
+`;

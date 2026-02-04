@@ -1,7 +1,11 @@
 import {
   EnvironmentProviders,
+  inject,
   Injectable,
+  InjectionToken,
+  LOCALE_ID,
   makeEnvironmentProviders,
+  provideAppInitializer,
 } from '@angular/core';
 import { provideI18Next } from 'angular-i18next';
 
@@ -22,42 +26,63 @@ import {
 import { DefaultRedirectComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
-import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from './utils';
+import {
+  createLookupDelegateBuilder,
+  LOOKUP_DELEGATE_BUILDER_FACTORY,
+} from './utils';
 import {
   AutocompleteCreator,
   LookupCreator,
   LookupDescriptor,
-  PickvalueCreator
+  PickvalueCreator,
 } from '@ballware/meta-services';
+import { provideDefaultItemRegistries } from './registries';
+import {
+  provideDefaultColumnConfigurations,
+  provideDefaultEditItems,
+  provideDefaultPageItems,
+  provideDefaultToolbarItemConfigurations,
+} from './components';
+import { provideServerRouting, RenderMode, ServerRoute } from '@angular/ssr';
 
 export * from './directives';
 export * from './page';
-export * from './edit';
 export { ApplicationComponent } from './application';
 
 export interface DxRenderFactoryConfig {
   licenseKey: string
 }
 
-export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig): EnvironmentProviders {
+export const DX_RENDERFACTORY_CONFIG = new InjectionToken<DxRenderFactoryConfig>('DxRenderFactoryConfig');
 
-  loadMessages(deMessages);
-  locale(navigator.language);
-
-  moment.locale(
-    navigator.languages ? navigator.languages[0] : navigator.language
-  );
-
-  globalConfig(
-    {
-      licenseKey: config.licenseKey,
-      editorStylingMode: 'underlined'
-    }
-  );
+export function provideDxRenderFactoryComponents(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     provideI18Next(),
     I18N_PROVIDERS,
+    provideAppInitializer(() => {
+      const config = inject(DX_RENDERFACTORY_CONFIG);
+      const locale_id = inject(LOCALE_ID);
+
+      globalConfig(
+        {
+          licenseKey: config.licenseKey,
+          editorStylingMode: 'underlined'
+        }
+      );
+
+      loadMessages(deMessages);
+      locale(locale_id);
+
+      moment.locale(
+        locale_id
+      );
+    }),
+    provideDefaultItemRegistries(),
+    provideDefaultPageItems(),
+    provideDefaultEditItems(),
+    provideDefaultToolbarItemConfigurations(),
+    provideDefaultColumnConfigurations(),
     {
       provide: LOOKUP_DELEGATE_BUILDER_FACTORY,
       useFactory: () => (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => createLookupDelegateBuilder(lookups)
@@ -65,7 +90,7 @@ export function provideDxRenderFactoryComponents(config: DxRenderFactoryConfig):
   ]);
 }
 
-const routes: Routes = [
+const browserRoutes: Routes = [
   {
     path: 'print',
     component: PrintComponent
@@ -79,6 +104,21 @@ const routes: Routes = [
       path: '**',
       component: DefaultRedirectComponent
   }
+];
+
+const serverRoutes: ServerRoute[] = [
+  {
+    path: 'print',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'page/:id',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: '**',
+    renderMode: RenderMode.Client,
+  },
 ];
 
 @Injectable()
@@ -109,12 +149,24 @@ export class NoReuseOnParamChangeStrategy implements RouteReuseStrategy {
   }
 }
 
-export function provideDxRenderFactoryRoutes(): EnvironmentProviders {
+export function provideDxRenderFactoryBrowserRoutes(): EnvironmentProviders {
 
   return makeEnvironmentProviders([
     {
-      provide: RouteReuseStrategy, useClass: NoReuseOnParamChangeStrategy,
+      provide: RouteReuseStrategy,
+      useClass: NoReuseOnParamChangeStrategy,
     },
-    provideRouter(routes, withComponentInputBinding())]
-  );
+    provideRouter(browserRoutes, withComponentInputBinding()),
+  ]);
+}
+
+export function provideDxRenderFactoryServerRoutes(): EnvironmentProviders {
+  return makeEnvironmentProviders([
+    {
+      provide: RouteReuseStrategy,
+      useClass: NoReuseOnParamChangeStrategy,
+    },
+    provideRouter(browserRoutes, withComponentInputBinding()),
+    provideServerRouting(serverRoutes),
+  ]);
 }

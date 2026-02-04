@@ -1,0 +1,1144 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutRichtextComponent should match snapshot 1`] = `
+<ballware-edit-richtext
+  livecycle={[Function EditItemLivecycle]}
+  readonly={[Function Readonly]}
+  validation={[Function Validation]}
+  value={[Function StringValue]}
+  visible={[Function Visible]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-html-editor
+    class="dx-validator dx-visibility-change-handler dx-show-invalid-badge dx-htmleditor dx-htmleditor-outlined dx-widget"
+    ngskiphydration="true"
+    role="application"
+    style="height: 300px;"
+  >
+    <div
+      class="dx-htmleditor-toolbar-wrapper"
+    >
+      <div
+        class="dx-htmleditor-toolbar dx-toolbar dx-toolbar-multiline dx-widget dx-visibility-change-handler dx-collection"
+        role="toolbar"
+      >
+        <div
+          class="dx-toolbar-items-container"
+        >
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Undo"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-undo-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Undo"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-undo"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Undo
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Redo"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-redo-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Redo"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-redo"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Redo
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Bold"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-bold-format"
+                role="button"
+                tabindex="0"
+                title="Bold"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-bold"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Bold
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Italic"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-italic-format"
+                role="button"
+                tabindex="0"
+                title="Italic"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-italic"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Italic
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Strikethrough"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-strike-format"
+                role="button"
+                tabindex="0"
+                title="Strikethrough"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-strike"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Strikethrough
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Underline"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-underline-format"
+                role="button"
+                tabindex="0"
+                title="Underline"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-underline"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Underline
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Align Left"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-alignleft-format"
+                role="button"
+                tabindex="0"
+                title="Align Left"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-alignleft"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Align Left
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Align Center"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-aligncenter-format"
+                role="button"
+                tabindex="0"
+                title="Align Center"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-aligncenter"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Align Center
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Align Right"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-alignright-format"
+                role="button"
+                tabindex="0"
+                title="Align Right"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-alignright"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Align Right
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Align Justify"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-alignjustify-format"
+                role="button"
+                tabindex="0"
+                title="Align Justify"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-alignjustify"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Align Justify
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Ordered List"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-orderedlist-format"
+                role="button"
+                tabindex="0"
+                title="Ordered List"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-orderedlist"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Ordered List
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Bullet List"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-bulletlist-format"
+                role="button"
+                tabindex="0"
+                title="Bullet List"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-bulletlist"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Bullet List
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                class="dx-show-invalid-badge dx-htmleditor-toolbar-format dx-header-format dx-selectbox dx-textbox dx-texteditor dx-dropdowneditor-button-visible dx-editor-filled dx-widget dx-dropdowneditor dx-dropdowneditor-field-clickable"
+              >
+                <div
+                  class="dx-dropdowneditor-input-wrapper dx-selectbox-container"
+                >
+                  <input
+                    type="hidden"
+                    value=""
+                  />
+                  <div
+                    class="dx-texteditor-container"
+                  >
+                    <div
+                      class="dx-texteditor-input-container"
+                    >
+                      <input
+                        aria-autocomplete="none"
+                        aria-expanded="false"
+                        aria-haspopup="listbox"
+                        autocomplete="off"
+                        class="dx-texteditor-input"
+                        placeholder="Header"
+                        readonly=""
+                        role="combobox"
+                        tabindex="0"
+                        type="text"
+                      />
+                      <div
+                        class="dx-placeholder dx-state-invisible"
+                        data-dx_placeholder="Header"
+                        id=dx-normalized-id-0
+                      />
+                    </div>
+                    <div
+                      class="dx-texteditor-buttons-container"
+                    >
+                      <div />
+                      <div
+                        aria-label="Select"
+                        class="dx-widget dx-button-normal dx-dropdowneditor-button"
+                        role="button"
+                      >
+                        <div
+                          class="dx-button-content"
+                        >
+                          <div
+                            class="dx-dropdowneditor-icon"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Font Color"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-color-format"
+                role="button"
+                tabindex="0"
+                title="Font Color"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-color"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Font Color
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Background Color"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-background-format"
+                role="button"
+                tabindex="0"
+                title="Background Color"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-background"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Background Color
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Add Link"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-link-format"
+                role="button"
+                tabindex="0"
+                title="Add Link"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-link"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Add Link
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Add Image"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-image-format"
+                role="button"
+                tabindex="0"
+                title="Add Image"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-image"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Add Image
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Clear Formatting"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-clear-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Clear Formatting"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-clearformat"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Clear Formatting
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Code Block"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-codeblock-format"
+                role="button"
+                tabindex="0"
+                title="Code Block"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-codeblock"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Code Block
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Blockquote"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-blockquote-format"
+                role="button"
+                tabindex="0"
+                title="Blockquote"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-blockquote"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Blockquote
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content dx-htmleditor-toolbar-separator"
+            />
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-label="Insert Table"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-inserttable-format"
+                role="button"
+                tabindex="0"
+                title="Insert Table"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-inserttable"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Insert Table
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Delete Table"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-deletetable-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Delete Table"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-deletetable"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Delete Table
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Insert Row Above"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-insertrowabove-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Insert Row Above"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-insertrowabove"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Insert Row Above
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Insert Row Below"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-insertrowbelow-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Insert Row Below"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-insertrowbelow"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Insert Row Below
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Delete Row"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-deleterow-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Delete Row"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-deleterow"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Delete Row
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Insert Column Left"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-insertcolumnleft-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Insert Column Left"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-insertcolumnleft"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Insert Column Left
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Insert Column Right"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-insertcolumnright-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Insert Column Right"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-insertcolumnright"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Insert Column Right
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Delete Column"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-deletecolumn-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Delete Column"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-deletecolumn"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Delete Column
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Cell Properties"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-cellproperties-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Cell Properties"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-cellproperties"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Cell Properties
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-item dx-toolbar-item dx-toolbar-button dx-toolbar-text-auto-hide"
+          >
+            <div
+              class="dx-item-content dx-toolbar-item-content"
+            >
+              <div
+                aria-disabled="true"
+                aria-label="Table Properties"
+                class="dx-widget dx-button dx-button-mode-text dx-button-normal dx-button-has-text dx-button-has-icon dx-htmleditor-toolbar-format dx-tableproperties-format dx-state-disabled"
+                role="button"
+                tabindex="-1"
+                title="Table Properties"
+              >
+                <div
+                  class="dx-button-content"
+                >
+                  <i
+                    class="dx-icon dx-icon-tableproperties"
+                  />
+                  <span
+                    class="dx-button-text"
+                  >
+                    Table Properties
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="dx-quill-container ql-container"
+    >
+      <div
+        aria-label="Editor content"
+        class="ql-editor ql-blank dx-htmleditor-content"
+        contenteditable="true"
+        role="textbox"
+        tabindex="0"
+      >
+        <p>
+          <br />
+        </p>
+      </div>
+      <div
+        class="dx-resize-frame dx-state-invisible dx-resizable"
+      >
+        <div
+          class="dx-resizable-handle dx-resizable-handle-top"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-bottom"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-left"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-right"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-corner-bottom-right"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-corner-bottom-left"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-corner-top-right"
+        />
+        <div
+          class="dx-resizable-handle dx-resizable-handle-corner-top-left"
+        />
+      </div>
+    </div>
+    <textarea
+      class="dx-htmleditor-submit-element"
+      hidden="true"
+      name="mockedmember"
+    />
+    <div
+      class="dx-has-context-menu dx-widget dx-visibility-change-handler dx-collection"
+    />
+    <div
+      class="dx-formdialog dx-overlay dx-popup dx-widget dx-state-invisible dx-visibility-change-handler"
+    >
+      <div
+        class="dx-overlay-content dx-popup-fullscreen dx-popup-draggable dx-resizable"
+        role="dialog"
+        style="width: 100%; height: 100%;"
+      >
+        <div
+          class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection dx-toolbar-mini dx-popup-title"
+          role="toolbar"
+        >
+          <div
+            class="dx-toolbar-items-container"
+          >
+            <div
+              class="dx-toolbar-before"
+              role="presentation"
+            />
+            <div
+              class="dx-toolbar-center"
+              role="presentation"
+            />
+            <div
+              class="dx-toolbar-after"
+              role="presentation"
+            />
+          </div>
+        </div>
+        <div
+          class="dx-popup-content dx-popup-content-scrollable"
+        >
+          <div
+            aria-label=""
+            class="dx-formdialog-form dx-form dx-widget dx-visibility-change-handler"
+            role="form"
+          >
+            <div
+              class="dx-layout-manager dx-widget"
+            />
+          </div>
+        </div>
+        <div
+          class="dx-toolbar dx-widget dx-visibility-change-handler dx-collection dx-popup-bottom"
+          role="toolbar"
+        >
+          <div
+            class="dx-toolbar-items-container"
+          >
+            <div
+              class="dx-toolbar-before"
+              role="presentation"
+            />
+            <div
+              class="dx-toolbar-center"
+              role="presentation"
+            />
+            <div
+              class="dx-toolbar-after"
+              role="presentation"
+            >
+              <div
+                class="dx-item dx-toolbar-item dx-toolbar-button"
+              >
+                <div
+                  class="dx-item-content dx-toolbar-item-content"
+                >
+                  <div
+                    aria-label="OK"
+                    class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-text"
+                    role="button"
+                    tabindex="0"
+                  >
+                    <div
+                      class="dx-button-content"
+                    >
+                      <span
+                        class="dx-button-text"
+                      >
+                        OK
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="dx-item dx-toolbar-item dx-toolbar-button"
+              >
+                <div
+                  class="dx-item-content dx-toolbar-item-content"
+                >
+                  <div
+                    aria-label="Cancel"
+                    class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-text"
+                    role="button"
+                    tabindex="0"
+                  >
+                    <div
+                      class="dx-button-content"
+                    >
+                      <span
+                        class="dx-button-text"
+                      >
+                        Cancel
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dx-html-editor>
+</ballware-edit-richtext>
+`;

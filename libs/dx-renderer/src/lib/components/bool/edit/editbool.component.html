@@ -1,0 +1,9 @@
+<div [class]="!((visible.visible$ | async) ?? false) ? 'hidden' : 'mt-2 dx-texteditor-label'" [style.position]="'relative'">{{livecycle.layoutItem?.options?.caption ?? ''}}</div>
+<dx-check-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+  class="pt-1"
+  [visible]="(visible.visible$ | async) ?? false"
+  [name]="livecycle.layoutItem.options.dataMember"
+  [(value)]="value.value"
+  [readOnly]="(readonly.readonly$ | async) ?? false">
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
+</dx-check-box>

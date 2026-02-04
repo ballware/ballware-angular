@@ -11,7 +11,7 @@
     (onEditorPreparing)="gridEditorPreparing($event)"
     (onSelectionChanged)="selectionChanged($event)"
     (onToolbarPreparing)="toolbarPreparing($event)"
-    (onRowExpanding)="rowExpanding($event)"        
+    (onRowExpanding)="rowExpanding($event)"
     (onExporting)="exporting($event)"
     [customizeColumns]="customizeColumns"
     [allowColumnResizing]="mode === 'large'"
@@ -29,31 +29,25 @@
     <dxo-filter-row *ngIf="mode === 'large'" [visible]="true"></dxo-filter-row>
     <dxo-group-panel *ngIf="mode === 'large'" [visible]="true"></dxo-group-panel>
     <dxo-export [enabled]="true" [fileName]="exportFileName"></dxo-export>
-    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="layout?.details ? true : false" template="masterDetail"></dxo-master-detail>    
+    <dxo-master-detail *ngIf="mode !== 'small'" [enabled]="!!layout?.details" template="masterDetail"></dxo-master-detail>
     <dxo-scrolling mode="standard" rowRenderingMode="virtual"></dxo-scrolling>
-    <div *dxTemplate="let cell of 'static'">
-      <ballware-entity-dynamic-column [readonly]="true" [lookupParams]="cell.data ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-entity-dynamic-column>
-    </div>
-    <div *dxTemplate="let cell of 'staticedit'">
-      <ballware-entity-dynamic-column [readonly]="true" [lookupParams]="cell.data ?? {}" [dataMember]="cell.column.editorOptions.dataMember" [item]="cell.data" [column]="cell.column.editorOptions" ></ballware-entity-dynamic-column>
-    </div>
-    <div *dxTemplate="let masterDetailItem of 'masterDetail'">        
-        <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>                    
+    <div *dxTemplate="let masterDetailItem of 'masterDetail'">
+        <ng-container *ngTemplateOutlet="masterDetailTemplate"></ng-container>
     </div>
 </dx-data-grid>
-<dx-popup 
-  [visible]="showSearchByScanner" 
+<dx-popup
+  [visible]="showSearchByScanner"
   [showCloseButton]="true"
   [hideOnOutsideClick]="true"
   [fullScreen]="(fullscreenDialogs$ | async) ?? false"
   [title]="'datacontainer.actions.searchbarcode' | i18next"
   (onHidden)="onScannerHidden()"
-  width="auto" 
-  minWidth="500px" 
+  width="auto"
+  minWidth="500px"
   maxHeight="90vh"
   height="auto">
   <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onSearchByScannerCancel }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
   <div *dxTemplate="let data of 'content'">
     <ballware-barcodescanner [enabled]="showSearchByScanner" (valueChange)="onScannerValueChanged($event)"></ballware-barcodescanner>
-  </div> 
+  </div>
 </dx-popup>

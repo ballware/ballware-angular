@@ -13,7 +13,7 @@ npx storybook@latest upgrade
 Some adjustments were made to your `.storybook/main.js|ts` files so that
 the Storybook automigration scripts could run successfully. The changes that were made are as follows:
 
-- Remove the `as StorybookConfig` typecast from the main.ts files, if any,
+- Remove the `as StorybookConfig` typecast from the main.browser.ts files, if any,
   since it is not needed any more.
 - Remove the `path.resolve` calls from the Next.js Storybook configuration, if any, since it breaks the Storybook automigration scripts.
 

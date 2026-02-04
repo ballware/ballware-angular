@@ -1,0 +1,192 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutDetailTreeListComponent should create 1`] = `
+<ballware-edit-detailtreelist
+  editing={[Function DetailCollectionEditing]}
+  grid={[Function _DxTreeListComponent]}
+  livecycle={[Function EditItemLivecycle]}
+  readonly={[Function Readonly]}
+  value={[Function UnknownArrayValue]}
+  visible={[Function Visible]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-tree-list
+    class="dx-widget dx-visibility-change-handler dx-treelist"
+    ngskiphydration="true"
+    role="presentation"
+    style="width: 100%;"
+    width="100%"
+  >
+    <div
+      aria-label="Tree list with 0 rows and 1 columns. Press Ctrl + right arrow to expand the focused node and Ctrl + left arrow to collapse it"
+      class="dx-treelist-container dx-gridbase-container"
+      role="group"
+    >
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-gridbase-a11y-status-container"
+        e2e-a11y-general-status-container="true"
+        role="status"
+      />
+      <div
+        class="dx-treelist-columns-separator dx-treelist-columns-separator-transparent"
+      />
+      <div
+        class="dx-treelist-tracker dx-state-invisible"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-treelist-headers dx-treelist-nowrap dx-bordered-top-view"
+        role="presentation"
+      >
+        <div
+          class="dx-treelist-scrollable-simulated dx-treelist-content dx-treelist-scroll-container"
+          role="presentation"
+        >
+          <table
+            class="dx-treelist-table dx-treelist-table-fixed"
+            id=dx-normalized-id-0
+            role="presentation"
+          >
+            <colgroup>
+              <col />
+            </colgroup>
+            <tbody
+              role="presentation"
+            >
+              <tr
+                class="dx-row dx-column-lines dx-header-row"
+                role="row"
+              >
+                <td
+                  aria-colindex="1"
+                  aria-label="Column Field 1"
+                  aria-sort="none"
+                  class="dx-treelist-action dx-cell-focus-disabled"
+                  id="dx-col-1"
+                  role="columnheader"
+                  style="text-align: left;"
+                  tabindex="0"
+                >
+                  <div
+                    class="dx-column-indicators"
+                    role="presentation"
+                    style="float: right;"
+                  >
+                    <span
+                      class="dx-sort dx-sort-none"
+                    />
+                  </div>
+                  <div
+                    class="dx-treelist-text-content dx-text-content-alignment-left"
+                    role="presentation"
+                  >
+                    Field 1
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div
+        class="dx-bordered-bottom-view dx-treelist-rowsview dx-treelist-nowrap dx-empty dx-scrollable dx-visibility-change-handler dx-scrollable-both dx-scrollable-simulated"
+        role="presentation"
+        tabindex="0"
+      >
+        <div
+          class="dx-scrollable-wrapper"
+        >
+          <div
+            class="dx-scrollable-container"
+          >
+            <div
+              class="dx-scrollable-content"
+              style="left: 0px; top: 0px; transform: none;"
+            >
+              <div
+                class="dx-treelist-content"
+              >
+                <table
+                  class="dx-treelist-table dx-treelist-table-fixed"
+                  id=dx-normalized-id-0
+                  role="presentation"
+                >
+                  <colgroup>
+                    <col />
+                  </colgroup>
+                  <tbody
+                    role="presentation"
+                  >
+                    <tr
+                      class="dx-row dx-freespace-row dx-column-lines"
+                      role="presentation"
+                      style="height: 0px;"
+                    >
+                      <td
+                        style="text-align: left;"
+                      />
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div
+              class="dx-scrollable-scrollbar dx-widget dx-scrollbar-horizontal dx-scrollbar-hoverable"
+            >
+              <div
+                class="dx-scrollable-scroll dx-state-invisible"
+                style="width: 15px; transform: translate(0px, 0px);"
+              >
+                <div
+                  class="dx-scrollable-scroll-content"
+                />
+              </div>
+            </div>
+            <div
+              class="dx-scrollable-scrollbar dx-widget dx-scrollbar-vertical dx-scrollbar-hoverable"
+            >
+              <div
+                class="dx-scrollable-scroll dx-state-invisible"
+                style="height: 15px; transform: translate(0px, 0px);"
+              >
+                <div
+                  class="dx-scrollable-scroll-content"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-treelist-drag-header dx-treelist-text-content dx-widget dx-state-invisible"
+      />
+      <div
+        class="dx-context-menu dx-has-context-menu dx-widget dx-visibility-change-handler dx-collection"
+        role="presentation"
+      />
+      <div
+        class="dx-header-filter-menu"
+      />
+      <div />
+    </div>
+  </dx-tree-list><dx-validator
+    class="dx-validator dx-visibility-change-handler"
+    ngskiphydration="true"
+  />
+</ballware-edit-detailtreelist>
+`;

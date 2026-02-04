@@ -2,10 +2,21 @@ import { Store } from "@ngrx/store";
 import { IdentityService } from "@ballware/meta-services";
 import { identityInitializeOidc, identityManageProfile, identityRefreshToken, identitySwitchTenant, identityUserExpired, identityUserLogout } from "./identity.actions";
 import { selectAccessToken, selectAccessTokenExpiration, selectSessionExpiration, selectAllowedTenants, selectAuthenticated, selectCurrentUser, selectProfileUrl, selectUserName, selectUserTenant, selectAccessTokenAutoRefresh, selectIdToken } from "./identity.state";
+import { OidcIdentityConfig } from './identity.oidc.config';
 
 export class IdentityOidcServiceProxy implements IdentityService {
 
-    constructor(private readonly store: Store) {}
+    constructor(private readonly store: Store, config: OidcIdentityConfig) {
+      this.store.dispatch(identityInitializeOidc({
+        issuer: config.issuer,
+        client: config.client,
+        scopes: config.scopes,
+        tenantClaim: config.tenantClaim,
+        usernameClaim: config.usernameClaim,
+        profileUrl: config.profileUrl,
+        accessTokenAutoRefresh: config.accessTokenAutoRefresh
+      }));
+    }
 
     public readonly profileUrl$ = this.store.select(selectProfileUrl);
     public readonly authenticated$ = this.store.select(selectAuthenticated);
@@ -44,12 +55,6 @@ export class IdentityOidcServiceProxy implements IdentityService {
 
     public get allowedTenants$() {
         return this.store.select(selectAllowedTenants);
-    }
-
-    public initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean) {
-        this.store.dispatch(identityInitializeOidc({
-            issuer, client, scopes, tenantClaim, usernameClaim, profileUrl, accessTokenAutoRefresh
-        }));
     }
 
     public refreshToken() {

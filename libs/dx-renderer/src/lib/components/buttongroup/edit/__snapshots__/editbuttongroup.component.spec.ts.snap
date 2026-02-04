@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutStaticButtonGroupComponent should create 1`] = `
+<ballware-edit-buttongroup
+  _selectedItemKeys={[Function Array]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  livecycle={[Function EditItemLivecycle]}
+  lookup={[Function Lookup]}
+  readonly={[Function Readonly]}
+  validation={[Function Validation]}
+  value={[Function NullableStringValue]}
+  visible={[Function Visible]}
+>
+  <div
+    class="dx-texteditor-label mt-2"
+    style="position: relative;"
+  >
+  </div><dx-button-group
+    class="dx-buttongroup dx-buttongroup-mode-contained dx-widget"
+    keyexpr="key"
+    ngskiphydration="true"
+    role="group"
+    selectionmode="single"
+    tabindex="0"
+  >
+    <div
+      class="dx-buttongroup-wrapper dx-widget dx-collection"
+    />
+  </dx-button-group>
+</ballware-edit-buttongroup>
+`;

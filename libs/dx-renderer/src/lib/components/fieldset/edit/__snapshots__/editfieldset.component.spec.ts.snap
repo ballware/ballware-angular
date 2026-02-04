@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutFieldsetComponent should match snapshot 1`] = `
+<ballware-edit-fieldset
+  layoutItem={[Function Object]}
+>
+  <div
+    class="dx-field"
+    style="height: 150px;"
+  >
+    <div
+      class="dx-field-label"
+    >
+       Snapshot Test Fieldset 
+    </div>
+    <div
+      class="dx-field-value flex-fill"
+      style="height: 150px;"
+    />
+  </div>
+</ballware-edit-fieldset>
+`;

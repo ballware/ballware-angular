@@ -6,7 +6,8 @@
     "target": "ES2022",
     "useDefineForClassFields": false
   },
-  "files": ["src/main.server.ts", "src/ssr.server.ts"],
+  "files": ["src/polyfills.ts", "src/polyfills.server.ts",
+    "src/main.browser.ts", "src/main.server.ts", "src/ssr.server.ts"],
   "angularCompilerOptions": {
     "entryModule": "./src/app/app.server.module#AppServerModule"
   }

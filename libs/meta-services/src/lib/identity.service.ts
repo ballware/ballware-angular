@@ -2,7 +2,7 @@ import { InjectionToken } from "@angular/core";
 import { Observable } from "rxjs";
 
 export interface IdentityService {
-    
+
     profileUrl$: Observable<string|undefined>;
 
     authenticated$: Observable<boolean|undefined>;
@@ -18,8 +18,6 @@ export interface IdentityService {
     accessToken$: Observable<string|undefined>;
 
     allowedTenants$: Observable<Array<Record<string, unknown>>|undefined>;
-
-    initialize(issuer: string, client: string, scopes: string, tenantClaim: string, usernameClaim: string, profileUrl: string, accessTokenAutoRefresh: boolean): void;
 
     refreshToken(): void;
     manageProfile(): void;

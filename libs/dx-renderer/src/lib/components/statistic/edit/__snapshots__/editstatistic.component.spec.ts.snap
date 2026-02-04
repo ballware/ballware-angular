@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutStatisticComponent should create 1`] = `
+<ballware-edit-statistic
+  breadcrumb={[Function Breadcrumb]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  livecycle={[Function EditItemLivecycle]}
+  metaService={[Function ]}
+  statisticService={[Function ]}
+  type$={[Function AnonymousSubject]}
+  visible={[Function Visible]}
+>
+</ballware-edit-statistic>
+`;

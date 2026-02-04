@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { LOOKUP_SERVICE, LOOKUP_SERVICE_FACTORY, LookupService, LookupServiceFactory, PAGE_SERVICE, PAGE_SERVICE_FACTORY, PageService, PageServiceFactory, RESPONSIVE_SERVICE, ResponsiveService, SCREEN_SIZE } from '@ballware/meta-services';
 import { Observable, map } from 'rxjs';
 import { ToolbarComponent } from '../../toolbar';
-import { PageLayoutComponent } from '../layout/layout.component';
+import { PageLayoutComponent } from '../../components/layout';
 import { CommonModule } from '@angular/common';
 import { Breadcrumb } from '@ballware/renderer-commons';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -47,10 +47,10 @@ export class PageComponent implements OnChanges {
   @Input() page!: string;
 
   constructor(
-    private destroy: DestroyRef,
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
-    @Inject(PAGE_SERVICE) private pageService: PageService,
-    private breadcrumb: Breadcrumb) {
+    private readonly destroy: DestroyRef,
+    @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService,
+    @Inject(PAGE_SERVICE) private readonly pageService: PageService,
+    private readonly breadcrumb: Breadcrumb) {
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
       takeUntilDestroyed(this.destroy),

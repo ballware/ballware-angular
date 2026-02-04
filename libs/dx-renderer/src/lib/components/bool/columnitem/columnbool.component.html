@@ -1,0 +1,7 @@
+<dx-check-box *ngIf="editing.prepared$ | async"
+    #element
+    [readOnly]="(editing.readonly$ | async) ?? false"
+    (onValueChanged)="valueChanged($event)"
+    [value]="value$ | async">
+  <dx-validator [validationRules]="(editing.validationRules$ | async) ?? []"></dx-validator>
+</dx-check-box>

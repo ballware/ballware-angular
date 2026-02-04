@@ -1,52 +1,128 @@
-import {APP_BASE_HREF} from '@angular/common';
-import {CommonEngine} from '@angular/ssr/node';
-import express from 'express';
-import {fileURLToPath} from 'node:url';
-import {dirname, join, resolve} from 'node:path';
+import { Hono, MiddlewareHandler } from 'hono';
 import bootstrap from './main.server';
+import {
+  initAuthConfig, verifyAuth, authHandler
+} from '@hono/auth-js';
+import Keycloak from '@auth/core/providers/keycloak'
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
 
-export function app(): express.Express {
-  const server = express();
-  const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-  const browserDistFolder = resolve(serverDistFolder, '../browser');
-  const indexHtml = join(serverDistFolder, 'index.server.html');
-  const commonEngine = new CommonEngine();
-  server.set('view engine', 'html');
-  server.set('views', browserDistFolder);
-  // TODO: implement data requests securely
-  // Serve data from URLS that begin "/api/"
-  server.get('/api/**', (req, res) => {
-    res.status(404).send('data requests are not yet supported');
-  });
-  // Serve static files from /browser
-  server.get(
-    '*.*',
-    express.static(browserDistFolder, {
-      maxAge: '1y',
-    }),
-  );
-  // All regular routes use the Angular engine
-  server.get('*', (req, res, next) => {
-    const {protocol, originalUrl, baseUrl, headers} = req;
-    commonEngine
-      .render({
-        bootstrap,
-        documentFilePath: indexHtml,
-        url: `${protocol}://${headers.host}${originalUrl}`,
-        publicPath: browserDistFolder,
-        providers: [{provide: APP_BASE_HREF, useValue: req.baseUrl}],
-      })
-      .then((html) => res.send(html))
-      .catch((err) => next(err));
-  });
-  return server;
+const app = new Hono();
+const angularAppEngine = new AngularAppEngine();
+
+export const requireAuth = (): MiddlewareHandler => {
+  return async (c, next) => {
+    const user = c.get('authUser')
+
+    if (user) {
+      await next()
+      return
+    }
+
+    // SSR / Browser → Redirect to Keycloak login
+    const url = new URL(c.req.url)
+    const callbackUrl = url.pathname + url.search
+
+    const signin = new URL('/auth/signin', url.origin)
+    signin.searchParams.set('provider', 'keycloak')
+    signin.searchParams.set('callbackUrl', callbackUrl)
+
+    return c.redirect(signin.toString(), 302)
+  }
 }
-function run(): void {
-  const port = process.env['PORT'] || 4000;
-  // Start up the Node server
-  const server = app();
-  server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
-  });
-}
-run();
+
+app.use(initAuthConfig((c) => ({
+  secret: process.env['AUTH_SECRET'],
+  session: { strategy: 'jwt' },
+  basePath: '/auth',
+  providers: [
+    Keycloak({
+      issuer: process.env['BALLWARE_IDENTITYURL'],
+      clientId: process.env['BALLWARE_CLIENTID'],
+      clientSecret: 'change_me',
+      authorization: {
+        params: {
+          scope: process.env['BALLWARE_IDENTITYSCOPES'],
+        }
+      }
+    })
+  ],
+  callbacks: {
+    async jwt({ token, account }) {
+      if (account?.access_token) {
+        const issuer = process.env['BALLWARE_IDENTITYURL']!;
+        const userinfoEndpoint = `${issuer}/protocol/openid-connect/userinfo`;
+
+        const res = await fetch(userinfoEndpoint, {
+          headers: { Authorization: `Bearer ${account.access_token}` },
+        });
+
+        if (res.ok) {
+          const userinfo = await res.json();
+
+          token['userinfo'] = userinfo;
+        }
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = {
+        ...(session.user ?? {}),
+        ...((token as any).userinfo ?? {}),
+      }
+      return session
+    },
+  }}))
+);
+
+app.use('*', verifyAuth());
+app.use('/auth/*', authHandler());
+
+  /*
+  OIDC_AUTH_SECRET: process.env['AUTH_SECRET'],
+  OIDC_ISSUER: process.env['BALLWARE_IDENTITYURL'],
+  OIDC_CLIENT_ID: process.env['BALLWARE_CLIENTID'],
+  OIDC_CLIENT_SECRET: 'change_me',
+  OIDC_REDIRECT_URI: '/signin-oidc',
+  OIDC_SCOPES: process.env['BALLWARE_IDENTITYSCOPES']
+  */
+
+app.get('/me', verifyAuth(), async (c) => {
+  const user = c.get('authUser');
+
+  if (!user?.session?.user) return c.status(401);
+
+  const userinfo = user.session.user as Record<string, unknown>;
+
+  return c.json({
+    user: userinfo,
+    userName: userinfo[process.env['BALLWARE_USERNAMECLAIM'] || 'preferred_username'],
+    tenant: userinfo[process.env['BALLWARE_TENANTCLAIM'] || 'tenant'],
+  }, 200);
+});
+
+app.get('/*', requireAuth(), async (c) => {
+  const user = c.get('authUser')
+
+  if (!user) {
+    const currentUrl = new URL(c.req.url)
+    const callbackUrl = currentUrl.pathname + currentUrl.search
+
+    const signin = new URL('/auth/signin', currentUrl.origin)
+    signin.searchParams.set('provider', 'keycloak')
+    signin.searchParams.set('callbackUrl', callbackUrl)
+
+    return c.redirect(signin.toString(), 302)
+  }
+
+  const res = await angularAppEngine.handle(c.req.raw, { server: 'hono' });
+  if (!res) {
+    // gracefuly fail with a 404 (probably because static failed)
+    return c.text('Not found ---', { status: 404 });
+  }
+  return res;
+});
+
+export const reqHandler = createRequestHandler(app.fetch);
+
+export default bootstrap;

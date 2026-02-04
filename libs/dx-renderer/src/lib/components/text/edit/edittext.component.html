@@ -1,0 +1,36 @@
+<dx-text-box *ngIf="livecycle.layoutItem && livecycle.layoutItem.options && livecycle.layoutItem.options.dataMember"
+  class="mt-2"
+  [visible]="((visible.visible$ | async) ?? false)"
+  [label]="livecycle.layoutItem.options.caption ?? ''"
+  [name]="livecycle.layoutItem.options.dataMember"
+  [(value)]="value.value"
+  [readOnly]="(readonly.readonly$ | async) ?? false"
+  [showClearButton]="true"
+  (onFocusIn)="livecycle.onEntered()">
+  <dxi-button
+    name="add"
+    location="after"
+    [options]="{
+      icon: 'bi bi-qr-code-scan',
+      onClick: onScannerClicked,
+      visible: allowScanner
+    }">
+  </dxi-button>
+  <dx-validator [validationRules]="(validation.validationRules$ | async) ?? []"></dx-validator>
+</dx-text-box>
+<dx-popup
+  [visible]="showScanner"
+  [showCloseButton]="true"
+  [hideOnOutsideClick]="true"
+  [fullScreen]="(fullscreenDialogs$ | async) ?? false"
+  [title]="'editing.actions.enterbarcode' | i18next"
+  (onHidden)="onScannerHidden()"
+  width="auto"
+  minWidth="500px"
+  maxHeight="90vh"
+  height="auto">
+  <dxi-popup-toolbar-item widget="dxButton" [options]="{ type: 'default', text: 'editing.actions.cancel' | i18next, onClick: onScannerCancel }" toolbar="bottom" location="after"></dxi-popup-toolbar-item>
+  <div *dxTemplate="let data of 'content'">
+    <ballware-barcodescanner [enabled]="showScanner" (valueChange)="onScannerValueChanged($event)"></ballware-barcodescanner>
+  </div>
+</dx-popup>

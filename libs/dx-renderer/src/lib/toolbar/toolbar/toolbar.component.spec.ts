@@ -11,6 +11,8 @@ import {
   TRANSLATOR
 } from '@ballware/meta-services';
 import { createLookupDelegateBuilder, LOOKUP_DELEGATE_BUILDER_FACTORY } from '../../utils';
+import { provideDefaultItemRegistries } from '../../registries';
+import { provideDefaultToolbarItemConfigurations } from '../../components';
 
 // Simple test doubles for the required services
 class MockPageService {
@@ -38,6 +40,8 @@ describe('ToolbarComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         ToolbarComponent,
+        provideDefaultItemRegistries(),
+        provideDefaultToolbarItemConfigurations(),
         { provide: PAGE_SERVICE, useValue: pageService },
         { provide: LOOKUP_SERVICE, useValue: lookupService },
         { provide: TRANSLATOR, useValue: translatorMock },
@@ -95,7 +99,7 @@ describe('ToolbarComponent', () => {
   it('should create a SelectBox toolbar item for static lookup and use static items configuration', () => {
     emitLayoutAndLookups([
       {
-        type: 'staticklookup',
+        type: 'staticlookup',
         name: 'sl1',
         caption: 'Static Lookup',
         options: {
@@ -140,7 +144,7 @@ describe('ToolbarComponent', () => {
   it('should create a TagBox toolbar item for static multilookup and use static items configuration', () => {
     emitLayoutAndLookups([
       {
-        type: 'statickmultilookup',
+        type: 'staticmultilookup',
         name: 'sml1',
         caption: 'Static Multi',
         options: {
@@ -224,9 +228,78 @@ describe('ToolbarComponent', () => {
     expect(pageService.paramEditorEvent).toHaveBeenCalledWith({ name: 'b1', event: 'click' });
   });
 
-  it('should not call paramEditorInitialized when name is missing', () => {
-    const e: any = { component: { option: jest.fn() } };
-    component.onItemInitialized(e as any, '');
-    expect(pageService.paramEditorInitialized).not.toHaveBeenCalled();
+  it('should create a NumberBox toolbar item for number and notify value changes', () => {
+    emitLayoutAndLookups([
+      { type: 'number', name: 'n1', caption: 'Number Input' },
+    ]);
+
+    expect(component.toolbarItems.length).toBe(1);
+    const item = component.toolbarItems[0];
+    expect(item.widget).toBe('dxNumberBox');
+
+    const options: any = item.options;
+    expect(options.label).toBe('Number Input');
+    expect(options.onInitialized).toBeDefined();
+    expect(options.onValueChanged).toBeDefined();
+
+    // simulate initialization and value change
+    const componentMock: any = { option: jest.fn() };
+    options.onInitialized({ component: componentMock });
+    options.onValueChanged({ value: 42 });
+
+    expect(pageService.paramEditorInitialized).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'n1' }),
+    );
+    expect(pageService.paramEditorValueChanged).toHaveBeenCalledWith({ name: 'n1', value: 42 });
+  });
+
+  it('should create a CheckBox toolbar item for bool and notify value changes', () => {
+    emitLayoutAndLookups([
+      { type: 'bool', name: 'b1', caption: 'Boolean Flag' },
+    ]);
+
+    expect(component.toolbarItems.length).toBe(1);
+    const item = component.toolbarItems[0];
+    expect(item.widget).toBe('dxCheckBox');
+
+    const options: any = item.options;
+    expect(options.label).toBe('Boolean Flag');
+    expect(options.onInitialized).toBeDefined();
+    expect(options.onValueChanged).toBeDefined();
+
+    // simulate initialization and value change
+    const componentMock: any = { option: jest.fn() };
+    options.onInitialized({ component: componentMock });
+    options.onValueChanged({ value: true });
+
+    expect(pageService.paramEditorInitialized).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'b1' }),
+    );
+    expect(pageService.paramEditorValueChanged).toHaveBeenCalledWith({ name: 'b1', value: true });
+  });
+
+  it('should create a TextBox toolbar item for text and notify value changes', () => {
+    emitLayoutAndLookups([
+      { type: 'text', name: 't1', caption: 'Text Input' },
+    ]);
+
+    expect(component.toolbarItems.length).toBe(1);
+    const item = component.toolbarItems[0];
+    expect(item.widget).toBe('dxTextBox');
+
+    const options: any = item.options;
+    expect(options.label).toBe('Text Input');
+    expect(options.onInitialized).toBeDefined();
+    expect(options.onValueChanged).toBeDefined();
+
+    // simulate initialization and value change
+    const componentMock: any = { option: jest.fn() };
+    options.onInitialized({ component: componentMock });
+    options.onValueChanged({ value: 'Hello World' });
+
+    expect(pageService.paramEditorInitialized).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 't1' }),
+    );
+    expect(pageService.paramEditorValueChanged).toHaveBeenCalledWith({ name: 't1', value: 'Hello World' });
   });
 });

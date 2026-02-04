@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
-import { parse } from 'json5/lib';
+import JSON5 from 'json5';
 
 import { CompiledStatistic, QueryParams, StatisticLayout } from '@ballware/meta-model';
 import { additionalParamsToUrl } from './util';
@@ -23,7 +23,7 @@ interface StatisticCustomScripts {
 }
 
 export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
-  const scripts = parse(
+  const scripts = JSON5.parse(
     statistic.CustomScripts ?? '{}'
   ) as StatisticCustomScripts;
 
@@ -33,7 +33,7 @@ export const compileStatistic = (statistic: Statistic): CompiledStatistic => {
     identifier: statistic.Identifier,
     name: statistic.Name,
     layout: statistic.Layout
-      ? (parse(statistic.Layout) as StatisticLayout)
+      ? (JSON5.parse(statistic.Layout) as StatisticLayout)
       : ({} as StatisticLayout),
     mappingScript: compileStatisticMapping(statistic.MappingScript),
     customScripts: {
@@ -87,7 +87,7 @@ const selectById = (http: HttpClient, metaServiceBaseUrl: string) => (id: string
  * @returns Adapter object providing data operations
  */
 export function createMetaBackendStatisticApi(
-  httpClient: HttpClient, 
+  httpClient: HttpClient,
   metaServiceBaseUrl: string,
   tenantServiceBaseUrl: string
 ): MetaStatisticApi {

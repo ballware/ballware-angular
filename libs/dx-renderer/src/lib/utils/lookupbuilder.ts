@@ -1,9 +1,11 @@
 import { LookupDelegate, LookupDelegateBuilder } from './lookupdelegate';
 import {
   AutocompleteCreator,
+  LookupByIdentifierFunc,
   LookupCreator,
   LookupDescriptor,
-  LookupStoreDescriptor, PickvalueCreator
+  LookupStoreDescriptor,
+  PickvalueCreator,
 } from '@ballware/meta-services';
 import { CustomItemCreatingEvent as SelectBoxCustomItemCreatingEvent } from 'devextreme/ui/select_box';
 import { CustomItemCreatingEvent as TagBoxCustomItemCreatingEvent } from 'devextreme/ui/tag_box';
@@ -224,119 +226,186 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
   private displayExpr: string | undefined;
   private hintExpr: string | undefined;
   private paramMember: string | undefined;
-  private paramMemberDelegate: ((dataMember: string) => string|string[]) | undefined;
+  private paramMemberDelegate:
+    | ((dataMember: string) => string | string[])
+    | undefined;
   private pickvalueEntity: string | undefined;
-  private pickvalueField: string | undefined
+  private pickvalueField: string | undefined;
   private groupBy: string | undefined;
   private staticItems: Array<Record<string, unknown>> | undefined;
   private itemsMember: string | undefined;
-  private itemsDelegate: ((dataMember: string) => Array<Record<string, unknown>>) | undefined;
+  private itemsDelegate:
+    | ((dataMember: string) => Array<Record<string, unknown>>)
+    | undefined;
   private acceptCustomValue: boolean = false;
-  private unknownLookupFallbackHandler: ((identifier: string) => LookupDescriptor) | undefined;
+  private unknownLookupFallbackHandler: LookupByIdentifierFunc | undefined;
   private apiErrorHandler: ((error: ApiError) => void) | undefined;
 
-  constructor(private readonly lookups:  Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) {}
+  constructor(
+    private readonly lookups: Record<
+      string,
+      | LookupDescriptor
+      | unknown[]
+      | LookupCreator
+      | PickvalueCreator
+      | AutocompleteCreator
+    >
+  ) {}
 
-  readonly forIdentifier = (lookupIdentifier: string): LookupDelegateBuilder => {
+  readonly forIdentifier = (
+    lookupIdentifier: string
+  ): LookupDelegateBuilder => {
     this.identifier = lookupIdentifier;
     return this;
-  }
+  };
 
-  readonly forStaticItems = (items: Array<Record<string, unknown>>): LookupDelegateBuilder => {
+  readonly forStaticItems = (
+    items: Array<Record<string, unknown>>
+  ): LookupDelegateBuilder => {
     this.staticItems = items;
     return this;
-  }
+  };
 
-  readonly forItemsFromMember = (dataMember: string, getDelegate: (dataMember: string) => Array<Record<string, unknown>>): LookupDelegateBuilder => {
+  readonly forItemsFromMember = (
+    dataMember: string,
+    getDelegate: (dataMember: string) => Array<Record<string, unknown>>
+  ): LookupDelegateBuilder => {
     this.itemsMember = dataMember;
     this.itemsDelegate = getDelegate;
     return this;
-  }
+  };
 
-  readonly withDisplayExpr = (displayExpr: string|undefined): LookupDelegateBuilder => {
+  readonly withDisplayExpr = (
+    displayExpr: string | undefined
+  ): LookupDelegateBuilder => {
     this.displayExpr = displayExpr;
     return this;
-  }
+  };
 
-  readonly withHintExpr = (hintExpr: string|undefined): LookupDelegateBuilder => {
+  readonly withHintExpr = (
+    hintExpr: string | undefined
+  ): LookupDelegateBuilder => {
     this.hintExpr = hintExpr;
     return this;
-  }
+  };
 
-  readonly withValueExpr = (valueExpr: string|undefined): LookupDelegateBuilder => {
+  readonly withValueExpr = (
+    valueExpr: string | undefined
+  ): LookupDelegateBuilder => {
     this.valueExpr = valueExpr;
     return this;
-  }
+  };
 
-  readonly withParamFromMember = (dataMember: string, getDelegate: (dataMember: string) => string|string[]): LookupDelegateBuilder => {
+  readonly withParamFromMember = (
+    dataMember: string,
+    getDelegate: (dataMember: string) => string | string[]
+  ): LookupDelegateBuilder => {
     this.paramMember = dataMember;
     this.paramMemberDelegate = getDelegate;
     return this;
-  }
+  };
 
-  readonly withPickvaluesForEntityAndField = (entity: string, field: string): LookupDelegateBuilder => {
+  readonly withPickvaluesForEntityAndField = (
+    entity: string,
+    field: string
+  ): LookupDelegateBuilder => {
     this.pickvalueEntity = entity;
     this.pickvalueField = field;
     return this;
-  }
+  };
 
-  readonly withGroupBy = (groupBy: string|undefined): LookupDelegateBuilder => {
+  readonly withGroupBy = (
+    groupBy: string | undefined
+  ): LookupDelegateBuilder => {
     this.groupBy = groupBy;
     return this;
-  }
+  };
 
-  readonly withAcceptCustomValue = (accept: boolean|undefined): LookupDelegateBuilder => {
+  readonly withAcceptCustomValue = (
+    accept: boolean | undefined
+  ): LookupDelegateBuilder => {
     this.acceptCustomValue = accept ?? false;
     return this;
-  }
+  };
 
-  readonly withUnknownLookupFallback = (fallback: (identifier: string) => LookupDescriptor): LookupDelegateBuilder => {
+  readonly withUnknownLookupFallback = (
+    fallback: LookupByIdentifierFunc
+  ): LookupDelegateBuilder => {
     this.unknownLookupFallbackHandler = fallback;
     return this;
-  }
+  };
 
-  readonly withApiErrorHandler = (handler: (error: ApiError) => void): LookupDelegateBuilder => {
+  readonly withApiErrorHandler = (
+    handler: (error: ApiError) => void
+  ): LookupDelegateBuilder => {
     this.apiErrorHandler = handler;
     return this;
-  }
+  };
 
   readonly build = () => {
-
     let lookup =
       this.identifier && this.lookups
-        ? (this.lookups[this.identifier] as LookupDescriptor|LookupCreator) : undefined;
+        ? (this.lookups[this.identifier] as LookupDescriptor | LookupCreator)
+        : undefined;
 
     if (!lookup && this.identifier && this.unknownLookupFallbackHandler) {
       lookup = this.unknownLookupFallbackHandler(this.identifier);
     }
 
-    let lookupInstance: LookupDescriptor|undefined;
-    let datasource: DataSource|undefined;
+    let lookupInstance: LookupDescriptor | undefined;
+    let datasource: DataSource | undefined;
 
-    let keyValueExpr: string|undefined;
-    let displayValueExpr: string|undefined;
-    let keyValueGetter: ((item: unknown) => unknown)|undefined;
-    let keyValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
-    let displayValueGetter: ((item: unknown) => unknown)|undefined;
-    let displayValueSetter: ((item: Record<string, unknown>, value: unknown) => void)|undefined;
-    let hintValueGetter: ((item: Record<string, unknown>) => unknown)|undefined;
+    let keyValueExpr: string | undefined;
+    let displayValueExpr: string | undefined;
+    let keyValueGetter: ((item: unknown) => unknown) | undefined;
+    let keyValueSetter:
+      | ((item: Record<string, unknown>, value: unknown) => void)
+      | undefined;
+    let displayValueGetter: ((item: unknown) => unknown) | undefined;
+    let displayValueSetter:
+      | ((item: Record<string, unknown>, value: unknown) => void)
+      | undefined;
+    let hintValueGetter:
+      | ((item: Record<string, unknown>) => unknown)
+      | undefined;
 
     if (lookup) {
-      if (this.paramMember && this.paramMemberDelegate && lookup as LookupCreator) {
-        lookupInstance = (lookup as LookupCreator)(this.paramMemberDelegate(this.paramMember) ?? this.paramMember);
-      } else if (this.pickvalueEntity && this.pickvalueField && lookup as PickvalueCreator) {
-        lookupInstance = (lookup as PickvalueCreator)(this.pickvalueEntity, this.pickvalueField);
+      if (
+        this.paramMember &&
+        this.paramMemberDelegate &&
+        (lookup as LookupCreator)
+      ) {
+        lookupInstance = (lookup as LookupCreator)(
+          this.paramMemberDelegate(this.paramMember) ?? this.paramMember
+        );
+      } else if (
+        this.pickvalueEntity &&
+        this.pickvalueField &&
+        (lookup as PickvalueCreator)
+      ) {
+        lookupInstance = (lookup as PickvalueCreator)(
+          this.pickvalueEntity,
+          this.pickvalueField
+        );
       } else if (lookup as LookupDescriptor) {
         lookupInstance = lookup as LookupDescriptor;
       }
 
       if (lookupInstance?.type === 'lookup') {
-        datasource = createDatasourceForRegularLookup(lookupInstance, this.groupBy, this.apiErrorHandler);
+        datasource = createDatasourceForRegularLookup(
+          lookupInstance,
+          this.groupBy,
+          this.apiErrorHandler
+        );
 
         keyValueExpr = this.valueExpr ?? lookupInstance.valueMember ?? 'Id';
-        displayValueExpr = this.displayExpr ?? lookupInstance.displayMember ?? 'Name';
+        displayValueExpr =
+          this.displayExpr ?? lookupInstance.displayMember ?? 'Name';
       } else if (lookupInstance?.type === 'autocomplete') {
-        datasource = createDatasourceForAutocompleteLookup(lookupInstance, this.apiErrorHandler);
+        datasource = createDatasourceForAutocompleteLookup(
+          lookupInstance,
+          this.apiErrorHandler
+        );
 
         keyValueGetter = (item: unknown) => item as string;
         displayValueGetter = (item) => item as string;
@@ -352,11 +421,31 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
     keyValueExpr = keyValueExpr || this.valueExpr || 'Id';
     displayValueExpr = displayValueExpr || this.displayExpr || 'Name';
 
-    keyValueGetter = keyValueGetter || compileGetter(keyValueExpr) as ((item: unknown) => unknown);
-    keyValueSetter = keyValueSetter || compileSetter(keyValueExpr) as ((item: Record<string, unknown>, value: unknown) => void);
-    displayValueGetter = displayValueGetter || compileGetter(displayValueExpr) as ((item: unknown) => unknown);
-    displayValueSetter = displayValueSetter || compileSetter(displayValueExpr) as ((item: Record<string, unknown>, value: unknown) => void);
-    hintValueGetter = hintValueGetter || (this.hintExpr ? compileGetter(this.hintExpr) as ((item: Record<string, unknown>) => unknown) : undefined);
+    keyValueGetter =
+      keyValueGetter ||
+      (compileGetter(keyValueExpr) as (item: unknown) => unknown);
+    keyValueSetter =
+      keyValueSetter ||
+      (compileSetter(keyValueExpr) as (
+        item: Record<string, unknown>,
+        value: unknown
+      ) => void);
+    displayValueGetter =
+      displayValueGetter ||
+      (compileGetter(displayValueExpr) as (item: unknown) => unknown);
+    displayValueSetter =
+      displayValueSetter ||
+      (compileSetter(displayValueExpr) as (
+        item: Record<string, unknown>,
+        value: unknown
+      ) => void);
+    hintValueGetter =
+      hintValueGetter ||
+      (this.hintExpr
+        ? (compileGetter(this.hintExpr) as (
+            item: Record<string, unknown>
+          ) => unknown)
+        : undefined);
 
     return new LookupDelegateImpl({
       datasource,
@@ -370,9 +459,9 @@ class LookupDelegateBuilderImpl implements LookupDelegateBuilder {
       displayValueSetter,
       groupBy: this.groupBy,
       staticLookupItems: this.staticItems,
-      acceptCustomValue: this.acceptCustomValue
+      acceptCustomValue: this.acceptCustomValue,
     });
-  }
+  };
 }
 
 export const createLookupDelegateBuilder = (lookups: Record<string, LookupDescriptor | unknown[] | LookupCreator | PickvalueCreator | AutocompleteCreator>) => {

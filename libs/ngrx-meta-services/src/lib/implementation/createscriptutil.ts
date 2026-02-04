@@ -1,5 +1,5 @@
-import { parse, stringify } from 'json5/lib';
-import * as moment from 'moment';
+import JSON5 from 'json5';
+import moment from 'moment';
 import { v4 as uuid } from 'uuid';
 
 import { ScriptUtil } from '@ballware/meta-model';
@@ -75,20 +75,20 @@ function localDateToDate(date: Date): Date | null {
  * @returns Generated util object
  */
 export const createUtil = (
-  http: HttpClient, 
-  documentApi: MetaDocumentApi, 
-  subscriptionApi: MetaSubscriptionApi, 
+  http: HttpClient,
+  documentApi: MetaDocumentApi,
+  subscriptionApi: MetaSubscriptionApi,
   mlApi: MetaMlModelApi,
-  idToken$: Observable<string|undefined>, 
-  accessToken$: Observable<string|undefined>, 
+  idToken$: Observable<string|undefined>,
+  accessToken$: Observable<string|undefined>,
   currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
   return {
     http: () => http,
     token: () => firstValueFrom(accessToken$),
     user: () => firstValueFrom(currentUser$),
     uuid: () => uuid(),
-    parse: json => parse(json),
-    stringify: json => stringify(json),
+    parse: json => JSON5.parse(json),
+    stringify: json => JSON5.stringify(json),
     dateToLocalDate: date => dateToLocalDate(date),
     localDateToDate: date => localDateToDate(date),
     beginOfYear: () => beginOfYear(),
@@ -198,7 +198,7 @@ export const createUtil = (
             console.error(reason?.message ?? reason);
             if (error) error(reason?.message ?? reason);
           }
-        });        
+        });
     },
     updateDatasources: (ids, callback, error) => {
       documentApi.updateDatasources(ids)
@@ -210,7 +210,7 @@ export const createUtil = (
             console.error(reason?.message ?? reason);
             if (error) error(reason?.message ?? reason);
           }
-        });        
+        });
     },
     train: (ids, callback, error) => {
       mlApi.train(ids)
@@ -222,7 +222,7 @@ export const createUtil = (
             console.error(reason?.message ?? reason);
             if (error) error(reason?.message ?? reason);
           }
-        });        
+        });
     }
   } as ScriptUtil;
 };

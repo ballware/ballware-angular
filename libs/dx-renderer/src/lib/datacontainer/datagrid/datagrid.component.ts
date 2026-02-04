@@ -12,9 +12,8 @@ import saveAs from 'file-saver';
 import { combineLatest, map, Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
-import { I18NextModule } from 'angular-i18next';
-import { BarcodeScannerComponent } from '../../edit';
-import { EntityDynamicColumnComponent } from '../columns/entitydynamiccolumn.component';
+import { I18NextPipe } from 'angular-i18next';
+import { BarcodeScannerComponent } from '../../components';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 interface EditComponentWithOptions {
@@ -45,7 +44,7 @@ export interface DatagridSummary {
     selector: 'ballware-datagrid',
     templateUrl: './datagrid.component.html',
     styleUrls: ['./datagrid.component.scss'],
-    imports: [CommonModule, I18NextModule, DxDataGridModule, DxPopupModule, BarcodeScannerComponent, EntityDynamicColumnComponent]
+    imports: [CommonModule, I18NextPipe, DxDataGridModule, DxPopupModule, BarcodeScannerComponent]
 })
 export class DatagridComponent implements OnInit {
 
@@ -96,12 +95,12 @@ export class DatagridComponent implements OnInit {
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(
-    private destroy: DestroyRef,
+    private readonly destroy: DestroyRef,
     @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService,
-    @Inject(META_SERVICE) private metaService: MetaService,
-    @Inject(CRUD_SERVICE) private crudService: CrudService,
-    private masterDetailService: MasterdetailService,
-    @Inject(TRANSLATOR) private translator: Translator) {
+    @Inject(META_SERVICE) private readonly metaService: MetaService,
+    @Inject(CRUD_SERVICE) private readonly crudService: CrudService,
+    private readonly masterDetailService: MasterdetailService,
+    @Inject(TRANSLATOR) private readonly translator: Translator) {
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
       takeUntilDestroyed(this.destroy),
@@ -138,12 +137,12 @@ export class DatagridComponent implements OnInit {
   }
 
   public editingStart(e: EditingStartEvent) {
-    e.cancel = !e.data || !this.editAllowed || !this.editAllowed(e.data);
+    e.cancel = !e.data || !this.editAllowed?.(e.data);
 
     if (!e.cancel && e.column) {
       const column = this.layout?.columns.find(c => c.dataMember === e.column?.dataField);
 
-      if (column && column.editFunction) {
+      if (column?.editFunction) {
         e.cancel = true;
 
         const customFunction = this.customFunctions.find(cf => cf.id === column.editFunction);
@@ -231,7 +230,7 @@ export class DatagridComponent implements OnInit {
           hint: this.translator('datacontainer.actions.searchbarcode'),
           text: this.translator('datacontainer.actions.searchbarcode'),
           icon: 'bi bi-qr-code-scan',
-          onClick: (e: { event: { currentTarget: Element } }) => {
+          onClick: () => {
             this.showSearchByScanner = true;
           },
         },
@@ -315,7 +314,7 @@ export class DatagridComponent implements OnInit {
       });
     }
 
-    this.customFunctions?.forEach(f => {
+    for (const f of this.customFunctions ?? []) {
       e.toolbarOptions?.items?.unshift({
         locateInMenu: 'auto',
         location: 'after',
@@ -334,7 +333,7 @@ export class DatagridComponent implements OnInit {
           },
         },
       } as Item);
-    });
+    }
 
     if (this.showAdd) {
       e.toolbarOptions?.items?.unshift({
@@ -426,7 +425,9 @@ export class DatagridComponent implements OnInit {
 
   public customizeColumns(columns: Array<Column>) {
     if (this.mode === 'large') {
-      columns?.forEach(c => (c.hidingPriority = undefined));
+      for (const c of columns) {
+        c.hidingPriority = undefined
+      }
     }
   }
 

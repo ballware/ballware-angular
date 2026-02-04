@@ -1,0 +1,10 @@
+<div class="d-flex flex-column align-items-center">
+    <dx-button class="big-icon-button" [icon]="icon" width="100px" height="100px" (onClick)="onClick()">
+
+    </dx-button>
+    <dx-text-area
+        class="mt-2 w-100"
+        [value]="(recognizedValue$ | async) ?? ''"
+        [readOnly]="true">
+    </dx-text-area>
+</div>

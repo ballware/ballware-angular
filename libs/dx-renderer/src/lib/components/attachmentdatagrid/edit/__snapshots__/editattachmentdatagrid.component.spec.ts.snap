@@ -1,0 +1,198 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EditLayoutAttachmentDataGridComponent should create 1`] = `
+<ballware-edit-attachmentdatagrid
+  attachmentService={[Function ]}
+  breadcrumb={[Function Breadcrumb]}
+  dataSource$={[Function AnonymousSubject]}
+  destroy={[Function NodeInjectorDestroyRef]}
+  editService={[Function ]}
+  fileUpload={[Function Function]}
+  livecycle={[Function EditItemLivecycle]}
+  onRemoveDialogApply={[Function Function]}
+  onRemoveDialogCancel={[Function Function]}
+  optionButtons$={[Function AnonymousSubject]}
+  readonly={[Function Readonly]}
+  removeDialog="undefined"
+  translator={[Function Function]}
+  visible={[Function Visible]}
+>
+  <dx-file-uploader
+    accept="*"
+    ballwarebreadcrumb="upload"
+    class="dx-show-invalid-badge dx-widget dx-fileuploader dx-fileuploader-show-file-list dx-fileuploader-empty"
+    data-testid="attachments.upload.0"
+    ngskiphydration="true"
+    uploadmode="instantly"
+  >
+    <div
+      class="dx-fileuploader-wrapper"
+    >
+      <div
+        class="dx-fileuploader-container"
+      >
+        <div
+          class="dx-fileuploader-content"
+        >
+          <div
+            class="dx-fileuploader-input-wrapper"
+          >
+            <div
+              aria-label="Select a file"
+              class="dx-widget dx-button dx-button-mode-contained dx-button-normal dx-button-has-text dx-fileuploader-button"
+              role="button"
+              tabindex="0"
+            >
+              <div
+                class="dx-button-content"
+              >
+                <span
+                  class="dx-button-text"
+                >
+                  Select a file
+                </span>
+              </div>
+            </div>
+            <div
+              class="dx-fileuploader-input-container"
+            >
+              <input
+                accept="*"
+                aria-labelledby=dx-fileuploader-input-label-normalized-id-0
+                class="dx-fileuploader-input"
+                name="files[]"
+                tabindex="-1"
+                type="file"
+              />
+              <div
+                class="dx-fileuploader-input-label"
+                id=dx-fileuploader-input-label-normalized-id-0
+              >
+                or Drop a file here
+              </div>
+            </div>
+          </div>
+          <div
+            class="dx-fileuploader-files-container"
+          />
+        </div>
+      </div>
+    </div>
+  </dx-file-uploader><dx-data-grid
+    ballwarebreadcrumb="files"
+    class="dx-widget dx-visibility-change-handler"
+    data-testid="attachments.files.0"
+    ngskiphydration="true"
+    role="presentation"
+    style="height: 100%;"
+  >
+    <div
+      class="dx-datagrid dx-gridbase-container"
+      role="group"
+    >
+      <div
+        class="dx-gridbase-a11y-status-container"
+        e2e-a11y-general-status-container="true"
+        role="status"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-datagrid-headers dx-datagrid-nowrap dx-datagrid-sticky-columns dx-bordered-top-view"
+        role="presentation"
+      >
+        <div
+          class="dx-datagrid-scrollable-simulated dx-datagrid-content dx-datagrid-scroll-container"
+          role="presentation"
+        >
+          <table
+            class="dx-datagrid-table dx-datagrid-table-fixed"
+            id=dx-normalized-id-0
+            role="presentation"
+          >
+            <colgroup>
+              <col />
+              <col
+                style="width: 100px;"
+              />
+            </colgroup>
+            <tbody
+              role="presentation"
+            />
+          </table>
+        </div>
+      </div>
+      <div
+        class="dx-bordered-bottom-view dx-datagrid-rowsview dx-datagrid-nowrap dx-empty dx-datagrid-sticky-columns"
+        role="presentation"
+        tabindex="0"
+      >
+        <div
+          class="dx-datagrid-content"
+        >
+          <table
+            class="dx-datagrid-table dx-datagrid-table-fixed"
+            id=dx-normalized-id-0
+            role="presentation"
+          >
+            <colgroup>
+              <col />
+              <col
+                style="width: 100px;"
+              />
+            </colgroup>
+            <tbody
+              role="presentation"
+            >
+              <tr
+                class="dx-row dx-freespace-row dx-column-lines"
+                role="presentation"
+              >
+                <td
+                  class="dx-datagrid-first-header"
+                  style="text-align: left;"
+                />
+                <td
+                  class="dx-command-edit dx-datagrid-sticky-column-right dx-datagrid-sticky-column-border-left"
+                  style="text-align: center; right: 0px;"
+                />
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div
+        class="dx-hidden"
+      />
+      <div />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-hidden"
+      />
+      <div
+        class="dx-datagrid-drag-header dx-datagrid-text-content dx-widget dx-state-invisible"
+      />
+      <div
+        class="dx-context-menu dx-has-context-menu dx-widget dx-visibility-change-handler dx-collection"
+        role="presentation"
+      />
+      <div
+        class="dx-header-filter-menu"
+      />
+      <div />
+    </div>
+  </dx-data-grid>
+</ballware-edit-attachmentdatagrid>
+`;
