@@ -58,6 +58,7 @@ export * from './richtext';
 export * from './speechinput';
 export * from './text';
 export * from './textarea';
+export * from './chat';
 
 export const provideDefaultPageItems = (): EnvironmentProviders => {
   return makeEnvironmentProviders([

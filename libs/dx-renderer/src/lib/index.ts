@@ -23,7 +23,7 @@ import {
   Routes,
   withComponentInputBinding,
 } from '@angular/router';
-import { DefaultRedirectComponent, PageComponent } from './page';
+import { ChatPageComponent, DefaultRedirectComponent, PageComponent } from './page';
 import { I18N_PROVIDERS } from './i18n/i18n';
 import { PrintComponent } from './application';
 import {
@@ -94,6 +94,10 @@ const browserRoutes: Routes = [
   {
     path: 'print',
     component: PrintComponent
+  },
+  {
+    path: 'chat',
+    component: ChatPageComponent
   },
   {
     path: 'page/:id',

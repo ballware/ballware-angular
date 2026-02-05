@@ -1,0 +1,4 @@
+<dx-chat
+  [items]="(conversation$ | async) ?? []"
+  (onMessageEntered)="messageEntered($event)">
+</dx-chat>

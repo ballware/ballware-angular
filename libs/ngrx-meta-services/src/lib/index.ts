@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
 import { Router } from '@angular/router';
 import {
+  AI_ORIGIN_API, AiOriginApi,
   GENERIC_ENTITY_API_FACTORY,
   GenericEntityApiFactory,
   IDENTITY_ROLE_API,
@@ -149,8 +150,8 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
       },
       {
         provide: SCRIPT_UTIL,
-        useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, mlApi: MetaMlModelApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, mlApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
-        deps: [HttpClient, META_DOCUMENT_API, META_SUBSCRIPTION_API, META_MLMODEL_API, IDENTITY_SERVICE]
+        useFactory: (httpClient: HttpClient, documentApi: MetaDocumentApi, subscriptionApi: MetaSubscriptionApi, mlApi: MetaMlModelApi, originApi: AiOriginApi, identityService: IdentityService) => createUtil(httpClient, documentApi, subscriptionApi, mlApi, originApi, identityService.idToken$, identityService.accessToken$, identityService.currentUser$),
+        deps: [HttpClient, META_DOCUMENT_API, META_SUBSCRIPTION_API, META_MLMODEL_API, AI_ORIGIN_API, IDENTITY_SERVICE]
       },
       {
         provide: ATTACHMENT_SERVICE_FACTORY,
@@ -159,9 +160,10 @@ export function provideNgrxMetaServices(): EnvironmentProviders {
           notificationService: NotificationService,
           identityService: IdentityService,
           attachmentApiFactory: MetaAttachmentApiFactory,
+          originApi: AiOriginApi,
           translator: Translator
-        ) => () => new AttachmentStore(store, notificationService, identityService, attachmentApiFactory, translator),
-        deps: [ Store, NOTIFICATION_SERVICE, IDENTITY_SERVICE, META_ATTACHMENT_API_FACTORY, TRANSLATOR ]
+        ) => () => new AttachmentStore(store, notificationService, identityService, attachmentApiFactory, originApi, translator),
+        deps: [ Store, NOTIFICATION_SERVICE, IDENTITY_SERVICE, META_ATTACHMENT_API_FACTORY, AI_ORIGIN_API, TRANSLATOR ]
       },
       {
         provide: LOOKUP_SERVICE_FACTORY,

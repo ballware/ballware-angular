@@ -36,6 +36,7 @@
     "@hono/auth-js": "^1.1.0",
     "@hono/node-server": "^1.19.7",
     "@hono/oidc-auth": "^1.7.1",
+    "@microsoft/signalr": "^10.0.0",
     "@ngrx/component-store": "19.2.1",
     "@ngrx/effects": "19.2.1",
     "@ngrx/operators": "19.2.1",
