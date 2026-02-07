@@ -11,7 +11,7 @@
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputMode": "static",
-        "outputPath": "dist/webclient/browser",
+        "outputPath": "dist/webclient",
         "index": "apps/webclient/src/index.html",
         "browser": "apps/webclient/src/main.static.ts",
         "polyfills": ["apps/webclient/src/polyfills.ts"],
