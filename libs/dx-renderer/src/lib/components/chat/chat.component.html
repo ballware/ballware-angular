@@ -1,4 +1,6 @@
 <dx-chat
+  [user]='(me$ | async) ?? { id: "none", name: "None" }'
+  [typingUsers]='(writingUsers$ | async) ?? []'
   [items]="(conversation$ | async) ?? []"
   (onMessageEntered)="messageEntered($event)">
 </dx-chat>

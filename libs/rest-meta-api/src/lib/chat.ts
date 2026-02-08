@@ -1,10 +1,15 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { AiChatApi, ApiError, ChatApiMessage } from '@ballware/meta-api';
+import { AiChatApi, ApiError, ChatApiMessage, ChatApiAuthor } from '@ballware/meta-api';
 import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, throwError } from 'rxjs';
 
 class AiChatApiImpl implements AiChatApi {
   private readonly _hubConnection: HubConnection;
-  private readonly _messageStream: ChatApiMessage[] = [];
+
+  private _user: ChatApiAuthor|undefined;
+  private readonly _bot: ChatApiAuthor = { id: 'bot', displayName: 'ballware' };
+
+  private readonly _users$ = new BehaviorSubject<ChatApiAuthor[]>([]);
+  private readonly _writingUsers$ = new BehaviorSubject<ChatApiAuthor[]>([]);
   private readonly _messageStream$ = new BehaviorSubject<ChatApiMessage[]>([]);
 
   constructor(private readonly aiServiceBaseUrl: string,
@@ -19,12 +24,17 @@ class AiChatApiImpl implements AiChatApi {
       .build();
 
     this._hubConnection.on("Response", (message: string) => {
-      this._messageStream.push({ direction: 'in', message: message });
-      this._messageStream$.next(this._messageStream);
+      this._writingUsers$.next([]);
+      this._messageStream$.next([...this._messageStream$.getValue(), { author: this._bot, direction: 'in', message: message }]);
     });
   }
 
-  readonly connect = () => {
+  readonly connect = (userId: string, displayName: string) => {
+
+    this._user = { id: userId, displayName };
+    this._users$.next([this._user, this._bot]);
+    this._writingUsers$.next([]);
+
     return from(this._hubConnection.start()).pipe(
       catchError((error: Error) => {
         return throwError(() => ({
@@ -33,11 +43,18 @@ class AiChatApiImpl implements AiChatApi {
           message: error.message,
           payload: error.stack
         } as ApiError))
-      })
+      }),
+      map(() => ({
+        id: userId,
+        displayName
+      }))
     );
   }
 
   readonly disconnect = () => {
+    this._users$.next([]);
+    this._writingUsers$.next([]);
+
     return from(this._hubConnection.stop()).pipe(
       catchError((error: Error) => {
         return throwError(() => ({
@@ -50,11 +67,20 @@ class AiChatApiImpl implements AiChatApi {
     );
   }
 
-  readonly sendMessage = (message: string) => {
-    this._messageStream.push({ direction: 'out', message: message });
-    this._messageStream$.next(this._messageStream);
+  readonly sendMessage = (author: ChatApiAuthor, message: string) => {
+
+    this._writingUsers$.next([ this._bot ]);
+    this._messageStream$.next([...this._messageStream$.getValue(), { author, direction: 'out', message }]);
 
     return from(this._hubConnection.send("Prompt", message));
+  }
+
+  get users$(): Observable<ChatApiAuthor[]> {
+    return this._users$.asObservable();
+  }
+
+  get writingUsers$(): Observable<ChatApiAuthor[]> {
+    return this._writingUsers$.asObservable();
   }
 
   get conversation$(): Observable<ChatApiMessage[]> {

@@ -1,15 +1,23 @@
 import { ChatService, ChatMessage } from '@ballware/meta-services';
-import { AiChatApi } from '@ballware/meta-api';
-import { map } from 'rxjs';
+import { AiChatApi, ChatApiAuthor } from '@ballware/meta-api';
+import { BehaviorSubject, map } from 'rxjs';
 
 export class DefaultChatService implements ChatService {
+
+  private readonly _me = new BehaviorSubject<ChatApiAuthor|undefined>(undefined);
+
+  public me$ = this._me.pipe(
+    map(user => user ? { id: user.id, displayName: user.displayName } : undefined)
+  );
+
   constructor(private readonly chatApi: AiChatApi) {
   }
 
-  readonly startChat = (): void => {
-    this.chatApi.connect().subscribe({
-      next: () => {
-        console.log('Chat connected');
+  readonly startChat = (displayName: string): void => {
+    this.chatApi.connect('user', displayName).subscribe({
+      next: (user: ChatApiAuthor) => {
+        this._me.next(user);
+        console.log('Chat connected for user', user);
       },
       error: (error) => {
         console.log('Error connecting chat', error);
@@ -18,8 +26,16 @@ export class DefaultChatService implements ChatService {
   }
 
   readonly endChat = (): void => {
-    this.chatApi.disconnect().subscribe({
+    const currentUser = this._me.getValue();
+
+    if (!currentUser) {
+      console.log('No user connected to chat');
+      return;
+    }
+
+    this.chatApi.disconnect(currentUser).subscribe({
       next: () => {
+        this._me.next(undefined);
         console.log('Chat disconnected');
       },
       error: (error) => {
@@ -29,7 +45,14 @@ export class DefaultChatService implements ChatService {
   }
 
   readonly send = (prompt: string): void => {
-    this.chatApi.sendMessage(prompt).subscribe({
+    const currentUser = this._me.getValue();
+
+    if (!currentUser) {
+      console.log('No user connected to chat');
+      return;
+    }
+
+    this.chatApi.sendMessage(currentUser, prompt).subscribe({
       next: () => {
         console.log('Message sent');
       },
@@ -39,10 +62,28 @@ export class DefaultChatService implements ChatService {
     });
   }
 
+  get users$() {
+    return this.chatApi.users$.pipe(
+      map(users => users.map(u => ({
+        id: u.id,
+        displayName: u.displayName
+      })))
+    );
+  }
+
+  get writingUsers$() {
+    return this.chatApi.writingUsers$.pipe(
+      map(users => users.map(u => ({
+        id: u.id,
+        displayName: u.displayName
+      })))
+    );
+  }
+
   get conversation$() {
     return this.chatApi.conversation$.pipe(
       map((messages) => messages.map(m => ({
-        author: m.direction === 'in' ? 'bot' : 'user',
+        author: { id: m.author.id, displayName: m.author.displayName },
         message: m.message
       } as ChatMessage)))
     );
