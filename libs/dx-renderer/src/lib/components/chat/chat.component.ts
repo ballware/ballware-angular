@@ -5,6 +5,9 @@ import { CHAT_SERVICE, IDENTITY_SERVICE } from '@ballware/meta-services';
 import { User, MessageEnteredEvent, Message } from 'devextreme/ui/chat';
 import { map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { remark } from 'remark'
+import gfm from 'remark-gfm'
+import html from 'remark-html'
 
 @Component({
   selector: 'ballware-chat',
@@ -69,5 +72,18 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (e.message?.text) {
       this.chatService.send(e.message?.text);
     }
+  }
+
+  convertToHtml(text: string) {
+
+    return remark()
+      .use(gfm)
+      .use(html)
+      .processSync(text)
+      .toString()
+      .replace(
+        /^\s*<p>(.*?)<\/p>\s*$/s,
+        '$1'
+      );
   }
 }
