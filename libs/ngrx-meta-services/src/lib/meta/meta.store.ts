@@ -3,7 +3,7 @@ import { GenericEntityApiFactory, MetaDocumentApi, MetaEntityApi } from "@ballwa
 import { CompiledEntityMetadata, CrudItem, DocumentSelectEntry, EditLayout, EditLayoutItem, EditUtil, EntityCustomFunction, GridLayout, GridLayoutColumn, QueryParams, ScriptUtil, ValueType } from "@ballware/meta-model";
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
-import { cloneDeep, isEqual } from "lodash";
+import { cloneDeep, get, isEqual } from 'lodash';
 import { Observable, combineLatest, distinctUntilChanged, map, of, switchMap, takeUntil, tap, withLatestFrom } from "rxjs";
 import { metaDestroyed, metaUpdated } from "../component";
 import { EditModes, IdentityService, LookupRequest, LookupService, MetaService, TenantService, Translator } from "@ballware/meta-services";
@@ -248,6 +248,7 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService 
     readonly entityTemplates$ = this.select(state => state.entityTemplates);
 
     readonly displayName$ = this.select(state => state.displayName);
+    readonly keyColumn$ = this.select(state => state.entityMetadata?.keyColumn ?? 'Id');
     readonly customFunctions$ = this.select(state => state.customFunctions);
 
     readonly addFunction$ = this.select(state => state.addFunction);
@@ -435,13 +436,13 @@ export class MetaStore extends ComponentStore<MetaState> implements MetaService 
     readonly drop$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
         ? (item) => this.genericEntityApiFactory(entityMetadata.baseUrl)
-            .drop(item.Id)
+            .drop(get(item, entityMetadata.keyColumn ?? 'Id') as string)
         : undefined)) as Observable<((item: CrudItem) => Observable<void>) | undefined>;
 
     readonly exportItems$ = combineLatest([this.entityMetadata$])
         .pipe(map(([entityMetadata]) => (entityMetadata)
         ? (query, items) => this.genericEntityApiFactory(entityMetadata.baseUrl)
-            .exportItems(query, items.map(item => item.Id))
+            .exportItems(query, items.map(item => get(item, entityMetadata.keyColumn ?? 'Id') as string))
         : undefined)) as Observable<((query: string, items: CrudItem[]) => Observable<string>) | undefined>;
 
     readonly importItems$ = combineLatest([this.entityMetadata$])

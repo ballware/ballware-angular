@@ -73,6 +73,10 @@ export class EditStore extends ComponentStore<EditState> implements EditService 
     readonly editLayout$ = this.select(state => state.editLayout);
     readonly readonly$ = this.select(state => state.readonly);
 
+    readonly id$ = combineLatest([this.item$, this.metaService.keyColumn$]).pipe(
+        map(([item, keyColumn]) => (item && keyColumn) ? get(item, keyColumn) as string : undefined)
+    );
+
     readonly setMode = this.updater((state, mode: EditModes) => ({
         ...state,
         mode,

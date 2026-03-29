@@ -964,4 +964,9 @@ export interface CompiledEntityMetadata {
    * Member of business object containing current state code
    */
   stateColumn: string;
+
+  /**
+   * Member of business object containing unique identifier
+   */
+  keyColumn: string;
 }

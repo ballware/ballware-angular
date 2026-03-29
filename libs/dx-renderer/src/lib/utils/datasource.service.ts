@@ -22,9 +22,10 @@ export class DataSourceService {
           this.crudService.queryIdentifier$,
           this.metaService.query$,
           this.metaService.editFunction$,
-          this.metaService.headParams$]).pipe(
+          this.metaService.headParams$,
+          this.metaService.keyColumn$]).pipe(
             takeUntilDestroyed(this.destroy),
-            map(([queryIdentifier, query, editFunction, headParams]) => (queryIdentifier && query && headParams)
+            map(([queryIdentifier, query, editFunction, headParams, keyColumn]) => (queryIdentifier && query && headParams && keyColumn)
               ? createEditableGridDatasource(() => lastValueFrom(query(queryIdentifier, headParams)
                   .pipe(catchError((error: ApiError) => {
                       this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
@@ -37,7 +38,7 @@ export class DataSourceService {
                   }
 
                   return Promise.resolve(item);
-                })
+                }, keyColumn)
               : undefined)
         ).subscribe((dataSource) => this.dataSource$.next(dataSource));
 

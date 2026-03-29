@@ -29,7 +29,7 @@ export function createReadonlyDatasource(
 export function createEditableGridDatasource(
   fetchFunc: () => Promise<Array<Record<string, unknown>>>,
   save: (item: CrudItem) => Promise<CrudItem>,
-  keyProperty = 'Id'
+  keyProperty: string
 ) {
   let items: Array<CrudItem> = [];
 
@@ -44,7 +44,7 @@ export function createEditableGridDatasource(
       });
     },
     byKey: function(key: string) {
-      const item = items?.find(item => item.Id === key);
+      const item = items?.find(item => item[keyProperty] === key);
 
       if (!item) {
         throw new Error(`Item with key ${key} not found`);

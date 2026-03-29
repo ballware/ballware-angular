@@ -22,6 +22,7 @@ export interface EntityMetadata {
   GridLayout: string;
   EditLayout: string;
   StateColumn: string;
+  KeyColumn: string;
 }
 
 export interface EntityCustomScripts {
@@ -56,6 +57,7 @@ export const compileEntityMetadata = (
     displayName: metaData.DisplayName,
     baseUrl: metaData.BaseUrl,
     stateColumn: metaData.StateColumn,
+    keyColumn: metaData.KeyColumn,
   } as CompiledEntityMetadata;
 
   const customScripts = metaData.CustomScripts ? JSON5.parse(

@@ -95,11 +95,11 @@ import { I18NextPipe } from 'angular-i18next';
 
         this.editService.item$.pipe(
             takeUntilDestroyed(this.destroy),
-            withLatestFrom(this.editService.entity$)
-        ).subscribe(([item, entity]) => {
-            if (item && entity) {
+            withLatestFrom(this.editService.entity$, this.editService.id$)
+        ).subscribe(([item, entity, id]) => {
+            if (item && entity && id) {
                 this.attachmentService.setEntity(entity);
-                this.attachmentService.setOwner((item as CrudItem).Id);
+                this.attachmentService.setOwner(id);
                 this.attachmentService.fetch();
             }
         });
