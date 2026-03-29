@@ -15,7 +15,7 @@ export interface AttachmentService {
 
   setIdentifier(identifier: string): void;
   setEntity(entity: string): void;
-  setOwner(identifier: string): void;
+  setOwner(id: string): void;
 
   fetch(): void;
   upload(file: File): void;

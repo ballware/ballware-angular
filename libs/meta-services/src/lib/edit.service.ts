@@ -12,6 +12,8 @@ export interface EditService {
     editLayout$: Observable<EditLayout|undefined>;
     readonly$: Observable<boolean|undefined>;
 
+    id$: Observable<string|undefined>;
+
     getValue$: Observable<((request: { dataMember: string }) => unknown)|undefined>;
     setValue$: Observable<((request: { dataMember: string, value: unknown }) => void)|undefined>;
 

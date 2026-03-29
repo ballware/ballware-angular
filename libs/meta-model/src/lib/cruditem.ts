@@ -15,10 +15,6 @@
 * Interface for generic business object types
 */
 export interface CrudItem extends Record<string, ValueType> {
- /**
-  * Unique identifier of object
-  */
- Id: string;
 
  /**
   * Identifier of creating user

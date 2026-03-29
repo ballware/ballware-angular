@@ -16,6 +16,7 @@ export interface MetaService {
 
   entity$: Observable<string|undefined>;
   displayName$: Observable<string|undefined>;
+  keyColumn$: Observable<string|undefined>;
   entityMetadata$: Observable<CompiledEntityMetadata|undefined>;
   entityDocuments$: Observable<DocumentSelectEntry[]|undefined>;
 

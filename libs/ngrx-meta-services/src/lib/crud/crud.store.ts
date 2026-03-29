@@ -254,9 +254,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService 
     );
 
     readonly view = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) =>
-        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
-            .pipe(switchMap(([viewRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && viewRequest) ?
-                byId(viewRequest.editLayout ?? 'primary', viewRequest.item.Id)
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$, this.metaService.keyColumn$))
+            .pipe(switchMap(([viewRequest, getEditLayout, byId, entity, displayName, keyColumn]) => (getEditLayout && byId && entity && displayName && keyColumn && viewRequest) ?
+                byId(viewRequest.editLayout ?? 'primary', get(viewRequest.item, keyColumn) as string)
                     .pipe(map((item) => ({
                         mode: EditModes.VIEW,
                         entity: entity,
@@ -287,9 +287,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService 
     );
 
     readonly edit = this.effect((request$: Observable<{ item: CrudItem, editLayout: string }>) =>
-        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$))
-            .pipe(switchMap(([editRequest, getEditLayout, byId, entity, displayName]) => (getEditLayout && byId && entity && displayName && editRequest) ?
-                byId(editRequest.editLayout ?? 'primary', editRequest.item.Id)
+        request$.pipe(withLatestFrom(this.metaService.getEditLayout$, this.metaService.byId$, this.metaService.entity$, this.metaService.displayName$, this.metaService.keyColumn$))
+            .pipe(switchMap(([editRequest, getEditLayout, byId, entity, displayName, keyColumn]) => (getEditLayout && byId && entity && displayName && keyColumn && editRequest) ?
+                byId(editRequest.editLayout ?? 'primary', get(editRequest.item, keyColumn) as string)
                     .pipe(map((item) => ({
                         mode: EditModes.EDIT,
                         entity: entity,
@@ -317,9 +317,9 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService 
     );
 
     readonly remove = this.effect((request$: Observable<{ item: CrudItem }>) =>
-        request$.pipe(withLatestFrom(this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$))
-            .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName]) => (entityMetadata && byId && displayName && removeRequest) ?
-                byId('primary', removeRequest.item.Id)
+        request$.pipe(withLatestFrom(this.metaService.entityMetadata$, this.metaService.byId$, this.metaService.displayName$, this.metaService.keyColumn$))
+            .pipe(switchMap(([removeRequest, entityMetadata, byId, displayName, keyColumn]) => (entityMetadata && byId && displayName && keyColumn && removeRequest) ?
+                byId('primary', get(removeRequest.item, keyColumn) as string)
                     .pipe(map((item) =>
                         ({
                             item: item,
@@ -341,11 +341,12 @@ export class CrudStore extends ComponentStore<CrudState> implements CrudService 
     );
 
     readonly print = this.effect((request$: Observable<{ documentId: string, items: CrudItem[] }>) =>
-        request$
-            .pipe(tap((request) => this.router.navigate(['print'], {
+        request$.pipe(
+          withLatestFrom(this.metaService.keyColumn$),
+          tap(([{ documentId, items }, keyColumn]) => keyColumn && this.router.navigate(['print'], {
                 queryParams: {
-                    docId: request.documentId,
-                    id: request.items.map(item => item.Id)
+                    docId: documentId,
+                    id: items.map(item => get(item, keyColumn) as string)
                 }
             })))
     );

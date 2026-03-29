@@ -2,6 +2,7 @@ import { Mock, It, Times } from 'moq.ts';
 import { CrudItem, ScriptUtil } from "@ballware/meta-model";
 
 import { compileItemMapping } from "./itemmapping";
+import { get } from 'lodash';
 
 describe("compileItemMapping", () => {
     it("should compile default implementation for undefined custom script", () => {
@@ -35,12 +36,12 @@ describe("compileItemMapping", () => {
 
         const mappedItem = subject(mockedItem, mockedCustomParam, mockedScriptUtil);
 
-        expect(mappedItem.Id).toBe('unique id');
+        expect(get(mappedItem, 'Id')).toBe('unique id');
         expect(mappedItem['additionalValue']).toBe(true);
     })
 
     it("should fail to compile faulty custom script", () => {
-        
+
         expect(() => compileItemMapping("invalid javascript;")).toThrow(SyntaxError);
     })
 
