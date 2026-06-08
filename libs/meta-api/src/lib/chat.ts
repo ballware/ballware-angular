@@ -13,7 +13,7 @@ export interface ChatApiMessage {
 }
 
 export interface AiChatApi {
-  connect(userId: string, displayName: string): Observable<ChatApiAuthor>;
+  connect(context: string, userId: string, displayName: string): Observable<ChatApiAuthor>;
   disconnect(user: ChatApiAuthor): Observable<void>;
 
   sendMessage(user: ChatApiAuthor, message: string): Observable<void>;

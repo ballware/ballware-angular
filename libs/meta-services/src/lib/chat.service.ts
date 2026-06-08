@@ -12,7 +12,7 @@ export interface ChatMessage {
 }
 
 export interface ChatService {
-  startChat(displayName: string): void;
+  startChat(context: string, displayName: string): void;
   endChat(): void;
 
   send(prompt: string): void;

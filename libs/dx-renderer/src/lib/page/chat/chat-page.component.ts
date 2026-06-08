@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatComponent } from '../../components';
 import { TOOLBAR_SERVICE, ToolbarService } from '@ballware/meta-services';
@@ -10,6 +10,8 @@ import { TOOLBAR_SERVICE, ToolbarService } from '@ballware/meta-services';
   imports: [CommonModule, ChatComponent]
 })
 export class ChatPageComponent {
+
+  @Input() context!: string;
 
   constructor(@Inject(TOOLBAR_SERVICE) private readonly toolbarService: ToolbarService) {
     this.toolbarService.setPage('Chat');

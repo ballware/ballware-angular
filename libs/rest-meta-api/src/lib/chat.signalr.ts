@@ -2,7 +2,7 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { AiChatApi, ApiError, ChatApiMessage, ChatApiAuthor } from '@ballware/meta-api';
 import { BehaviorSubject, catchError, firstValueFrom, from, map, Observable, throwError } from 'rxjs';
 
-class AiChatApiImpl implements AiChatApi {
+class SignalrChatApi implements AiChatApi {
   private readonly _hubConnection: HubConnection;
 
   private _user: ChatApiAuthor|undefined;
@@ -29,7 +29,7 @@ class AiChatApiImpl implements AiChatApi {
     });
   }
 
-  readonly connect = (userId: string, displayName: string) => {
+  readonly connect = (context: string, userId: string, displayName: string) => {
 
     this._user = { id: userId, displayName };
     this._users$.next([this._user, this._bot]);
@@ -88,9 +88,9 @@ class AiChatApiImpl implements AiChatApi {
   }
 }
 
-export function createAiChatApi(
+export function createAiSignalrChatApi(
   aiServiceBaseUrl: string,
   tokenFactory: () => Observable<string|undefined>
 ): AiChatApi {
-  return new AiChatApiImpl(aiServiceBaseUrl, tokenFactory);
+  return new SignalrChatApi(aiServiceBaseUrl, tokenFactory);
 }

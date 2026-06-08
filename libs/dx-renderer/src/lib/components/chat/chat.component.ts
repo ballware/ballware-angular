@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DxChatModule } from 'devextreme-angular';
 import { CHAT_SERVICE, IDENTITY_SERVICE } from '@ballware/meta-services';
@@ -19,6 +19,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly identityService = inject(IDENTITY_SERVICE);
   private readonly chatService = inject(CHAT_SERVICE);
+
+  @Input() context!: string;
 
   public readonly me$ = this.chatService.me$.pipe(
     map((user) => {
@@ -58,7 +60,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatService.endChat();
 
         if (userName) {
-          this.chatService.startChat(userName);
+          this.chatService.startChat(this.context, userName);
         }
     });
 

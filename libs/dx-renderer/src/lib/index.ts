@@ -96,8 +96,9 @@ const browserRoutes: Routes = [
     component: PrintComponent
   },
   {
-    path: 'chat',
-    component: ChatPageComponent
+    path: 'chat/:context',
+    component: ChatPageComponent,
+    data: { forceNewOnParamChange: ['context'] }
   },
   {
     path: 'page/:id',

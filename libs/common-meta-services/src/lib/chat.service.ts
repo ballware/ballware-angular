@@ -13,8 +13,8 @@ export class DefaultChatService implements ChatService {
   constructor(private readonly chatApi: AiChatApi) {
   }
 
-  readonly startChat = (displayName: string): void => {
-    this.chatApi.connect('user', displayName).subscribe({
+  readonly startChat = (context: string, displayName: string): void => {
+    this.chatApi.connect(context, 'user', displayName).subscribe({
       next: (user: ChatApiAuthor) => {
         this._me.next(user);
         console.log('Chat connected for user', user);

@@ -37,9 +37,10 @@ import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
 import { createSessionApi } from './session';
-import { createAiChatApi } from './chat';
+import { createAiSignalrChatApi } from './chat.signalr';
 import { Observable } from 'rxjs';
 import { createAiOriginApi } from './origin';
+import { createOpenAiChatApi } from './chat.openai';
 
 export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
 export { PageData, PageCustomScripts, compilePage } from './page';
@@ -221,14 +222,28 @@ export interface AiApiConfig {
 export const AI_API_CONFIG = new InjectionToken<AiApiConfig>('AiApiConfig');
 export const AI_API_TOKEN_FACTORY = new InjectionToken<() => Observable<string|undefined>>('AiApiTokenFactory');
 
-export function provideAiChatApi()
+export function provideSignalrChatApi()
   : EnvironmentProviders {
 
   return makeEnvironmentProviders(
     [
       {
         provide: AI_CHAT_API,
-        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createAiChatApi(config.aiServiceBaseUrl, tokenFactory),
+        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createAiSignalrChatApi(config.aiServiceBaseUrl, tokenFactory),
+        deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
+      },
+    ]);
+}
+
+export function provideOpenAiChatApi()
+  : EnvironmentProviders {
+
+  return makeEnvironmentProviders(
+    [
+      {
+        provide: AI_CHAT_API,
+        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiChatApi(config.aiServiceBaseUrl, tokenFactory),
+
         deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
       },
     ]);

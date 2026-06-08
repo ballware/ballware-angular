@@ -113,7 +113,7 @@ export class ApplicationHeaderComponent {
   }
 
   readonly showChat = () => {
-    this.router.navigate(['/chat']);
+    this.router.navigate(['/chat/global']);
   }
 }
 
