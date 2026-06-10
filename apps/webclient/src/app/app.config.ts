@@ -12,7 +12,7 @@ import {
   provideDocumentBackendRestApi,
   IDENTITY_KEYCLOAK_REST_API_CONFIG, META_REST_API_CONFIG, IdentityKeycloakRestApiConfig, MetaRestApiConfig,
   DOCUMENT_API_CONFIG, DocumentRestApiConfig, GENERIC_API_CONFIG, GenericRestApiConfig, AI_API_CONFIG, AiApiConfig,
-  provideOpenAiChatApi, AI_API_TOKEN_FACTORY, provideAiRestApi
+  AI_API_TOKEN_FACTORY, provideAiRestApi, provideOpenAiResponsesApi
 } from '@ballware/rest-meta-api';
 import {
   DX_RENDERFACTORY_CONFIG,
@@ -117,6 +117,6 @@ export const sharedConfig: ApplicationConfig = {
         provideDocumentBackendRestApi(),
         provideGenericBackendRestApi(),
         provideAiRestApi(),
-        provideOpenAiChatApi()
+        provideOpenAiResponsesApi()
     ]
 };

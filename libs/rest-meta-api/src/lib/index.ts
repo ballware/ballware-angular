@@ -40,7 +40,7 @@ import { createSessionApi } from './session';
 import { createAiSignalrChatApi } from './chat.signalr';
 import { Observable } from 'rxjs';
 import { createAiOriginApi } from './origin';
-import { createOpenAiChatApi } from './chat.openai';
+import { createOpenAiCompletionsApi, createOpenAiResponsesApi } from './chat.openai';
 
 export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
 export { PageData, PageCustomScripts, compilePage } from './page';
@@ -235,19 +235,32 @@ export function provideSignalrChatApi()
     ]);
 }
 
-export function provideOpenAiChatApi()
+export function provideOpenAiCompletionsApi()
   : EnvironmentProviders {
 
   return makeEnvironmentProviders(
     [
       {
         provide: AI_CHAT_API,
-        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiChatApi(config.aiServiceBaseUrl, tokenFactory),
-
+        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiCompletionsApi(config.aiServiceBaseUrl, tokenFactory),
         deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
       },
     ]);
 }
+
+export function provideOpenAiResponsesApi()
+  : EnvironmentProviders {
+
+  return makeEnvironmentProviders(
+    [
+      {
+        provide: AI_CHAT_API,
+        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiResponsesApi(config.aiServiceBaseUrl, tokenFactory),
+        deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
+      },
+    ]);
+}
+
 
 export function provideAiRestApi(): EnvironmentProviders {
 
