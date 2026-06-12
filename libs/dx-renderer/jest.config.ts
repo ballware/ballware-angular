@@ -13,7 +13,14 @@ export default {
       },
     ],
   },
-  transformIgnorePatterns: ['node_modules/(?!.*\\.mjs$)'],
+  moduleNameMapper: {
+    '^remark$': '<rootDir>/src/test/mocks/remark.ts',
+    '^remark-gfm$': '<rootDir>/src/test/mocks/remark-gfm.ts',
+    '^remark-html$': '<rootDir>/src/test/mocks/remark-html.ts',
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!.*\\.mjs$)'
+  ],
   snapshotSerializers: [
     'jest-preset-angular/build/serializers/no-ng-attributes',
     'jest-preset-angular/build/serializers/ng-snapshot',

@@ -76,6 +76,12 @@ import { I18NextPipe } from 'angular-i18next';
                     icon: 'bi bi-trash-fill',
                     onClick: (e: any) => this.fileDelete(e.row.data),
                     visible: !readonly
+                },
+                {
+                    hint: this.translator('attachment.actions.addtoknowledge'),
+                    icon: 'bi bi-robot',
+                    onClick: (e: any) => this.fileAddToKnowledge(e.row.data),
+                    visible: !readonly
                 }
             ])
         )
@@ -115,6 +121,10 @@ import { I18NextPipe } from 'angular-i18next';
 
     fileUpload(file: File) {
         this.attachmentService.upload(file);
+    }
+
+    fileAddToKnowledge(file: Record<string, unknown>) {
+        this.attachmentService.addToKnowledge({ id: file['Id'] as string, name: file['FileName'] as string });
     }
 
     public onRemoveDialogApply() {

@@ -13,14 +13,15 @@ import { ApplicationAccountMenuComponent } from '../account/menu.component';
 import { ApplicationDocumentationComponent } from "../documentation/documentation.component";
 import { DxButtonModule, DxPopupModule, DxToolbarModule } from 'devextreme-angular';
 import { CommonModule } from '@angular/common';
-import { I18NextModule } from 'angular-i18next';
+import { I18NextPipe } from 'angular-i18next';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'ballware-application-header',
     templateUrl: './header.component.html',
     styleUrls: ['./header.component.scss'],
-    imports: [CommonModule, I18NextModule, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule]
+    imports: [CommonModule, I18NextPipe, ApplicationAccountMenuComponent, ApplicationDocumentationComponent, DxToolbarModule, DxButtonModule, DxPopupModule]
 })
 export class ApplicationHeaderComponent {
   @ViewChild('accountMenu', { static: false }) accountMenu?: ApplicationAccountMenuComponent;
@@ -45,11 +46,12 @@ export class ApplicationHeaderComponent {
   public fullscreenDialogs$: Observable<boolean>;
 
   constructor(
-    private destroy: DestroyRef,
-    @Inject(RESPONSIVE_SERVICE) private responsiveService: ResponsiveService,
-    @Inject(IDENTITY_SERVICE) private identityService: IdentityService,
-    @Inject(TENANT_SERVICE) private tenantService: TenantService,
-    @Inject(TOOLBAR_SERVICE) private toolbarService: ToolbarService) {
+    private readonly destroy: DestroyRef,
+    private readonly router: Router,
+    @Inject(RESPONSIVE_SERVICE) private readonly responsiveService: ResponsiveService,
+    @Inject(IDENTITY_SERVICE) private readonly identityService: IdentityService,
+    @Inject(TENANT_SERVICE) private readonly tenantService: TenantService,
+    @Inject(TOOLBAR_SERVICE) private readonly toolbarService: ToolbarService) {
 
     this.fullscreenDialogs$ = this.responsiveService.onResize$.pipe(
       takeUntilDestroyed(this.destroy),
@@ -78,7 +80,7 @@ export class ApplicationHeaderComponent {
             }
           }),
           takeWhile(([, sessionExpiration ]) => (sessionExpiration) ? (new Date() < sessionExpiration) : true),
-          map(([, sessionExpiration]) => (sessionExpiration) ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
+          map(([, sessionExpiration]) => (sessionExpiration) ? sessionExpiration.valueOf() - Date.now() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
           map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : ''));
       } else {
         this.tokenExpiration$ = of(undefined);
@@ -93,7 +95,7 @@ export class ApplicationHeaderComponent {
         }
       }),
       takeWhile(([, sessionExpiration ]) => sessionExpiration ? (new Date() < sessionExpiration) : true),
-      map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - new Date().valueOf() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
+      map(([, sessionExpiration]) => sessionExpiration ? sessionExpiration.valueOf() - Date.now() : 0), map((milliseconds) => Math.ceil(milliseconds / 1000)),
       map((expiration) => expiration ? `${Math.ceil(expiration / 60 - 1).toString().padStart(2, '0')}:${Math.ceil(expiration % 60).toString().padStart(2, '0')}` : '')
     );
   }
@@ -108,6 +110,10 @@ export class ApplicationHeaderComponent {
 
   showDocumentation(): void {
     this.toolbarService.showDocumentation();
+  }
+
+  readonly showChat = () => {
+    this.router.navigate(['/chat/global']);
   }
 }
 

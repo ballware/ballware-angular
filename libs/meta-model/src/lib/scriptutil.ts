@@ -128,9 +128,9 @@
    * @param callback Callback function called with result
    */
   withPickvalueList: (
-    lookup: unknown, 
-    entity: string, 
-    field: string, 
+    lookup: unknown,
+    entity: string,
+    field: string,
     callback: (items: Array<Record<string, unknown>>) => void) => void;
 
   /**
@@ -142,9 +142,9 @@
    * @param callback Callback function called with result
    */
   withPickvalueByValue: (
-    lookup: unknown, 
-    entity: string, 
-    field: string, 
+    lookup: unknown,
+    entity: string,
+    field: string,
     value: number,
     callback: (item: Record<string, unknown>) => void) => void;
 
@@ -211,26 +211,28 @@
 
   /**
    * Trigger subscriptions for ids
-   * 
+   *
    * @param ids Collection of ids to trigger subscriptions for
    */
   triggerSubscriptions: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 
   /**
    * Trigger datasource updates for given ids
-   * 
+   *
    * @param ids Collection of ids to trigger update for
    * @param callback Function called when update is triggered
-   * @param error Function called when update fails   
+   * @param error Function called when update fails
    */
   updateDatasources: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
 
   /**
    * Train machine learning model for given ids
-   * 
+   *
    * @param ids Collection of ids to train model for
    * @param callback Function called when training is triggered
    * @param error Function called when training fails
    */
   train: (ids: Array<string>, callback: () => void, error: (message: string) => void) => void;
+
+  createEmbedding: (ids: Array<string>, model: string, activate: boolean, callback: () => void, error: (message: string) => void) => void;
 }

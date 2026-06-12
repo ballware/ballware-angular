@@ -1,5 +1,5 @@
 import { DestroyRef, inject } from '@angular/core';
-import { ApiError, MetaAttachmentApiFactory } from "@ballware/meta-api";
+import { AiOriginApi, ApiError, MetaAttachmentApiFactory } from '@ballware/meta-api';
 import { ComponentStore } from "@ngrx/component-store";
 import { Store } from "@ngrx/store";
 import { cloneDeep, isEqual } from "lodash";
@@ -10,9 +10,14 @@ import { AttachmentState } from "./attachment.state";
 
 export class AttachmentStore extends ComponentStore<AttachmentState> implements AttachmentService {
 
-    private destroyRef = inject(DestroyRef);
+    private readonly destroyRef = inject(DestroyRef);
 
-    constructor(private store: Store, private notificationService: NotificationService, private identityService: IdentityService, private attachmentApiFactory: MetaAttachmentApiFactory, private translator: Translator) {
+    constructor(private readonly store: Store,
+                private readonly notificationService: NotificationService,
+                private readonly identityService: IdentityService,
+                private readonly attachmentApiFactory: MetaAttachmentApiFactory,
+                private readonly originApi: AiOriginApi,
+                private readonly translator: Translator) {
         super({});
 
         this.state$
@@ -138,4 +143,22 @@ export class AttachmentStore extends ComponentStore<AttachmentState> implements 
             }))
             .pipe(map(() => this.fetch()))
     );
+
+    readonly addToKnowledge = this.effect((request$: Observable<{ id: string, name: string }>) =>
+      request$.pipe(withLatestFrom(this.identityService.userTenant$, this.entity$, this.owner$))
+        .pipe(switchMap(([{ id, name }, tenant, entity, owner]) => (tenant && entity && owner && id && name)
+          ? this.originApi.addFromAttachment(entity, owner, id, name)
+          : of(undefined)))
+        .pipe(catchError((error: ApiError) => {
+          this.notificationService.triggerNotification({ message: error.payload?.Message ?? error.message ?? error.statusText, severity: 'error' });
+
+          return of(undefined);
+        }), tap(() => {
+          this.notificationService.triggerNotification({
+            message: this.translator('attachment.messages.addedtoknowledge'),
+            severity: 'info'
+          })
+        }))
+    );
+
 }

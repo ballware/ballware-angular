@@ -22,6 +22,7 @@ export interface AttachmentService {
   open(id: string): void;
   remove(request: { id: string, filename: string }): void;
   drop(id: string): void;
+  addToKnowledge(request: { id: string, name: string }): void;
 }
 
 export type AttachmentServiceFactory = () => AttachmentService;
