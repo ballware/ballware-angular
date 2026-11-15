@@ -37,10 +37,8 @@ import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
 import { createSessionApi } from './session';
-import { createAiSignalrChatApi } from './chat.signalr';
-import { Observable } from 'rxjs';
+import { createAiChatApi } from './chat';
 import { createAiOriginApi } from './origin';
-import { createOpenAiCompletionsApi, createOpenAiResponsesApi } from './chat.openai';
 
 export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
 export { PageData, PageCustomScripts, compilePage } from './page';
@@ -219,44 +217,23 @@ export interface AiApiConfig {
   aiServiceBaseUrl: string,
 }
 
+export interface AiChatApiConfig {
+  signonUrl: string,
+  chatUrl: string
+}
+
 export const AI_API_CONFIG = new InjectionToken<AiApiConfig>('AiApiConfig');
-export const AI_API_TOKEN_FACTORY = new InjectionToken<() => Observable<string|undefined>>('AiApiTokenFactory');
+export const AI_CHAT_API_CONFIG = new InjectionToken<AiChatApiConfig>('AiChatApiConfig');
 
-export function provideSignalrChatApi()
+export function provideAiChatApi()
   : EnvironmentProviders {
 
   return makeEnvironmentProviders(
     [
       {
         provide: AI_CHAT_API,
-        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createAiSignalrChatApi(config.aiServiceBaseUrl, tokenFactory),
-        deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
-      },
-    ]);
-}
-
-export function provideOpenAiCompletionsApi()
-  : EnvironmentProviders {
-
-  return makeEnvironmentProviders(
-    [
-      {
-        provide: AI_CHAT_API,
-        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiCompletionsApi(config.aiServiceBaseUrl, tokenFactory),
-        deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
-      },
-    ]);
-}
-
-export function provideOpenAiResponsesApi()
-  : EnvironmentProviders {
-
-  return makeEnvironmentProviders(
-    [
-      {
-        provide: AI_CHAT_API,
-        useFactory: (config: AiApiConfig, tokenFactory: () => Observable<string|undefined>) => createOpenAiResponsesApi(config.aiServiceBaseUrl, tokenFactory),
-        deps: [ AI_API_CONFIG, AI_API_TOKEN_FACTORY ]
+        useFactory: (config: AiChatApiConfig) => createAiChatApi(config.signonUrl, config.chatUrl),
+        deps: [ AI_CHAT_API_CONFIG ]
       },
     ]);
 }

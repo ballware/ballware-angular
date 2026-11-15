@@ -13,11 +13,6 @@ export default {
       },
     ],
   },
-  moduleNameMapper: {
-    '^remark$': '<rootDir>/src/test/mocks/remark.ts',
-    '^remark-gfm$': '<rootDir>/src/test/mocks/remark-gfm.ts',
-    '^remark-html$': '<rootDir>/src/test/mocks/remark-html.ts',
-  },
   transformIgnorePatterns: [
     'node_modules/(?!.*\\.mjs$)'
   ],
