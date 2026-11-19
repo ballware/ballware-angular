@@ -4,7 +4,7 @@
         <ballware-page-tabs-counter *ngIf="item.options.itemoptions.entity" (tabNotAuthorized)="onTabNotAuthorized($event)" [tab]="item" [caption]="item.options.itemoptions.caption" [entity]="item.options.itemoptions.entity" [query]="item.options.itemoptions.query"></ballware-page-tabs-counter>
     </div>
     <div *dxTemplate="let item of 'item'" class="flex-fill overflow-hidden row-cols-xs-1 row-cols-lg-12" ballwareBreadcrumb="panel">
-        <ballware-page-item *ngFor="let layoutItem of item?.items" [layoutItem]="layoutItem" [colCount]="layoutItem.colCount">
+        <ballware-page-item *ngFor="let layoutItem of item?.items; let itemIndex = index" [layoutItem]="layoutItem" [colCount]="layoutItem.colCount" [itemIndex]="itemIndex">
         </ballware-page-item>
     </div>
 </dx-tab-panel>

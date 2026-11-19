@@ -1,7 +1,7 @@
 <div [style.height]="height ?? 'auto'" class="w-100 container-fluid">
-  <div class="row row-cols-1 row-cols-xl-{{colCount}}" *ngFor="let row of rows">
-    <div class="col col-xl-{{ (12 / colCount) * (layoutItem.colSpan ?? 1) }}" [style.height]="layoutItem.options?.height ?? 'auto'" *ngFor="let layoutItem of row">
-      <ballware-edit-item [layoutItem]="layoutItem">
+  <div class="row row-cols-1 row-cols-xl-{{colCount}}" *ngFor="let row of rows; let rowIndex = index">
+    <div class="col col-xl-{{ (12 / colCount) * (layoutItem.colSpan ?? 1) }}" [style.height]="layoutItem.options?.height ?? 'auto'" *ngFor="let layoutItem of row; let colIndex = index">
+      <ballware-edit-item [layoutItem]="layoutItem" [itemIndex]="rowItemIndexes[rowIndex][colIndex]">
       </ballware-edit-item>
     </div>
   </div>

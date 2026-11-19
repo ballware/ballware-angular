@@ -24,14 +24,22 @@ exports[`EditLayoutGroupComponent should match snapshot 1`] = `
             class="col col-xl-6"
             style="height: auto;"
           >
-            <ballware-edit-item>
+            <ballware-edit-item
+              data-test-identifier="field1-0"
+              data-test-path="field1-0"
+              data-testid="field1-0"
+            >
             </ballware-edit-item>
           </div>
           <div
             class="col col-xl-6"
             style="height: auto;"
           >
-            <ballware-edit-item>
+            <ballware-edit-item
+              data-test-identifier="field2-1"
+              data-test-path="field2-1"
+              data-testid="field2-1"
+            >
             </ballware-edit-item>
           </div>
         </div>

@@ -2,6 +2,8 @@
 
 exports[`EditLayoutMultilookupComponent should match snapshot 1`] = `
 <div
+  data-test-identifier="mockedmember"
+  data-test-path="mockedmember"
   data-testid="mockedmember"
   id="root2"
 >

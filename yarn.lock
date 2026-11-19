@@ -7304,6 +7304,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nx/playwright@npm:22.0.3":
+  version: 22.0.3
+  resolution: "@nx/playwright@npm:22.0.3"
+  dependencies:
+    "@nx/devkit": "npm:22.0.3"
+    "@nx/eslint": "npm:22.0.3"
+    "@nx/js": "npm:22.0.3"
+    minimatch: "npm:9.0.3"
+    tslib: "npm:^2.3.0"
+  peerDependencies:
+    "@playwright/test": ^1.36.0
+  peerDependenciesMeta:
+    "@playwright/test":
+      optional: true
+  checksum: 5e3c18c55cc89e6940d8e14e739c68f3d53e4bc404cf5d4bbeaa39a61858797a1ef5e39eaf7d6679015a2072aa6cbd67805746ce721651d768d7f53f7c02e92b
+  languageName: node
+  linkType: hard
+
 "@nx/rspack@npm:22.0.3":
   version: 22.0.3
   resolution: "@nx/rspack@npm:22.0.3"
@@ -7618,6 +7636,17 @@ __metadata:
   version: 0.2.9
   resolution: "@pkgr/core@npm:0.2.9"
   checksum: ac8e4e8138b1a7a4ac6282873aef7389c352f1f8b577b4850778f5182e4a39a5241facbe48361fec817f56d02b51691b383010843fb08b34a8e8ea3614688fd5
+  languageName: node
+  linkType: hard
+
+"@playwright/test@npm:1.56.1":
+  version: 1.56.1
+  resolution: "@playwright/test@npm:1.56.1"
+  dependencies:
+    playwright: "npm:1.56.1"
+  bin:
+    playwright: cli.js
+  checksum: 2b5b0e1f2e6a18f6e5ce6897c7440ca78f64e0b004834e9808e93ad2b78b96366b562ae4366602669cf8ad793a43d85481b58541e74be71e905e732d833dd691
   languageName: node
   linkType: hard
 
@@ -11954,9 +11983,11 @@ __metadata:
     "@nx/eslint-plugin": "npm:22.0.3"
     "@nx/jest": "npm:22.0.3"
     "@nx/js": "npm:^22.0.3"
+    "@nx/playwright": "npm:22.0.3"
     "@nx/storybook": "npm:22.0.3"
     "@nx/web": "npm:22.0.3"
     "@nx/workspace": "npm:22.0.3"
+    "@playwright/test": "npm:1.56.1"
     "@schematics/angular": "npm:19.2.19"
     "@storybook/addon-coverage": "npm:^2.0.0"
     "@storybook/addon-docs": "npm:9.1.16"
@@ -23231,6 +23262,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright@npm:1.56.1, playwright@npm:^1.56.1":
+  version: 1.56.1
+  resolution: "playwright@npm:1.56.1"
+  dependencies:
+    fsevents: "npm:2.3.2"
+    playwright-core: "npm:1.56.1"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    playwright: cli.js
+  checksum: 8e9965aede86df0f4722063385748498977b219630a40a10d1b82b8bd8d4d4e9b6b65ecbfa024331a30800163161aca292fb6dd7446c531a1ad25f4155625ab4
+  languageName: node
+  linkType: hard
+
 "playwright@npm:^1.14.0":
   version: 1.40.1
   resolution: "playwright@npm:1.40.1"
@@ -23243,21 +23289,6 @@ __metadata:
   bin:
     playwright: cli.js
   checksum: 5dae164d1f69162da8d7eee52da651296fb885c76a8b36049f216975c751a0a826ff05795a1c0902dc0bd193fe606ae17d5def655f4cbcccb8d8b71afb74b950
-  languageName: node
-  linkType: hard
-
-"playwright@npm:^1.56.1":
-  version: 1.56.1
-  resolution: "playwright@npm:1.56.1"
-  dependencies:
-    fsevents: "npm:2.3.2"
-    playwright-core: "npm:1.56.1"
-  dependenciesMeta:
-    fsevents:
-      optional: true
-  bin:
-    playwright: cli.js
-  checksum: 8e9965aede86df0f4722063385748498977b219630a40a10d1b82b8bd8d4d4e9b6b65ecbfa024331a30800163161aca292fb6dd7446c531a1ad25f4155625ab4
   languageName: node
   linkType: hard
 

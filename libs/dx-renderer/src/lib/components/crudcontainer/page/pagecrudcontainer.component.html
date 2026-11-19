@@ -1,5 +1,5 @@
 <div class="h-100 w-100 container-fluid">
-    <ballware-page-item *ngFor="let item of layoutItem?.items" [layoutItem]="item" [colCount]="item.colCount">
+    <ballware-page-item *ngFor="let item of layoutItem?.items; let itemIndex = index" [layoutItem]="item" [colCount]="item.colCount" [itemIndex]="itemIndex">
     </ballware-page-item>
     <ng-content></ng-content>
 </div>

@@ -19,6 +19,14 @@ export class Breadcrumb implements OnDestroy {
     return this.pathString;
   }
 
+  @HostBinding('attr.data-test-path') get testPath() {
+    return this.pathString;
+  }
+
+  @HostBinding('attr.data-test-identifier') get testIdentifier() {
+    return this.identifier;
+  }
+
   constructor(@Optional() @SkipSelf() private readonly parent?: Breadcrumb) {
     if (parent) {
       const autoIdentifier = parent.addChild(this);
