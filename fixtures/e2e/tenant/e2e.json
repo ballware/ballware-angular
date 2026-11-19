@@ -1,0 +1,9 @@
+[
+  {
+    "Id": "e2e",
+    "Name": "E2E tenant",
+    "Navigation": "{title:'E2E tenant',defaultUrl:'e2e-orderslist',items:[{type:'page',options:{page:'e2e-orderslist',url:'e2e-orderslist',caption:'Orders'}}]}",
+    "Templates": "[]",
+    "RightsCheckScript": "return (userinfo.Rights || []).indexOf(right) >= 0;"
+  }
+]

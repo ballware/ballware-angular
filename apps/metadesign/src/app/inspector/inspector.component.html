@@ -1,0 +1,69 @@
+<section class="inspector-section" data-testid="inspector-revision">
+  <h4>Sandbox state</h4>
+  <p>Revision: <strong>{{ revision }}</strong></p>
+  <p>Fixture roots: {{ roots.join(', ') }}</p>
+  <p>Tenants: {{ tenantNames }}</p>
+  <p>Active overlays: {{ overlays.length }}</p>
+  <ul>
+    @for (overlay of overlays; track overlay.kind + overlay.id) {
+      <li>{{ overlay.kind }}/{{ overlay.id }}</li>
+    }
+  </ul>
+</section>
+
+<section class="inspector-section" data-testid="inspector-entities">
+  <h4>Compiled entity metadata</h4>
+  <table>
+    <thead>
+      <tr><th>Id</th><th>Application</th><th>BaseUrl</th><th>GridLayouts</th><th>EditLayouts</th><th>Overlay</th></tr>
+    </thead>
+    <tbody>
+      @for (entity of entities; track entity.id) {
+        <tr data-testid="inspector-entity-row">
+          <td>{{ entity.id }}</td>
+          <td>{{ entity.application }}</td>
+          <td>{{ entity.baseUrl }}</td>
+          <td>{{ entity.gridLayouts }}</td>
+          <td>{{ entity.editLayouts }}</td>
+          <td>{{ entity.overlay ? 'yes' : 'no' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>
+
+<section class="inspector-section" data-testid="inspector-rights">
+  <h4>Rights matrix</h4>
+  <table>
+    <thead>
+      <tr><th>Right</th><th>Allowed</th></tr>
+    </thead>
+    <tbody>
+      @for (right of rights; track right.right) {
+        <tr>
+          <td>{{ right.right }}</td>
+          <td class="{{ right.allowed ? 'right-granted' : 'right-denied' }}">{{ right.allowed ? 'granted' : 'denied' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>
+
+<section class="inspector-section" data-testid="inspector-requests">
+  <h4>Request log</h4>
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Url</th><th>Status</th><th>Timestamp</th></tr>
+    </thead>
+    <tbody>
+      @for (request of requests; track request.timestamp + request.url) {
+        <tr>
+          <td>{{ request.method }}</td>
+          <td>{{ request.url }}</td>
+          <td>{{ request.status }}</td>
+          <td>{{ request.timestamp }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

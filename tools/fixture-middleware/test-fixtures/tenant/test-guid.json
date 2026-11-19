@@ -1,0 +1,9 @@
+[
+  {
+    "Id": "11111111-2222-3333-4444-555555555555",
+    "Name": "Test tenant with GUID id",
+    "Navigation": "{title:'GUID tenant',defaultUrl:'/page/personPage',items:[{type:'page',options:{page:'personPage',caption:'Persons'}}]}",
+    "Templates": "[]",
+    "RightsCheckScript": "return (userinfo.Rights || []).indexOf(right) >= 0;"
+  }
+]

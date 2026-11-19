@@ -1,0 +1,4 @@
+[
+  { "Id": "p1", "FirstName": "Alice", "SirName": "Adams", "State": "new" },
+  { "Id": "p2", "FirstName": "Bob", "SirName": "Brown", "State": "new" }
+]

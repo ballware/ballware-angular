@@ -1,0 +1,26 @@
+<div class="sandbox-header" data-testid="sandbox-header">
+  <strong>MetaDesign sandbox</strong>
+  <span>{{ title$ | async }}</span>
+  <span>{{ userName$ | async }}</span>
+  <nav>
+    <a routerLink="/inspector" data-testid="sandbox-inspector-link">Inspector</a>
+    @for (item of pages$ | async; track item.options?.page) {
+      @if (item.options?.url) {
+        <a [href]="'/page/' + item.options.url">{{ item.options.caption ?? item.options.page }}</a>
+      }
+    }
+  </nav>
+  <select (change)="onTenantSelected($event)" data-testid="sandbox-tenant-select">
+    @for (tenant of tenants; track tenant.Id) {
+      <option [value]="tenant.Id" [selected]="tenant.Id === selectedTenant">{{ tenant.Name }}</option>
+    }
+  </select>
+  <select (change)="onUserSelected($event)" data-testid="sandbox-user-select">
+    @for (user of users; track user.Id) {
+      <option [value]="user.Id" [selected]="user.Id === selectedUser">{{ user.Name }}</option>
+    }
+  </select>
+</div>
+<main class="sandbox-main">
+  <router-outlet></router-outlet>
+</main>

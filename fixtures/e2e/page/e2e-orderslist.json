@@ -1,0 +1,11 @@
+[
+  {
+    "Id": "e2e-orderslist",
+    "Identifier": "e2e-orderslist",
+    "Name": "Orders list",
+    "Layout": "{title:'Orders',items:[{type:'crudcontainer',options:{itemoptions:{entity:'demoorder',query:'primary',identifier:'orderslist'}},items:[{type:'grid',options:{itemoptions:{entity:'demoorder',layout:'primary',identifier:'ordersgrid'}}}]}],toolbaritems:[{type:'lookup',name:'statusfilter',caption:'Status',lookup:'e2estatus'}]}",
+    "Lookups": "[{id:'e2estatus',identifier:'e2estatus',valueMember:'Id',displayMember:'Name'}]",
+    "Picklists": "[]",
+    "CustomScripts": "{paramsInitialized:'actions.loadData();',paramEditorValueChanged:'if (name == \"statusfilter\") { actions.loadData({ ...pageParam, statusfilter: value }); }'}"
+  }
+]

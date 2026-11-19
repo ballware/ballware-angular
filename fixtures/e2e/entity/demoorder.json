@@ -1,0 +1,18 @@
+[
+  {
+    "Id": "demoorder",
+    "Application": "ballware",
+    "Entity": "demoorder",
+    "DisplayName": "Demo order",
+    "BaseUrl": "{generic}ballware/demoorder",
+    "KeyColumn": "Id",
+    "StateColumn": "Status",
+    "Lookups": "[{id:'e2estatus',identifier:'e2estatus',valueMember:'Id',displayMember:'Name'}]",
+    "Picklists": "[]",
+    "Templates": "[]",
+    "CustomScripts": "{commonUtils:'',prepareEditLayout:'',editorValueChanged:''}",
+    "CustomFunctions": "[{id:'add',type:'default_add',text:'New order',editLayout:'primary',supportContinue:false},{id:'edit',type:'default_edit',text:'Edit',editLayout:'primary',supportContinue:false}]",
+    "GridLayout": "[{identifier:'primary',editLayout:'primary',title:'Orders',allowMultiselect:false,columns:[{type:'text',dataMember:'OrderNr',caption:'Order no',position:1},{type:'text',dataMember:'Customer',caption:'Customer',position:2},{type:'lookup',dataMember:'Status',caption:'Status',lookup:'e2estatus',position:3}]}]",
+    "EditLayout": "[{identifier:'primary',title:'Order',items:[{type:'text',options:{dataMember:'OrderNr',caption:'Order no'}},{type:'text',options:{dataMember:'Customer',caption:'Customer'}},{type:'lookup',lookup:'e2estatus',options:{dataMember:'Status',caption:'Status'}}]}]"
+  }
+]
