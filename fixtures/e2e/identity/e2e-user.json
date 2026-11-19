@@ -1,0 +1,5 @@
+{
+  "Id": "e2e-user",
+  "Name": "E2E User",
+  "Rights": ["generic.page.e2e-orderslist", "ballware.demoorder.add", "ballware.demoorder.edit", "ballware.demoorder.delete", "ballware.demoorder.view"]
+}

@@ -2,6 +2,8 @@
 
 exports[`EditLayoutTabsComponent should match snapshot with complete tab configuration 1`] = `
 <div
+  data-test-identifier="selectedTab"
+  data-test-path="selectedTab"
   data-testid="selectedTab"
   id="root11"
 >
@@ -35,6 +37,8 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
             <div
               ballwarebreadcrumb="tab"
               class="dx-template-wrapper dx-item-content dx-tab-content"
+              data-test-identifier="tab"
+              data-test-path="selectedTab.tab.0"
               data-testid="selectedTab.tab.0"
             >
               <div
@@ -57,6 +61,8 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
             <div
               ballwarebreadcrumb="tab"
               class="dx-template-wrapper dx-item-content dx-tab-content"
+              data-test-identifier="tab"
+              data-test-path="selectedTab.tab.1"
               data-testid="selectedTab.tab.1"
             >
               <div
@@ -92,6 +98,8 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
             <div
               ballwarebreadcrumb="panel"
               class="dx-template-wrapper dx-item-content dx-multiview-item-content"
+              data-test-identifier="panel"
+              data-test-path="selectedTab.panel.0"
               data-testid="selectedTab.panel.0"
             >
               <ballware-edit-container>
@@ -106,7 +114,11 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
                       class="col col-xl-6"
                       style="height: auto;"
                     >
-                      <ballware-edit-item>
+                      <ballware-edit-item
+                        data-test-identifier="firstName-0"
+                        data-test-path="selectedTab.panel.0.firstName-0.0"
+                        data-testid="selectedTab.panel.0.firstName-0.0"
+                      >
                         
                       </ballware-edit-item>
                     </div>
@@ -114,7 +126,11 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
                       class="col col-xl-6"
                       style="height: auto;"
                     >
-                      <ballware-edit-item>
+                      <ballware-edit-item
+                        data-test-identifier="lastName-1"
+                        data-test-path="selectedTab.panel.0.lastName-1.0"
+                        data-testid="selectedTab.panel.0.lastName-1.0"
+                      >
                         
                       </ballware-edit-item>
                     </div>
@@ -133,6 +149,8 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
             <div
               ballwarebreadcrumb="panel"
               class="dx-template-wrapper dx-item-content dx-multiview-item-content"
+              data-test-identifier="panel"
+              data-test-path="selectedTab.panel.1"
               data-testid="selectedTab.panel.1"
             >
               <ballware-edit-container>
@@ -147,7 +165,11 @@ exports[`EditLayoutTabsComponent should match snapshot with complete tab configu
                       class="col col-xl-12"
                       style="height: auto;"
                     >
-                      <ballware-edit-item>
+                      <ballware-edit-item
+                        data-test-identifier="email-0"
+                        data-test-path="selectedTab.panel.1.email-0.0"
+                        data-testid="selectedTab.panel.1.email-0.0"
+                      >
                         
                       </ballware-edit-item>
                     </div>

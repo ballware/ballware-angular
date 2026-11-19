@@ -4,6 +4,7 @@ import { Translator, TRANSLATOR } from '@ballware/meta-services';
 
 export * from './directives';
 export * from './speech-recognition';
+export * from './testidentifiers';
 
 export function provideRendererCommonsServices(): EnvironmentProviders {
   return makeEnvironmentProviders(    

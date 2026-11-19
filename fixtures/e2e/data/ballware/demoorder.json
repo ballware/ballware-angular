@@ -1,0 +1,5 @@
+[
+  { "Id": "o1", "OrderNr": "O-1001", "Customer": "Acme GmbH", "Status": "open" },
+  { "Id": "o2", "OrderNr": "O-1002", "Customer": "Globex Corp", "Status": "open" },
+  { "Id": "o3", "OrderNr": "O-1003", "Customer": "Initech", "Status": "closed" }
+]

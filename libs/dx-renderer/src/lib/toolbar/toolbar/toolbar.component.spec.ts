@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
+import { Breadcrumb } from '@ballware/renderer-commons';
 import { ToolbarComponent } from './toolbar.component';
 import {
   AutocompleteCreator,
@@ -40,6 +41,7 @@ describe('ToolbarComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         ToolbarComponent,
+        Breadcrumb,
         provideDefaultItemRegistries(),
         provideDefaultToolbarItemConfigurations(),
         { provide: PAGE_SERVICE, useValue: pageService },

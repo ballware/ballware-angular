@@ -1,0 +1,9 @@
+[
+  {
+    "Id": "test",
+    "Name": "Test tenant",
+    "Navigation": "{title:'Test tenant',defaultUrl:'/page/personPage',items:[{type:'page',options:{page:'personPage',caption:'Persons'}}]}",
+    "Templates": "[]",
+    "RightsCheckScript": "return (userinfo.Rights || []).indexOf(right) >= 0;"
+  }
+]

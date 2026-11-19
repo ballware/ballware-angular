@@ -3,6 +3,7 @@ import { InitializedEvent } from 'devextreme/ui/validation_group';
 import { Observable, of } from 'rxjs';
 import { EditLayout } from '@ballware/meta-model';
 import { EDIT_SERVICE, EditService } from '@ballware/meta-services';
+import { Breadcrumb } from '@ballware/renderer-commons';
 import { DxScrollViewModule, DxValidationGroupModule, DxValidationSummaryModule } from 'devextreme-angular';
 import { EditLayoutContainerComponent } from './container.component';
 import { CommonModule } from '@angular/common';
@@ -11,14 +12,17 @@ import { CommonModule } from '@angular/common';
     selector: 'ballware-edit-layout',
     templateUrl: './editlayout.component.html',
     styleUrls: ['./editlayout.component.scss'],
-    imports: [CommonModule, DxValidationGroupModule, DxValidationSummaryModule, DxScrollViewModule, forwardRef(() => EditLayoutContainerComponent)]
+    imports: [CommonModule, DxValidationGroupModule, DxValidationSummaryModule, DxScrollViewModule, forwardRef(() => EditLayoutContainerComponent)],
+    hostDirectives: [Breadcrumb]
 })
 export class EditLayoutComponent implements OnDestroy {
 
   public layout$: Observable<EditLayout|undefined>;
 
   constructor(
-    @Inject(EDIT_SERVICE) private readonly editService: EditService) {
+    @Inject(EDIT_SERVICE) private readonly editService: EditService,
+    private readonly breadcrumb: Breadcrumb) {
+    this.breadcrumb.setIdentifier('edit');
     this.layout$ = editService.editLayout$;
   }
 

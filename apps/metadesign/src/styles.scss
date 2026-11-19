@@ -1,0 +1,73 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+ballware-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sandbox-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: #1f2937;
+  color: white;
+  flex-wrap: wrap;
+}
+
+.sandbox-header nav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sandbox-header a,
+.sandbox-header select {
+  color: #e5e7eb;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  text-decoration: none;
+}
+
+.sandbox-main {
+  flex: 1 1 auto;
+  overflow: hidden;
+}
+
+.inspector-section {
+  margin: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.inspector-section table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.inspector-section th,
+.inspector-section td {
+  border: 1px solid #e5e7eb;
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.right-granted {
+  color: #047857;
+  font-weight: bold;
+}
+
+.right-denied {
+  color: #b91c1c;
+  font-weight: bold;
+}

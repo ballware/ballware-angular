@@ -21,6 +21,8 @@ exports[`EditLayoutAttachmentDataGridComponent should create 1`] = `
     accept="*"
     ballwarebreadcrumb="upload"
     class="dx-show-invalid-badge dx-widget dx-fileuploader dx-fileuploader-show-file-list dx-fileuploader-empty"
+    data-test-identifier="upload"
+    data-test-path="attachments.upload.0"
     data-testid="attachments.upload.0"
     ngskiphydration="true"
     uploadmode="instantly"
@@ -81,6 +83,8 @@ exports[`EditLayoutAttachmentDataGridComponent should create 1`] = `
   </dx-file-uploader><dx-data-grid
     ballwarebreadcrumb="files"
     class="dx-widget dx-visibility-change-handler"
+    data-test-identifier="files"
+    data-test-path="attachments.files.0"
     data-testid="attachments.files.0"
     ngskiphydration="true"
     role="presentation"

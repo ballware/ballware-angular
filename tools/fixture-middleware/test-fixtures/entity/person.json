@@ -1,0 +1,19 @@
+[
+  {
+    "Id": "person",
+    "Application": "ballware",
+    "Entity": "person",
+    "DisplayName": "Person",
+    "BaseUrl": "{generic}ballware/person",
+    "KeyColumn": "Id",
+    "StateColumn": "State",
+    "ItemMappingScript": "item.FirstName = data.FirstName;\nitem.SirName = data.SirName;",
+    "ItemReverseMappingScript": "data.FirstName = item.FirstName;\ndata.SirName = item.SirName;",
+    "Lookups": "[{identifier:'nameLookup',valueMember:'Id',displayMember:'Name'}]",
+    "Picklists": "[]",
+    "Templates": "[]",
+    "CustomScripts": "{commonUtils:'',extendedRightsCheck:'return result;'}",
+    "GridLayout": "[{identifier:'primary',editLayout:'primary',title:'Persons',allowMultiselect:true,columns:[{type:'text',dataMember:'FirstName',caption:'First name',position:1},{type:'text',dataMember:'SirName',caption:'Sir name',position:2}]}]",
+    "EditLayout": "[{identifier:'primary',title:'Person',editPopup:{items:[{type:'text',options:{dataMember:'FirstName',caption:'First name'}},{type:'text',options:{dataMember:'SirName',caption:'Sir name'}}]}}]"
+  }
+]

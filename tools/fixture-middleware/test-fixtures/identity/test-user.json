@@ -1,0 +1,5 @@
+{
+  "Id": "test-user",
+  "Name": "Test User",
+  "Rights": ["generic.page.personPage"]
+}

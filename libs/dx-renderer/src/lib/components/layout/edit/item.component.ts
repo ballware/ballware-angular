@@ -1,21 +1,30 @@
-import { AfterViewInit, Component, Inject, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, Inject, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { EditLayoutItem } from '@ballware/meta-model';
 import { CommonModule } from '@angular/common';
+import { Breadcrumb, getEditItemTestIdSegment } from '@ballware/renderer-commons';
 import { EDITITEM_REGISTRY, EditItemRegistry } from '../../../registries';
 
 @Component({
     selector: 'ballware-edit-item',
     templateUrl: './item.component.html',
     styleUrls: ['./item.component.scss'],
-    imports: [CommonModule]
+    imports: [CommonModule],
+    hostDirectives: [Breadcrumb]
 })
-export class EditLayoutItemComponent implements AfterViewInit {
+export class EditLayoutItemComponent implements OnInit, AfterViewInit {
 
   @ViewChild('item', { read: ViewContainerRef }) private readonly itemHost?: ViewContainerRef;
 
   @Input() layoutItem!: EditLayoutItem;
+  @Input() itemIndex?: number;
 
-  constructor(@Inject(EDITITEM_REGISTRY) private readonly editItemRegistry: EditItemRegistry) {
+  constructor(
+    @Inject(EDITITEM_REGISTRY) private readonly editItemRegistry: EditItemRegistry,
+    private readonly breadcrumb: Breadcrumb) {
+  }
+
+  ngOnInit() {
+    this.breadcrumb.setIdentifier(getEditItemTestIdSegment(this.layoutItem, this.itemIndex ?? 0));
   }
 
   ngAfterViewInit() {

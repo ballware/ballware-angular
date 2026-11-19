@@ -1,0 +1,4 @@
+[
+  { "Id": "open", "Name": "Open" },
+  { "Id": "closed", "Name": "Closed" }
+]

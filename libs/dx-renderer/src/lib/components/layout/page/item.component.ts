@@ -1,23 +1,32 @@
-import { AfterViewInit, Component, HostBinding, Inject, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, Component, HostBinding, Inject, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { PageLayoutItem } from '@ballware/meta-model';
 import { CommonModule } from '@angular/common';
+import { Breadcrumb, getPageItemTestIdSegment } from '@ballware/renderer-commons';
 import { PAGEITEM_REGISTRY, PageItemRegistry } from '../../../registries';
 
 @Component({
     selector: 'ballware-page-item',
     templateUrl: './item.component.html',
     styleUrls: ['./item.component.scss'],
-    imports: [CommonModule]
+    imports: [CommonModule],
+    hostDirectives: [Breadcrumb]
 })
-export class PageLayoutItemComponent implements AfterViewInit {
+export class PageLayoutItemComponent implements OnInit, AfterViewInit {
 
   @ViewChild('item', { read: ViewContainerRef }) private readonly itemHost?: ViewContainerRef;
 
   @Input() layoutItem?: PageLayoutItem;
   @Input() colSpan?: number;
   @Input() colCount?: number;
+  @Input() itemIndex?: number;
 
-  constructor(@Inject(PAGEITEM_REGISTRY) private readonly pageItemRegistry: PageItemRegistry) {
+  constructor(
+    @Inject(PAGEITEM_REGISTRY) private readonly pageItemRegistry: PageItemRegistry,
+    private readonly breadcrumb: Breadcrumb) {
+  }
+
+  ngOnInit() {
+    this.breadcrumb.setIdentifier(getPageItemTestIdSegment(this.layoutItem, this.itemIndex ?? 0));
   }
 
   ngAfterViewInit() {
