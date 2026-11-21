@@ -14,6 +14,7 @@ The workspace is an [Nx](https://nx.dev) monorepo containing the webclient appli
 - [Key Features](#key-features)
 - [Technology Stack](#technology-stack)
 - [Architecture](#architecture)
+- [Modeling Applications with Metadata](#modeling-applications-with-metadata)
 - [Monorepo Layout](#monorepo-layout)
 - [Configuration](#configuration)
 - [Development](#development)
@@ -98,6 +99,24 @@ metadata backend (REST)
 - **`@ballware/dx-renderer`** contains a component registry that maps metadata item types to DevExtreme-based components (list/edit/detail views) and the application shell components.
 - **`@ballware/renderer-commons`** provides shared renderer directives and speech recognition services.
 - The webclient exposes three hosts sharing one `sharedConfig`: **static SPA** (`main.static.ts`, served by nginx), **SSR** (`main.server.ts` + `ssr.server.ts` with Hono and Auth.js), and an OIDC-protected middleware (`src/middleware`, `src/auth`).
+
+---
+
+## Modeling Applications with Metadata
+
+Business apps are described entirely in metadata served by the Ballware metadata backend. The **[metadata reference](docs/metadata/README.md)** documents the raw metadata JSON envelope as consumed by this webclient — the entity, page, tenant, and statistic envelopes, grid and edit layouts, custom functions, statistics, and the `CustomScripts` hooks — with option tables and strict-JSON examples, written so that both humans and AI assistants can author metadata.
+
+| Topic | Reference |
+|---|---|
+| Navigation & tenant metadata | [docs/metadata/navigation.md](docs/metadata/navigation.md) |
+| Entities, CRUD, lookups, rights | [docs/metadata/entities-and-crud.md](docs/metadata/entities-and-crud.md) |
+| Grid (list) layouts & columns | [docs/metadata/lists.md](docs/metadata/lists.md) |
+| Edit layouts, editors, templates | [docs/metadata/edit-forms.md](docs/metadata/edit-forms.md) |
+| Custom functions | [docs/metadata/custom-functions.md](docs/metadata/custom-functions.md) |
+| Statistics (chart / map / pivot) | [docs/metadata/statistics.md](docs/metadata/statistics.md) |
+| Custom scripts & `ScriptUtil` | [docs/metadata/scripting.md](docs/metadata/scripting.md) |
+
+Runnable example envelopes live in [`fixtures/e2e/`](fixtures/e2e).
 
 ---
 
