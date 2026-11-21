@@ -9,7 +9,7 @@ import { LookupCreator, LookupDescriptor, LookupStoreDescriptor, PickvalueCreato
 import { geocodeAddress, geocodeLocation } from './geocoder';
 import { firstValueFrom, Observable } from 'rxjs';
 import { speak } from './speech';
-import { MetaDocumentApi, MetaMlModelApi, MetaSubscriptionApi } from '@ballware/meta-api';
+import { AiOriginApi, MetaDocumentApi, MetaMlModelApi, MetaSubscriptionApi } from '@ballware/meta-api';
 
 
 function beginOfYear(): Date {
@@ -79,6 +79,7 @@ export const createUtil = (
   documentApi: MetaDocumentApi,
   subscriptionApi: MetaSubscriptionApi,
   mlApi: MetaMlModelApi,
+  originApi: AiOriginApi,
   idToken$: Observable<string|undefined>,
   accessToken$: Observable<string|undefined>,
   currentUser$: Observable<Record<string, unknown>|undefined>): ScriptUtil => {
@@ -214,6 +215,18 @@ export const createUtil = (
     },
     train: (ids, callback, error) => {
       mlApi.train(ids)
+        .subscribe({
+          next: () => {
+            if (callback) callback();
+          },
+          error: (reason) => {
+            console.error(reason?.message ?? reason);
+            if (error) error(reason?.message ?? reason);
+          }
+        });
+    },
+    createEmbedding: (ids, model: string, activate: boolean, callback, error) => {
+      originApi.createEmbedding(ids, model, activate)
         .subscribe({
           next: () => {
             if (callback) callback();

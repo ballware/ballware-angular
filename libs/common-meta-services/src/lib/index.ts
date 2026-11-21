@@ -6,13 +6,13 @@ import { EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { BreakpointObserver } from '@angular/cdk/layout';
 
 export function provideCommonMetaServices(): EnvironmentProviders {
-  return makeEnvironmentProviders(    
-    [  
+  return makeEnvironmentProviders(
+    [
       {
         provide: RESPONSIVE_SERVICE,
         useFactory: (bp: BreakpointObserver) => new DefaultResponsiveService(bp),
         deps: [BreakpointObserver]
-      },      
+      },
       {
         provide: IDLE_SERVICE,
         useFactory: () => new DefaultIdleService(),
@@ -22,7 +22,7 @@ export function provideCommonMetaServices(): EnvironmentProviders {
         provide: INTERACTION_SERVICE,
         useFactory: () => new DefaultInteractionService(),
         deps: []
-      },      
+      }
     ]
   );
 }

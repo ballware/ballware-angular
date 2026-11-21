@@ -16,3 +16,5 @@ export * from './notification';
 export * from './subscription';
 export * from './mlmodel';
 export * from './session';
+export * from './chat';
+export * from './origin';

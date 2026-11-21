@@ -5,7 +5,7 @@
       location="before"
       locateInMenu="never">
       <div *dxTemplate>
-        <dx-button class="menubutton" icon="bi bi-list" stylingMode="text" (onClick)="toggleMenu()">    
+        <dx-button class="menubutton" icon="bi bi-list" stylingMode="text" (onClick)="toggleMenu()">
         </dx-button>
       </div>
     </dxi-item>
@@ -24,6 +24,12 @@
       location="before"
       *ngIf="(pageTitle$ | async)"
       [text]="pageTitle$ | async">
+    </dxi-item>
+    <dxi-item location="after">
+      <div *dxTemplate>
+        <dx-button id="ballware-chat-button" class="menubutton" icon="bi bi-chat" stylingMode="text" (onClick)="showChat()">
+        </dx-button>
+      </div>
     </dxi-item>
     <dxi-item
       location="after"
@@ -47,12 +53,12 @@
 </header>
 <ballware-application-account-menu #accountMenu></ballware-application-account-menu>
 <ballware-application-documentation></ballware-application-documentation>
-<dx-popup *ngIf="sessionExpirationVisible$ | async" 
-  [visible]="true" 
+<dx-popup *ngIf="sessionExpirationVisible$ | async"
+  [visible]="true"
   [title]="'session.useridle' | i18next"
-  [animation]="{ hide: undefined, show: undefined }"  
-  width="auto" 
-  minWidth="300px" 
+  [animation]="{ hide: undefined, show: undefined }"
+  width="auto"
+  minWidth="300px"
   height="auto">
   <div *dxTemplate="let data of 'content'">
     <p>{{'session.autologout' | i18next: { expiration: sessionExpiration$ | async } }}</p>

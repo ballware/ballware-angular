@@ -11,7 +11,8 @@ import {
   provideGenericBackendRestApi,
   provideDocumentBackendRestApi,
   IDENTITY_KEYCLOAK_REST_API_CONFIG, META_REST_API_CONFIG, IdentityKeycloakRestApiConfig, MetaRestApiConfig,
-  DOCUMENT_API_CONFIG, DocumentRestApiConfig, GENERIC_API_CONFIG, GenericRestApiConfig
+  DOCUMENT_API_CONFIG, DocumentRestApiConfig, GENERIC_API_CONFIG, GenericRestApiConfig, AI_API_CONFIG, AiApiConfig,
+  AI_CHAT_API_CONFIG, AiChatApiConfig, provideAiChatApi, provideAiRestApi
 } from '@ballware/rest-meta-api';
 import {
   DX_RENDERFACTORY_CONFIG,
@@ -71,8 +72,24 @@ export const sharedConfig: ApplicationConfig = {
           genericServiceBaseUrl: env.BALLWARE_GENERICURL,
           documentServiceBaseUrl: env.BALLWARE_DOCUMENTURL,
           mlServiceBaseUrl: env.BALLWARE_MLURL,
+          aiServiceBaseUrl: env.BALLWARE_AIURL,
           storageServiceBaseUrl: env.BALLWARE_STORAGEURL
         } as GenericRestApiConfig),
+        deps: [ENV]
+      },
+      {
+        provide: AI_API_CONFIG,
+        useFactory: (env: RuntimeEnv) => ({
+          aiServiceBaseUrl: env.BALLWARE_AIURL
+        } as AiApiConfig),
+        deps: [ENV]
+      },
+      {
+        provide: AI_CHAT_API_CONFIG,
+        useFactory: (env: RuntimeEnv) => ({
+          signonUrl: env.BALLWARE_AI_SIGNON_URL,
+          chatUrl: env.BALLWARE_AI_CHAT_URL
+        } as AiChatApiConfig),
         deps: [ENV]
       },
         importProvidersFrom(LayoutModule),
@@ -100,6 +117,8 @@ export const sharedConfig: ApplicationConfig = {
         provideIdentityKeycloakRestApi(),
         provideMetaBackendRestApi(),
         provideDocumentBackendRestApi(),
-        provideGenericBackendRestApi()
+        provideGenericBackendRestApi(),
+        provideAiRestApi(),
+        provideAiChatApi()
     ]
 };

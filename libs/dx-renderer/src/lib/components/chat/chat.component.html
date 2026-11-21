@@ -1,0 +1,4 @@
+<iframe *ngIf="url$ | async as url; else placeholder" class="w-100 h-100" [src]="url"></iframe>
+<ng-template #placeholder>
+  <div class="w-100 h-100"></div>
+</ng-template>

@@ -1,6 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { EnvironmentProviders, InjectionToken, makeEnvironmentProviders } from '@angular/core';
 import {
+  AI_CHAT_API, AI_ORIGIN_API,
   GENERIC_ENTITY_API_FACTORY,
   IDENTITY_ROLE_API,
   IDENTITY_SESSION_API,
@@ -36,6 +37,8 @@ import { createMetaBackendTenantApi } from "./tenant";
 import { createGenericBackendEntityApi } from "./genericentity";
 import { createMetaBackendAttachmentApi } from "./attachment";
 import { createSessionApi } from './session';
+import { createAiChatApi } from './chat';
+import { createAiOriginApi } from './origin';
 
 export { EntityMetadata, EntityCustomScripts, compileEntityMetadata } from './entity';
 export { PageData, PageCustomScripts, compilePage } from './page';
@@ -180,6 +183,7 @@ export interface GenericRestApiConfig {
   genericServiceBaseUrl: string,
   documentServiceBaseUrl: string,
   mlServiceBaseUrl: string,
+  aiServiceBaseUrl: string,
   storageServiceBaseUrl: string
 }
 
@@ -201,8 +205,58 @@ export function provideGenericBackendRestApi()
                     .replace('{generic}', config.genericServiceBaseUrl + "/")
                     .replace('{document}', config.documentServiceBaseUrl + "/")
                     .replace('{ml}', config.mlServiceBaseUrl + "/")
+                    .replace('{ai}', config.aiServiceBaseUrl + "/")
                     .replace('{storage}', config.storageServiceBaseUrl + "/")),
               deps: [ HttpClient, GENERIC_API_CONFIG ]
           },
       ]);
   }
+
+
+export interface AiApiConfig {
+  aiServiceBaseUrl: string,
+}
+
+export interface AiChatApiConfig {
+  signonUrl: string,
+  chatUrl: string
+}
+
+export const AI_API_CONFIG = new InjectionToken<AiApiConfig>('AiApiConfig');
+export const AI_CHAT_API_CONFIG = new InjectionToken<AiChatApiConfig>('AiChatApiConfig');
+
+export function provideAiChatApi()
+  : EnvironmentProviders {
+
+  return makeEnvironmentProviders(
+    [
+      {
+        provide: AI_CHAT_API,
+        useFactory: (config: AiChatApiConfig) => createAiChatApi(config.signonUrl, config.chatUrl),
+        deps: [ AI_CHAT_API_CONFIG ]
+      },
+    ]);
+}
+
+
+export function provideAiRestApi(): EnvironmentProviders {
+
+  return makeEnvironmentProviders(
+    [
+      {
+        provide: AI_ORIGIN_API,
+        useFactory: (client: HttpClient, config: AiApiConfig) => createAiOriginApi(client, config.aiServiceBaseUrl),
+        deps: [ HttpClient, AI_API_CONFIG ]
+      },
+      {
+        provide: META_NOTIFICATION_API,
+        useFactory: (client: HttpClient, config: DocumentRestApiConfig) => createMetaBackendNotificationApi(client, config.baseUrl),
+        deps: [ HttpClient, DOCUMENT_API_CONFIG ]
+      },
+      {
+        provide: META_SUBSCRIPTION_API,
+        useFactory: (client: HttpClient, config: DocumentRestApiConfig) => createMetaBackendSubscriptionApi(client, config.baseUrl),
+        deps: [ HttpClient, DOCUMENT_API_CONFIG ]
+      },
+    ]);
+}
