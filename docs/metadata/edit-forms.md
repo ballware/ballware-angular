@@ -59,7 +59,7 @@ For editors with a select list (`lookup`, `staticlookup`, `pickvalue`, `multiloo
 
 1. `items` — static list from metadata.
 2. `itemsMember` — list taken from the business object property.
-3. `lookup` — lookup definition from the entity (with `lookupParam` when the query needs a param).
+3. `lookup` — lookup definition from the entity (with `lookupParam` when the query needs a param). Built-in identifiers registered by the client resolve from the same map, without a `Lookups` entry (see [entities-and-crud.md](entities-and-crud.md#built-in-lookups)).
 
 `valueExpr` defaults to the lookup's `valueMember` (fallback `Id`), `displayExpr` to `displayMember` (fallback `Name`). Static `items` therefore need `"valueExpr": "Value"` / `"displayExpr": "Text"` overrides. `pickvalue` resolves against the entity's `Picklists` (see [entities-and-crud.md](entities-and-crud.md)).
 

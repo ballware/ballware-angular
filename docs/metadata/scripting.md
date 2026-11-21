@@ -170,6 +170,30 @@ Page `CustomScripts` payload (from `fixtures/e2e/page/e2e-orderslist.json`):
 }
 ```
 
+## Practical recipes
+
+Patterns commonly used in entity metadata. Use only option keys the client actually reads — [edit-forms.md](edit-forms.md) lists declared-but-never-read keys (e.g. `uniqueKey`/`fetchParams` on `entitygrid` `itemoptions`); setting them in a script has no effect.
+
+### Seed defaults for new detail rows (`initNewDetailItem`)
+
+`initNewDetailItem` fires when a detail grid inserts a row (`dataMember, item, detailItem, util` — see the hook table). Branch on `dataMember`, seed a fresh id with `util.uuid()`, copy parent references, and default flags/values:
+
+```json
+{
+  "initNewDetailItem": "if (dataMember == 'Positions') { detailItem.Id = util.uuid(); detailItem.OrderNr = item.OrderNr; detailItem.Qty = 1; detailItem.Billed = false; }"
+}
+```
+
+### Retarget an embedded `entitygrid` per editor (`editorPreparing`)
+
+In `editorPreparing`, the `layoutItem` argument is the editor's `options` object (`libs/ngrx-meta-services/src/lib/meta/meta.store.ts:497-500`), so replacing `layoutItem.itemoptions` rewrites the configuration of one specific editor before rendering. Assign only the keys `entitygrid` reads (`query`, `layout`, `headParams`, `customParam`, `readOnly` — see [edit-forms.md](edit-forms.md)); `identifier` is the editor's `dataMember`, which doubles as the entity identifier on `entitygrid`:
+
+```json
+{
+  "editorPreparing": "if (identifier == 'demoorder') { layoutItem.itemoptions = { query: 'byCustomer', layout: 'primary', customParam: { customerId: item.Id }, readOnly: mode == 'VIEW' }; }"
+}
+```
+
 ## Caveats (verified against source)
 
 - Argument names are **fixed per hook** — the tables above are the only valid identifiers; a wrong name silently becomes a global lookup.

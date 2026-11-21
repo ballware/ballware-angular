@@ -65,7 +65,7 @@ For lookup-family columns (`libs/dx-renderer/src/lib/components/utils/columnlook
 1. `items` — static list.
 2. `lookupMember` — list read from **head params** (entity grids) or the **parent item** (detail grids).
 3. `itemsMember` — list read from the row itself (detail grids).
-4. `lookup` — lookup identifier, optionally combined with `lookupParam` (query param from head params/parent item) or `pickvalueEntity` + `pickvalueField` (pickvalue query).
+4. `lookup` — lookup identifier, optionally combined with `lookupParam` (query param from head params/parent item) or `pickvalueEntity` + `pickvalueField` (pickvalue query). Built-in identifiers registered by the client resolve here too, without a `Lookups` entry (see [entities-and-crud.md](entities-and-crud.md#built-in-lookups)).
 
 `valueExpr` defaults to the lookup's `valueMember` (fallback `Id`), `displayExpr` to `displayMember` (fallback `Name`). Static `items` of shape `{ Value, Text }` need explicit `"valueExpr": "Value"`, `"displayExpr": "Text"`.
 

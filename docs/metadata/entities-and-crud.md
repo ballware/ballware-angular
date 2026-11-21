@@ -89,6 +89,43 @@ All paths below are relative to the expanded `BaseUrl`. Query parameters are app
 
 **Auto-created state lookups:** when `StateColumn` is set, the client additionally registers lookups `stateLookup` (all states), `allowedMetaStateLookup` (states allowed by metadata), and `allowedStateLookup` (states allowed for the current tenant) — `libs/ngrx-meta-services/src/lib/meta/meta.store.ts:147-167`. A `lookup` option may reference these identifiers without any `Lookups` entry.
 
+### Built-in lookups
+
+Independently of the entity's `Lookups`/`Picklists` payload, every lookup request batch registers **17 built-in lookup identifiers** (`libs/ngrx-meta-services/src/lib/lookup/lookup.store.ts:519-536`). They sit in the same identifier map as the entity lookups (`lookupbuilder.ts` resolves `lookups[identifier]` — `libs/dx-renderer/src/lib/utils/lookupbuilder.ts:345-349`), so any `lookup` option in a layout, grid column, or detail-grid column can reference them without a `Lookups` entry.
+
+| Identifier | Backed by | `valueMember` / `displayMember` |
+|---|---|---|
+| `userLookup` | `IdentityUserApi` | `id` / `name` |
+| `roleLookup` | `IdentityRoleApi` | `id` / `name` |
+| `documentLookup` | `MetaDocumentApi` | `Id` / `Name` |
+| `documentationLookup` | `MetaDocumentationApi` | `Id` / `Name` |
+| `entityLookup` | `MetaEntityApi` | `Id` / `Name` |
+| `lookupLookup` | `MetaLookupApi` | `Id` / `Name` |
+| `mlmodelLookup` | `MetaMlModelApi` | `Id` / `Name` |
+| `notificationLookup` | `MetaNotificationApi` | `Id` / `Name` |
+| `pageLookup` | `MetaPageApi` | `Id` / `Name` |
+| `processingstateLookup` | `MetaProcessingstateApi` | `Id` / `Name` |
+| `statisticLookup` | `MetaStatisticApi` | `Id` / `Name` |
+| `subscriptionLookup` | `MetaSubscriptionApi` | `Id` / `Name` |
+| `tenantLookup` | `MetaTenantApi` | `Id` / `Name` |
+| `entityIdentifierLookup` | `MetaEntityApi` | `Entity` / `Name` — the editor value is the **entity name**, not the id |
+| `entityRightLookup` | `MetaEntityApi.rightSelectList()` / `rightSelectById()` (endpoints `entity/selectlistrights`, `entity/rightselectbyid/{id}` — `libs/rest-meta-api/src/lib/entity.ts:157-169`) | `Id` / `DisplayName` |
+| `entityStateLookup` | `MetaProcessingstateApi.selectListForEntity(param)` — **LookupCreator**: the lookup param must be the **entity name** (via `lookupParam`) | `State` / `Name` |
+| `entityPickvalueLookup` | `MetaPickvalueApi.selectListForEntityAndField(entity, field)` — **PickvalueCreator** driven by `pickvalueEntity`/`pickvalueField` | empty — override with `valueExpr`/`displayExpr` |
+
+- The entity-scoped creators are declared at `lookup.store.ts:235-249` (`entityRightLookup`), `:251-265` (`entityStateLookup`), `:267-282` (`entityPickvalueLookup`).
+- **Entity definitions shadow built-ins:** the `Lookups`/`Picklists` requests are assigned to the same batch map *after* the built-ins (`lookup.store.ts:538-625`) and `updateLookups` replaces the whole record per batch (`:500-504, 628`) — a `Lookups` entry with the same `identifier` wins.
+- Registration is unconditional inside `requestLookups`; all backing APIs are constructor-injected (`lookup.store.ts:451-465`) and provided by the standard app wiring (`provideMetaBackendRestApi()` / `provideIdentityKeycloakRestApi()` — `apps/webclient/src/app/app.config.ts:100-103`). Batches are issued by the entity store (`meta.store.ts:169`) and the page store (`page.store.ts:160`).
+
+Grid columns referencing built-ins — no `Lookups` entry involved:
+
+```json
+[
+  { "type": "lookup", "dataMember": "OwnerId", "caption": "Owner", "lookup": "userLookup" },
+  { "type": "lookup", "dataMember": "EntityName", "caption": "Entity", "lookup": "entityIdentifierLookup" }
+]
+```
+
 ## Rights
 
 Rights are plain claim strings on the user (see `fixtures/e2e/identity/e2e-user.json`). The client checks:
