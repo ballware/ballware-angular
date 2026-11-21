@@ -91,7 +91,9 @@ See [custom-functions.md](custom-functions.md) for the function flow these hooks
 | `paramsInitialized` | `hidden, lookups, util, actions, pageParam` | no-op |
 | `paramEditorInitialized` | `name, editUtil, lookups, util, actions, pageParam` | no-op |
 | `paramEditorValueChanged` | `name, value, editUtil, lookups, util, actions, pageParam` | no-op |
-| `paramEditorEvent` | `name, event, editUtil, lookups, util, actions, pageParam` | no-op |
+| `paramEditorEvent` | `name, event, editUtil, lookups, util, actions, pageParam, param` | no-op |
+
+`param` (only for `paramEditorEvent`) is the event payload: a `dropdownbutton` menu click passes the clicked item's `id`, a split-button click passes `undefined` (`libs/dx-renderer/src/lib/components/dropdownbutton/toolbaritem.ts:41-54`, invoked at `libs/ngrx-meta-services/src/lib/page/page.store.ts:278-286`); filter-button patterns branch on it. The page `editUtil` maps `getEditorOption`/`setEditorOption` to the toolbar widget options **by item name** (`page.store.ts:58-61`) — option names are raw DevExtreme widget options, bypassing the edit-item option registry.
 
 `paramsInitialized` fires only after every declared toolbar item has registered; a page with toolbar items renders only after `actions.loadData()` is called.
 
@@ -107,6 +109,23 @@ See [statistics.md](statistics.md).
 ## commonUtils
 
 `CustomScripts.commonUtils` is a script string prepended verbatim to **entity** scripts — both mapping scripts and all `CustomScripts` hooks **except `prepareCustomParam`**. Helper functions declared once here are available in every other entity hook. It is **not** available for `prepareCustomParam` (entity or page), the four page hooks, the statistic hooks, or the tenant script — those must be self-contained.
+
+In practice production metadata **barely uses** `commonUtils` — helpers are usually inlined per hook. Both styles are valid; reach for `commonUtils` only when the same helper is needed in several hooks.
+
+## Lookups in scripts
+
+The `lookups` argument is a map of compiled lookup **descriptors** — and for parameterized lookups also **creators**: entries with `hasParam: true` (and the built-in `allowedStateLookup`/`allowedMetaStateLookup` and entity-scoped creators, see [entities-and-crud.md](entities-and-crud.md)) compile to a **function** `(param) => LookupDescriptor` (`LookupCreator`, `libs/ngrx-meta-services/src/lib/lookup/lookup.store.ts:304-324` lookup variant, `:356-367` autocomplete variant, `:385-424` allowed-state variants — the state creators accept a single id or an **array of ids**).
+
+Call them inside scripts to fetch a scoped list:
+
+```json
+{
+  "prepareCustomParam": "util.withLookupList(lookups.allowedStateLookup(['new','open']), (states) => callback({ states: states }));",
+  "editorInitialized": "if (identifier == 'personId') { util.withLookupList(lookups.unitPersonalLookup(item.unitId), (persons) => editUtil.setEditorOption('personId', 'items', persons)); }"
+}
+```
+
+Equivalent helpers that call the creator for you: `util.withLookupListParam(lookup, param, cb)` / `util.withLookupByIdParam(lookup, param, id, cb)` (`libs/ngrx-meta-services/src/lib/implementation/createscriptutil.ts:106-129`). The direct-call style additionally works with `withLookupList`/`withLookupById`/`withAutocompleteList` because those accept a finished **descriptor** — which is what `lookups.<id>(param)` returns.
 
 ## EditUtil
 
@@ -146,6 +165,7 @@ The `util` argument is `ScriptUtil` (`libs/meta-model/src/lib/scriptutil.ts`):
 | `triggerSubscriptions(ids, cb, error)` | Trigger subscriptions for ids |
 | `updateDatasources(ids, cb, error)` | Trigger datasource updates |
 | `train(ids, cb, error)` | Train machine learning model |
+| `speak(text)` | Text-to-speech output (e.g. scanner confirmations) — **implementation-provided**: present on the `util` instance (`libs/ngrx-meta-services/src/lib/implementation/createscriptutil.ts:175`) but not declared on the `ScriptUtil` interface |
 
 ## Examples
 
@@ -191,6 +211,70 @@ In `editorPreparing`, the `layoutItem` argument is the editor's `options` object
 ```json
 {
   "editorPreparing": "if (identifier == 'demoorder') { layoutItem.itemoptions = { query: 'byCustomer', layout: 'primary', customParam: { customerId: item.Id }, readOnly: mode == 'VIEW' }; }"
+}
+```
+
+### Chain lookups before the first data load (`prepareCustomParam` / `paramsInitialized`)
+
+Async lookup helpers nest — collect several lists, then trigger the load/callback once all are present:
+
+```json
+{
+  "paramsInitialized": "util.withPickvalueList(lookups.entityPickvalueLookup, 'demoorder', 'category', (categories) => { util.withLookupListParam(lookups.entityStateLookup, 'demoorder', (states) => { actions.loadData({ categories: categories.map((c) => c.Value), states: states.map((s) => s.State) }); }); });"
+}
+```
+
+```json
+{
+  "prepareCustomParam": "util.withLookupList(lookups.groupsLookup, (groups) => { util.withLookupList(lookups.itemsLookup, (items) => { callback({ groups: groups, items: items }); }); });"
+}
+```
+
+### Cascade dependent editors and gate on lookup row attributes (`editorValueChanged`)
+
+Refine one editor from another's value — a scoped list for the dependent editor, or required/readonly flags driven by attributes on the selected lookup row (state rows carry `ReasonRequired`, `Finished` — see [entities-and-crud.md](entities-and-crud.md)):
+
+```json
+{
+  "editorValueChanged": "if (identifier == 'unitId') { util.withLookupList(lookups.personalForUnitLookup(value), (persons) => { editUtil.setEditorOption('personId', 'items', persons); }); } else { editUtil.setEditorOption('personId', 'items', []); }"
+}
+```
+
+```json
+{
+  "editorValueChanged": "if (identifier == 'Status') { util.withLookupById(lookups.stateLookup, value, (state) => { editUtil.setEditorOption('StatusReason', 'readonly', !state.ReasonRequired); editUtil.setEditorOption('StatusReason', 'required', !!state.ReasonRequired); }); }"
+}
+```
+
+### Seed a lookup editor's `items` from row references (`editorInitialized`)
+
+Restrict a select list to the options relevant for the edited item (e.g. a default reference narrowed by stored associations):
+
+```json
+{
+  "editorInitialized": "if (identifier == 'defaultSupplierId') { util.withLookupList(lookups.supplierLookup, (suppliers) => { const ds = (item.supplierAssociations || []).map((a) => suppliers.find((s) => s.Id == a.supplierId)).filter((s) => s); editUtil.setEditorOption('defaultSupplierId', 'items', ds); }); }"
+}
+```
+
+### Switch cell editors per detail row (`detailGridCellPreparing`)
+
+On `dynamic` columns (see [lists.md](lists.md)), rewrite the cell editor per row — `identifier` is the **column's** data member, `options` is a clone of the column whose mutations take effect. Type by a row attribute, or a parameterized autocomplete per row:
+
+```json
+{
+  "detailGridCellPreparing": "if (identifier == 'checkValue') { switch (detailItem.type) { case 0: options.type = 'bool'; break; case 1: options.type = 'number'; break; case 2: options.type = 'date'; break; case 3: options.type = 'datetime'; break; default: options.type = 'string'; } } if (identifier == 'size') { options.type = 'lookup'; options.lookup = 'sizeAutocomplete'; options.lookupParam = detailItem.itemId; options.acceptCustomValue = detailItem.customSizeAllowed; }"
+}
+```
+
+Note `options.type = 'string'` — the dynamic cell renderer renders `string`, **not** `text` (see [lists.md](lists.md)).
+
+### Reject invalid detail rows with a message (`detailGridRowValidating`)
+
+Returning a **string** fails the row and shows it as the validation message; `undefined` accepts it:
+
+```json
+{
+  "detailGridRowValidating": "if (identifier == 'items' && !detailItem.unitId) { return 'A unit must be selected'; } return undefined;"
 }
 ```
 

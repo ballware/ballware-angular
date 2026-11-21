@@ -87,7 +87,17 @@ All paths below are relative to the expanded `BaseUrl`. Query parameters are app
 
 `Picklists` payload entries: `{ identifier, entity, field }` — resolved as **pickvalue** queries against the data backend (`{base}` of `entity`/`field`); referenced through `lookup` on `pickvalue` editors/columns or through `pickvalueEntity`/`pickvalueField` (see [lists.md](lists.md)).
 
-**Auto-created state lookups:** when `StateColumn` is set, the client additionally registers lookups `stateLookup` (all states), `allowedMetaStateLookup` (states allowed by metadata), and `allowedStateLookup` (states allowed for the current tenant) — `libs/ngrx-meta-services/src/lib/meta/meta.store.ts:147-167`. A `lookup` option may reference these identifiers without any `Lookups` entry.
+**Lookup metadata records:** a `Lookups` entry references a **standalone lookup document** on the metadata backend (`Id`, `Identifier`, `Name`, `Type`, `HasParam` + the query bodies) — listed/edited via `GET {meta}/lookup/selectlist` / `selectbyid/{id}` and the built-in `lookupLookup` (`libs/rest-meta-api/src/lib/lookup.ts:80-89`). The client-relevant fields are `Type` (`1` = autocomplete) and `HasParam` (query needs a parameter); the result rows are fetched from the tenant service (`lookup/selectlistforlookup…`, `…identifier…`, `…withparam…` — `lookup.ts:8-56`). Entity/page `Lookups` entries must carry the record's `id` **and** `identifier` — production payloads show `id` as the record uuid; a lookup may also be defined purely inline (no `id` match needed only when nothing queries the record itself).
+
+**Parameterized lookups are callable in scripts:** `hasParam: true` compiles the entry to a `LookupCreator` function (`libs/ngrx-meta-services/src/lib/lookup/lookup.store.ts:304-324`, autocomplete variant `:356-367`) — `lookups.<id>(param)` returns a ready descriptor for `util.withLookupList`/`withLookupById`/`withAutocompleteList`, e.g. `lookups.allowedStateLookup(ids)`, `lookups.personalForUnitLookup(unitId)`, `lookups.sizeAutocomplete(itemId)`. Details and helper variants in [scripting.md](scripting.md#lookups-in-scripts).
+
+**Auto-created state lookups:** when `StateColumn` is set, the client additionally registers lookups `stateLookup` (all states), `allowedMetaStateLookup` (states allowed by metadata), and `allowedStateLookup` (states allowed for the current tenant) — `libs/ngrx-meta-services/src/lib/meta/meta.store.ts:147-167`. A `lookup` option may reference these identifiers without any `Lookups` entry. The three are also **LookupCreators** accepting a single key or an **array of keys** (`lookup.store.ts:385-424`). Rows returned by state lookups carry at least `State`, `Name`, `Finished` (terminal state flag), and `ReasonRequired` (a status change needs a reason) — scripts use them to filter lists and gate reason editors:
+
+```json
+{
+  "editorValueChanged": "if (identifier == 'Status') { util.withLookupById(lookups.stateLookup, value, (state) => { editUtil.setEditorOption('StatusReason', 'readonly', !state.ReasonRequired); editUtil.setEditorOption('StatusReason', 'required', !!state.ReasonRequired); }); }"
+}
+```
 
 ### Built-in lookups
 
@@ -134,6 +144,32 @@ Rights are plain claim strings on the user (see `fixtures/e2e/identity/e2e-user.
 - Per-row checks apply for function types `default_view`, `default_edit`, `edit` when a row is in context; otherwise a head-level check applies (`customFunctionAllowed$`, `meta.store.ts:392-396`).
 - `extendedRightsCheck` (entity) and `RightsCheckScript` (tenant) can override the claim-based decision (see [scripting.md](scripting.md)).
 - Page visibility uses `generic.page.<page>` — see [navigation.md](navigation.md).
+
+### Scoped and derived rights (production patterns)
+
+Production deployments extend the plain `<Application>.<Entity>.<function>` scheme with claim **families** resolved in `extendedRightsCheck` (the client only ever asks for the plain function right — the script does the mapping):
+
+- **Row-scoped rights:** claims like `<app>.<entity>.<function>.<unitId>` / `<app>.my<entity>.<function>.<personId>` are stored per scope id; the script matches them against values on the row — typically with `startsWith('<family>')` or by concatenating the row value into the expected claim string.
+- **Category-derived rights:** `<app>.<entity>.<category>.<right>` derived from a row field (e.g. a confidentiality category) — `userinfo.right.includes('ballware.workorder.' + param.category + '.' + right)`.
+- **Right remapping:** a script may decide a different right for an action (e.g. treat `state` as `edit`: `right = 'edit'` before the claim lookup).
+- **`rightsParamForItem`** builds a **slim param object** (only the columns the checks need) that arrives as the `param` argument of `extendedRightsCheck`:
+
+  ```json
+  {
+    "rightsParamForItem": "return { ownerPersonId: item.ownerPersonId, ownerUnitId: item.ownerUnitId, Status: item.Status, Locked: item.Locked };",
+    "extendedRightsCheck": "if ((right == 'edit' || right == 'delete') && param.Locked && !userinfo.right.includes('ballware.workorder.edit')) { return false; } if (param.ownerPersonId && param.ownerPersonId == userinfo.person && !!userinfo.right.find((c) => c.startsWith('ballware.myworkorder.' + right))) { return true; } return result;"
+  }
+  ```
+
+  This pattern is pervasive in production **despite the deprecation warning** on `rightsParamForHead`/`rightsParamForItem` (see [scripting.md](scripting.md) caveats) — the slim param also keeps per-row checks cheap.
+
+### Print and documents
+
+A print action appears in the row menu **only if the entity has at least one document metadata record** and the user holds `<Application>.<Entity>.print` per row (`printAllowed$` combines `entityDocuments$` — `selectListDocumentsForEntity` (`meta.store.ts:176-185`) — with the `print` right, `meta.store.ts:389-390`). Choosing one of the entity's documents routes to `/print?docId=<documentId>&id=<key values>` (`crud.store.ts:343-352`). Document records are managed as their own metadata document type (built-in `documentLookup`; designer access via `util.openDocumentDesigner` — see [scripting.md](scripting.md)).
+
+## Backend-side envelope fields (context only)
+
+Production entity records carry additional fields that the client **never reads** — they belong to the metadata/data backend (queries, save statements, state machines, storage schema). They are listed so authors know what the client contract ignores: `ListQuery`, `ByIdQuery`, `NewQuery`, `ScalarValueQuery`, `SaveStatement`/`SaveScript`, `RemoveStatement`/`RemoveScript`, `RemovePreliminaryCheckScript`, `BeforeSaveScript`, `ListScript`, `ByIdScript`, `StateAllowedScript`, `States`, `Rights`, `StateReasonColumn`, `Indices`, `GeneratedSchema`, `NoIdentity`, `ProviderModelDefinition`, `Meta`, and the storage/export artifact `__KEY__`. None of them affect rendering or client behavior; do not document them as part of the metadata contract.
 
 ## Example (payload view)
 

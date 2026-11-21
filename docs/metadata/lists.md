@@ -95,6 +95,65 @@ Mapped to DevExtreme group/total summary items with `column: dataMember` and har
 - Excel export is fully client-side (`exportDataGrid` + `exceljs` + `file-saver`, `datagrid.component.ts:434-450`), file name `<displayName>_<YYYYMMDD>.xlsx`.
 - Inline cell editing updates through the CRUD save pipeline; `allowEditing` gates the DevExtreme editing state and `editAllowed` gates per row (`datagrid.component.ts:127-155`).
 
+## Recipes
+
+### Inline status change via a custom function
+
+A state column with `editable: true` **and** `editFunction` does not open a cell editor — the click opens the named custom function for the row (`datagrid.component.ts:143-153`), combining per-row editability with a controlled dialog (e.g. a batch status-change function, see [custom-functions.md](custom-functions.md)):
+
+```json
+{ "type": "lookup", "dataMember": "Status", "caption": "Status", "lookup": "stateLookup", "width": "170px", "editable": true, "editFunction": "state", "position": 5 }
+```
+
+The grid needs `allowEditing: true` (DevExtreme cell-editing mode) for the column's `editable` flag to matter; the lookup list still renders the current value as usual.
+
+### Lookup-driven dynamic columns
+
+Columns (and their summaries) can be **built at runtime** from a lookup — one declarative chain (hook signatures in [scripting.md](scripting.md)):
+
+```json
+{
+  "prepareCustomParam": "util.withLookupList(lookups.extraColumnsLookup, (columns) => callback({ extraColumns: columns }));",
+  "prepareGridLayout": "customParam.extraColumns.forEach((c, i) => { gridLayout.columns.push({ type: 'bool', dataMember: 'extraValues.' + c.Id, caption: c.Name, position: 100 + i }); gridLayout.summaries.push({ dataMember: 'extraValues.' + c.Id, groupSummary: true, totalSummary: true, summaryType: 'sum' }); });",
+  "ItemMappingScript": "item.extraValues = {}; (item.ExtraIds || '').split(',').forEach((id) => { item.extraValues[id] = true; });"
+}
+```
+
+1. `prepareCustomParam` loads the column definition list (`{ Id, Name }` rows) into `customParam`.
+2. `prepareGridLayout` pushes a column **and** its summary per entry; large `position` numbers keep dynamic columns right of the static ones.
+3. `ItemMappingScript` materializes the values on the dotted member (`extraValues.<id>`) from a flattened server-side property — the columns address ordinary property paths on the item.
+
+### Master-detail with tabs
+
+A `details` block is a full edit-item subtree, so containers work inside it — tabs wrapping a statistic, an embedded list of a foreign entity, and the attachment grid:
+
+```json
+{
+  "colCount": 1,
+  "colCountByScreen": { "sm": 1, "lg": 1 },
+  "height": "auto",
+  "items": [
+    {
+      "type": "tabs",
+      "options": { "height": "100%" },
+      "items": [
+        { "type": "tab", "options": { "caption": "Progression" }, "items": [
+          { "type": "statistic", "options": { "height": "500px", "itemoptions": { "identifier": "orderProgression", "params": { "scale": 1800 } } } }
+        ] },
+        { "type": "tab", "options": { "caption": "Units" }, "items": [
+          { "type": "entitygrid", "options": { "dataMember": "orderunit", "height": "100%", "itemoptions": { "query": "byOrder" } } }
+        ] },
+        { "type": "tab", "options": { "caption": "Attachments" }, "items": [ { "type": "attachments", "options": { "dataMember": "Id" } } ] }
+      ]
+    }
+  ]
+}
+```
+
+- `statistic` items in a detail layout are **edit-form embeddings** (`itemoptions.identifier` + `params`, see [statistics.md](statistics.md)).
+- `entitygrid` lists a foreign entity (`dataMember` is its identifier, `itemoptions.query` one of its queries — see [edit-forms.md](edit-forms.md)); its row filter comes from head params/custom param supplied for the grid context.
+- `attachments` binds to the current edit session of the row; `dataMember` points at the key column value.
+
 ## Example
 
 Strict JSON `GridLayout` payload:
@@ -133,7 +192,8 @@ Strict JSON `GridLayout` payload:
 
 ## Caveats (verified against source)
 
-- `hidingPriority` is unused: no factory sets it and it is cleared on large screens.
+- `hidingPriority` is unused: no factory sets it and it is cleared on large screens — production layouts that store it (explicitly `null` or as integers) behave identically to omitting it.
+- A `searchparams` key on grid layouts (present in some production metadata) is **never read** by the client — filtering runs through page toolbar head params (see [pages.md](pages.md) caveats).
 - `identifier` on grids / `itemoptions.identifier` (storageIdentifier) is **not** bound to any state store — no DevExtreme `stateStore` is used, so column/page state is not persisted (NgRx CRUD state is keyed by breadcrumb route, not layout identifier).
 - Remote sorting/filtering disabled: every list loads fully client-side before paging — keep default queries bounded server-side.
 - In `dynamic` cells, `text` columns don't render (renderer matches `"string"` only) and popups require type `"editpopup"`, not `"popup"`.

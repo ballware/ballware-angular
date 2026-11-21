@@ -11,6 +11,7 @@ The [main README](../../README.md) covers setup and operation of the webclient; 
 | File | Topic |
 |---|---|
 | [navigation.md](navigation.md) | Tenant metadata and the navigation layout |
+| [pages.md](pages.md) | Page envelope: layout tree, toolbar head params, tab counters, documentation help |
 | [entities-and-crud.md](entities-and-crud.md) | Entity metadata envelope, CRUD endpoints, lookups, rights |
 | [lists.md](lists.md) | Grid (list) layouts and columns |
 | [edit-forms.md](edit-forms.md) | Edit layouts, editors, templates, detail collections |
@@ -54,7 +55,7 @@ Data (as opposed to metadata) is served by a separate backend reachable via the 
 - **Payload fields are strings containing JSON**: layout definitions, lookup lists, script collections and custom function lists are not sent as JSON objects but as JSON *strings* embedded in the envelope (e.g. `"GridLayout": "[{...}]"`). They are parsed by the adapter with `JSON5.parse`.
 - **JSON5 is tolerated, plain strict JSON is recommended.** The backend round-trips these strings and the client parses them with JSON5 (unquoted keys, single quotes allowed). All examples in these docs use strict JSON so they parse with plain `JSON.parse` as well.
 - **Script fields are function bodies**, not full functions: each script string is the *body* of a function whose parameter names are fixed by the client (see [scripting.md](scripting.md)).
-- Fixtures contain a redundant `Id` row key next to `Identifier` fields; `Id` is the backend storage row id, `Identifier` is the lookup key the client resolves.
+- Fixtures contain a redundant `Id` row key next to `Identifier` fields; `Id` is the backend storage row id, `Identifier` is the lookup key the client resolves. Exported metadata additionally carries `__KEY__` — a storage/export artifact, likewise ignored by the client.
 
 A complete raw entity envelope (payload strings escaped; the same content is shown unescaped in the topic files):
 
@@ -95,7 +96,13 @@ Rights are plain strings assigned to the user (typically via identity claims) an
 - `<application>.<entity>.<functionId>` for CRUD/custom function operations (e.g. `ballware.demoorder.edit`)
 - `generic.page.<page>` for navigation/page visibility
 
+In production the scheme extends to **claim families** and meta-admin/identity scopes: `<app>.<entity>.<function>.<scope>` row-scoped claims, `<app>.<entity>.<category>.<right>` category-derived claims, and `meta.*` / `identity.*` (e.g. `meta.entity.view`, `identity.user.view`) for admin pages — all resolved inside `RightsCheckScript`/`extendedRightsCheck` (see [navigation.md](navigation.md), [entities-and-crud.md](entities-and-crud.md)). The shape of the `userinfo` claims record is **identity-provider dependent**: production tenants issue a lowercase `right` array plus custom claims (e.g. `person`), while `fixtures/e2e/identity/e2e-user.json` uses `Rights` — scripts must read the claim names their backend issues.
+
 Extended, script-based rights checks are described in [scripting.md](scripting.md). See `fixtures/e2e/identity/e2e-user.json` for example rights.
+
+## Backend-side metadata (context)
+
+The metadata/data backends store more than the client consumes. Query and persistence fields (`ListQuery`, `SaveStatement`, `States`, `Rights`, …) and the `__KEY__` storage artifact are **never read by the client** — the full ignored-field list is in [entities-and-crud.md](entities-and-crud.md#backend-side-envelope-fields-context-only). Other backend-side document types — **documents** (report/print templates, reached only via the print route and `documentLookup`), **notifications** and **subscriptions** (delivery scheduling, reached via `notificationLookup`/`subscriptionLookup` and `util.triggerSubscriptions`), **mlmodels** (training backend, `mlmodelLookup` + `util.train`), and generic datasource folders behind the `{generic}` `BaseUrl` placeholder — are administered through their meta-admin pages; their internals are outside this client contract.
 
 ## Authoring metadata with AI prompts
 

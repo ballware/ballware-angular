@@ -89,6 +89,7 @@ All types registered in `libs/dx-renderer/src/lib/components/index.ts`. Keys rea
 | `json`, `javascript`, `sql` | `EditLayoutCodeComponent` | `prefixCode`, `suffixCode`, `snippets` (`{ snippet, label, info, detail }`) | CodeMirror editor; language from `type` |
 | `attachments` (alias `attachements`) | `EditLayoutAttachmentDataGridComponent` | none | Attachment grid bound to the current edit session (entity/id), not to `dataMember` |
 | `statistic` | `EditLayoutStatisticComponent` | `identifier`, `params` | Embeds a statistic; see [statistics.md](statistics.md). `itemoptions.statistic` is **not** read by the edit component |
+| `empty` | *no component* | — | Recognized **silent type**: the edit item host renders nothing and logs no warning (`layout/edit/item.component.ts:43-45`) — spacer / collapsed group placeholder (see Recipes) |
 
 ## Validations
 
@@ -116,6 +117,8 @@ Edit items of `type: "template"` are **materialized before rendering** (`libs/ng
 - `scope` is `"tenant"` (tenant envelope `Templates`) or `"meta"` (entity envelope `Templates`).
 - `identifier` selects the template `{ identifier, definition }`, where `definition` is a full `EditLayoutItem` subtree.
 - On materialization the item's `type`, `colCount`, `colSpan`, `options`, and `items` are replaced by the template definition, then the `prepareMaterializedEditItem` script may post-adjust it (see [scripting.md](scripting.md)).
+
+In practice entities define small reusable blocks (`bookingSource`, `enquirer`, …) in their **own** `Templates` (`scope: "meta"`) and reference shared cross-entity blocks (e.g. an *activities* tab) from the **tenant** `Templates` (`scope: "tenant"`, see [navigation.md](navigation.md)). `prepareMaterializedEditItem` receives `scope` + `identifier` of the used template and the materialized item, so one hook can post-adjust several template families.
 
 ## Runtime editor adjustment (`EditUtil`)
 
@@ -210,13 +213,85 @@ Strict JSON `EditLayout` payload covering the most common patterns:
 ]
 ```
 
+## Recipes
+
+### Address + coordinates (map editor with numeric fallback)
+
+A `map` editor stores a `{ lat, lng }` object; keep plain number editors for the coordinates in sync and resolve a free-text address with `util.geocodeAddress` (pattern from production *work order* forms):
+
+```json
+[
+  { "type": "text", "options": { "dataMember": "Address", "caption": "Address" } },
+  { "type": "number", "options": { "dataMember": "Location.lat", "caption": "Latitude" } },
+  { "type": "number", "options": { "dataMember": "Location.lng", "caption": "Longitude" } },
+  { "type": "map", "colSpan": 2, "options": { "height": "500px", "dataMember": "Location" } }
+]
+```
+
+```json
+{
+  "ItemMappingScript": "item.Location = { lat: item.Latitude, lng: item.Longitude };",
+  "ItemReverseMappingScript": "item.Latitude = item.Location.lat; item.Longitude = item.Location.lng; item.Location = null;",
+  "editorValueChanged": "if (identifier == 'Location') { editUtil.setEditorOption('Location.lat', 'value', value.lat); editUtil.setEditorOption('Location.lng', 'value', value.lng); } else if (identifier == 'Location.lat') { editUtil.setEditorOption('Location', 'value', { lat: value, lng: editUtil.getEditorOption('Location.lng', 'value') }); } else if (identifier == 'Address') { if (value) { util.geocodeAddress(value, (location) => { editUtil.setEditorOption('Location.lat', 'value', location.lat); editUtil.setEditorOption('Location.lng', 'value', location.lng); }); } }"
+}
+```
+
+Dotted `dataMember` paths (`Location.lat`) are **ordinary property paths** on the item — the editor lifecycle registers the exact `dataMember` string, no special nesting exists. The mapping scripts convert between the server columns (`Latitude`/`Longitude`) and the client object.
+
+### Runtime layout rewriting (`prepareEditLayout`)
+
+The layout handed to `prepareEditLayout` is mutable before rendering — swap an item type per mode, or inject lookup-driven editors:
+
+```json
+{
+  "prepareEditLayout": "if (mode == 'CREATE') { const gridItem = editLayout.items.find((i) => i.type == 'entitygrid' && i.options && i.options.dataMember == 'orderunit'); if (gridItem) { gridItem.type = 'multilookup'; gridItem.options = { dataMember: 'unitIds', caption: 'Units', lookup: 'unitLookup' }; } } const groupItem = editLayout.items.find((i) => i.type == 'group' && i.options && i.options.caption == 'Characteristics'); if (groupItem) { customParam.groups.forEach((g) => { groupItem.items.push({ type: 'staticmultilookup', options: { dataMember: 'containers.' + g.Id, caption: g.Name, itemsMember: 'sources.' + g.Id, valueExpr: 'Id', displayExpr: 'Name', hintExpr: 'Description' } }); }); }",
+  "ItemMappingScript": "customParam.groups.forEach((g) => { item.containers = item.containers || {}; item.sources = item.sources || {}; item.containers[g.Id] = item.containerValues[g.Id] || []; item.sources[g.Id] = g.Options || []; });"
+}
+```
+
+- Swapping an embedded `entitygrid` to a lookup editor in `CREATE` is the standard pattern for "pick the related records as you create" (no child rows exist yet).
+- Injected `staticmultilookup` editors resolve `itemsMember` **from the edited item** — the dotted members must exist by the time the editor resolves (build them in `ItemMappingScript` from data delivered with the item).
+- Retargeting an existing `entitygrid` per row (head params, `readOnly` from a lock flag on the item) belongs in `editorPreparing` — see the recipe in [scripting.md](scripting.md).
+
+### Scanner add workflow (barcode capture)
+
+A scanner-driven add function combines a dedicated edit layout, toggles on virtual members, the `interactionKeyboardLine` hook, and `util.speak` confirmations:
+
+```json
+{ "id": "addscan", "type": "add", "text": "Add by scanner", "icon": "bi bi-qr-code-scan", "supportContinue": true, "editLayout": "addscan" }
+```
+
+```json
+{
+  "identifier": "addscan",
+  "colCount": 2,
+  "items": [
+    { "type": "lookup", "options": { "dataMember": "checklistId", "caption": "Checklist", "lookup": "checklistLookup", "required": true } },
+    { "type": "toggle", "options": { "dataMember": "scannerActive", "caption": "Scanner active" } },
+    { "type": "toggle", "options": { "dataMember": "audioActive", "caption": "Audio output active" } },
+    { "type": "number", "options": { "dataMember": "result", "caption": "Result" } }
+  ]
+}
+```
+
+```json
+{
+  "interactionKeyboardLine": "if (item.scannerActive && value) { if (value == '**PASSED**') { editUtil.setEditorOption('result', 'value', 10); if (item.audioActive) { util.speak('passed'); } } else if (value == '**NOTPASSED**') { editUtil.setEditorOption('result', 'value', 5); if (item.audioActive) { util.speak('not passed'); } } else if (value == '**SAVE**') { editUtil.apply(editUtil, item, true); } }"
+}
+```
+
+- `interactionKeyboardLine` (arguments `item, editUtil, value, lookups, util`) receives **hardware-keyboard line input** — barcode scanners deliver their payload as a typed line ending in Enter. Sentinel tokens (like `**PASSED**`) let the scanner trigger structured actions instead of free text.
+- `supportContinue` keeps the dialog open after `editUtil.apply(...)` for the next scan; `scannerActive`/`audioActive` are virtual members read by the scripts.
+- The list side of the workflow is the grid option `allowSearchByBarcode` (scanner search button, see [lists.md](lists.md)).
+
 ## Caveats (verified against source)
 
 - **`tabs` persists the selected tab index** (number) into the bound `dataMember` — the tab state round-trips with the business object (`libs/dx-renderer/src/lib/components/tabs/edit/tabs.component.ts`). `itemoptions.identifier` is **not** used by the edit tabs component.
 - `precision` on edit `number` editors is ignored; it only affects grid columns (see [lists.md](lists.md)).
 - `pickvalueEntity`/`pickvalueField`/`lookupMember` are not read by edit editors — only by grid columns.
 - `width` is only honored on `button` and `tabs`.
-- `uniqueKey` and `fetchParams` on `entitygrid` `itemoptions` are declared but never read.
+- `uniqueKey` and `fetchParams` on `entitygrid` `itemoptions` are declared but never read. Production `editorPreparing` scripts still set them widely — without any client effect; put per-row filtering data in `headParams`/`customParam` instead (see [scripting.md](scripting.md)).
+- Unknown edit item types log `Unknown edit layout item type <type>` and render nothing; only `empty` is recognized as the silent no-render type (`layout/edit/item.component.ts:43-45`).
 - Fixtures occasionally place `lookup` at the **item root** (e.g. `fixtures/e2e/entity/demoorder.json`); the client reads `options.lookup` on edit items — at the item root it is ignored (on grid columns the option lives at the column root by design, since columns extend `EditLayoutItemOptions`).
 - A `fieldset` component exists (`libs/dx-renderer/src/lib/components/fieldset/`) but is **not registered** — do not use `fieldset` as a type.
 - `attachements` is a registered typo alias of `attachments`.

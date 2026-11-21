@@ -18,6 +18,8 @@ Raw envelope (`libs/rest-meta-api/src/lib/tenant.ts`):
 
 Compiled into `CompiledTenant` (`libs/meta-model/src/lib/tenant.ts`) as `id`, `name`, `navigation`, `templates`, `hasRight`.
 
+**Tenant templates in practice:** a tenant `Templates` entry holds a layout block reused across many entity edit layouts — e.g. an *activities* tab (`type: "tab"` containing an `entitygrid` with `query: 'context'` — the related-activity list query of the edited entity). Entities reference it with `type: "template"` + `itemoptions: { scope: 'tenant', identifier: '<template>' }` (see [edit-forms.md](edit-forms.md)).
+
 ## NavigationLayout schema
 
 Source: `libs/meta-model/src/lib/tenant.ts`
@@ -116,5 +118,33 @@ The same `Navigation` payload standalone (strict JSON):
 The `RightsCheckScript` above mirrors the minimal default: it grants a right if the string appears in the user's assigned rights. It is a function body; the client invokes it with `(userinfo, right)` (see [scripting.md](scripting.md)).
 
 > The backend tolerates JSON5 in payload strings (the fixture `fixtures/e2e/tenant/e2e.json` uses unquoted keys); this reference always uses strict JSON.
+
+## RightsCheckScript patterns
+
+The tenant script is the **single gate for every right the client asks about** — navigation visibility (`generic.page.<page>`), entity CRUD rights, and print rights all pass through it. A common production shape is a `switch (right)` that maps page visibility onto entity claims, gates meta-admin/identity pages on `meta.*` / `identity.*` claims, and resolves **scoped rights families** with `startsWith`:
+
+```js
+var result = false;
+if (!userinfo.right) { return false; }
+switch (right) {
+  case 'generic.page.workorders':
+    result = userinfo.right.includes('ballware.workorder.view')
+          || !!userinfo.right.find(function (c) { return c.startsWith('ballware.myworkorder.view'); });
+    break;
+  case 'generic.page.users':
+    result = userinfo.right.includes('identity.user.view');
+    break;
+  case 'generic.page.entities':
+    result = userinfo.right.includes('meta.entity.view');
+    break;
+  default:
+    result = userinfo.right.includes(right);
+    break;
+}
+return !!result;
+```
+
+- Page-level gating only decides **access to the page**; per-row scoping (e.g. `ballware.myworkorder.view.<personId>` claims) is resolved in the entity's `extendedRightsCheck` (see [entities-and-crud.md](entities-and-crud.md)).
+- `userinfo` is the **raw claims record of the identity provider** — claim naming is backend-dependent. Production tenants issue a lowercase `right` array plus custom claims (e.g. `person`, consumed by entity scripts); the e2e fixture `fixtures/e2e/identity/e2e-user.json` uses `Rights`. A script must read the claim its backend actually issues.
 
 See also: `fixtures/e2e/tenant/e2e.json` (runnable fixture) and [entities-and-crud.md](entities-and-crud.md) for the entity rights strings a page's content may additionally require.
